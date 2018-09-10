@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<link rel="stylesheet" data-name="vs/editor/editor.main" href="../node_modules/monaco-editor-core/dev/vs/editor/editor.main.css">
+</head>
+<body>
+
+<h2>Monaco Editor Kusto test page</h2>
+
+<script>
+
+</script>
+<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
+
+<script>
+	var require = {
+		paths: {
+			'vs/language/kusto': '../release/dev',
+			'vs': '../node_modules/monaco-editor-core/dev/vs'
+		}
+	};
+</script>
+<script src="../node_modules/monaco-editor-core/dev/vs/loader.js"></script>
+<script src="../node_modules/monaco-editor-core/dev/vs/editor/editor.main.nls.js"></script>
+<script src="../node_modules/monaco-editor-core/dev/vs/editor/editor.main.js"></script>
+<script src="../node_modules/@kusto/language-service/bridge.js"></script>
+<script src="../node_modules/@kusto/language-service/kusto.javascript.client.js"></script>
+<script src="../node_modules/@kusto/language-service-next/Kusto.Language.Bridge.js"></script>
+
+<script>
+	var setDM;
+	var setHelp;
+	var setKuskus;
+	var setSemanticOff;
+	var setSemanticOn;
+	var setIntellisenseV2;
+	var setIntellisenseV1;
+	require([
+		'vs/language/kusto/monaco.contribution'
+	], function() {
+		var editor = monaco.editor.create(document.getElementById('container'), {
+			value: ['StormEvents | project StartTime , State | where toupper(State) == "Texas" | count'].join('\n'),
+			language: 'kusto',
+			selectionHighlight:false,
+			theme: 'kusto-light',
+			folding: true
+		});
+
+		setDM = () => {
+			monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const model = editor.getModel();
+			workerAccessor(model.uri).then(worker => {
+				worker.setSchema(null, 'DataManagement');
+			});
+		})};
+
+		monaco.languages.kusto.kustoDefaults.setLanguageSettings({includeControlCommands: true, newlineAfterPipe: true, useIntellisenseV2: false, useSemanticColorization: true});
+		const schema = {
+			"Plugins": [{
+				"Name": "pivot"
+			}
+			],
+			"Databases": {
+				"Samples": {
+					"Name": "Samples",
+					"Tables": {
+						"StormEvents": {
+							"Name": "StormEvents",
+							"OrderedColumns": [{
+								"Name": "StartTime",
+								"Type": "System.DateTime",
+								"CslType": "datetime"
+							}, {
+								"Name": "EndTime",
+								"Type": "System.DateTime",
+								"CslType": "datetime"
+							}, {
+								"Name": "EpisodeId",
+								"Type": "System.Int32",
+								"CslType": "int"
+							}, {
+								"Name": "EventId",
+								"Type": "System.Int32",
+								"CslType": "int"
+							}, {
+								"Name": "State",
+								"Type": "System.String",
+								"CslType": "string"
+							}
+							]
+						}, "ForecastExample": {
+							"Name": "ForecastExample",
+							"OrderedColumns": [{
+								"Name": "Timestamp",
+								"Type": "System.DateTime",
+								"CslType": "datetime"
+							}, {
+								"Name": "RequestCount",
+								"Type": "System.Int64",
+								"CslType": "long"
+							}
+							]
+						}
+					},
+					"Functions": {
+						"MyFunction1": {
+							"Name": "MyFunction1",
+							"InputParameters": [],
+							"Body": "{     StormEvents     | limit 100 }  ",
+							"Folder": "Demo",
+							"DocString": "Simple demo function",
+							"FunctionKind": "Unknown",
+							"OutputColumns": []
+						},
+						"MyFunction2": {
+							"Name": "MyFunction2",
+							"InputParameters": [{
+								"Name": "myLimit",
+								"Type": "System.Int64",
+								"CslType": "long"
+							}
+							],
+							"Body": "{     StormEvents     | limit myLimit }  ",
+							"Folder": "Demo",
+							"DocString": "Demo function with parameter",
+							"FunctionKind": "Unknown",
+							"OutputColumns": []
+						}
+					}
+				}
+			}
+
+		};
+		const schema2 = {
+			"Plugins": [{
+				"Name": "pivot"
+			}
+			],
+			"Databases": {
+				"Kuskus": {
+					"Name": "Kuskus",
+					"Tables": {
+						"KustoLogs": {
+							"Name": "KustoLogs",
+							"OrderedColumns": [{
+								"Name": "Timestamp",
+								"Type": "System.DateTime",
+								"CslType": "datetime"
+							}, {
+								"Name": "EventText",
+								"Type": "System.String",
+								"CslType": "string"
+							}, {
+								"Name": "Level",
+								"Type": "System.String",
+								"CslType": "string"
+							}, {
+								"Name": "Source",
+								"Type": "System.String",
+								"CslType": "string"
+							}
+							]
+						}, "Usage": {
+							"Name": "Usage",
+							"OrderedColumns": [{
+								"Name": "StartedOn",
+								"Type": "System.DateTime",
+								"CslType": "datetime"
+							}, {
+								"Name": "User",
+								"Type": "System.String",
+								"CslType": "string"
+							}
+							]
+						}
+					},
+					"Functions": {
+						"FindCIDPast24h": {
+							"Name": "FindCIDPast24h",
+							"InputParameters": [],
+							"Body": "{     KustoLogs     | limit 100 }  ",
+							"Folder": "Demo",
+							"DocString": "Find CID past 24 hours",
+							"FunctionKind": "Unknown",
+							"OutputColumns": []
+						},
+						"MyFunction2": {
+							"Name": "FindCID",
+							"InputParameters": [{
+								"Name": "cid",
+								"Type": "System.String",
+								"CslType": "string"
+
+							},{
+								"Name": "startTime",
+								"Type": "System.Datetime",
+								"CslType": "datetime"
+							}
+							],
+							"Body": "{     KustoLogs     | where Timestamp > startTime | where EventText has cid }  ",
+							"Folder": "Demo",
+							"DocString": "Find  CID in after a cetain time",
+							"FunctionKind": "Unknown",
+							"OutputColumns": []
+						}
+					}
+				}
+			}
+
+		};
+		setHelp = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const model = editor.getModel();
+			workerAccessor(model.uri).then(worker => {
+				worker.setSchemaFromShowSchema(schema, "https://help.kusto.windows.net", 'Samples');
+			});
+		});
+		setKuskus = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const model = editor.getModel();
+			workerAccessor(model.uri).then(worker => {
+				worker.setSchemaFromShowSchema(schema2, "https://kuskus.kusto.windows.net", 'Kuskus');
+			});
+		});
+		setSemanticOff = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+			monaco.useSemanticColorization = false;
+			monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+		});
+		setSemanticOn = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+			monaco.useSemanticColorization = true;
+			monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+		});
+		setIntellisenseV1 = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+			monacoSettings.useIntellisenseV2 = false;
+			monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+		});
+		setIntellisenseV2 = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+			monacoSettings.useIntellisenseV2 = true;
+			monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+		});
+		setHelp();
+	});
+</script>
+<div>
+	<button onclick="setKuskus()">Kuskus</button>
+	<button onclick="setHelp()">Help</button>
+	<button onclick="setDM()">DM</button>
+</div>
+<div>
+	<button onclick="setSemanticOff()">Semantic colorization Off</button>
+	<button onclick="setSemanticOn()">Semantic colorization On</button>
+</div>
+<div>
+	<button onclick="setIntellisenseV1()">V1 Intellisense</button>
+	<button onclick="setIntellisenseV2()">V2 Intellisense</button>
+</div>
+</body>
+</html>

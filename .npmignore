@@ -1,0 +1,11 @@
+/.vscode/
+/lib/
+/out/
+/src/
+/test/
+/gulpfile.js
+/.npmignore
+.tfignore
+publish.cmd
+yarn.lock
+yarn-error.log
