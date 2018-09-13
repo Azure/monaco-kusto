@@ -210,16 +210,15 @@ const classificationToColor: {[K in kinds]: string} = {
 	Keyword: '0000FF',
 	Literal: 'B22222',
 	ScalarOperator: '000000',
+	MathOperator: '000000',
 	Parameter: '2B91AF',
 	PlainText: '000000',
-	Plugin: '0000FF',
 	Punctuation: '000000',
 	QueryOperator: 'FF4500',
 	QueryParameter: 'FF4500',
 	StringLiteral: 'B22222',
 	Table: 'C71585',
 	Type: '0000FF',
-	Unknown: '000000',
 	Variable: '191970',
 	Directive: '9400D3'
 }
