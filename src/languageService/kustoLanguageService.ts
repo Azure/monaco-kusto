@@ -214,7 +214,7 @@ export type CmSchema = {
 
         const completionItems = currentcommand.GetCompletionItems(cursorOffset);
 
-        let items: ls.CompletionItem[] = completionItems.Items.map((kItem, i) => {
+        let items: ls.CompletionItem[] = this.toArray<k2.CompletionItem>(completionItems.Items).map((kItem, i) => {
             const v1CompletionOption = new k.CompletionOption(this._toOptionKind[kItem.Kind] || k.OptionKind.None, kItem.DisplayText);
             const helpTopic: k.CslTopicDocumentation = this.getTopic(v1CompletionOption);
             // If we have AfterText it means that the cursor should no be placed at end of suggested text.
@@ -482,7 +482,7 @@ export type CmSchema = {
             const affectedBlocks = this.getAffectedBlocks(blocks, changeIntervals);
 
             return Promise.as(affectedBlocks.map(block => ({
-                classifications: block.GetClassifications(block.Start, block.End).Classifications,
+                classifications: this.toArray<k2.ClassifiedRange>(block.GetClassifications(block.Start, block.End).Classifications),
                 absoluteStart: block.Start,
                 absoluteEnd: block.End
             })));
