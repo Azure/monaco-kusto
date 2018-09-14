@@ -154,7 +154,7 @@ export type CmSchema = {
         [k2.CompletionKind.ClausePrefix]: k.OptionKind.None,
         [k2.CompletionKind.Cluster]: k.OptionKind.Database,
         [k2.CompletionKind.Column]: k.OptionKind.Column,
-        [k2.CompletionKind.CommandPrefix]: k.OptionKind.Operator,
+        [k2.CompletionKind.QueryPrefix]: k.OptionKind.Operator,
         [k2.CompletionKind.Database]: k.OptionKind.Database,
         [k2.CompletionKind.Identifier]: k.OptionKind.None,
         [k2.CompletionKind.Keyword]: k.OptionKind.None,
@@ -167,6 +167,7 @@ export type CmSchema = {
         [k2.CompletionKind.Syntax]: k.OptionKind.None,
         [k2.CompletionKind.Table]: k.OptionKind.Table,
         [k2.CompletionKind.TabularFunction]: k.OptionKind.FunctionServerSide,
+        [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
         [k2.CompletionKind.TabularPrefix]: k.OptionKind.None,
         [k2.CompletionKind.TabularSuffix]: k.OptionKind.None,
         [k2.CompletionKind.Unknown]: k.OptionKind.None,
@@ -213,7 +214,7 @@ export type CmSchema = {
 
         const completionItems = currentcommand.GetCompletionItems(cursorOffset);
 
-        let items: ls.CompletionItem[] = completionItems.Items.map((kItem, i) => {
+        let items: ls.CompletionItem[] = this.toArray<k2.CompletionItem>(completionItems.Items).map((kItem, i) => {
             const v1CompletionOption = new k.CompletionOption(this._toOptionKind[kItem.Kind] || k.OptionKind.None, kItem.DisplayText);
             const helpTopic: k.CslTopicDocumentation = this.getTopic(v1CompletionOption);
             // If we have AfterText it means that the cursor should no be placed at end of suggested text.
@@ -383,7 +384,7 @@ export type CmSchema = {
         }
 
         const script = this.parseDocumentV2(document);
-        let blocks: k2.ScriptBlock[] = this.toArray(script.Blocks);
+        let blocks = this.toArray<k2.ScriptBlock>(script.Blocks);
         if (changeIntervals.length > 0) {
             blocks = this.getAffectedBlocks(blocks, changeIntervals);
         }
@@ -477,11 +478,11 @@ export type CmSchema = {
         const script = this.parseDocumentV2(document);
         if (changeIntervals.length > 0) {
 
-            const blocks: Kusto.Language.Editor.ScriptBlock[] = this.toArray(script.Blocks);
+            const blocks = this.toArray<k2.ScriptBlock>(script.Blocks);
             const affectedBlocks = this.getAffectedBlocks(blocks, changeIntervals);
 
             return Promise.as(affectedBlocks.map(block => ({
-                classifications: block.GetClassifications(block.Start, block.End),
+                classifications: this.toArray<k2.ClassifiedRange>(block.GetClassifications(block.Start, block.End).Classifications),
                 absoluteStart: block.Start,
                 absoluteEnd: block.End
             })));
@@ -838,6 +839,7 @@ export type CmSchema = {
                     sym.ParameterTypeKind.Tabular,
                     sym.ArgumentKind.Expression,
                     null,
+                    null,
                     false,
                     null,
                     1,
@@ -1181,13 +1183,14 @@ export type CmSchema = {
         [k2.CompletionKind.TabularPrefix]: ls.CompletionItemKind.Field,
         // datatable, externaldata
         [k2.CompletionKind.TabularSuffix]: ls.CompletionItemKind.Field,
-        [k2.CompletionKind.CommandPrefix]: ls.CompletionItemKind.Function,
+        [k2.CompletionKind.QueryPrefix]: ls.CompletionItemKind.Function,
         [k2.CompletionKind.ClausePrefix]: ls.CompletionItemKind.Interface,
         [k2.CompletionKind.OperatorInfix ]: ls.CompletionItemKind.Method,
         [k2.CompletionKind.Column]: ls.CompletionItemKind.Function,
         [k2.CompletionKind.Table]: ls.CompletionItemKind.Class,
         [k2.CompletionKind.ScalarFunction]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.TabularFunction]: ls.CompletionItemKind.Field,
+        [k2.CompletionKind.AggregateFunction]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Parameter]: ls.CompletionItemKind.Variable,
         [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
         [k2.CompletionKind.Database]: ls.CompletionItemKind.Class,
@@ -1216,7 +1219,7 @@ export type CmSchema = {
         [TokenKind.CalculatedColumnToken]: k2.ClassificationKind.Column,
         [TokenKind.StringLiteralToken]: k2.ClassificationKind.Literal,
         [TokenKind.FunctionNameToken]: k2.ClassificationKind.Function,
-        [TokenKind.UnknownToken]: k2.ClassificationKind.Unknown,
+        [TokenKind.UnknownToken]: k2.ClassificationKind.PlainText,
         [TokenKind.CommentToken]: k2.ClassificationKind.Comment,
         [TokenKind.PlainTextToken]: k2.ClassificationKind.PlainText,
         [TokenKind.DataTypeToken]: k2.ClassificationKind.Type,
@@ -1225,7 +1228,7 @@ export type CmSchema = {
         [TokenKind.QueryParametersToken]: k2.ClassificationKind.QueryParameter,
         [TokenKind.CslCommandToken]: k2.ClassificationKind.Keyword, // TODO ?
         [TokenKind.LetVariablesToken]: k2.ClassificationKind.Identifier, // TODO ?
-        [TokenKind.PluginToken]: k2.ClassificationKind.Plugin,
+        [TokenKind.PluginToken]: k2.ClassificationKind.Function,
         [TokenKind.BracketRangeToken]: k2.ClassificationKind.Keyword, // TODO ?
         [TokenKind.ClientDirectiveToken]: k2.ClassificationKind.Keyword // TODO ?
     }

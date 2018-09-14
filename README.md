@@ -39,6 +39,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
     In the future we might load these programmatically ourselves (in fact  - we already do this for the web monaco language service web worker).
 
 ## Changelog
+### 0.1.18
+#### Added
+- Updated language server dependnecy to latest version.
 ### 0.1.16
 #### Bug Fix
 - improve V2 intellisense colorization performance.
