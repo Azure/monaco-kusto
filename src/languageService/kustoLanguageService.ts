@@ -491,7 +491,7 @@ export type CmSchema = {
         // Entire document requested
         const blocks = this.toArray<k2.ScriptBlock>(script.Blocks);
         const classifications = blocks.map(block => {
-            return block.GetClassifications(block.Start, block.Length);
+            return this.toArray<k2.ClassifiedRange>(block.GetClassifications(block.Start, block.Length).Classifications);
         }).reduce((prev, curr) => prev.concat(curr), []);
 
         return Promise.as([{classifications, absoluteStart: 0, absoluteEnd: document.getText().length}]);
