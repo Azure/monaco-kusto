@@ -16,9 +16,9 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@kusto/language-service-next@0.0.21":
-  version "0.0.21"
-  resolved "https://1essharedassets.pkgs.visualstudio.com/_packaging/Kusto/npm/registry/@kusto/language-service-next/-/language-service-next-0.0.21.tgz#fe51b43730dee30f6d2594569b47ebf1fea0c567"
+"@kusto/language-service-next@0.0.23":
+  version "0.0.23"
+  resolved "https://1essharedassets.pkgs.visualstudio.com/_packaging/Kusto/npm/registry/@kusto/language-service-next/-/language-service-next-0.0.23.tgz#d7eb743b2463c2613bbf50ee0c9e0694367cd344"
 
 "@kusto/language-service@0.0.19":
   version "0.0.19"
