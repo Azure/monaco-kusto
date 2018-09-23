@@ -201,6 +201,27 @@ export type CmSchema = {
             :  this.doCompleteV1(document, position);
     }
 
+    private disabledCompletionItemsV2: {[value: string]: k2.CompletionKind}= {
+        // plugins
+        'cosmosdb_sql_request': k2.CompletionKind.TabularFunction,
+        'http_request':  k2.CompletionKind.TabularFunction,
+        'http_request_post': k2.CompletionKind.TabularFunction,
+        // functions
+        'distance': k2.CompletionKind.ScalarFunction,
+        'point': k2.CompletionKind.ScalarFunction,
+        // render charts
+        'anomalychart': k2.CompletionKind.Syntax,
+        'areachart': k2.CompletionKind.Syntax,
+        'ladderchart': k2.CompletionKind.Syntax,
+        'pivotchart': k2.CompletionKind.Syntax,
+        'scatterchart': k2.CompletionKind.Syntax,
+        'stackedareachart': k2.CompletionKind.Syntax,
+        'timeline': k2.CompletionKind.Syntax,
+        'timepivot': k2.CompletionKind.Syntax,
+        '3Dchart': k2.CompletionKind.Syntax,
+        'list': k2.CompletionKind.Syntax
+    }
+
     doCompleteV2(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
         const script = this.parseDocumentV2(document);
         const cursorOffset = document.offsetAt(position);
@@ -214,7 +235,12 @@ export type CmSchema = {
 
         const completionItems = currentcommand.GetCompletionItems(cursorOffset);
 
-        let items: ls.CompletionItem[] = this.toArray<k2.CompletionItem>(completionItems.Items).map((kItem, i) => {
+        let items: ls.CompletionItem[] = this.toArray<k2.CompletionItem>(completionItems.Items)
+        .filter(item => !(
+            item
+            && item.MatchText
+            && this.disabledCompletionItemsV2[item.MatchText] === item.Kind))
+        .map((kItem, i) => {
             const v1CompletionOption = new k.CompletionOption(this._toOptionKind[kItem.Kind] || k.OptionKind.None, kItem.DisplayText);
             const helpTopic: k.CslTopicDocumentation = this.getTopic(v1CompletionOption);
             // If we have AfterText it means that the cursor should no be placed at end of suggested text.
@@ -241,7 +267,7 @@ export type CmSchema = {
             lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;
             lsItem.documentation = helpTopic ? {value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown} : undefined;
             return lsItem;
-        })
+        });
 
         return Promise.as(ls.CompletionList.create(items));
     }
@@ -253,7 +279,7 @@ export type CmSchema = {
      * This piece of code tries to strip this hwne getting topic.
      * @param completionOption the Completion option
      */
-     private getTopic(completionOption: k.CompletionOption): k.CslTopicDocumentation {
+    private getTopic(completionOption: k.CompletionOption): k.CslTopicDocumentation {
         if (completionOption.Kind == k.OptionKind.FunctionScalar || completionOption.Kind == k.OptionKind.FunctionAggregation) {
             // from a value like 'abs(number)' remove the '(number)' so that only 'abs' will remain
             const indexOfParen = completionOption.Value.indexOf('(');
@@ -264,6 +290,23 @@ export type CmSchema = {
 
         return k.CslDocumentation.Instance.GetTopic(completionOption);
      }
+
+    private disabledCompletionItemsV1: {[value: string]: k.OptionKind}= {
+        'capacity': k.OptionKind.Policy,
+        'callout': k.OptionKind.Policy,
+        'encoding': k.OptionKind.Policy,
+        'batching': k.OptionKind.Policy,
+        'querythrottling': k.OptionKind.Policy,
+        'merge': k.OptionKind.Policy,
+        'querylimit': k.OptionKind.Policy,
+        'rowstore': k.OptionKind.Policy,
+        'streamingingestion': k.OptionKind.Policy,
+        'restricted_view_access': k.OptionKind.Policy,
+        'sharding': k.OptionKind.Policy,
+        'restricted-viewers': k.OptionKind.Policy,
+        'attach': k.OptionKind.Command,
+        'purge': k.OptionKind.Command,
+    }
 
     doCompleteV1(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
         // TODO: fix typing in CslCommandParser to allow rulesProvider to be query only.
@@ -299,7 +342,12 @@ export type CmSchema = {
                 (rule as any).DefaultAfterApplyPolicy = this._newlineAppendPipePolicy;
             };
 
-            let options: ls.CompletionItem[] = completionOptions.map((option: k.CompletionOption, ordinal:number) => {
+            let options: ls.CompletionItem[] = completionOptions
+            .filter(option => !(
+                option
+                && option.Value
+                && this.disabledCompletionItemsV1[option.Value] === option.Kind))
+            .map((option: k.CompletionOption, ordinal:number) => {
                 const { insertText, insertTextFormat } = this.getTextToInsert(rule, option)
                 const helpTopic: k.CslTopicDocumentation = k.CslDocumentation.Instance.GetTopic(option);
                 const item = ls.CompletionItem.create(option.Value);

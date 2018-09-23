@@ -39,6 +39,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
     In the future we might load these programmatically ourselves (in fact  - we already do this for the web monaco language service web worker).
 
 ## Changelog
+### 0.1.21 (9/23/2018)
+#### Added
+- Removed completion options that arent' curerntly supported.
 ### 0.1.19
 #### Bug fix
 - Colorization didn't work when asked to colorize entire document
