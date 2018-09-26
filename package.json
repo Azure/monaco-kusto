@@ -1,15 +1,17 @@
 {
   "name": "@kusto/monaco-kusto",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "CSL, KQL plugin for the Monaco Editor",
   "author": {
     "name": "Microsoft"
   },
-  "homepage": "https://github.com/Azure/monaco-kusto",
   "license": "MIT",
   "keywords": [
+    "Azure Data Explorer",
+    "ADE",
     "kusto"
   ],
+  "homepage": "https://github.com/Azure/monaco-kusto",
   "scripts": {
     "compile": "gulp compile",
     "watch": "gulp watch",
