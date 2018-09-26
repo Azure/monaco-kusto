@@ -12,12 +12,6 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ## Setting up a dev environment
 
 1. Install Node.js (v6.10.3 or later) from [https://nodejs.org/](https://nodejs.org/)
-2. Connect to kusto npm package feed:
-     * Open a new Kazzle environment (to make sure that Node.js is on the `PATH`),
-     * switch to this directory (`src/hosts/webux/monaco-kusto`),
-     * and then execute:
-       * `npm install -g vsts-npm-auth --registry https://registry.npmjs.com --always-auth false`
-       * `vsts-npm-auth -config .npmrc`
 3. (optional - you can probably use npm instead of yarn) Install Yarn from [https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)
 4. Open a new Kazzle environment, and then execute:
      * `yarn install` (or `npm install`)
@@ -28,15 +22,75 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 1. yarn add monaco-kusto
 2. add the following to your `index.html` (or other entry point)
     ```xml
-    <script src="../node_modules/kusto-language-service/bridge.js"></script>
-    <script src="../node_modules/kusto-language-service/kusto.javascript.client.js"></script>
-    <script src="../node_modules/kusto-language-service/kusto.language.bridge.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/bridge.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/kusto.javascript.client.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/newtonsoft.json.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/Kusto.Language.Bridge.js"></script>
     ```
 
-    This is done since this package has a dependency on `kusto-language-service` but for now, `Bridge.Net` isn't capable of producing valid modules, with valid typescript typings.
+    This is done since this package has a dependency on `kusto-language-service` but for now, we couldn't get `Bridge.Net` to produce valid modules with valid typescript typings.
 
-    Until they do, consumer of this package will have to add the aformentioned lines globally in order for the package to work.
+    Until we do, consumer of this package will have to add the aformentioned lines globally in order for the package to work.
     In the future we might load these programmatically ourselves (in fact  - we already do this for the web monaco language service web worker).
+3. Monaco is using AMD module (actually it now supports ES modules, but we've still not update this pacakge to leverage that). In order to load monaco and monaco-kusto in your application you will need to monaco and monaco-ksuto as static files on your web server, and do do the following (this is in a React app and is taken from an older version of [react-monaco-editor](https://github.com/superRaytin/react-monaco-editor)
+
+```javascript
+  // The MIT License (MIT)
+  // Copyright (c) 2016-present Leon Shi
+  // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+  // documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+  // rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+  // permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+  // Software.
+  // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+  // WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+  // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+  // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  const requireConfig = {
+      url: 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js',
+      paths: {
+        'vs': `${process.env.PUBLIC_URL}/monaco-editor/min/vs`
+      }
+  };
+  componentDidMount() {
+    const context = this.props.context || window;
+    if (context.monaco !== undefined) {
+      this.initMonaco();
+      return;
+    }
+    const { requireConfig } = this.props;
+    const loaderUrl = requireConfig!.url || 'vs/loader.js';
+    const onGotAmdLoader = () => {
+      if (context.__REACT_MONACO_EDITOR_LOADER_ISPENDING__) {
+        // Do not use webpack
+        if (requireConfig!.paths && requireConfig!.paths!.vs) {
+          context.require.config(requireConfig);
+        }
+      }
+
+      // Load monaco
+      context.require(['vs/editor/editor.main'], () => {
+        context.require(['vs/language/kusto/monaco.contribution'], () => {
+          this.initMonaco();
+        });
+
+      });
+
+      // Call the delayed callbacks when AMD loader has been loaded
+      if (context.__REACT_MONACO_EDITOR_LOADER_ISPENDING__) {
+        context.__REACT_MONACO_EDITOR_LOADER_ISPENDING__ = false;
+        const loaderCallbacks = context.__REACT_MONACO_EDITOR_LOADER_CALLBACKS__;
+        if (loaderCallbacks && loaderCallbacks.length) {
+          let currentCallback = loaderCallbacks.shift();
+          while (currentCallback) {
+            currentCallback.fn.call(currentCallback.context);
+            currentCallback = loaderCallbacks.shift();
+          }
+        }
+      }
+    };
+```
 
 ## Changelog
 ### 0.1.21 (9/23/2018)

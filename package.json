@@ -7,8 +7,11 @@
   },
   "license": "MIT",
   "keywords": [
+    "Azure Data Explorer",
+    "ADE",
     "kusto"
   ],
+  "homepage": "https://github.com/Azure/monaco-kusto",
   "scripts": {
     "compile": "gulp compile",
     "watch": "gulp watch",
