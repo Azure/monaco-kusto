@@ -8,35 +8,30 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 * ~~Hovers~~
 * ~~Find definition, references & highlights for symbols in the same file~~
 * ~~Document Symbols~~
+## Usage
+1. yarn add monaco-kusto
+2. add the following to your `index.html` (or other entry point)
+    ```xml
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/bridge.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/kusto.javascript.client.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/newtonsoft.json.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/Kusto.Language.Bridge.js"></script>
+    ```
+
+    This is done since this package has a dependency on `@kusto/kusto-language-service` and `@kusto/Kusto-language-service-next` but for now, we couldn't get `Bridge.Net` to produce valid modules, with valid typescript typings.
+
+    Until we do, consumer of this package will have to add the aformentioned lines globally in order for the package to work.
+    In the future we might load these programmatically ourselves (in fact  - we already do this for the web monaco language service web worker).
+
 
 ## Setting up a dev environment
 
 1. Install Node.js (v6.10.3 or later) from [https://nodejs.org/](https://nodejs.org/)
-2. Connect to kusto npm package feed:
-     * Open a new Kazzle environment (to make sure that Node.js is on the `PATH`),
-     * switch to this directory (`src/hosts/webux/monaco-kusto`),
-     * and then execute:
-       * `npm install -g vsts-npm-auth --registry https://registry.npmjs.com --always-auth false`
-       * `vsts-npm-auth -config .npmrc`
 3. (optional - you can probably use npm instead of yarn) Install Yarn from [https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)
 4. Open a new Kazzle environment, and then execute:
      * `yarn install` (or `npm install`)
 5. You're set! Open `test/index.html` in your favorite browser and type some text.
 6. You can also use `yarn run watch` (or `npm watch`) to automatically recompile on save.
-
-## Usage
-1. yarn add monaco-kusto
-2. add the following to your `index.html` (or other entry point)
-    ```xml
-    <script src="../node_modules/kusto-language-service/bridge.js"></script>
-    <script src="../node_modules/kusto-language-service/kusto.javascript.client.js"></script>
-    <script src="../node_modules/kusto-language-service/kusto.language.bridge.js"></script>
-    ```
-
-    This is done since this package has a dependency on `kusto-language-service` but for now, `Bridge.Net` isn't capable of producing valid modules, with valid typescript typings.
-
-    Until they do, consumer of this package will have to add the aformentioned lines globally in order for the package to work.
-    In the future we might load these programmatically ourselves (in fact  - we already do this for the web monaco language service web worker).
 
 ## Changelog
 ### 0.1.19
