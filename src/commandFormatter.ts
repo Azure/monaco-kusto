@@ -6,6 +6,7 @@ export default class KustoCommandFormatter {
         // selection also represents no selection - for example the event gets triggered when moving cursor from point
         // a to point b. in the case start position will equal end position.
         editor.onDidChangeCursorSelection(changeEvent => {
+            this.cursorPosition = changeEvent.selection.getStartPosition();
             // Theoretically you would expect this code to run only once in onDidCreateEditor.
             // Turns out that onDidCreateEditor is fired before the IStandaloneEditor is completely created (it is emmited by
             // the super ctor before the child ctor was able to fully run).
@@ -13,8 +14,6 @@ export default class KustoCommandFormatter {
             // By adding the action here in onDidChangeCursorSelection we're making sure that the editor has a key binding provider,
             // and we just need to make sure that this happens only once.
             if (!this.actionAdded) {
-                this.cursorPosition = changeEvent.selection.getStartPosition();
-
                 editor.addAction({
                     id: 'editor.action.kusto.formatCurrentCommand',
                     label: 'Format Command Under Cursor',
