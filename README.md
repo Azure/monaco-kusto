@@ -93,6 +93,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 0.1.22 (9/27/2018)
+#### Bug fix
+- Format current command always formatted the 1st command.
 ### 0.1.21 (9/23/2018)
 #### Added
 - Removed completion options that arent' curerntly supported.
