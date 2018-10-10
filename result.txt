@@ -1,0 +1,303 @@
+
+> @kusto/monaco-kusto@0.1.25 prepublish E:\projects\monaco-kusto
+> gulp release
+
+[15:04:56] Using gulpfile E:\projects\monaco-kusto\gulpfile.js
+[15:04:56] Starting 'clean-release'...
+[15:04:56] Starting 'clean-out'...
+[15:04:56] Finished 'clean-release' after 15 ms
+[15:04:56] Finished 'clean-out' after 13 ms
+[15:04:56] Starting 'compile'...
+[15:04:57] [emit code] ../out/languageService/schema.js
+[15:04:57] [emit code] ../out/languageService/schema.d.ts
+[15:04:58] [emit code] ../out/languageService/kustoMonarchLanguageDefinition.js
+[15:04:58] [emit code] ../out/languageService/kustoMonarchLanguageDefinition.d.ts
+[15:04:58] [emit code] ../out/languageService/kustoLanguageService.js
+[15:04:58] [emit code] ../out/languageService/kustoLanguageService.d.ts
+[15:04:58] [emit code] ../out/workerManager.js
+[15:04:58] [emit code] ../out/workerManager.d.ts
+[15:04:58] [emit code] ../out/monaco.contribution.js
+[15:04:58] [emit code] ../out/monaco.contribution.d.ts
+[15:04:58] [emit code] ../out/languageFeatures.js
+[15:04:58] [emit code] ../out/languageFeatures.d.ts
+[15:04:58] [emit code] ../out/kustoWorker.js
+[15:04:58] [emit code] ../out/kustoWorker.d.ts
+[15:04:58] [emit code] ../out/kustoMode.js
+[15:04:58] [emit code] ../out/kustoMode.d.ts
+[15:04:58] [emit code] ../out/extendedEditor.js
+[15:04:58] [emit code] ../out/extendedEditor.d.ts
+[15:04:58] [emit code] ../out/commandHighlighter.js
+[15:04:58] [emit code] ../out/commandHighlighter.d.ts
+[15:04:58] [emit code] ../out/commandFormatter.js
+[15:04:58] [emit code] ../out/commandFormatter.d.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/typings/refs.d.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/languageService/schema.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/languageService/kustoMonarchLanguageDefinition.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/languageService/kustoLanguageService.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/workerManager.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/monaco.d.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/monaco.contribution.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/languageFeatures.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/kustoWorker.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/kustoMode.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/extendedEditor.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/commandHighlighter.ts
+[15:04:58] [check syntax] E:/projects/monaco-kusto/src/commandFormatter.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/typings/refs.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/languageService/schema.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/languageService/kustoMonarchLanguageDefinition.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/languageService/kustoLanguageService.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/workerManager.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/monaco.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/monaco.contribution.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/languageFeatures.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/kustoWorker.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/kustoMode.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/extendedEditor.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/commandHighlighter.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/src/commandFormatter.ts
+[15:04:58] [check semantics*] E:/projects/monaco-kusto/src/monaco.d.ts is an internal module and it has changed shape -> check whatever hasn't been checked yet
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/util.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/string.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/seq.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/object.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/number.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/math.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/lang.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/function.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/date.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/collection.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/array.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/common/common.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/lodash/index.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/@types/xregexp/index.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol/lib/protocol.foldingRange.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol/lib/protocol.colorProvider.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol/lib/protocol.configuration.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol/lib/protocol.workspaceFolders.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol/lib/protocol.typeDefinition.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol/lib/protocol.implementation.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol/lib/protocol.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol/node_modules/vscode-languageserver-types/lib/umd/main.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/socketSupport.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/pipeSupport.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/linkedMap.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/cancellation.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageWriter.d.ts
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageWriter.d.ts(2,30): Cannot find module 'child_process'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageWriter.d.ts(3,24): Cannot find module 'net'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageWriter.d.ts(30,27): Cannot find namespace 'NodeJS'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageWriter.d.ts(38,26): Cannot find namespace 'NodeJS'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageWriter.d.ts(1,23): Cannot find type definition file for 'node'."
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/events.d.ts
+[15:04:58] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageReader.d.ts
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageReader.d.ts(2,24): Cannot find module 'net'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageReader.d.ts(3,30): Cannot find module 'child_process'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageReader.d.ts(45,27): Cannot find namespace 'NodeJS'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageReader.d.ts(54,26): Cannot find namespace 'NodeJS'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messageReader.d.ts(1,23): Cannot find type definition file for 'node'."
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/messages.d.ts
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/thenable.d.ts
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/main.d.ts
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/main.d.ts(223,62): Cannot find namespace 'NodeJS'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/main.d.ts(223,99): Cannot find namespace 'NodeJS'."
+"E:/projects/monaco-kusto/node_modules/vscode-jsonrpc/lib/main.d.ts(2,23): Cannot find type definition file for 'node'."
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol/lib/main.d.ts
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-protocol-foldingprovider/lib/protocol.foldingProvider.d.ts
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/vscode-languageserver-types/lib/umd/main.d.ts
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/bridge.d.ts
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/bridge.d.ts(7,1): Definitions of the following identifiers conflict with those in another file: TypeRef, ErrorException, CustomEnumerator, ArrayEnumerator, ArrayEnumerable, Decimal, Single, Double, SByte, Byte, Int16, UInt16, UInt32, Int32, Int64, UInt64, Object, Attribute, Exception, SystemException, OutOfMemoryException, IndexOutOfRangeException, ArgumentException, ArgumentNullException, ArgumentOutOfRangeException, ArithmeticException, DivideByZeroException, OverflowException, FormatException, InvalidCastException, InvalidOperationException, NotImplementedException, NotSupportedException, NullReferenceException, TimeSpan, KeyNotFoundException, PropertyChangedEventArgs, CultureNotFoundException, DateTimeFormatInfo, NumberFormatInfo, CultureInfo, StringBuilder, Task, Task$1"
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(201,51): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(216,62): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(217,62): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(239,89): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(241,61): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(258,109): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(270,95): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(272,71): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(336,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(337,53): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(338,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(339,50): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(340,47): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(341,49): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(342,47): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(343,53): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(344,56): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(346,49): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(348,59): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(350,51): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(351,63): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(352,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(353,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(354,53): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(355,51): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(356,50): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(357,51): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(358,49): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(359,49): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(487,49): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(498,55): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(532,117): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(585,60): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(596,61): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(644,46): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(674,47): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(684,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(694,45): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(704,47): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(737,61): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(759,63): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(781,57): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(814,61): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(1430,72): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(1871,47): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(1875,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(1881,56): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(1884,56): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2204,114): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2304,49): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2309,60): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2310,61): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2400,53): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2472,126): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2566,44): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2823,60): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2834,61): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(2996,43): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(3151,112): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(3229,82): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(3230,79): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(3251,52): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(3627,53): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(3634,113): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(3853,58): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4010,68): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4011,64): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4019,88): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4020,112): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4024,73): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4277,122): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4289,126): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4312,127): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4426,118): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4611,132): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4636,171): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4654,380): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4660,116): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4746,116): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4784,117): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4827,53): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4835,119): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4897,123): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4903,116): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4910,128): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4927,116): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(4953,116): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5094,49): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5112,155): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5118,82): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5119,79): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5161,49): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5431,64): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5433,64): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5481,55): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5505,51): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5529,51): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5553,59): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5577,59): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5697,167): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5734,45): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5769,45): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5771,47): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5820,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5845,118): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5851,126): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5857,133): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5857,307): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5860,133): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5863,132): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5869,85): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5875,127): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5892,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5894,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5900,71): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5900,210): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5933,45): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(5956,45): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6031,45): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6033,45): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6232,45): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6247,52): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6255,61): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6258,61): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6291,45): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6413,53): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6453,51): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6515,44): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6525,46): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6566,170): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6566,229): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6569,159): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6569,218): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6572,162): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6572,221): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6680,139): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6680,222): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6681,100): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6681,184): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6785,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6825,110): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6912,105): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6925,111): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6930,108): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6936,104): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6942,119): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6942,293): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6945,119): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6948,118): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(6954,113): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(7015,48): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(7039,56): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(7040,51): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(7041,57): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(7042,56): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(7043,51): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(7044,55): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(7045,56): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(7046,53): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(8770,106): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(8800,59): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(8800,126): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(8803,81): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(9847,55): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(9976,69): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(10205,59): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11289,49): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11346,57): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11788,117): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11789,91): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11790,118): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11791,128): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11792,126): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11793,115): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11810,128): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11821,114): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11839,88): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11856,114): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(11873,128): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(12776,121): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(12791,78): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts(13007,50): Namespace 'System.Collections.Generic' has no exported member 'IReadOnlyList$1'."
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/@kusto/language-service/bridge.d.ts
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service/bridge.d.ts(7,1): Definitions of the following identifiers conflict with those in another file: TypeRef, ErrorException, CustomEnumerator, ArrayEnumerator, ArrayEnumerable, Decimal, Single, Double, SByte, Byte, Int16, UInt16, UInt32, Int32, Int64, UInt64, Object, Attribute, Exception, SystemException, OutOfMemoryException, IndexOutOfRangeException, ArgumentException, ArgumentNullException, ArgumentOutOfRangeException, ArithmeticException, DivideByZeroException, OverflowException, FormatException, InvalidCastException, InvalidOperationException, NotImplementedException, NotSupportedException, NullReferenceException, TimeSpan, KeyNotFoundException, PropertyChangedEventArgs, CultureNotFoundException, DateTimeFormatInfo, NumberFormatInfo, CultureInfo, StringBuilder, Task, Task$1"
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/@kusto/language-service/Kusto.JavaScript.Client.d.ts
+"E:/projects/monaco-kusto/node_modules/@kusto/language-service/Kusto.JavaScript.Client.d.ts(805,94): Namespace 'System' has no exported member 'StringComparison'."
+[15:04:59] [check semantics] E:/projects/monaco-kusto/node_modules/monaco-editor-core/monaco.d.ts
+[15:04:59] [tsb] time: 3389ms mem: 136MB Δ84
+[15:04:59] Finished 'compile' after 3.46 s
+[15:04:59] Starting 'release'...
+audited 20823 packages in 19.818s
+found 5 vulnerabilities (1 low, 4 high)
+  run `npm audit fix` to fix them, or `npm audit` for details
