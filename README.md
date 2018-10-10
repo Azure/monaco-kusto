@@ -93,7 +93,7 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
-### 0.1.22 (10/09/2018)
+### 0.1.25 (10/09/2018)
 #### Bug fix
 - Don't try to run logic on disposed models.
 ### 0.1.22 (9/27/2018)

@@ -103,7 +103,7 @@ export class DiagnosticsAdapter {
 	}
 
 	private _doValidate(model: monaco.editor.IModel, languageId: string, intervals: {start: number, end: number}[]): void {
-		if (model.isDisposed) {
+		if (model.isDisposed()) {
 			return;
 		}
 		const resource = model.uri;
@@ -326,6 +326,9 @@ export class ColorizationAdapter {
 	}
 
 	private _doColorization(model: monaco.editor.IModel, languageId: string, intervals: {start: number, end: number}[]): void {
+		if (model.isDisposed()) {
+			return;
+		}
 		const resource = model.uri;
 		const versionNumberBeforeColorization = model.getVersionId();
 		this._worker(resource).then(worker => {
