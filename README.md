@@ -19,7 +19,7 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 6. You can also use `yarn run watch` (or `npm watch`) to automatically recompile on save.
 
 ## Usage
-1. yarn add monaco-kusto
+1. npm i @kusto/monaco-kusto
 2. add the following to your `index.html` (or other entry point)
     ```xml
     <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/bridge.js"></script>
