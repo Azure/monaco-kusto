@@ -111,6 +111,30 @@ monaco.editor.defineTheme('kusto-light', {
 	colors: {}
 })
 
+monaco.editor.defineTheme('kusto-dark', {
+	base: 'vs-dark',
+	inherit: true,
+	rules: [
+		{ token: 'comment', foreground: '608B4E' }, // CommentToken Green
+		{ token: 'variable.predefined', foreground: '4ec9b0' }, // CalculatedColumnToken Purple
+		{ token: 'function', foreground: 'dcdcaa' }, // FunctionNameToken Blue
+		{ token: 'operator.sql', foreground: '9cdcfe' }, // OperatorToken OrangeRed
+		{ token: 'string', foreground: 'ce9178' }, // StringLiteralToken Firebrick
+		{ token: 'operator.scss', foreground: '569cd6' }, // SubOperatorToken Blue
+		{ token: 'variable', foreground: '4ec9b0' }, // TableColumnToken MediumVioletRed
+		{ token: 'variable.parameter', foreground: 'c586c0' }, // TableToken DarkOrchid
+		{ token: '', foreground: 'd4d4d4' }, // UnknownToken, PlainTextToken  Black
+		{ token: 'type', foreground: '569cd6' }, // DataTypeToken Blue
+		{ token: 'tag', foreground: '569cd6' }, // ControlCommandToken Blue
+		{ token: 'annotation', foreground: '9cdcfe' }, // QueryParametersToken FF2B91AF
+		{ token: 'keyword', foreground: '569cd6' }, // CslCommandToken, PluginToken Blue
+		{ token: 'number', foreground: 'd7ba7d' }, // LetVariablesToken MidnightBlue
+		{ token: 'annotation', foreground: 'b5cea8' }, // ClientDirectiveToken DarkViolet
+		{ token: 'invalid', background: 'cd3131' },
+	],
+	colors: {}
+})
+
 // Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
 // Most other language features are initialized in kustoMode.ts
 monaco.editor.onDidCreateEditor(editor => {

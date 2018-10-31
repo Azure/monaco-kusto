@@ -37,6 +37,8 @@
 	var setSemanticOn;
 	var setIntellisenseV2;
 	var setIntellisenseV1;
+	var setDarkTheme;
+	var setLightTheme;
 	require([
 		'vs/language/kusto/monaco.contribution'
 	], function() {
@@ -242,6 +244,8 @@
 			monacoSettings.useIntellisenseV2 = true;
 			monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
 		});
+		setDarkTheme = () => monaco.editor.setTheme('kusto-dark');
+		setLightTheme = () => monaco.editor.setTheme('kusto-light');
 		setHelp();
 	});
 </script>
@@ -257,6 +261,10 @@
 <div>
 	<button onclick="setIntellisenseV1()">V1 Intellisense</button>
 	<button onclick="setIntellisenseV2()">V2 Intellisense</button>
+</div>
+<div>
+	<button onClick="setDarkTheme()">Dark Theme</button>
+	<button onClick="setLightTheme()">Light Theme</button>
 </div>
 </body>
 </html>

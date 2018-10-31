@@ -205,7 +205,7 @@ type kinds = keyof typeof ClassificationKind;
 // { token: 'number', foreground: '191970' }, // LetVariablesToken MidnightBlue
 // { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
 // { token: 'invalid', background: 'cd3131' },
-const classificationToColor: {[K in kinds]: string} = {
+const classificationToColorLight: {[K in kinds]: string} = {
 	Column: 'C71585',
 	Comment: '008000',
 	Function: '0000FF',
@@ -224,6 +224,27 @@ const classificationToColor: {[K in kinds]: string} = {
 	Type: '0000FF',
 	Variable: '191970',
 	Directive: '9400D3'
+}
+
+const classificationToColorDark: {[K in kinds]: string} = {
+	Column: '4ec9b0',
+	Comment: '608B4E',
+	Function: 'dcdcaa',
+	Identifier: 'd4d4d4',
+	Keyword: '569cd6',
+	Literal: 'ce9178',
+	ScalarOperator: 'd4d4d4',
+	MathOperator: 'd4d4d4',
+	Parameter: '2B91AF',
+	PlainText: 'd4d4d4',
+	Punctuation: 'd4d4d4',
+	QueryOperator: '9cdcfe',
+	QueryParameter: '9cdcfe',
+	StringLiteral: 'ce9178',
+	Table: 'c586c0',
+	Type: '569cd6',
+	Variable: 'd7ba7d',
+	Directive: 'b5cea8'
 }
 
 export class ColorizationAdapter {
@@ -365,7 +386,7 @@ export class ColorizationAdapter {
 			const oldDecorations = decorationRanges
 				.map(range => model
 					.getLinesDecorations(range.firstImpactedLine, range.lastImpactedLine)
-					.filter(d => classificationToColor[d.options.inlineClassName]) // Don't delete any other decorations
+					.filter(d => classificationToColorLight[d.options.inlineClassName]) // Don't delete any other decorations
 					.map(d => d.id))
 				.reduce((prev, curr) => prev.concat(curr), []);
 
@@ -392,10 +413,10 @@ function getEnumKeys<E>(e: any ) {
 /**
  * Generates a mapping between ClassificationKind and color.
  */
-function getClassificationColorPairs(): {classification: string, color: string}[] {
+function getClassificationColorTriplets(): {classification: string, colorLight: string, colorDark: string}[] {
 	const keys = getEnumKeys(ClassificationKind);
 	const result =  keys
-		.map(key => ({classification:key, color: classificationToColor[key]}));
+		.map(key => ({classification:key, colorLight: classificationToColorLight[key], colorDark: classificationToColorDark[key]}));
 	return result;
 }
 
@@ -403,18 +424,19 @@ function getClassificationColorPairs(): {classification: string, color: string}[
  * Returns a string which is a css describing all tokens and their colors.
  * looks a little bit something like this:
  *
- * .Literal {color: '#000000';}
- * .Comment {color: '#111111';}
+ * .vs .Literal {color: '#000000';} .vs-dark .Literal {color: '#FFFFFF';}
+ * .vs .Comment {color: '#111111';} .vs-dark .Comment {color: '#EEEEEE';}
  */
 function getCssForClassification(): string {
-	const classificationColorPairs = getClassificationColorPairs();
-	const cssInnerHtml = classificationColorPairs.map(pair => `.${pair.classification} {color: #${pair.color};}`).join('\n');
+	const classificationColorTriplets = getClassificationColorTriplets();
+	const cssInnerHtml = classificationColorTriplets.map(pair =>
+		`.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`).join('\n');
 	return cssInnerHtml;
 }
 
 /**
- * Inject a Css to the head of document, coloring kusto elements by classification.
- * It creates the element (if not yet created). It updates the content if the element is already there.
+ * Inject a CSS sheet to the head of document, coloring kusto elements by classification.
+ * TODO: make idempotent
  */
 function injectCss(): any {
 	const container = document.getElementsByTagName('head')[0];
