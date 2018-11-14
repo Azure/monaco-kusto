@@ -114,7 +114,8 @@ export interface LanguageSettings {
     newlineAfterPipe?: boolean;
     useIntellisenseV2: boolean;
     useSemanticColorization?: boolean;
-    useTokenColorization?: boolean
+    useTokenColorization?: boolean;
+    disabledCompletionItems?: string[];
 }
 
 export type CmSchema = {
@@ -235,11 +236,21 @@ export type CmSchema = {
 
         const completionItems = currentcommand.GetCompletionItems(cursorOffset);
 
+        let disabledItems = this.disabledCompletionItemsV2;
+        if (this._languageSettings.disabledCompletionItems) {
+            this._languageSettings.disabledCompletionItems.map(item => {
+                // logic will treat unknown as a '*' wildcard, meaning that if the key is in the object
+                // the completion item will be suppressed.
+                disabledItems[item] = k2.CompletionKind.Unknown
+            })
+        }
+
         let items: ls.CompletionItem[] = this.toArray<k2.CompletionItem>(completionItems.Items)
         .filter(item => !(
             item
             && item.MatchText
-            && this.disabledCompletionItemsV2[item.MatchText] === item.Kind))
+            && disabledItems[item.MatchText] !== undefined
+            && (disabledItems[item.MatchText] === k2.CompletionKind.Unknown ||  disabledItems[item.MatchText] === item.Kind)))
         .map((kItem, i) => {
             const v1CompletionOption = new k.CompletionOption(this._toOptionKind[kItem.Kind] || k.OptionKind.None, kItem.DisplayText);
             const helpTopic: k.CslTopicDocumentation = this.getTopic(v1CompletionOption);

@@ -93,9 +93,12 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 0.1.27 (11/14/2018)
+#### Added
+- Abiltiy to suppress completion items from intellisense.
 ### 0.1.26 (10/31/2018)
 #### Added
-- Dark theme support (set by calling monaco.editor.setTheme('kusto.dark')).
+- Dark theme support (set by calling monaco.editor.setTheme('kusto.dark'))
 ### 0.1.25 (10/09/2018)
 #### Bug fix
 - Don't try to run logic on disposed models.

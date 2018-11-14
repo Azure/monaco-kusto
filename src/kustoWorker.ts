@@ -13,15 +13,14 @@ export class KustoWorker {
 
 	private _ctx:IWorkerContext;
 	private _languageService: kustoService.LanguageService;
-	private _languageSettings: kustoService.LanguageSettings;
 	private _languageId: string;
-	private languageSettings: kustoService.LanguageSettings;
+	private _languageSettings: kustoService.LanguageSettings;
 
 	constructor(ctx:IWorkerContext, createData: ICreateData) {
 		this._ctx = ctx;
-		this.languageSettings = createData.languageSettings;
+		this._languageSettings = createData.languageSettings;
 		this._languageService = kustoService.getKustoLanguageService();
-		this._languageService.configure(this.languageSettings);
+		this._languageService.configure(this._languageSettings);
 	}
 
 	// --- language service host ---------------
