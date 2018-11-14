@@ -18,6 +18,7 @@ declare module monaco.languages.kusto {
 		useIntellisenseV2?: boolean;
 		useSemanticColorization?: boolean;
 		useTokenColorization?: boolean;
+		disabledCompletionItems?: string[];
 	}
 
 	export interface LanguageServiceDefaults {

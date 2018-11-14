@@ -39,6 +39,8 @@
 	var setIntellisenseV1;
 	var setDarkTheme;
 	var setLightTheme;
+	var setDisableClusterCompletion;
+	var setEnableClusterCompletion;
 	require([
 		'vs/language/kusto/monaco.contribution'
 	], function() {
@@ -246,6 +248,16 @@
 		});
 		setDarkTheme = () => monaco.editor.setTheme('kusto-dark');
 		setLightTheme = () => monaco.editor.setTheme('kusto-light');
+		setDisableClusterCompletion = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+			monacoSettings.disabledCompletionItems = ['cluster', 'database'];
+			monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+		});
+		setEnableClusterCompletion = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+			monacoSettings.disabledCompletionItems = [];
+			monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+		});
 		setHelp();
 	});
 </script>
@@ -265,6 +277,10 @@
 <div>
 	<button onClick="setDarkTheme()">Dark Theme</button>
 	<button onClick="setLightTheme()">Light Theme</button>
+</div>
+<div>
+	<button onClick="setDisableClusterCompletion()">Disable Cluster keyword completion</button>
+	<button onClick="setEnableClusterCompletion()">Enalbe Cluster keyword completion</button>
 </div>
 </body>
 </html>
