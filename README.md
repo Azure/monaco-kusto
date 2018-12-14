@@ -93,6 +93,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 0.1.28 (12/13/2018)
+#### Added
+- **[Breaking]** Support monaco-editor v15. This removes supprot for pre 15 versions.
 ### 0.1.27 (11/14/2018)
 #### Added
 - Abiltiy to suppress completion items from intellisense.
