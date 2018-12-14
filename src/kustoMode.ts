@@ -11,7 +11,7 @@ import { WorkerAccessor } from './languageFeatures';
 import { EngineSchema, Schema } from './languageService/schema';
 
 let kustoWorker: WorkerAccessor;
-let resolveWorker: monaco.TValueCallback<languageFeatures.WorkerAccessor>;
+let resolveWorker: (value: languageFeatures.WorkerAccessor | PromiseLike<languageFeatures.WorkerAccessor>) => void;
 let rejectWorer: (err: any) => void;
 let workerPromise: Promise<WorkerAccessor> = new Promise((resolve, reject) => {
 	resolveWorker = resolve;

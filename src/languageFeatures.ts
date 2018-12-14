@@ -123,7 +123,7 @@ export class DiagnosticsAdapter {
 			if (model && model.getModeId() === languageId) {
 				monaco.editor.setModelMarkers(model, languageId, markers);
 			}
-		}).done(undefined, err => {
+		}).then(undefined, err => {
 			console.error(err);
 		});
 	}
@@ -396,7 +396,7 @@ export class ColorizationAdapter {
 			if (model && model.getModeId() === languageId) {
 				this.decorations = model.deltaDecorations(oldDecorations, newDecorations);
 			}
-		}).done(undefined, err => {
+		}).then(undefined, err => {
 			console.error(err);
 		});
 	}
@@ -529,11 +529,11 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
 		return [' '];
 	}
 
-	provideCompletionItems(model: monaco.editor.IReadOnlyModel, position: Position, token: CancellationToken): Thenable<monaco.languages.CompletionList> {
+	provideCompletionItems(model: monaco.editor.IReadOnlyModel, position: Position, context: monaco.languages.CompletionContext, token: CancellationToken): Thenable<monaco.languages.CompletionList> {
 		const wordInfo = model.getWordUntilPosition(position);
 		const resource = model.uri;
 
-		return wireCancellationToken(token, this._worker(resource).then(worker => {
+		return this._worker(resource).then(worker => {
 			return worker.doComplete(resource.toString(), fromPosition(position));
 		}).then(info => {
 			if (!info) {
@@ -554,16 +554,16 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
 					item.insertText = entry.textEdit.newText;
 				}
 				if (entry.insertTextFormat === ls.InsertTextFormat.Snippet) {
-					item.insertText = { value: <string> item.insertText };
+					item.insertTextRules = monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet;
 				}
 				return item;
 			});
 
 			return {
 				isIncomplete: info.isIncomplete,
-				items: items
+				suggestions: items
 			};
-		}));
+		});
 	}
 }
 
@@ -660,9 +660,9 @@ export class DocumentFormatAdapter implements monaco.languages.DocumentFormattin
 
 		provideDocumentFormattingEdits(model: monaco.editor.IReadOnlyModel, options: monaco.languages.FormattingOptions, token: CancellationToken): monaco.languages.TextEdit[] | Thenable<monaco.languages.TextEdit[]> {
 			const resource = model.uri;
-			return wireCancellationToken(token, this._worker(resource).then(worker => {
+			return this._worker(resource).then(worker => {
 				return worker.doDocumentFormat(resource.toString()).then(edits => edits.map(edit => toTextEdit(edit)));
-			}));
+			});
 		}
 	}
 
@@ -673,9 +673,9 @@ export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEd
 
 	provideDocumentRangeFormattingEdits(model: monaco.editor.IReadOnlyModel, range: Range, options: monaco.languages.FormattingOptions, token: CancellationToken): monaco.languages.TextEdit[] | Thenable<monaco.languages.TextEdit[]> {
 		const resource = model.uri;
-		return wireCancellationToken(token, this._worker(resource).then(worker => {
+		return this._worker(resource).then(worker => {
 			return worker.doRangeFormat(resource.toString(), fromRange(range)).then(edits => edits.map(edit => toTextEdit(edit)));
-		}));
+		});
 	}
 }
 
@@ -686,9 +686,9 @@ export class FoldingAdapter implements monaco.languages.FoldingRangeProvider {
 
 	provideFoldingRanges(model: monaco.editor.ITextModel, context: monaco.languages.FoldingContext, token: CancellationToken): monaco.languages.FoldingRange[] | PromiseLike<monaco.languages.FoldingRange[]> {
 		const resource = model.uri;
-		return wireCancellationToken(token, this._worker(resource).then(worker => {
+		return this._worker(resource).then(worker => {
 			return worker.doFolding(resource.toString()).then(foldingRanges => foldingRanges.map((range): monaco.languages.FoldingRange => toFoldingRange(range)));
-		}));
+		});
 	}
 }
 
@@ -698,12 +698,4 @@ function toFoldingRange(range: FoldingRange): monaco.languages.FoldingRange {
 		end: range.endLine + 1,
 		kind: monaco.languages.FoldingRangeKind.Region
 	}
-}
-
-/**
- * Hook a cancellation token to a WinJS Promise
- */
-function wireCancellationToken<T>(token: CancellationToken, promise: Promise<T>): Thenable<T> {
-	token.onCancellationRequested(() => promise.cancel());
-	return promise;
 }

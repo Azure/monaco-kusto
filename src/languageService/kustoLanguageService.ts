@@ -579,12 +579,13 @@ export type CmSchema = {
         }
 
         // Since V2 doesn't support control commands, we're initializing V1 intellisense for both cases and we'll going to use V1 intellisense for contorl commands.
-        return Promise.timeout(0).then(() => {
+        return new Promise((resolve, reject) => {
             const kustoJsSchema = schema
                 ? KustoLanguageService.convertToKustoJsSchema(schema)
                 : undefined;
             this._kustoJsSchema = kustoJsSchema;
             this.createRulesProvider(kustoJsSchema, schema.clusterType);
+            resolve(undefined);
         });
     }
 
@@ -645,7 +646,7 @@ export type CmSchema = {
         return Promise.as(this._schema);
     }
 
-    getCommandInContext(document: ls.TextDocument, cursorOffset: number): Promise<string, | null> {
+    getCommandInContext(document: ls.TextDocument, cursorOffset: number): Promise<string | null> {
         return this._languageSettings.useIntellisenseV2
             ? this.getCommandInContextV2(document, cursorOffset)
             : this.getCommandInContextV1(document, cursorOffset);
