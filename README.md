@@ -93,6 +93,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 0.2.2-alpha (12/21/2018)
+#### Added
+- Updated dependency on @kusto/language-service.
 ### 0.2.0 (12/14/2018)
 #### Added
 - **[Breaking]** Support monaco-editor v15. This removes supprot for pre 15 versions.
