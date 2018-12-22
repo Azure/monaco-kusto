@@ -152,23 +152,24 @@ export type CmSchema = {
     private _rulesProvider: k.CslIntelliSenseRulesProvider | k.CslQueryIntelliSenseRulesProvider | k.DataManagerIntelliSenseRulesProvider | k.ClusterManagerIntelliSenseRulesProvider;
     private _newlineAppendPipePolicy: Kusto.Data.IntelliSense.ApplyPolicy;
     private _toOptionKind: {[completionKind in k2.CompletionKind]: k.OptionKind} = {
+        [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
         [k2.CompletionKind.ClausePrefix]: k.OptionKind.None,
         [k2.CompletionKind.Cluster]: k.OptionKind.Database,
         [k2.CompletionKind.Column]: k.OptionKind.Column,
-        [k2.CompletionKind.QueryPrefix]: k.OptionKind.Operator,
         [k2.CompletionKind.Database]: k.OptionKind.Database,
         [k2.CompletionKind.Identifier]: k.OptionKind.None,
         [k2.CompletionKind.Keyword]: k.OptionKind.None,
         [k2.CompletionKind.Literal]: k.OptionKind.Literal,
-        [k2.CompletionKind.OperatorInfix]: k.OptionKind.None,
         [k2.CompletionKind.Parameter]: k.OptionKind.Parameter,
         [k2.CompletionKind.Punctuation]: k.OptionKind.None,
+        [k2.CompletionKind.QueryPrefix]: k.OptionKind.Operator,
+        [k2.CompletionKind.RenderChart]: k.OptionKind.Operator,
         [k2.CompletionKind.ScalarFunction]: k.OptionKind.FunctionScalar,
+        [k2.CompletionKind.ScalarInfix]: k.OptionKind.None,
         [k2.CompletionKind.ScalarPrefix]: k.OptionKind.None,
         [k2.CompletionKind.Syntax]: k.OptionKind.None,
         [k2.CompletionKind.Table]: k.OptionKind.Table,
         [k2.CompletionKind.TabularFunction]: k.OptionKind.FunctionServerSide,
-        [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
         [k2.CompletionKind.TabularPrefix]: k.OptionKind.None,
         [k2.CompletionKind.TabularSuffix]: k.OptionKind.None,
         [k2.CompletionKind.Unknown]: k.OptionKind.None,
@@ -914,7 +915,7 @@ export type CmSchema = {
             var parameters = fn.inputParameters.map(param => createParameterSymbol(param));
 
             // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
-            return new sym.FunctionSymbol.$ctor11(fn.name, fn.body, parameters);
+            return new sym.FunctionSymbol.$ctor16(fn.name, fn.body, parameters);
         }
 
 
@@ -1233,28 +1234,29 @@ export type CmSchema = {
     }
 
     private _kustoKindtolsKindV2: {[k in k2.CompletionKind]: ls.CompletionItemKind} = {
-        [k2.CompletionKind.Unknown] : ls.CompletionItemKind.Interface,
-        [k2.CompletionKind.Keyword]: ls.CompletionItemKind.Method,
-        [k2.CompletionKind.Punctuation] :ls.CompletionItemKind.Interface,
-        [k2.CompletionKind.Syntax]: ls.CompletionItemKind.Method,
+        [k2.CompletionKind.AggregateFunction]: ls.CompletionItemKind.Field,
+        [k2.CompletionKind.ClausePrefix]: ls.CompletionItemKind.Interface,
+        [k2.CompletionKind.Cluster]: ls.CompletionItemKind.Class,
+        [k2.CompletionKind.Column]: ls.CompletionItemKind.Function,
+        [k2.CompletionKind.Database]: ls.CompletionItemKind.Class,
         [k2.CompletionKind.Identifier]: ls.CompletionItemKind.Method,
+        [k2.CompletionKind.Keyword]: ls.CompletionItemKind.Method,
         [k2.CompletionKind.Literal]: ls.CompletionItemKind.Property,
+        [k2.CompletionKind.Parameter]: ls.CompletionItemKind.Variable,
+        [k2.CompletionKind.Punctuation] :ls.CompletionItemKind.Interface,
+        [k2.CompletionKind.QueryPrefix]: ls.CompletionItemKind.Function,
+        [k2.CompletionKind.RenderChart]: ls.CompletionItemKind.Method,
+        [k2.CompletionKind.ScalarFunction]: ls.CompletionItemKind.Field,
+        [k2.CompletionKind.ScalarInfix]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.ScalarPrefix]: ls.CompletionItemKind.Field,
+        [k2.CompletionKind.Syntax]: ls.CompletionItemKind.Method,
+        [k2.CompletionKind.Table]: ls.CompletionItemKind.Class,
+        [k2.CompletionKind.TabularFunction]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.TabularPrefix]: ls.CompletionItemKind.Field,
         // datatable, externaldata
         [k2.CompletionKind.TabularSuffix]: ls.CompletionItemKind.Field,
-        [k2.CompletionKind.QueryPrefix]: ls.CompletionItemKind.Function,
-        [k2.CompletionKind.ClausePrefix]: ls.CompletionItemKind.Interface,
-        [k2.CompletionKind.OperatorInfix ]: ls.CompletionItemKind.Method,
-        [k2.CompletionKind.Column]: ls.CompletionItemKind.Function,
-        [k2.CompletionKind.Table]: ls.CompletionItemKind.Class,
-        [k2.CompletionKind.ScalarFunction]: ls.CompletionItemKind.Field,
-        [k2.CompletionKind.TabularFunction]: ls.CompletionItemKind.Field,
-        [k2.CompletionKind.AggregateFunction]: ls.CompletionItemKind.Field,
-        [k2.CompletionKind.Parameter]: ls.CompletionItemKind.Variable,
+        [k2.CompletionKind.Unknown] : ls.CompletionItemKind.Interface,
         [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
-        [k2.CompletionKind.Database]: ls.CompletionItemKind.Class,
-        [k2.CompletionKind.Cluster]: ls.CompletionItemKind.Class,
     }
 
     private kustoKindToLsKind(kustoKind: k.OptionKind): ls.CompletionItemKind {

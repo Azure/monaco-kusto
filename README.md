@@ -93,6 +93,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 0.2.2-alpha2 (12/21/2018)
+#### Added
+- Updated dependency @kusto/language-service-next.
 ### 0.2.2-alpha (12/21/2018)
 #### Added
 - Updated dependency on @kusto/language-service.
