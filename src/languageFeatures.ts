@@ -223,7 +223,8 @@ const classificationToColorLight: {[K in kinds]: string} = {
 	Table: 'C71585',
 	Type: '0000FF',
 	Variable: '191970',
-	Directive: '9400D3'
+	Directive: '9400D3',
+	ClientParameter: 'b5cea8'
 }
 
 const classificationToColorDark: {[K in kinds]: string} = {
@@ -244,7 +245,8 @@ const classificationToColorDark: {[K in kinds]: string} = {
 	Table: 'c586c0',
 	Type: '569cd6',
 	Variable: 'd7ba7d',
-	Directive: 'b5cea8'
+	Directive: 'b5cea8',
+	ClientParameter: 'b5cea8'
 }
 
 export class ColorizationAdapter {
