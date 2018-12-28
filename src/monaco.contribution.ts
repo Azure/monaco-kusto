@@ -94,7 +94,7 @@ monaco.editor.defineTheme('kusto-light', {
 		{ token: 'comment', foreground: '008000' }, // CommentToken Green
 		{ token: 'variable.predefined', foreground: '800080' }, // CalculatedColumnToken Purple
 		{ token: 'function', foreground: '0000FF' }, // FunctionNameToken Blue
-		{ token: 'operator.sql', foreground: 'FF4500' }, // OperatorToken OrangeRed
+		{ token: 'operator.sql', foreground: 'CC3700' }, // _WAS_ OperatorToken OrangeRed, but wasn't accessible.
 		{ token: 'string', foreground: 'B22222' }, // StringLiteralToken Firebrick
 		{ token: 'operator.scss', foreground: '0000FF' }, // SubOperatorToken Blue
 		{ token: 'variable', foreground: 'C71585' }, // TableColumnToken MediumVioletRed

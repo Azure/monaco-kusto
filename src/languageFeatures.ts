@@ -192,7 +192,7 @@ type kinds = keyof typeof ClassificationKind;
 // { token: 'comment', foreground: '008000' }, // CommentToken Green
 // { token: 'variable.predefined', foreground: '800080' }, // CalculatedColumnToken Purple
 // { token: 'function', foreground: '0000FF' }, // FunctionNameToken Blue
-// { token: 'operator.sql', foreground: 'FF4500' }, // OperatorToken OrangeRed
+// { token: 'operator.sql', foreground: 'FF4500' }, // OperatorToken OrangeRed (now changed to darker color CC3700 because wasn't accessible)
 // { token: 'string', foreground: 'B22222' }, // StringLiteralToken Firebrick
 // { token: 'operator.scss', foreground: '0000FF' }, // SubOperatorToken Blue
 // { token: 'variable', foreground: 'C71585' }, // TableColumnToken MediumVioletRed
@@ -217,8 +217,8 @@ const classificationToColorLight: {[K in kinds]: string} = {
 	Parameter: '2B91AF',
 	PlainText: '000000',
 	Punctuation: '000000',
-	QueryOperator: 'FF4500',
-	QueryParameter: 'FF4500',
+	QueryOperator: 'CC3700',
+	QueryParameter: 'CC3700',
 	StringLiteral: 'B22222',
 	Table: 'C71585',
 	Type: '0000FF',
