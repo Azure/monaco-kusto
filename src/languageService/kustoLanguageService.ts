@@ -1001,7 +1001,6 @@ export type CmSchema = {
             const range = new k2.ClassifiedRange();
             range.Kind = this.tokenKindToClassificationKind(cslCommandToken.TokenKind)
             range.Start = cslCommandToken.AbsoluteStart + offset;
-            range.End = cslCommandToken.AbsoluteEnd + offset;
             range.Length = cslCommandToken.Length;
 
             return range;
