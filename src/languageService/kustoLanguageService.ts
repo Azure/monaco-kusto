@@ -616,7 +616,8 @@ export type CmSchema = {
                 name: Name,
                 columns: OrderedColumns.map(({Name, Type, CslType}: s.showSchema.Column) => ({
                     name: Name,
-                    type: CslType,
+                    type: Type,
+                    cslType: CslType,
                 }))
             })),
             functions: Object.keys(Functions).map(key => Functions[key]).map(({Name, Body, InputParameters}) => ({
