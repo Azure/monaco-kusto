@@ -93,6 +93,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.0.0-alpha (1/31/2019)
+#### Bug fix
+- put minified versions of language serivce in npm package.
 ### 0.2.2 (12/28/2018)
 #### Bug fix
 - Increase contrast of operators in syntax highlighting.
