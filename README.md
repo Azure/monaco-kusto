@@ -93,9 +93,10 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
-### 1.0.0-alpha (1/31/2019)
+### 1.0.0 (1/31/2019)
 #### Bug fix
-- put minified versions of language serivce in npm package.
+- **[Breaking]** put minified versions of language serivce in npm package.
+- **[How to migrate]**: Import following files in script tag rather than the old non minified files: `kusto.javascript.client.min.js`, `newtonsoft.json.min.js`, `Kusto.Language.Bridge.min.js, bridge.min.js`
 ### 0.2.2 (12/28/2018)
 #### Bug fix
 - Increase contrast of operators in syntax highlighting.
