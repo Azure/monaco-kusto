@@ -54,10 +54,10 @@ gulp.task('release', ['clean-release','compile'], function() {
 		.pipe(gulp.dest('./release/min')),
 		gulp.src('src/monaco.d.ts').pipe(gulp.dest('./release/min')),
 		gulp.src('out/monaco.contribution.d.ts').pipe(gulp.dest('./release/min')),
-		gulp.src('node_modules/@kusto/language-service/kusto.javascript.client.js').pipe(gulp.dest('./release/min')),
-		gulp.src('node_modules/@kusto/language-service-next/Kusto.Language.Bridge.js').pipe(gulp.dest('./release/min')),
-		gulp.src('node_modules/@kusto/language-service/bridge.js').pipe(gulp.dest('./release/min')),
-		gulp.src('node_modules/@kusto/language-service/newtonsoft.json.js').pipe(gulp.dest('./release/min'))
+		gulp.src('node_modules/@kusto/language-service/kusto.javascript.client.min.js').pipe(gulp.dest('./release/min')),
+		gulp.src('node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js').pipe(gulp.dest('./release/min')),
+		gulp.src('node_modules/@kusto/language-service/bridge.min.js').pipe(gulp.dest('./release/min')),
+		gulp.src('node_modules/@kusto/language-service/newtonsoft.json.min.js').pipe(gulp.dest('./release/min'))
 	);
 });
 

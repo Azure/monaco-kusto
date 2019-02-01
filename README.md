@@ -22,10 +22,10 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 1. npm i @kusto/monaco-kusto
 2. add the following to your `index.html` (or other entry point)
     ```xml
-    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/bridge.js"></script>
-    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/kusto.javascript.client.js"></script>
-    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/newtonsoft.json.js"></script>
-    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/Kusto.Language.Bridge.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/bridge.min.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/kusto.javascript.client.min.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/newtonsoft.json.min.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/Kusto.Language.Bridge.min.js"></script>
     ```
 
     This is done since this package has a dependency on `kusto-language-service` but for now, we couldn't get `Bridge.Net` to produce valid modules with valid typescript typings.
@@ -93,6 +93,17 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.0.0 (1/31/2019)
+#### Bug fix
+- **[Breaking]** put minified versions of language serivce in npm package.
+- **[How to migrate]**:
+    include the .min (minified files) rather than the unminified files (which are no longer available)
+    ```xml
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/bridge.min.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/kusto.javascript.client.min.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/newtonsoft.json.min.js"></script>
+    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/Kusto.Language.Bridge.min.js"></script>
+    ```
 ### 0.2.2 (12/28/2018)
 #### Bug fix
 - Increase contrast of operators in syntax highlighting.
