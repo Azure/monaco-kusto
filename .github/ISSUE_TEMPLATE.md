@@ -1,4 +1,4 @@
-<!-- Do you have a question? Please ask it on https://stackoverflow.com/questions/tagged/monaco-editor -->
+<!-- Do you have a question? Please ask it on https://stackoverflow.com/questions/tagged/azure-data-explorer -->
 
  ### Description
 
@@ -24,6 +24,7 @@
 
  ### System configuration
 
+ monaco-kusto version: 0.x.y
  monaco-editor version: 0.X.Y
  Browser:
  OS:
