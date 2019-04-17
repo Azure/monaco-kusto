@@ -48,8 +48,8 @@
     "xregexp": "^3.2.0"
   },
   "dependencies": {
-    "@kusto/language-service": "0.0.22-alpha",
-    "@kusto/language-service-next": "0.0.25-alpha1"
+    "@kusto/language-service": "0.0.23-alpha",
+    "@kusto/language-service-next": "0.0.26-alpha1"
   },
   "peerDependencies": {
     "monaco-editor": "^0.15.6"
