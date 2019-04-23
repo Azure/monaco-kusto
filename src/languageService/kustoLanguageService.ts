@@ -146,14 +146,13 @@ export type CmSchema = {
     private _schema: s.Schema;
     private _schemaCache: {[cluster: string]: {[dbName: string]: {database: s.Database, symbol: sym.DatabaseSymbol, includesFunctions: boolean}}};
     private _parser: k.CslCommandParser;
-    private _script: k2.Script;
+    private _script: k2.CodeScript;
     private _parsePropertiesV1: ParseProperties
     private _parsePropertiesV2: ParseProperties
     private _rulesProvider: k.CslIntelliSenseRulesProvider | k.CslQueryIntelliSenseRulesProvider | k.DataManagerIntelliSenseRulesProvider | k.ClusterManagerIntelliSenseRulesProvider;
     private _newlineAppendPipePolicy: Kusto.Data.IntelliSense.ApplyPolicy;
     private _toOptionKind: {[completionKind in k2.CompletionKind]: k.OptionKind} = {
         [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
-        [k2.CompletionKind.ClausePrefix]: k.OptionKind.None,
         [k2.CompletionKind.Cluster]: k.OptionKind.Database,
         [k2.CompletionKind.Column]: k.OptionKind.Column,
         [k2.CompletionKind.Database]: k.OptionKind.Database,
@@ -229,13 +228,7 @@ export type CmSchema = {
         const cursorOffset = document.offsetAt(position);
         let currentcommand = this.getCurrentCommandV2(script, cursorOffset);
 
-        // Currently V2 only supports queries, so we'll deffer to V1 for control commands.
-        // Bridge.net didn't add 'Kind' to d.ts file, so we're adding here
-        if ((currentcommand as k2.ScriptBlock & {Kind: 'Query' | 'Command' | 'Directive' | 'Unknown' }).Kind !== 'Query') {
-            return this.doCompleteV1(document, position);
-        }
-
-        const completionItems = currentcommand.GetCompletionItems(cursorOffset);
+        const completionItems = currentcommand.Service.GetCompletionItems(cursorOffset);
 
         let disabledItems = this.disabledCompletionItemsV2;
         if (this._languageSettings.disabledCompletionItems) {
@@ -444,7 +437,7 @@ export type CmSchema = {
         }
 
         const script = this.parseDocumentV2(document);
-        let blocks = this.toArray<k2.ScriptBlock>(script.Blocks);
+        let blocks = this.toArray<k2.CodeBlock>(script.Blocks);
         if (changeIntervals.length > 0) {
             blocks = this.getAffectedBlocks(blocks, changeIntervals);
         }
@@ -538,26 +531,26 @@ export type CmSchema = {
         const script = this.parseDocumentV2(document);
         if (changeIntervals.length > 0) {
 
-            const blocks = this.toArray<k2.ScriptBlock>(script.Blocks);
+            const blocks = this.toArray<k2.CodeBlock>(script.Blocks);
             const affectedBlocks = this.getAffectedBlocks(blocks, changeIntervals);
 
             return Promise.as(affectedBlocks.map(block => ({
-                classifications: this.toArray<k2.ClassifiedRange>(block.GetClassifications(block.Start, block.End).Classifications),
+                classifications: this.toArray<k2.ClassifiedRange>(block.Service.GetClassifications(block.Start, block.End).Classifications),
                 absoluteStart: block.Start,
                 absoluteEnd: block.End
             })));
         }
 
         // Entire document requested
-        const blocks = this.toArray<k2.ScriptBlock>(script.Blocks);
+        const blocks = this.toArray<k2.CodeBlock>(script.Blocks);
         const classifications = blocks.map(block => {
-            return this.toArray<k2.ClassifiedRange>(block.GetClassifications(block.Start, block.Length).Classifications);
+            return this.toArray<k2.ClassifiedRange>(block.Service.GetClassifications(block.Start, block.Length).Classifications);
         }).reduce((prev, curr) => prev.concat(curr), []);
 
         return Promise.as([{classifications, absoluteStart: 0, absoluteEnd: document.getText().length}]);
     }
 
-     private getAffectedBlocks(blocks: k2.ScriptBlock[], changeIntervals: { start: number; end: number; }[]) {
+     private getAffectedBlocks(blocks: k2.CodeBlock[], changeIntervals: { start: number; end: number; }[]) {
          return blocks.filter(block =>
              // a command is affected if it intersects at least on of changed ranges.
              block // command can be null. we're filtering all nulls in the array.
@@ -691,7 +684,7 @@ export type CmSchema = {
 
     getCommandsInDocumentV2(document: ls.TextDocument): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]> {
         const script = this.parseDocumentV2(document);
-        let commands = this.toArray<k2.ScriptBlock>(script.Blocks);
+        let commands = this.toArray<k2.CodeBlock>(script.Blocks);
         return Promise.as(commands.map(({Start, End, Text}) => ({absoluteStart:Start, absoluteEnd: End, text: Text})));
     }
 
@@ -904,7 +897,8 @@ export type CmSchema = {
                     false,
                     null,
                     1,
-                    1);
+                    1,
+                    null);
             }
 
             const argumentType = new sym.TableSymbol.ctor(param.columns.map(col => createColumnSymbol(col)))
@@ -984,7 +978,7 @@ export type CmSchema = {
 
 
 
-        globalState = globalState.WithCluster(clusterSymbol)
+        globalState = globalState.WithCluster(clusterSymbol);
 
         if (databaseInContext) {
             globalState = globalState.WithDatabase(databaseInContext);
@@ -998,11 +992,13 @@ export type CmSchema = {
         .map(command => this.toArray(command.Tokens))
        .reduce((prev, curr) => prev.concat(curr), [])
        .map((cslCommandToken): k2.ClassifiedRange => {
-            const range = new k2.ClassifiedRange();
-            range.Kind = this.tokenKindToClassificationKind(cslCommandToken.TokenKind)
-            range.Start = cslCommandToken.AbsoluteStart + offset;
+            const range = new k2.ClassifiedRange(
+                this.tokenKindToClassificationKind(cslCommandToken.TokenKind),
+                cslCommandToken.AbsoluteStart + offset,
+                cslCommandToken.Length
+            );
+            // todo: shouldn't we remove it
             range.End = cslCommandToken.AbsoluteEnd + offset;
-            range.Length = cslCommandToken.Length;
 
             return range;
        });
@@ -1087,7 +1083,7 @@ export type CmSchema = {
         }
 
         if (!this._script) {
-            this._script = k2.Script.From(document.getText(), this._kustoJsSchemaV2);
+            this._script = k2.CodeScript.From$1(document.getText(), this._kustoJsSchemaV2);
         } else {
             this._script = this._script.WithText(document.getText());
         }
@@ -1123,7 +1119,7 @@ export type CmSchema = {
         return command;
     }
 
-    private getCurrentCommandV2(script: k2.Script, offset: number) {
+    private getCurrentCommandV2(script: k2.CodeScript, offset: number) {
         let block = script.GetBlockAtPosition(offset);
 
         return block;
@@ -1235,7 +1231,6 @@ export type CmSchema = {
 
     private _kustoKindtolsKindV2: {[k in k2.CompletionKind]: ls.CompletionItemKind} = {
         [k2.CompletionKind.AggregateFunction]: ls.CompletionItemKind.Field,
-        [k2.CompletionKind.ClausePrefix]: ls.CompletionItemKind.Interface,
         [k2.CompletionKind.Cluster]: ls.CompletionItemKind.Class,
         [k2.CompletionKind.Column]: ls.CompletionItemKind.Function,
         [k2.CompletionKind.Database]: ls.CompletionItemKind.Class,
