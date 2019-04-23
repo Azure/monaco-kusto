@@ -228,12 +228,6 @@ export type CmSchema = {
         const cursorOffset = document.offsetAt(position);
         let currentcommand = this.getCurrentCommandV2(script, cursorOffset);
 
-        // Currently V2 only supports queries, so we'll deffer to V1 for control commands.
-        // Bridge.net didn't add 'Kind' to d.ts file, so we're adding here
-        if (currentcommand.Kind !== 'Query') {
-            return this.doCompleteV1(document, position);
-        }
-
         const completionItems = currentcommand.Service.GetCompletionItems(cursorOffset);
 
         let disabledItems = this.disabledCompletionItemsV2;
