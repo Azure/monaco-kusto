@@ -107,6 +107,9 @@ export interface LanguageService {
     configure(languageSettings: LanguageSettings);
     getClientDirective(text: string): Promise<{isClientDirective: boolean, directiveWithoutLeadingComments: string}>;
     getAdminCommand(text: string): Promise<{isAdminCommand: boolean, adminCommandWithoutLeadingComments: string}>;
+    findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
+    findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
+    doRename(doucment: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit>;
 }
 
 export interface LanguageSettings {
@@ -704,6 +707,74 @@ export type CmSchema = {
             isAdminCommand,
             adminCommandWithoutLeadingComments: outParam.v
         })
+    }
+
+    findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]> {
+        if (!this._languageSettings.useIntellisenseV2) {
+            return Promise.as([]);
+        }
+
+        const script = this.parseDocumentV2(document);
+        const cursorOffset = document.offsetAt(position);
+        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
+        const relatedInfo = currentBlock.Service.GetRelatedElements(document.offsetAt(position));
+        const relatedElements = this.toArray<k2.RelatedElement>(relatedInfo.Elements);
+
+        const definition = relatedElements[0];
+
+        if (!definition) {
+            return Promise.as([]);
+        }
+
+        const start = document.positionAt(definition.Start);
+        const end = document.positionAt(definition.End);
+        const range = ls.Range.create(start, end);
+        const location = ls.Location.create(document.uri, range);
+        return Promise.as([location]);
+    }
+
+    findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]> {
+        if (!this._languageSettings.useIntellisenseV2) {
+            return Promise.as([]);
+        }
+
+        const script = this.parseDocumentV2(document);
+        const cursorOffset = document.offsetAt(position);
+        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
+        const relatedInfo = currentBlock.Service.GetRelatedElements(document.offsetAt(position));
+        const relatedElements = this.toArray<k2.RelatedElement>(relatedInfo.Elements);
+
+        if (!relatedElements || relatedElements.length == 0) {
+            return Promise.as([]);
+        }
+
+        const references = relatedElements.map(relatedElement => {
+            const start = document.positionAt(relatedElement.Start);
+            const end = document.positionAt(relatedElement.End);
+            const range = ls.Range.create(start, end);
+            const location = ls.Location.create(document.uri, range);
+            return location;
+        })
+
+        return Promise.as(references);
+    }
+
+    doRename(document: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit> {
+        const script = this.parseDocumentV2(document);
+        const cursorOffset = document.offsetAt(position);
+        let currentBLock = this.getCurrentCommandV2(script, cursorOffset);
+        const relatedInfo = currentBLock.Service.GetRelatedElements(document.offsetAt(position), k2.FindRelatedOptions.Renamable);
+        const relatedelements = this.toArray<k2.RelatedElement>(relatedInfo.Elements);
+        const edits =  relatedelements.map(edit => {
+            const start = document.positionAt(edit.Start);
+            const end = document.positionAt(edit.End);
+            const range = ls.Range.create(start, end);
+            return ls.TextEdit.replace(range, newName);
+        })
+
+        // create a workspace edit
+        const workspaceEdit: ls.WorkspaceEdit = {changes: {[document.uri]: edits}};
+        return Promise.as(workspaceEdit);
     }
 
     //#region dummy schema for manual testing

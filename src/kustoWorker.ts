@@ -120,6 +120,24 @@ export class KustoWorker {
 		return this._languageService.getAdminCommand(text);
 	}
 
+	findDefinition(uri: string, position: ls.Position) {
+		const document = this._getTextDocument(uri);
+		const definition = this._languageService.findDefinition(document, position);
+		return definition;
+	}
+
+	findReferences(uri: string, position: ls.Position): Thenable<ls.Location[]> {
+		let document = this._getTextDocument(uri);
+		const references = this._languageService.findReferences(document, position);
+		return references;
+	}
+
+	doRename(uri: string, position: ls.Position, newName: string) {
+		const document = this._getTextDocument(uri);
+		const workspaceEdit = this._languageService.doRename(document, position, newName);
+		return workspaceEdit;
+	}
+
 	private _getTextDocument(uri: string): ls.TextDocument {
 		let models = this._ctx.getMirrorModels();
 		for (let model of models) {
