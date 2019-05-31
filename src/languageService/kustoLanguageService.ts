@@ -29,6 +29,7 @@ import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
 import * as XRegExp from 'xregexp'
 import k = Kusto.Data.IntelliSense;
 import k2 = Kusto.Language.Editor;
+import kl = Kusto.Language;
 import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
@@ -227,6 +228,9 @@ export type CmSchema = {
         const script = this.parseDocumentV2(document);
         const cursorOffset = document.offsetAt(position);
         let currentcommand = this.getCurrentCommandV2(script, cursorOffset);
+
+        const kustoCode = kl.KustoCode.ParseAndAnalyze(currentcommand.Text);
+        const tableSymbols = kustoCode.GetSymbolsInScope(cursorOffset , sym.SymbolMatch.Table);
 
         const completionItems = currentcommand.Service.GetCompletionItems(cursorOffset);
 
