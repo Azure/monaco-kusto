@@ -82,6 +82,13 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
 
 	disposables.push(monaco.languages.registerFoldingRangeProvider(language, new languageFeatures.FoldingAdapter(workerAccessor)));
 
+	disposables.push(monaco.languages.registerDefinitionProvider(language, new languageFeatures.DefinitionAdapter(workerAccessor)));
+
+	disposables.push(monaco.languages.registerRenameProvider(language, new languageFeatures.RenameAdapter(workerAccessor)));
+
+	disposables.push(monaco.languages.registerReferenceProvider(language, new languageFeatures.ReferenceAdapter(workerAccessor)));
+
+
 	monaco.languages.registerDocumentFormattingEditProvider(language, new languageFeatures.DocumentFormatAdapter(workerAccessor));
 	kustoWorker =  workerAccessor;
 	resolveWorker(workerAccessor);

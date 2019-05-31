@@ -6,8 +6,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 * Validation: Syntax errors and linting
 * code folding / outlining
 * ~~Hovers~~
-* ~~Find definition, references & highlights for symbols in the same file~~
-* ~~Document Symbols~~
+* Find definition
+* find all refernces
+* rename symbol
 
 ## Setting up a dev environment
 

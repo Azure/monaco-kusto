@@ -605,6 +605,54 @@ function toMarkedStringArray(contents: ls.MarkupContent | ls.MarkedString | ls.M
 	return [toMarkdownString(contents)];
 }
 
+// --- definition ------
+
+function toLocation(location: ls.Location): monaco.languages.Location {
+	return {
+		uri: Uri.parse(location.uri),
+		range: toRange(location.range)
+	};
+}
+
+export class DefinitionAdapter {
+
+	constructor(private _worker: WorkerAccessor) {
+	}
+
+	public provideDefinition(model: monaco.editor.IReadOnlyModel, position: Position, token: CancellationToken): Thenable<monaco.languages.Definition> {
+		const resource = model.uri;
+
+		return this._worker(resource).then(worker => {
+			return  worker.findDefinition(resource.toString(), fromPosition(position));
+		}).then(definition => {
+			if (!definition || definition.length == 0) {
+				return;
+			}
+			return [toLocation(definition[0])];
+		});
+	}
+}
+
+// --- references ------
+
+export class ReferenceAdapter implements monaco.languages.ReferenceProvider {
+
+	constructor(private _worker: WorkerAccessor) {
+	}
+
+	provideReferences(model: monaco.editor.IReadOnlyModel, position: Position, context: monaco.languages.ReferenceContext, token: CancellationToken): Thenable<monaco.languages.Location[]> {
+		const resource = model.uri;
+
+		return this._worker(resource).then(worker => {
+			return worker.findReferences(resource.toString(), fromPosition(position));
+		}).then(entries => {
+			if (!entries) {
+				return;
+			}
+			return entries.map(toLocation);
+		});
+	}
+}
 
 // --- rename ------
 
@@ -627,6 +675,23 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit): monaco.languages.WorkspaceEdit
 		edits: resourceEdits
 	}
 }
+
+export class RenameAdapter implements monaco.languages.RenameProvider {
+
+	constructor(private _worker: WorkerAccessor) {
+	}
+
+	provideRenameEdits(model: monaco.editor.IReadOnlyModel, position: Position, newName: string, token: CancellationToken): Thenable<monaco.languages.WorkspaceEdit> {
+		const resource = model.uri;
+
+		return this._worker(resource).then(worker => {
+			return worker.doRename(resource.toString(), fromPosition(position), newName);
+		}).then(edit => {
+			return toWorkspaceEdit(edit);
+		});
+	}
+}
+
 
 // --- document symbols ------
 
