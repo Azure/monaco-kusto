@@ -94,6 +94,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.0.3 (5/31/2019)
+#### Added
+- Support for go-to definition, find all refrences, rename symbol.
 ### 1.0.0 (1/31/2019)
 #### Bug fix
 - **[Breaking]** put minified versions of language serivce in npm package.
