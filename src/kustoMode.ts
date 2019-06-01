@@ -90,7 +90,6 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
 
 	disposables.push(monaco.languages.registerHoverProvider(language, new languageFeatures.HoverAdapter(workerAccessor)));
 
-
 	monaco.languages.registerDocumentFormattingEditProvider(language, new languageFeatures.DocumentFormatAdapter(workerAccessor));
 	kustoWorker =  workerAccessor;
 	resolveWorker(workerAccessor);
