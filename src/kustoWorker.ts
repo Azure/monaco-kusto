@@ -126,7 +126,7 @@ export class KustoWorker {
 		return definition;
 	}
 
-	findReferences(uri: string, position: ls.Position): Thenable<ls.Location[]> {
+	findReferences(uri: string, position: ls.Position) {
 		let document = this._getTextDocument(uri);
 		const references = this._languageService.findReferences(document, position);
 		return references;
@@ -136,6 +136,12 @@ export class KustoWorker {
 		const document = this._getTextDocument(uri);
 		const workspaceEdit = this._languageService.doRename(document, position, newName);
 		return workspaceEdit;
+	}
+
+	doHover(uri: string, position: ls.Position) {
+		let document = this._getTextDocument(uri);
+		let hover = this._languageService.doHover(document, position);
+		return hover;
 	}
 
 	private _getTextDocument(uri: string): ls.TextDocument {
