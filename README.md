@@ -5,7 +5,7 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 * Syntax highlighting
 * Validation: Syntax errors and linting
 * code folding / outlining
-* ~~Hovers~~
+* Hovers
 * Find definition
 * find all refernces
 * rename symbol
@@ -94,6 +94,10 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.0.4 (5/31/2019)
+#### Added
+- Support for adding and removing line comments with keyboard shortcut.
+- Support hover
 ### 1.0.3 (5/31/2019)
 #### Added
 - Support for go-to definition, find all refrences, rename symbol.

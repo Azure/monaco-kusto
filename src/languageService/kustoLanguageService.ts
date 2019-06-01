@@ -92,6 +92,8 @@ export interface LanguageService {
     doFolding(document: ls.TextDocument): Promise<FoldingRange[]>;
     doValidation(document: ls.TextDocument, intervals: {start: number, end: number}[]): Promise<ls.Diagnostic[]>;
     doColorization(document: ls.TextDocument, intervals: {start: number, end: number}[]): Promise<ColorizationRange[]>;
+    doRename(doucment: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
+    doHover(document: ls.TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
     setSchema(schema: s.Schema): Promise<void>;
     setSchemaFromShowSchema(
         schema: s.showSchema.Result,
@@ -109,7 +111,6 @@ export interface LanguageService {
     getAdminCommand(text: string): Promise<{isAdminCommand: boolean, adminCommandWithoutLeadingComments: string}>;
     findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
     findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
-    doRename(doucment: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit>;
 }
 
 export interface LanguageSettings {
@@ -717,6 +718,11 @@ export type CmSchema = {
         const script = this.parseDocumentV2(document);
         const cursorOffset = document.offsetAt(position);
         let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
+
+        if (!currentBlock) {
+            return Promise.as([]);
+        }
+
         const relatedInfo = currentBlock.Service.GetRelatedElements(document.offsetAt(position));
         const relatedElements = this.toArray<k2.RelatedElement>(relatedInfo.Elements);
 
@@ -741,6 +747,11 @@ export type CmSchema = {
         const script = this.parseDocumentV2(document);
         const cursorOffset = document.offsetAt(position);
         let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
+
+        if (!currentBlock) {
+            return Promise.as([]);
+        }
+
         const relatedInfo = currentBlock.Service.GetRelatedElements(document.offsetAt(position));
         const relatedElements = this.toArray<k2.RelatedElement>(relatedInfo.Elements);
 
@@ -759,10 +770,19 @@ export type CmSchema = {
         return Promise.as(references);
     }
 
-    doRename(document: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit> {
+    doRename(document: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined> {
+        if (!this._languageSettings.useIntellisenseV2) {
+            return Promise.as(undefined);
+        }
+
         const script = this.parseDocumentV2(document);
         const cursorOffset = document.offsetAt(position);
         let currentBLock = this.getCurrentCommandV2(script, cursorOffset);
+
+        if (!currentBLock) {
+            return Promise.as(undefined);
+        }
+
         const relatedInfo = currentBLock.Service.GetRelatedElements(document.offsetAt(position), k2.FindRelatedOptions.Renamable);
         const relatedelements = this.toArray<k2.RelatedElement>(relatedInfo.Elements);
         const edits =  relatedelements.map(edit => {
@@ -775,6 +795,34 @@ export type CmSchema = {
         // create a workspace edit
         const workspaceEdit: ls.WorkspaceEdit = {changes: {[document.uri]: edits}};
         return Promise.as(workspaceEdit);
+    }
+
+    doHover(document: ls.TextDocument, position: ls.Position): Promise<ls.Hover | undefined> {
+        if (!this._languageSettings.useIntellisenseV2) {
+            return Promise.as(undefined);
+        }
+
+        const script = this.parseDocumentV2(document);
+        const cursorOffset = document.offsetAt(position);
+        let currentBLock = this.getCurrentCommandV2(script, cursorOffset);
+
+        if (!currentBLock) {
+            return Promise.as(undefined);
+        }
+
+        const isSupported = currentBLock.Service.IsFeatureSupported(k2.CodeServiceFeatures.QuickInfo, cursorOffset);
+
+        if (!isSupported) {
+            return Promise.as(undefined);
+        }
+
+        const quickInfo = currentBLock.Service.GetQuickInfo(cursorOffset);
+
+        if (!quickInfo || !quickInfo.Text) {
+            return Promise.as(undefined);
+        }
+
+        return Promise.as({contents: quickInfo.Text});
     }
 
     //#region dummy schema for manual testing

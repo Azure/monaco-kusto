@@ -656,7 +656,7 @@ export class ReferenceAdapter implements monaco.languages.ReferenceProvider {
 
 // --- rename ------
 
-function toWorkspaceEdit(edit: ls.WorkspaceEdit): monaco.languages.WorkspaceEdit {
+function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.WorkspaceEdit {
 	if (!edit || !edit.changes) {
 		return void 0;
 	}
@@ -681,7 +681,11 @@ export class RenameAdapter implements monaco.languages.RenameProvider {
 	constructor(private _worker: WorkerAccessor) {
 	}
 
-	provideRenameEdits(model: monaco.editor.IReadOnlyModel, position: Position, newName: string, token: CancellationToken): Thenable<monaco.languages.WorkspaceEdit> {
+	provideRenameEdits(
+		model: monaco.editor.IReadOnlyModel,
+		position: Position,
+		newName: string,
+		token: CancellationToken): Thenable<monaco.languages.WorkspaceEdit> {
 		const resource = model.uri;
 
 		return this._worker(resource).then(worker => {
@@ -766,5 +770,29 @@ function toFoldingRange(range: FoldingRange): monaco.languages.FoldingRange {
 		start: range.startLine + 1,
 		end: range.endLine + 1,
 		kind: monaco.languages.FoldingRangeKind.Region
+	}
+}
+
+// --- hover ------
+
+export class HoverAdapter implements monaco.languages.HoverProvider {
+
+	constructor(private _worker: WorkerAccessor) {
+	}
+
+	provideHover(model: monaco.editor.IReadOnlyModel, position: Position, token: CancellationToken): Thenable<monaco.languages.Hover> {
+		let resource = model.uri;
+
+		return this._worker(resource).then(worker => {
+			return worker.doHover(resource.toString(), fromPosition(position));
+		}).then(info => {
+			if (!info) {
+				return;
+			}
+			return <monaco.languages.Hover>{
+				range: toRange(info.range),
+				contents: toMarkedStringArray(info.contents)
+			};
+		});
 	}
 }
