@@ -448,13 +448,13 @@ export type CmSchema = {
 
         const diagnostics = blocks.map(block => {
 
-            // Bridge.net bug causes d.ts file to not Generate Diagnostics member, but we know it's there.
-            const blockAsAny = block as any;
-            if (blockAsAny.Diagnostics && blockAsAny.Diagnostics.Count !== 0) {
-                return this.toArray(blockAsAny.Diagnostics) as Kusto.Language.Diagnostic[];
-            } else {
-                return [];
+            const diagnostics = this.toArray<Kusto.Language.Diagnostic>(block.Service.GetDiagnostics());
+            if (diagnostics) {
+                return diagnostics;
             }
+
+            return [];
+
         }).reduce((prev, curr) => prev.concat(curr), []);
 
         const lsDiagnostics = this.toLsDiagnostics(diagnostics, document);
