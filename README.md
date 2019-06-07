@@ -94,6 +94,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.0.6 (6/6/2019)
+#### Bug fix
+- Fix broken Diagnostics
 ### 1.0.5 (6/5/2019)
 #### Bug fix
 - Fix vulnerability in dependency
