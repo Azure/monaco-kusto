@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import { KustoWorker } from './kustoWorker';
 
@@ -8,7 +12,6 @@ import Uri = monaco.Uri;
 import Position = monaco.Position;
 import Range = monaco.Range;
 import Thenable = monaco.Thenable;
-import Promise = monaco.Promise;
 import CancellationToken = monaco.CancellationToken;
 import IDisposable = monaco.IDisposable;
 import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider/lib/protocol.foldingProvider';
@@ -552,6 +555,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
 					documentation: entry.documentation,
 					detail: entry.detail,
 					kind: toCompletionItemKind(entry.kind),
+					range: new Range(position.lineNumber, position.lineNumber, wordInfo.startColumn, wordInfo.endColumn)
 				};
 				if (entry.textEdit) {
 					item.range = toRange(entry.textEdit.range);

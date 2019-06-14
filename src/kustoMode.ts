@@ -4,7 +4,6 @@ import {LanguageServiceDefaultsImpl} from './monaco.contribution';
 import {KustoLanguageDefinition} from './languageService/kustoMonarchLanguageDefinition'
 import * as languageFeatures from './languageFeatures';
 
-import Promise = monaco.Promise;
 import Uri = monaco.Uri;
 import IDisposable = monaco.IDisposable;
 import { WorkerAccessor } from './languageFeatures';

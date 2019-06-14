@@ -1,12 +1,12 @@
 import Emitter = monaco.Emitter;
 import IEvent = monaco.IEvent;
 import IDisposable = monaco.IDisposable;
-import Promise = monaco.Promise;
 
 import * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
+import { WorkerAccessor } from './languageFeatures';
 
 
 declare var require: <T>(moduleId: [string], callback: (module: T) => void) => void;
@@ -49,13 +49,8 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
 
 const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
-function getKustoWorker(): monaco.Promise<any> {
-	return new monaco.Promise((resolve, reject) => {
-		withMode((mode) => {
-			mode.getKustoWorker()
-				.then(resolve, reject);
-		});
-	});
+function getKustoWorker(): Promise<WorkerAccessor> {
+	return getMode().then(mode => mode.getKustoWorker());
 }
 
 // Export API
@@ -69,12 +64,12 @@ monaco.languages.kusto = createAPI();
 
 // --- Registration to monaco editor ---
 
-function withMode(callback: (module: typeof mode) => void): void {
-	require<typeof mode>(['vs/language/kusto/kustoMode'], callback);
+function getMode(): Promise<typeof mode> {
+	return import('./kustoMode')
 }
 
 monaco.languages.onLanguage('kusto', () => {
-	withMode(mode => mode.setupMode(kustoDefaults));
+	getMode().then(mode => mode.setupMode(kustoDefaults));
 });
 
 monaco.languages.register({

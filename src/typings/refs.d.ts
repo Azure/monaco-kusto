@@ -18,3 +18,9 @@ declare module System.Text.RegularExpressions {
     export interface Match {}
     export interface MatchCollection {}
 }
+
+declare module System {
+    export interface StringComparison {
+
+    }
+}

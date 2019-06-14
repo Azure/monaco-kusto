@@ -15,11 +15,20 @@
 <div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
 
 <script>
-	var require = {
-		paths: {
-			'vs/language/kusto': '../release/dev',
-			'vs': '../node_modules/monaco-editor-core/dev/vs'
+	var paths = {
+		'vs/language/kusto': '../release/dev',
+		'vs': '../node_modules/monaco-editor-core/dev/vs'
+	}
+	if (document.location.protocol === 'http:') {
+		// Add support for running local http server
+		let testIndex = document.location.pathname.indexOf('/test/');
+		if (testIndex !== -1) {
+			let prefix = document.location.pathname.substr(0, testIndex);
+			paths['vs/language/css'] = prefix + '/release/dev';
 		}
+	}
+	var require = {
+		paths: paths
 	};
 </script>
 <script src="../node_modules/monaco-editor-core/dev/vs/loader.js"></script>

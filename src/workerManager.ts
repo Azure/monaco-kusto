@@ -1,7 +1,6 @@
 import {LanguageServiceDefaultsImpl} from './monaco.contribution';
 import {KustoWorker} from './kustoWorker';
 
-import Promise = monaco.Promise;
 import IDisposable = monaco.IDisposable;
 import Uri = monaco.Uri;
 

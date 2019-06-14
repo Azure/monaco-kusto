@@ -104,6 +104,6 @@ declare module monaco.languages.kusto {
 	export type Schema = EngineSchema | ClusterMangerSchema | DataManagementSchema;
 
 
-	export var getKustoWorker: () => monaco.Promise<WorkerAccessor>;
+	export var getKustoWorker: () => Promise<WorkerAccessor>;
 
 }

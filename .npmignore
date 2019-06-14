@@ -1,11 +1,10 @@
 /.vscode/
-/lib/
 /out/
+/scripts/
 /src/
 /test/
-/gulpfile.js
+/.gitignore
 /.npmignore
-.tfignore
-publish.cmd
-yarn.lock
-yarn-error.log
+package-lock.json
+webpack.dev.config.js
+webpack.min.config.js

@@ -1,4 +1,3 @@
-import Promise = monaco.Promise;
 import IWorkerContext = monaco.worker.IWorkerContext;
 
 import * as kustoService from './languageService/kustoLanguageService';
