@@ -20,7 +20,14 @@ declare module System.Text.RegularExpressions {
 }
 
 declare module System {
+    // module Collections {
+    //     module Generic {
+    //         export interface IReadOnlyList$1<T> extends IEnumerable$1<T>, ICollection$1<T> {
+    //         }
+    //     }
+    // }
     export interface StringComparison {
 
     }
+
 }

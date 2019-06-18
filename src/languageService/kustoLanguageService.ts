@@ -24,7 +24,6 @@ if (typeof (document) == "undefined") {
 }
 
 import * as ls from 'vscode-languageserver-types';
-import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
 import * as XRegExp from 'xregexp'
 import k = Kusto.Data.IntelliSense;
 import k2 = Kusto.Language.Editor;
@@ -88,7 +87,7 @@ export interface LanguageService {
     doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]>;
     doDocumentformat(document: ls.TextDocument): Promise<ls.TextEdit[]>;
     doCurrentCommandFormat(document: ls.TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
-    doFolding(document: ls.TextDocument): Promise<FoldingRange[]>;
+    doFolding(document: ls.TextDocument): Promise<ls.FoldingRange[]>;
     doValidation(document: ls.TextDocument, intervals: {start: number, end: number}[]): Promise<ls.Diagnostic[]>;
     doColorization(document: ls.TextDocument, intervals: {start: number, end: number}[]): Promise<ColorizationRange[]>;
     doRename(doucment: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
@@ -410,9 +409,9 @@ export type CmSchema = {
         return this.doRangeFormat(document, range);
     }
 
-    doFolding(document: ls.TextDocument): Promise<FoldingRange[]> {
+    doFolding(document: ls.TextDocument): Promise<ls.FoldingRange[]> {
         return this.getCommandsInDocument(document).then(commands => {
-            return commands.map((command): FoldingRange => {
+            return commands.map((command): ls.FoldingRange => {
                 // don't count the last empty line as part of the folded range (cnosider linux, mac, pc newlines)
                 if (command.text.endsWith("\r\n")) {
                     command.absoluteEnd -= 2;
@@ -423,12 +422,11 @@ export type CmSchema = {
                 const startPosition = document.positionAt(command.absoluteStart);
 
                 const endPosition = document.positionAt(command.absoluteEnd);
-                return {
-                    startLine: startPosition.line,
-                    startColumn: startPosition.character,
-                    endLine: endPosition.line,
-                    endColumn: endPosition.character
-                };
+                return ls.FoldingRange.create(
+                    startPosition.line,
+                    endPosition.line,
+                    startPosition.character,
+                    endPosition.character);
             });
         });
     }
@@ -1027,7 +1025,7 @@ export type CmSchema = {
             var parameters = fn.inputParameters.map(param => createParameterSymbol(param));
 
             // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
-            return new sym.FunctionSymbol.$ctor16(fn.name, fn.body, parameters);
+            return new sym.FunctionSymbol.$ctor13(fn.name, fn.body, parameters);
         }
 
 

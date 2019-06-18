@@ -14,9 +14,8 @@ import Range = monaco.Range;
 import Thenable = monaco.Thenable;
 import CancellationToken = monaco.CancellationToken;
 import IDisposable = monaco.IDisposable;
-import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider/lib/protocol.foldingProvider';
 import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
-import { EngineSchema, Schema } from './languageService/schema';
+import { Schema } from './languageService/schema';
 
 export interface WorkerAccessor {
 	(first: Uri, ...more: Uri[]): Promise<KustoWorker>
@@ -769,7 +768,7 @@ export class FoldingAdapter implements monaco.languages.FoldingRangeProvider {
 	}
 }
 
-function toFoldingRange(range: FoldingRange): monaco.languages.FoldingRange {
+function toFoldingRange(range: ls.FoldingRange): monaco.languages.FoldingRange {
 	return {
 		start: range.startLine + 1,
 		end: range.endLine + 1,

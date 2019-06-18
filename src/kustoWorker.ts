@@ -3,7 +3,6 @@ import IWorkerContext = monaco.worker.IWorkerContext;
 import * as kustoService from './languageService/kustoLanguageService';
 import { EngineSchema, ClusterType, Schema, showSchema } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
-import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
 import { ColorizationRange } from './languageService/kustoLanguageService';
 
 export class KustoWorker {
@@ -83,7 +82,7 @@ export class KustoWorker {
 		return formatted;
 	}
 
-	doFolding(uri: string): Promise<FoldingRange[]> {
+	doFolding(uri: string): Promise<ls.FoldingRange[]> {
 		const document = this._getTextDocument(uri);
 		const folding = this._languageService.doFolding(document);
 		return folding;
