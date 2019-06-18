@@ -24,7 +24,7 @@ if (typeof (document) == "undefined") {
 }
 
 import * as ls from 'vscode-languageserver-types';
-import * as XRegExp from 'xregexp'
+import XRegExp from 'xregexp'
 import k = Kusto.Data.IntelliSense;
 import k2 = Kusto.Language.Editor;
 import sym = Kusto.Language.Symbols;

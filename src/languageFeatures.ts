@@ -6,7 +6,7 @@ import { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import { KustoWorker } from './kustoWorker';
 
 import * as ls from 'vscode-languageserver-types';
-import * as _ from 'lodash';
+import debounce  from 'lodash/debounce';
 
 import Uri = monaco.Uri;
 import Position = monaco.Position;
@@ -37,7 +37,7 @@ export class DiagnosticsAdapter {
 				return;
 			}
 
-			const debouncedValidation = _.debounce(
+			const debouncedValidation = debounce(
 				(intervals?: {start: number, end: number}[]) =>
 					this._doValidate(model, modeId, intervals),
 				500
@@ -271,7 +271,7 @@ export class ColorizationAdapter {
 				return;
 			}
 
-			const debouncedColorization = _.debounce((intervals?: {start: number, end: number}[]) =>
+			const debouncedColorization = debounce((intervals?: {start: number, end: number}[]) =>
 				this._doColorization(model, modeId, intervals), 500
 			);
 

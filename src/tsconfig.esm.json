@@ -10,6 +10,7 @@
       "es2015.collection",
       "es2015.promise"
     ],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   }
 }

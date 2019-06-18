@@ -18,7 +18,9 @@ helpers.packageESM({
 		'kusto.worker.js',
 	],
 	resolveAlias: {
-		'vscode-nls': path.join(REPO_ROOT, "out/esm/fillers/vscode-nls.js")
+		'vscode-nls': path.join(REPO_ROOT, "out/esm/fillers/vscode-nls.js"),
+		'lodash/debounce': path.join(REPO_ROOT, "node_modules/lodash/debounce.js"),
+		'xregexp': path.join(REPO_ROOT, "node_modules/xregexp/xregexp-all.js")
 	},
 	resolveSkip: [
 		'monaco-editor-core'

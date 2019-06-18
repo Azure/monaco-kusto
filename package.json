@@ -29,14 +29,14 @@
     "@kusto/language-service-next": "0.0.28-rc.1",
     "@types/lodash": "^4.14.109",
     "@types/xregexp": "^3.0.29",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.11",
     "monaco-editor-core": "0.16.0",
     "monaco-plugin-helpers": "^1.0.2",
     "requirejs": "^2.3.6",
     "typescript": "3.3.3333",
     "uglify-js": "3.4.9",
-    "vscode-nls": "^4.1.1",
     "vscode-languageserver-types": "3.14.0",
+    "vscode-nls": "^4.1.1",
     "xregexp": "^3.2.0"
   },
   "peerDependencies": {

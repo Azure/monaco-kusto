@@ -48,11 +48,11 @@ function bundleOne(moduleId, exclude) {
 			main: 'vscode-nls'
 		}, {
             name: 'xregexp',
-            location: __dirname + '/node_modules/xregexp',
+            location: path.join(REPO_ROOT, 'node_modules/xregexp'),
             main: 'xregexp-all.js'
         }, {
             name: 'lodash',
-            location: __dirname + '/node_modules/lodash',
+            location: path.join(REPO_ROOT, 'node_modules/lodash'),
             main: 'lodash.js'
         }]
 	}, function (buildResponse) {
