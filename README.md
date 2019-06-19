@@ -13,11 +13,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ## Setting up a dev environment
 
 1. Install Node.js (v6.10.3 or later) from [https://nodejs.org/](https://nodejs.org/)
-3. (optional - you can probably use npm instead of yarn) Install Yarn from [https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)
-4. Open a new Kazzle environment, and then execute:
-     * `yarn install` (or `npm install`)
+2. npm run prepublishOnly
 5. You're set! Open `test/index.html` in your favorite browser and type some text.
-6. You can also use `yarn run watch` (or `npm watch`) to automatically recompile on save.
+6. You can also use `npm run watch` to automatically recompile on save (won't reflect the changes in index.html though)
 
 ## Usage
 1. npm i @kusto/monaco-kusto

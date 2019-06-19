@@ -19,7 +19,7 @@ helpers.packageESM({
 	],
 	resolveAlias: {
 		'vscode-nls': path.join(REPO_ROOT, "out/esm/fillers/vscode-nls.js"),
-		'lodash/debounce': path.join(REPO_ROOT, "node_modules/lodash/debounce.js"),
+		'lodash': path.join(REPO_ROOT, "node_modules/lodash/lodash.js"),
 		'xregexp': path.join(REPO_ROOT, "node_modules/xregexp/xregexp-all.js")
 	},
 	resolveSkip: [

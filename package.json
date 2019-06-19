@@ -3,9 +3,10 @@
   "version": "2.0.0-alpha1",
   "description": "Azure Data Explorer KQL plugin for the Monaco Editor",
   "scripts": {
+    "copy": "mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./release/min/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/kusto.javascript.client.min.js ./release/min/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./release/min/bridge.min.js && mcopy ./node_modules/@kusto/language-service/newtonsoft.json.min.js ./release/min/newtonsoft.json.min.js",
     "compile": "mrmdir ./out && tsc -p ./src/tsconfig.json && tsc -p ./src/tsconfig.esm.json",
     "watch": "tsc -p ./src --watch",
-    "prepublishOnly": "mrmdir ./release && npm run compile && node ./scripts/release.js && node ./scripts/bundle && mcopy ./src/monaco.d.ts ./release/monaco.d.ts"
+    "prepublishOnly": "mrmdir ./release && npm run compile && node ./scripts/release.js && node ./scripts/bundle && mcopy ./src/monaco.d.ts ./release/monaco.d.ts && npm run copy"
   },
   "author": "Microsoft Corporation",
   "license": "MIT",
