@@ -6,7 +6,7 @@
     "copy": "mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./release/min/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/kusto.javascript.client.min.js ./release/min/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./release/min/bridge.min.js && mcopy ./node_modules/@kusto/language-service/newtonsoft.json.min.js ./release/min/newtonsoft.json.min.js",
     "compile": "mrmdir ./out && tsc -p ./src/tsconfig.json && tsc -p ./src/tsconfig.esm.json",
     "watch": "tsc -p ./src --watch",
-    "prepublishOnly": "mrmdir ./release && npm run compile && node ./scripts/release.js && node ./scripts/bundle && mcopy ./src/monaco.d.ts ./release/monaco.d.ts && npm run copy"
+    "prepublishOnly": "mrmdir ./release && npm run compile && node ./scripts/release.js && node ./scripts/bundle && node ./scripts/rewrite && mcopy ./src/monaco.d.ts ./release/monaco.d.ts && npm run copy"
   },
   "author": "Microsoft Corporation",
   "license": "MIT",
@@ -24,7 +24,7 @@
   ],
   "homepage": "https://github.com/Azure/monaco-kusto",
   "main": "./release/min/monaco.contribution.js",
-  "types": "./release/min/monaco.contribution.d.ts",
+  "types": "./release/min/monaco-kusto.d.ts",
   "devDependencies": {
     "@kusto/language-service": "0.0.23-alpha",
     "@kusto/language-service-next": "0.0.28-rc.1",

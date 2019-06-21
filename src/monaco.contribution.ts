@@ -4,7 +4,6 @@ import IDisposable = monaco.IDisposable;
 
 import * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
-import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
 import { WorkerAccessor } from './languageFeatures';
 
@@ -80,7 +79,6 @@ monaco.languages.register({
 // TODO: asked if there's a cleaner way to register an editor contribution. looks like monaco has an internal contribution regstrar but it's no exposed in the API.
 // https://stackoverflow.com/questions/46700245/how-to-add-an-ieditorcontribution-to-monaco-editor
 let commandHighlighter: KustoCommandHighlighter;
-let commandFormatter: KustoCommandFormatter;
 
 monaco.editor.defineTheme('kusto-light', {
 	base: 'vs',
@@ -138,10 +136,6 @@ monaco.editor.onDidCreateEditor(editor => {
 
 	commandHighlighter = new KustoCommandHighlighter(editor);
 
-	if (isStandaloneCodeEditor(editor)) {
-		commandFormatter = new KustoCommandFormatter(editor);
-	}
-
 	triggerSuggestDialogWhenCompletionItemSelected(editor);
 });
 
@@ -171,8 +165,4 @@ function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.IC
 			}
 		}
 	})
-}
-
-function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is monaco.editor.IStandaloneCodeEditor {
-    return (editor as monaco.editor.IStandaloneCodeEditor).addAction !== undefined;
 }

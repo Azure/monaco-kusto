@@ -73,14 +73,81 @@ export enum TokenKind {
     ClientDirectiveToken = 524288
 }
 
+// We don't want to leak kusto language service types to caller.
+// mainly since we don't want the dev to need to use <script> tag to import the non-modules
+// that are our language service (due to bridge.net not having sound enough support for modules).
+// Thus we duplicate the Kusto.Language.Editor.ClassificationKind.
+// we'll try to do it in a type-safe way.
+export enum ClassificationKind {
+    PlainText = 0,
+    Comment = 1,
+    Punctuation = 2,
+    Directive = 3,
+    Literal = 4,
+    StringLiteral = 5,
+    Type = 6,
+    Column = 7,
+    Table = 8,
+    Function = 9,
+    Parameter = 10,
+    Variable = 11,
+    Identifier = 12,
+    ClientParameter = 13,
+    QueryParameter = 14,
+    ScalarOperator = 15,
+    MathOperator = 16,
+    QueryOperator = 17,
+    Command = 18,
+    Keyword = 19
+}
+
+const _toClassificationKind: {[key in k2.ClassificationKind]: ClassificationKind} = {
+    [k2.ClassificationKind.PlainText]: ClassificationKind.PlainText,
+    [k2.ClassificationKind.Comment]: ClassificationKind.Comment,
+    [k2.ClassificationKind.Punctuation]: ClassificationKind.Punctuation,
+    [k2.ClassificationKind.Directive]: ClassificationKind.Directive,
+    [k2.ClassificationKind.Literal]: ClassificationKind.Literal,
+    [k2.ClassificationKind.StringLiteral]: ClassificationKind.StringLiteral,
+    [k2.ClassificationKind.Type]: ClassificationKind.Type,
+    [k2.ClassificationKind.Column]: ClassificationKind.Column,
+    [k2.ClassificationKind.Table]: ClassificationKind.Table,
+    [k2.ClassificationKind.Function]: ClassificationKind.Function,
+    [k2.ClassificationKind.Parameter]: ClassificationKind.Parameter,
+    [k2.ClassificationKind.Variable]: ClassificationKind.Variable,
+    [k2.ClassificationKind.Identifier]: ClassificationKind.Identifier,
+    [k2.ClassificationKind.ClientParameter]: ClassificationKind.ClientParameter,
+    [k2.ClassificationKind.QueryParameter]: ClassificationKind.QueryParameter,
+    [k2.ClassificationKind.ScalarOperator]: ClassificationKind.ScalarOperator,
+    [k2.ClassificationKind.MathOperator]: ClassificationKind.MathOperator,
+    [k2.ClassificationKind.QueryOperator]: ClassificationKind.QueryOperator,
+    [k2.ClassificationKind.Command]: ClassificationKind.Command,
+    [k2.ClassificationKind.Keyword]: ClassificationKind.Keyword
+}
+
+// This is another type taken from language service to prevent type leak.
+export interface ClassifiedRange {
+    kind: ClassificationKind;
+    start: number;
+    length: number;
+    end: number;
+}
+
+const toClassifiedRange = (input: k2.ClassifiedRange): ClassifiedRange => ({
+    kind: _toClassificationKind[input.Kind],
+    end: input.End,
+    length: input.Length,
+    start: input.Start
+});
+
 /**
  * colorization data for specific line range.
  */
 export interface ColorizationRange {
-    classifications: k2.ClassifiedRange[];
+    classifications: ClassifiedRange[];
     absoluteStart: number,
     absoluteEnd: number
 };
+
 
 export interface LanguageService {
     doComplete(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList>;
@@ -513,7 +580,8 @@ export type CmSchema = {
 
                 return Promise.resolve(affectedCommands.map(command => {
                     this.parseTextV1(command.Text, k.ParseMode.TokenizeAllText);
-                    const classifications = this.getClassificationsFromParseResult(command.AbsoluteStart);
+                    const classifications = this.getClassificationsFromParseResult(command.AbsoluteStart)
+                        .map(x => toClassifiedRange(x));
                     return {
                         classifications,
                         absoluteStart: command.AbsoluteStart,
@@ -524,7 +592,7 @@ export type CmSchema = {
 
             // Entire document requested
             this.parseDocumentV1(document, k.ParseMode.TokenizeAllText);
-            const classifications = this.getClassificationsFromParseResult();
+            const classifications = this.getClassificationsFromParseResult().map(x => toClassifiedRange(x));
             return Promise.resolve([{classifications, absoluteStart: 0, absoluteEnd: document.getText().length}]);
         }
 
@@ -536,7 +604,8 @@ export type CmSchema = {
             const affectedBlocks = this.getAffectedBlocks(blocks, changeIntervals);
 
             return Promise.resolve(affectedBlocks.map(block => ({
-                classifications: this.toArray<k2.ClassifiedRange>(block.Service.GetClassifications(block.Start, block.End).Classifications),
+                classifications: this.toArray<k2.ClassifiedRange>(block.Service.GetClassifications(block.Start, block.End).Classifications)
+                    .map(x => toClassifiedRange(x)),
                 absoluteStart: block.Start,
                 absoluteEnd: block.End
             })));
@@ -545,7 +614,8 @@ export type CmSchema = {
         // Entire document requested
         const blocks = this.toArray<k2.CodeBlock>(script.Blocks);
         const classifications = blocks.map(block => {
-            return this.toArray<k2.ClassifiedRange>(block.Service.GetClassifications(block.Start, block.Length).Classifications);
+            return this.toArray<k2.ClassifiedRange>(block.Service.GetClassifications(block.Start, block.Length).Classifications)
+            .map(x => toClassifiedRange(x));
         }).reduce((prev, curr) => prev.concat(curr), []);
 
         return Promise.resolve([{classifications, absoluteStart: 0, absoluteEnd: document.getText().length}]);

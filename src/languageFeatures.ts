@@ -14,8 +14,8 @@ import Range = monaco.Range;
 import Thenable = monaco.Thenable;
 import CancellationToken = monaco.CancellationToken;
 import IDisposable = monaco.IDisposable;
-import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
 import { Schema } from './languageService/schema';
+import { ClassificationKind, ClassifiedRange } from './languageService/kustoLanguageService';
 
 export interface WorkerAccessor {
 	(first: Uri, ...more: Uri[]): Promise<KustoWorker>
@@ -450,15 +450,14 @@ function injectCss(): any {
 	style.type = 'text/css';
 	style.media = 'screen';
 	container.appendChild(style);
-	ClassificationKind
 	style.innerHTML = getCssForClassification();
 }
 
-function toDecoration(model: monaco.editor.ITextModel, classification: Kusto.Language.Editor.ClassifiedRange): monaco.editor.IModelDeltaDecoration {
-	const start = model.getPositionAt(classification.Start);
-	const end = model.getPositionAt(classification.Start + classification.Length);
+function toDecoration(model: monaco.editor.ITextModel, classification: ClassifiedRange): monaco.editor.IModelDeltaDecoration {
+	const start = model.getPositionAt(classification.start);
+	const end = model.getPositionAt(classification.start + classification.length);
 	const range = new Range(start.lineNumber, start.column, end.lineNumber, end.column);
-	const inlineClassName = (ClassificationKind as any).$names[classification.Kind];
+	const inlineClassName = (ClassificationKind as any).$names[classification.kind];
 	return {
 		range,
 		options: {

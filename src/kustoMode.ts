@@ -1,13 +1,14 @@
 import {WorkerManager} from './workerManager';
 import {KustoWorker} from './kustoWorker';
 import {LanguageServiceDefaultsImpl} from './monaco.contribution';
-import {KustoLanguageDefinition} from './languageService/kustoMonarchLanguageDefinition'
+//import {KustoLanguageDefinition} from './languageService/kustoMonarchLanguageDefinition'
 import * as languageFeatures from './languageFeatures';
+import { WorkerAccessor } from './languageFeatures';
+import { Schema } from './languageService/schema';
 
 import Uri = monaco.Uri;
 import IDisposable = monaco.IDisposable;
-import { WorkerAccessor } from './languageFeatures';
-import { EngineSchema, Schema } from './languageService/schema';
+
 
 let kustoWorker: WorkerAccessor;
 let resolveWorker: (value: languageFeatures.WorkerAccessor | PromiseLike<languageFeatures.WorkerAccessor>) => void;
@@ -57,7 +58,7 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
 	// Monaco tokenization runs in main thread so we're using a quick schema-unaware tokenization.
 	// a web worker will run semantic colorization in the background (ColorizationAdapter).
 	if (defaults.languageSettings.useTokenColorization) {
-		monarchTokensProvider = monaco.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
+		//monarchTokensProvider = monaco.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
 	}
 
 
@@ -69,7 +70,7 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
 		}
 
 		if (e.languageSettings.useTokenColorization && monarchTokensProvider == undefined) {
-			monarchTokensProvider = monaco.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
+			//monarchTokensProvider = monaco.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
 		}
 	})
 
