@@ -17,10 +17,19 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
 
 	private _onDidChange = new Emitter<monaco.languages.kusto.LanguageServiceDefaults>();
 	private _languageSettings: monaco.languages.kusto.LanguageSettings;
+	// in miliseconds. For example - this is 2 minutes 2 * 60 * 1000
+	private _workerMaxIdleTime: number;
 
 	constructor(
 		languageSettings: monaco.languages.kusto.LanguageSettings) {
 		this.setLanguageSettings(languageSettings);
+		// default to never kill worker when idle.
+		// reason: when killing worker - schema gets lost. We transmit the schema back to main process when killing
+		// the worker, but in some extreme cases web worker runs out of memory while stringifying the schema.
+		// This stems from the fact that web workers have much more limited memory that the main process.
+		// An alternative solution (not currently implemented) is to just save the schema in the main process whenever calling
+		// setSchema. That way we don't need to stringify the schema on the worker side when killing the web worker.
+		this._workerMaxIdleTime = 0;
 	}
 
 	get onDidChange(): IEvent<monaco.languages.kusto.LanguageServiceDefaults> {
@@ -34,6 +43,16 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
 	setLanguageSettings(options: monaco.languages.kusto.LanguageSettings): void {
 		this._languageSettings = options || Object.create(null);
 		this._onDidChange.fire(this);
+	}
+
+	setMaximumWorkerIdleTime(value: number): void {
+		// doesn't fire an event since no
+		// worker restart is required here
+		this._workerMaxIdleTime = value;
+	}
+
+	getWorkerMaxIdleTime() {
+		return this._workerMaxIdleTime;
 	}
 }
 
