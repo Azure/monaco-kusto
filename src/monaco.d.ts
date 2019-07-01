@@ -28,6 +28,14 @@ declare module monaco.languages.kusto {
 		 * Configure language service settings.
 		 */
 		setLanguageSettings(options: LanguageSettings): void;
+
+        /**
+         * Configure when the worker shuts down. By default that is 2mins.
+         *
+         * @param value The maximum idle time in milliseconds. Values less than one
+         * mean never shut down.
+         */
+        setMaximumWorkerIdleTime(value: number): void;
 	}
 
 	export var kustoDefaults: LanguageServiceDefaults;

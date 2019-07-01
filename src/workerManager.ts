@@ -5,8 +5,6 @@ import Promise = monaco.Promise;
 import IDisposable = monaco.IDisposable;
 import Uri = monaco.Uri;
 
-const STOP_WHEN_IDLE_FOR = 2 * 60 * 1000; // 2min
-
 export class WorkerManager {
 	private _storedState: {
 		schema: any,
@@ -59,8 +57,9 @@ export class WorkerManager {
 		if (!this._worker) {
 			return;
 		}
+		const maxIdleTime = this._defaults.getWorkerMaxIdleTime();
 		let timePassedSinceLastUsed = Date.now() - this._lastUsedTime;
-		if (timePassedSinceLastUsed > STOP_WHEN_IDLE_FOR) {
+		if (maxIdleTime > 0 && timePassedSinceLastUsed > maxIdleTime) {
 			this._saveStateAndStopWorker();
 		}
 	}
