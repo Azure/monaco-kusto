@@ -94,6 +94,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.0.10 (7/1/2019)
+#### Bug fix
+- Fix broken dependency on language service.
 ### 1.0.9 (7/1/2019)
 #### Bug fix
 - don't suggest chart types that we do not support yet.
