@@ -215,16 +215,12 @@ export type CmSchema = {
         'distance': k2.CompletionKind.ScalarFunction,
         'point': k2.CompletionKind.ScalarFunction,
         // render charts
-        'anomalychart': k2.CompletionKind.Syntax,
-        'areachart': k2.CompletionKind.Syntax,
-        'ladderchart': k2.CompletionKind.Syntax,
-        'pivotchart': k2.CompletionKind.Syntax,
-        'scatterchart': k2.CompletionKind.Syntax,
-        'stackedareachart': k2.CompletionKind.Syntax,
-        'timeline': k2.CompletionKind.Syntax,
-        'timepivot': k2.CompletionKind.Syntax,
-        '3Dchart': k2.CompletionKind.Syntax,
-        'list': k2.CompletionKind.Syntax
+        'ladderchart': k2.CompletionKind.RenderChart,
+        'pivotchart': k2.CompletionKind.RenderChart,
+        'timeline': k2.CompletionKind.RenderChart,
+        'timepivot': k2.CompletionKind.RenderChart,
+        '3Dchart': k2.CompletionKind.RenderChart,
+        'list': k2.CompletionKind.RenderChart
     }
 
     doCompleteV2(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {

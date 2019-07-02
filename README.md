@@ -94,6 +94,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.0.9 (7/1/2019)
+#### Bug fix
+- don't suggest chart types that we do not support yet.
 ### 1.0.8 (7/1/2019)
 #### Bug fix
 - don't kill web worker after 2 minutes of inactivity by default. Reason: In exterme cases where schema is very large, trying to stringify the schema in web worker causes an OOM. This is configurable though.
