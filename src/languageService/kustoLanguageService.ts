@@ -32,7 +32,7 @@ import k2 = Kusto.Language.Editor;
 import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
-import { Database, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
+import { Database, Table, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
 
 let List = System.Collections.Generic.List$1;
 
@@ -103,6 +103,8 @@ export interface LanguageService {
             schema: s.showSchema.Result,
             clusterConnectionString: string,
             databaseInContextName: string): Promise<s.EngineSchema>;
+    setRecommendationModel(model: monaco.languages.kusto.ClusterRecommendation): Promise<void>;
+    getRecommendationModel(): Promise<monaco.languages.kusto.ClusterRecommendation>;
     getSchema(): Promise<s.Schema>;
     getCommandInContext(document: ls.TextDocument, cursorOffset: number): Promise<string>;
     getCommandsInDocument(document: ls.TextDocument): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]>;
@@ -128,6 +130,46 @@ export type CmSchema = {
     connectionString: string
 };
 
+// Recommendation choice snippet token
+const SnippetChoiceToken = '<CHOICES>';
+
+// Query operators we support for Recommendations
+const QueryOperatorTokenSet = {
+    // NOTE: We currently don't support "getschema", "as", and "join" kinds for recommendations
+    [Kusto.Language.Syntax.SyntaxKind.ConsumeKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.CountKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.DistinctKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.EvaluateKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.ExtendKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.FacetKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.ForkKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.InvokeKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.LimitKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.LookupKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.MakeSeriesKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.MvExpandKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.OrderKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.PartitionKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.ParseKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.PrintKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.ProjectKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.ProjectAwayKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.ProjectRenameKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.RangeKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.ReduceKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.RenderKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.SampleKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.SampleDistinctKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.SerializeKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.SortKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.SummarizeKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.TakeKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.TopHittersKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.TopKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.TopNestedKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.UnionKeyword]: true,
+    [Kusto.Language.Syntax.SyntaxKind.WhereKeyword]: true
+};
 
 /**
  * Kusto Language service translates the kusto object model (transpiled from C# by Bridge.Net)
@@ -177,7 +219,11 @@ export type CmSchema = {
         [k2.CompletionKind.TabularSuffix]: k.OptionKind.None,
         [k2.CompletionKind.Unknown]: k.OptionKind.None,
         [k2.CompletionKind.Variable]: k.OptionKind.Parameter
-     }
+    }
+    // recommendation model associated to cluster
+    private _recommendationModel: monaco.languages.kusto.ClusterRecommendation;
+    // table map associated to selected database
+    private _tableMap: {[tableName: string]: Table};
 
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
 
@@ -185,6 +231,8 @@ export type CmSchema = {
         this._kustoJsSchema = KustoLanguageService.convertToKustoJsSchema(schema);
         this._kustoJsSchemaV2 = this.convertToKustoJsSchemaV2(schema);
         this._schema = schema;
+        this._recommendationModel = undefined;
+        this._tableMap = {};
 
         this.configure(languageSettings);
         this._newlineAppendPipePolicy = new Kusto.Data.IntelliSense.ApplyPolicy();
@@ -226,9 +274,10 @@ export type CmSchema = {
     doCompleteV2(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
         const script = this.parseDocumentV2(document);
         const cursorOffset = document.offsetAt(position);
-        let currentcommand = this.getCurrentCommandV2(script, cursorOffset);
+        const currentcommand = this.getCurrentCommandV2(script, cursorOffset);
 
         const completionItems = currentcommand.Service.GetCompletionItems(cursorOffset);
+        const { recommendCompletionItems, shouldReplaceCompletionItems, replaceNameExistSet, recommendItems } = this.getRecommendations(currentcommand, cursorOffset);
 
         let disabledItems = this.disabledCompletionItemsV2;
         if (this._languageSettings.disabledCompletionItems) {
@@ -239,13 +288,18 @@ export type CmSchema = {
             })
         }
 
-        let items: ls.CompletionItem[] = this.toArray<k2.CompletionItem>(completionItems.Items)
+        let items: ls.CompletionItem[] = recommendCompletionItems.concat(this.toArray<k2.CompletionItem>(completionItems.Items))
         .filter(item => !(
             item
             && item.MatchText
             && disabledItems[item.MatchText] !== undefined
             && (disabledItems[item.MatchText] === k2.CompletionKind.Unknown ||  disabledItems[item.MatchText] === item.Kind)))
         .map((kItem, i) => {
+            // replace completion items we have already in recommended completion item list
+            if (shouldReplaceCompletionItems && recommendCompletionItems.length <= i && kItem.DisplayText in replaceNameExistSet) {
+                return undefined;
+            }
+
             const v1CompletionOption = new k.CompletionOption(this._toOptionKind[kItem.Kind] || k.OptionKind.None, kItem.DisplayText);
             const helpTopic: k.CslTopicDocumentation = this.getTopic(v1CompletionOption);
             // If we have AfterText it means that the cursor should no be placed at end of suggested text.
@@ -258,21 +312,29 @@ export type CmSchema = {
                 }
                 : {
                     textToInsert: kItem.EditText,
-                    format: ls.InsertTextFormat.PlainText
+                    format: i < recommendCompletionItems.length && recommendItems[i].snippet ? ls.InsertTextFormat.Snippet : ls.InsertTextFormat.PlainText
                 };
 
-            const lsItem = ls.CompletionItem.create(kItem.DisplayText);
+            // add Star unicode character to display of recommended items
+            const displayText = i < recommendCompletionItems.length ? `\u2605 ${kItem.DisplayText}` : kItem.DisplayText;
+            const lsItem = ls.CompletionItem.create(displayText);
 
             const startPosition = document.positionAt(completionItems.EditStart);
             const endPosition = document.positionAt(completionItems.EditStart + completionItems.EditLength);
             lsItem.textEdit = ls.TextEdit.replace(ls.Range.create(startPosition, endPosition), textToInsert);
             lsItem.sortText = this.getSortText(i + 1);
+            lsItem.filterText = kItem.DisplayText;
             lsItem.kind = this.kustoKindToLsKindV2(kItem.Kind);
             lsItem.insertTextFormat = format;
             lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;
             lsItem.documentation = helpTopic ? {value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown} : undefined;
             return lsItem;
         });
+
+        // if we've replaced items with recommendations, filter out the blanked out items
+        if (shouldReplaceCompletionItems) {
+            items = items.filter(item => item !== undefined);
+        }
 
         return Promise.as(ls.CompletionList.create(items));
     }
@@ -570,6 +632,12 @@ export type CmSchema = {
             this._kustoJsSchemaV2 = kustoJsSchemaV2;
             this._script = undefined;
             this._parsePropertiesV2 = undefined;
+
+            // Build a quick lookup map of table names to table schema for currently selected database
+            if (schema && schema.clusterType === 'Engine' && schema.database) {
+                this._tableMap = {};
+                schema.database.tables.forEach(table => this._tableMap[table.name] = table);
+            }
         }
 
         // Since V2 doesn't support control commands, we're initializing V1 intellisense for both cases and we'll going to use V1 intellisense for contorl commands.
@@ -635,6 +703,22 @@ export type CmSchema = {
 
         return Promise.as(result);
     }
+
+    /**
+     * Set recommendation model for cluster
+     * @param model recommendation model
+     */
+    setRecommendationModel(model: monaco.languages.kusto.ClusterRecommendation): Promise<void> {
+        this._recommendationModel = model;
+        return Promise.as(undefined);
+    }
+
+    /**
+     * Get recommendation model for cluster. Returns undefined if no model was previously registered.
+     */
+    getRecommendationModel(): Promise<monaco.languages.kusto.ClusterRecommendation> {
+		return Promise.as(this._recommendationModel);
+	}
 
     getSchema() {
         return Promise.as(this._schema);
@@ -1107,12 +1191,12 @@ export type CmSchema = {
         .map(command => this.toArray(command.Tokens))
        .reduce((prev, curr) => prev.concat(curr), [])
        .map((cslCommandToken): k2.ClassifiedRange => {
-            const range = new k2.ClassifiedRange(
-                this.tokenKindToClassificationKind(cslCommandToken.TokenKind),
-                cslCommandToken.AbsoluteStart + offset,
-                cslCommandToken.Length
-            );
-            // todo: shouldn't we remove it
+        const range = new k2.ClassifiedRange(
+            this.tokenKindToClassificationKind(cslCommandToken.TokenKind),
+            cslCommandToken.AbsoluteStart + offset,
+            cslCommandToken.Length
+        );
+        // todo: shouldn't we remove it
             range.End = cslCommandToken.AbsoluteEnd + offset;
 
             return range;
@@ -1407,6 +1491,207 @@ export type CmSchema = {
     private tokenKindToClassificationKind(token: TokenKind): k2.ClassificationKind {
         const conversion = this._tokenKindToClassificationKind[token];
         return conversion || k2.ClassificationKind.PlainText;
+    }
+
+    /**
+     * Get recommendations for completions
+     * @param currentcommand current command
+     * @param cursorOffset cursor offset relative to current command
+     */
+    private getRecommendations(currentcommand: k2.CodeBlock, cursorOffset: number) {
+        let recommendItems: monaco.languages.kusto.RecommendationItem[] = [];
+        let recommendCompletionItems: k2.CompletionItem[] = [];
+        let shouldReplaceCompletionItems = false;
+        let replaceNameExistSet: {[name: string]: boolean} = {};
+
+        // Only process recommendations if a recommendation model is registered for the current cluster/database
+        if (this._recommendationModel) {
+            const kustoCode = Kusto.Language.KustoCode.Parse(currentcommand.Text);
+            const cursorOffsetInBlock = cursorOffset - currentcommand.Start;
+            const tokens = (kustoCode.Syntax.GetTokens() as any).Items.ToArray() as Kusto.Language.Syntax.SyntaxToken.KindToken[];
+
+            if (this.isStartOfQueryOperator(tokens, cursorOffsetInBlock)) {
+                // get recommended query operator completion items for table in context
+                const recommendations = this.getModelRecommendations(tokens, cursorOffsetInBlock, 'op');
+                ({ recommendItems, recommendCompletionItems } = this.getRecommendedOperatorItems(recommendations));
+                recommendCompletionItems.forEach(item => replaceNameExistSet[item.DisplayText] = true);
+                shouldReplaceCompletionItems = true;
+            } else {
+                const { match, operator } = this.isStartOfQueryOperatorValue(tokens, cursorOffsetInBlock);
+                if (match) {
+                    // get recommended value statement completion items for table and query operator in context
+                    const recommendations = this.getModelRecommendations(tokens, cursorOffsetInBlock, 'val');
+                    ({ recommendItems, recommendCompletionItems } = this.getRecommendedOperatorValueItems(recommendations, currentcommand.Text, operator));
+
+                } else if (this.isStartOfAfterAndOrToken(tokens, cursorOffsetInBlock)) {
+                    // get recommended "where" operator value statement completion items for table since we are after an "and/or" token
+                    const recommendations = this.getModelRecommendations(tokens, cursorOffsetInBlock, 'val');
+                    ({ recommendItems, recommendCompletionItems } = this.getRecommendedOperatorValueItems(recommendations, currentcommand.Text, 'where'));
+                }
+            }
+        }
+        return { recommendCompletionItems, shouldReplaceCompletionItems, replaceNameExistSet, recommendItems };
+    }
+
+    /**
+     * Get recommendations from model for given model type and for table in context
+     * @param model recommendation model data
+     * @param tokens tokens of current command
+     * @param cursorOffset cursor offset relative to current command
+     * @param modelType type of recommendation
+     */
+    private getModelRecommendations(tokens: Kusto.Language.Syntax.SyntaxToken.KindToken[], cursorOffset: number, modelType: string): monaco.languages.kusto.RecommendationItem[] {
+        const currentDatabase = this._kustoJsSchemaV2.Database.Name;
+        const currentTable = this.getTableInContext(tokens, cursorOffset);
+        return this._recommendationModel.databases[currentDatabase]
+               && this._recommendationModel.databases[currentDatabase].tables[currentTable]
+               && this._recommendationModel.databases[currentDatabase].tables[currentTable][modelType]
+                ? this._recommendationModel.databases[currentDatabase].tables[currentTable][modelType]
+                : [];
+    }
+
+    /**
+     * Determine whether cursor is at the beginning of a query operator. i.e. "|<some_operator>" or "| <some_operator>" or "|"
+     * @param tokens tokens of current command
+     * @param cursorOffset cursor offset relative to current command
+     */
+    private isStartOfQueryOperator(tokens: Kusto.Language.Syntax.SyntaxToken.KindToken[], cursorOffset: number): boolean {
+        let token = this.getTokenBeforeCursor(tokens, cursorOffset);
+        if (token) {
+            if (token.Kind === Kusto.Language.Syntax.SyntaxKind.BarToken) {
+                return true;
+            } else if (token.Kind === Kusto.Language.Syntax.SyntaxKind.IdentifierToken) {
+                // lets check if the token before the current is a bar token
+                token = token.GetPreviousToken() as Kusto.Language.Syntax.SyntaxToken.KindToken;
+                if (token && token.Kind === Kusto.Language.Syntax.SyntaxKind.BarToken) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine whether cursor is at the beginning of query operator value definition. i.e. start of where operator
+     * @param tokens tokens of current command
+     * @param cursorOffset cursor offset relative to current command
+     */
+    private isStartOfQueryOperatorValue(tokens: Kusto.Language.Syntax.SyntaxToken.KindToken[], cursorOffset: number): { match: boolean, operator: string } {
+        const token = this.getTokenBeforeCursor(tokens, cursorOffset);
+        return (token && token.Kind in QueryOperatorTokenSet)
+            ? { match: true, operator: token.Value }
+            : { match: false, operator: undefined };
+    }
+
+    /**
+     * Determine whether cursor is at the beginning of where clause after "and/or" keyword.
+     * @param tokens tokens of current command
+     * @param cursorOffset cursor offset relative to current command
+     */
+    private isStartOfAfterAndOrToken(tokens: Kusto.Language.Syntax.SyntaxToken.KindToken[], cursorOffset: number): boolean {
+        const token = this.getTokenBeforeCursor(tokens, cursorOffset);
+        return (token && (token.Kind === Kusto.Language.Syntax.SyntaxKind.AndKeyword || token.Kind === Kusto.Language.Syntax.SyntaxKind.OrKeyword));
+    }
+
+    /**
+     * generate recommended query operator completion items for up to 5 recommendations.
+     * @param recommendations list of recommendations
+     * @param text current command's text
+     */
+    private getRecommendedOperatorItems(recommendations: monaco.languages.kusto.RecommendationItem[])
+        : { recommendItems: monaco.languages.kusto.RecommendationItem[], recommendCompletionItems: k2.CompletionItem[] } {
+
+        let candidates = [];
+        for (let index = 0; index < recommendations.length && candidates.length < 5; index++) {
+            candidates.push(recommendations[index]);
+        }
+        return {
+            recommendItems: candidates,
+            recommendCompletionItems: candidates.map(item => this.createRecommendCompletionItem(item.type, item.type))
+        };
+    }
+
+    /**
+     * generate recommended query operator value completion items for up to 5 recommendations.
+     * @param recommendations list of recommendations
+     * @param text current command's text
+     * @param operatorType type of query operator
+     */
+    private getRecommendedOperatorValueItems(recommendations: monaco.languages.kusto.RecommendationItem[], text: string, operatorType: string)
+        : { recommendItems: monaco.languages.kusto.RecommendationItem[], recommendCompletionItems: k2.CompletionItem[] } {
+
+        let candidates = [];
+        for (let index = 0; index < recommendations.length && candidates.length < 5; index++) {
+            const recommendation = recommendations[index];
+            if (operatorType === 'where' && operatorType === recommendation.type) {
+                if (recommendation.snippet) {
+                    // keep recommendation snippets that tagged to persist or has not already been used
+                    const regex = new RegExp(recommendation.value.replace(SnippetChoiceToken, '.*'));
+                    if (recommendation.persist || !regex.test(text)) {
+                        candidates.push(recommendation);
+                    }
+                } else if (text.indexOf(`${recommendation.value}`) === -1) {
+                    // non-snippet case: handles "where" recommendations for "where" in isolation, used with and/or, and used with wrapped parenthesis
+                    candidates.push(recommendation);
+                }
+            } else if (operatorType === recommendation.type && text.indexOf(`${operatorType} ${recommendation.value}`) === -1) {
+                candidates.push(recommendation);
+            }
+        }
+        return {
+            recommendItems: candidates,
+            recommendCompletionItems: candidates.map(item => this.createRecommendCompletionItem(item.value, item.snippet ? item.snippet : item.value))
+        };
+    }
+
+    /**
+     * Create recommended completion item
+     * @param displayText display text
+     * @param insertText insertion text
+     */
+    private createRecommendCompletionItem(displayText: string, insertText: string): k2.CompletionItem {
+        return {
+            Kind: Kusto.Language.Editor.CompletionKind.QueryPrefix,
+            DisplayText: displayText,
+            MatchText: displayText,
+            EditText: insertText,
+            Priority: Kusto.Language.Editor.CompletionPriority.Top
+        } as k2.CompletionItem;
+    }
+
+    /**
+     * Get token before the cursor
+     * @param candidates list of table candidate tokens
+     * @param cursorOffset cursor offset relative to current command
+     */
+    private getTokenBeforeCursor(tokens: Kusto.Language.Syntax.SyntaxToken.KindToken[], cursorOffset: number): Kusto.Language.Syntax.SyntaxToken.KindToken {
+        let prevToken: Kusto.Language.Syntax.SyntaxToken.KindToken;
+        for (let index = 0; index < tokens.length; index++) {
+            if (tokens[index].TextStart >= cursorOffset) {
+                break;
+            }
+            prevToken = tokens[index];
+        }
+        return prevToken;
+    }
+
+    /**
+     * Get name of table that is in context to the cursor
+     * @param tokens tokens of current command
+     * @param cursorOffset cursor offset relative to current command
+     */
+    private getTableInContext(tokens: Kusto.Language.Syntax.SyntaxToken.KindToken[], cursorOffset: number): string {
+        let tableToken: Kusto.Language.Syntax.SyntaxToken.KindToken;
+        let currentToken: Kusto.Language.Syntax.SyntaxToken.KindToken;
+        for (let index = 0; index < tokens.length; index++) {
+            currentToken = tokens[index];
+            if (currentToken.TextStart >= cursorOffset) {
+                break;
+            } else if (currentToken.Kind === Kusto.Language.Syntax.SyntaxKind.IdentifierToken && this._tableMap[currentToken.Text] !== undefined) {
+                tableToken = currentToken;
+            }
+        }
+        return tableToken ? tableToken.Value : undefined;
     }
 }
 

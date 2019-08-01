@@ -29,12 +29,20 @@ export class KustoWorker {
 		return this._languageService.setSchema(schema);
 	}
 
-    setSchemaFromShowSchema(schema: any, clusterConnectionString: string, databaseInContextName: string) {
+  setSchemaFromShowSchema(schema: any, clusterConnectionString: string, databaseInContextName: string) {
 		return this._languageService.setSchemaFromShowSchema(schema, clusterConnectionString, databaseInContextName);
 	};
 
 	normalizeSchema(schema: showSchema.Result, clusterConnectionString: string, databaseInContextName: string) {
 		return this._languageService.normalizeSchema(schema, clusterConnectionString, databaseInContextName);
+	}
+
+	setRecommendationModel(model: monaco.languages.kusto.ClusterRecommendation): Promise<void> {
+		return this._languageService.setRecommendationModel(model);
+	}
+
+	getRecommendationModel(): Promise<monaco.languages.kusto.ClusterRecommendation> {
+		return this._languageService.getRecommendationModel();
 	}
 
 	getSchema(): Promise<Schema> {

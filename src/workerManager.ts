@@ -8,6 +8,7 @@ import Uri = monaco.Uri;
 export class WorkerManager {
 	private _storedState: {
 		schema: any,
+		recommendationModel: monaco.languages.kusto.ClusterRecommendation
 	};
 
 	private _defaults: LanguageServiceDefaultsImpl;
@@ -40,11 +41,14 @@ export class WorkerManager {
 		}
 
 		this._worker.getProxy().then(proxy => {
-			proxy.getSchema().then(schema => {
-				this._storedState = {schema: schema};
+			Promise.join([
+				proxy.getSchema(),
+				proxy.getRecommendationModel()
+			]).then(results => {
+				this._storedState = { schema: results[0], recommendationModel: results[1] };
 				this._stopWorker();
-			})
-		})
+			});
+		});
 	}
 
 	dispose(): void {
@@ -86,7 +90,9 @@ export class WorkerManager {
 
 				// push state we held onto before killing the client.
 				if (this._storedState) {
-					return proxy.setSchema(this._storedState.schema).then(() => proxy);
+					return proxy.setSchema(this._storedState.schema).then(() =>
+						   proxy.setRecommendationModel(this._storedState.recommendationModel).then(() =>
+						   proxy));
 				} else {
 					return proxy;
 				}
