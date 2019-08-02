@@ -29,7 +29,7 @@ declare module monaco.languages.kusto {
 		 */
 		setLanguageSettings(options: LanguageSettings): void;
 
-        /**
+		/**
          * Configure when the worker shuts down. By default that is 2mins.
          *
          * @param value The maximum idle time in milliseconds. Values less than one
@@ -44,6 +44,7 @@ declare module monaco.languages.kusto {
 		setSchema(schema: Schema): Promise<void>;
 		setSchemaFromShowSchema(schema: any, clusterConnectionString: string, databaseInContextName: string): Promise<void>;
 		normalizeSchema(schema: any, clusterConnectionString: string, databaseInContextName: string): Promise<EngineSchema>;
+		setRecommendationModel(model: ClusterRecommendation): Promise<void>;
 		getCommandInContext(uri: string, cursorOffest: number): Promise<string | null>;
 		getCommandsInDocument(uri: string): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]>;
 		getClientDirective(text: string): Promise<{isClientDirective: boolean, directiveWithoutLeadingComments: string}>;
@@ -114,4 +115,25 @@ declare module monaco.languages.kusto {
 
 	export var getKustoWorker: () => monaco.Promise<WorkerAccessor>;
 
+	export type ClusterRecommendation = {
+		cluster: string;
+		databases: { [name: string]: DatabaseRecommendation };
+	} | undefined;
+
+	export interface DatabaseRecommendation {
+		tables: { [name: string]: TableRecommendation };
+	}
+
+	export interface TableRecommendation {
+		op: RecommendationItem[];
+		val: RecommendationItem[];
+	}
+
+	export interface RecommendationItem {
+		type: string;
+		frequency: number;
+		value?: string;
+		snippet?: string;
+		persist?: boolean;
+	}
 }
