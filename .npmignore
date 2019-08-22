@@ -9,3 +9,5 @@
 publish.cmd
 yarn.lock
 yarn-error.log
+/.github
+/kusto-monaco-kusto-*.tgz
