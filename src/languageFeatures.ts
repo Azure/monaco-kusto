@@ -208,13 +208,14 @@ type kinds = keyof typeof ClassificationKind;
 const classificationToColorLight: {[K in kinds]: string} = {
 	Column: 'C71585',
 	Comment: '008000',
+	Database: 'C71585',
 	Function: '0000FF',
 	Identifier: '000000',
 	Keyword: '0000FF',
 	Literal: 'B22222',
 	ScalarOperator: '000000',
 	MathOperator: '000000',
-	Command: '000000',
+	Command: '0000FF',
 	Parameter: '2B91AF',
 	PlainText: '000000',
 	Punctuation: '000000',
@@ -231,6 +232,7 @@ const classificationToColorLight: {[K in kinds]: string} = {
 const classificationToColorDark: {[K in kinds]: string} = {
 	Column: '4ec9b0',
 	Comment: '608B4E',
+	Database: 'c586c0',
 	Function: 'dcdcaa',
 	Identifier: 'd4d4d4',
 	Keyword: '569cd6',
