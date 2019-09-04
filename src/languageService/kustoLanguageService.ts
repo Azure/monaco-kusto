@@ -176,7 +176,8 @@ export type CmSchema = {
         [k2.CompletionKind.TabularPrefix]: k.OptionKind.None,
         [k2.CompletionKind.TabularSuffix]: k.OptionKind.None,
         [k2.CompletionKind.Unknown]: k.OptionKind.None,
-        [k2.CompletionKind.Variable]: k.OptionKind.Parameter
+        [k2.CompletionKind.Variable]: k.OptionKind.Parameter,
+        [k2.CompletionKind.CommandPrefix]: k.OptionKind.None
      }
 
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
@@ -779,9 +780,18 @@ export type CmSchema = {
             return Promise.as(undefined);
         }
 
-        const relatedInfo = currentBLock.Service.GetRelatedElements(document.offsetAt(position), k2.FindRelatedOptions.Renamable);
-        const relatedelements = this.toArray<k2.RelatedElement>(relatedInfo.Elements);
-        const edits =  relatedelements.map(edit => {
+        const relatedInfo = currentBLock.Service.GetRelatedElements(document.offsetAt(position));
+
+        const relatedElements = this.toArray<k2.RelatedElement>(relatedInfo.Elements);
+        const declarations = relatedElements.filter(e => e.Kind == k2.RelatedElementKind.Declaration);
+
+        // A declaration must be one of the elements
+        if (!declarations || declarations.length == 0)
+        {
+            return Promise.as(undefined);
+        }
+
+        const edits =  relatedElements.map(edit => {
             const start = document.positionAt(edit.Start);
             const end = document.positionAt(edit.End);
             const range = ls.Range.create(start, end);
@@ -1369,6 +1379,7 @@ export type CmSchema = {
         [k2.CompletionKind.TabularSuffix]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Unknown] : ls.CompletionItemKind.Interface,
         [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
+        [k2.CompletionKind.CommandPrefix]: ls.CompletionItemKind.Field
     }
 
     private kustoKindToLsKind(kustoKind: k.OptionKind): ls.CompletionItemKind {
