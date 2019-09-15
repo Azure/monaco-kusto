@@ -56,6 +56,36 @@ export class KustoWorker {
 		return commandInContext;
 	}
 
+	/**
+	 * Get command in cotext and the command range.
+	 * This method will basically convert generate microsoft language service interface to monaco interface.
+	 * @param uri document URI
+	 * @param cursorOffset offset from start of doucment to cursor
+	 */
+	getCommandAndLocationInContext(
+		uri: string,
+		cursorOffset: number): Promise<{text: string, range: monaco.Range} | null> {
+		const document = this._getTextDocument(uri);
+		if (!document) {
+			console.error(`getCommandAndLocationInContext: document is ${document}. uri is ${uri}`);
+			return Promise.as(null);
+		}
+
+		return this._languageService.getCommandAndLocationInContext(document, cursorOffset).then(result => {
+			if (!result) {
+				return null;
+			}
+
+			// convert to monaco object.
+			const {text, location: {range: {start, end}}} = result;
+			const range = new monaco.Range(start.line, start.character, end.line, end.character);
+			return {
+				range,
+				text
+			}
+		});
+	}
+
 	getCommandsInDocument(uri: string): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]> {
 		const document = this._getTextDocument(uri);
 		if (!document) {
