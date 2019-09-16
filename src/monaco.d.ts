@@ -45,6 +45,7 @@ declare module monaco.languages.kusto {
 		setSchemaFromShowSchema(schema: any, clusterConnectionString: string, databaseInContextName: string): Promise<void>;
 		normalizeSchema(schema: any, clusterConnectionString: string, databaseInContextName: string): Promise<EngineSchema>;
 		getCommandInContext(uri: string, cursorOffest: number): Promise<string | null>;
+		getCommandAndLocationInContext(uri: string, cursorOffset: number): Promise<{text: string, range: monaco.Range} | null>
 		getCommandsInDocument(uri: string): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]>;
 		getClientDirective(text: string): Promise<{isClientDirective: boolean, directiveWithoutLeadingComments: string}>;
 		getAdminCommand(text: string): Promise<{isAdminCommand: boolean, adminCommandWithoutLeadingComments: string}>;

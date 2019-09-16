@@ -94,6 +94,10 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.1.13 (9/14/2019)
+#### Added
+- Introduce a new function in language service called `getCommandAndLocationInContext`.
+  it will return both the text and the range of the command in context.
 ### 1.0.12 (9/4/2019)
 #### Added
 - Update language service to latest version.

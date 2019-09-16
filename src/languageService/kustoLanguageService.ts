@@ -105,6 +105,7 @@ export interface LanguageService {
             databaseInContextName: string): Promise<s.EngineSchema>;
     getSchema(): Promise<s.Schema>;
     getCommandInContext(document: ls.TextDocument, cursorOffset: number): Promise<string>;
+    getCommandAndLocationInContext(document: ls.TextDocument, cursorOffset: number): Promise<{text: string, location: ls.Location} | null>;
     getCommandsInDocument(document: ls.TextDocument): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]>;
     configure(languageSettings: LanguageSettings);
     getClientDirective(text: string): Promise<{isClientDirective: boolean, directiveWithoutLeadingComments: string}>;
@@ -645,6 +646,28 @@ export type CmSchema = {
         return this._languageSettings.useIntellisenseV2
             ? this.getCommandInContextV2(document, cursorOffset)
             : this.getCommandInContextV1(document, cursorOffset);
+    }
+
+    getCommandAndLocationInContext(document: ls.TextDocument, cursorOffset: number) {
+        // We are going to remove v1 intellisense. no use to keep parity.
+        if (!this._languageSettings.useIntellisenseV2) {
+            return Promise.as(null);
+        }
+
+        const script = this.parseDocumentV2(document);
+        const block = this.getCurrentCommandV2(script, cursorOffset);
+        if (!block) {
+            return Promise.as(null);
+        }
+
+        const start = document.positionAt(block.Start);
+        const end = document.positionAt(block.End);
+        const location = ls.Location.create(document.uri, ls.Range.create(start, end));
+        const text = block.Text;
+        return Promise.as({
+            text,
+            location
+        });
     }
 
     getCommandInContextV1(document: ls.TextDocument, cursorOffset: number): Promise<string | null> {

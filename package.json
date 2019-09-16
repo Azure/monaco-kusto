@@ -1,6 +1,6 @@
 {
   "name": "@kusto/monaco-kusto",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "CSL, KQL plugin for the Monaco Editor",
   "author": {
     "name": "Microsoft"

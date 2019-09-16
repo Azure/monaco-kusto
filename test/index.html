@@ -30,6 +30,7 @@
 <script src="../release/min/Kusto.Language.Bridge.min.js"></script>
 
 <script>
+	var getCurrentCommand;
 	var setDM;
 	var setHelp;
 	var setKuskus;
@@ -51,6 +52,18 @@
 			theme: 'kusto-light',
 			folding: true
 		});
+
+		getCurrentCommand = () => {
+			monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const model = editor.getModel();
+			workerAccessor(model.uri).then(worker => {
+				worker.getCommandAndLocationInContext(model.uri.toString(), model.getOffsetAt(editor.getPosition())).then(command => {
+					const {text, range} = command;
+					const currentCommand = document.getElementById('currentCommand');
+					currentCommand.innerHTML = range.toString() + text;
+				})
+			});
+		})};
 
 		setDM = () => {
 			monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
@@ -281,6 +294,12 @@
 <div>
 	<button onClick="setDisableClusterCompletion()">Disable Cluster keyword completion</button>
 	<button onClick="setEnableClusterCompletion()">Enalbe Cluster keyword completion</button>
+</div>
+<div>
+	<button onclick="getCurrentCommand()">Show current Command and position</button>
+</div>
+<div id="currentCommand">
+
 </div>
 </body>
 </html>
