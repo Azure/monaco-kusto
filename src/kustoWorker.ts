@@ -64,7 +64,7 @@ export class KustoWorker {
 	 */
 	getCommandAndLocationInContext(
 		uri: string,
-		cursorOffset: number): Promise<{text: string, range: monaco.Range} | null> {
+		cursorOffset: number): Promise<{text: string, range: monaco.IRange} | null> {
 		const document = this._getTextDocument(uri);
 		if (!document) {
 			console.error(`getCommandAndLocationInContext: document is ${document}. uri is ${uri}`);
@@ -78,7 +78,7 @@ export class KustoWorker {
 
 			// convert to monaco object.
 			const {text, location: {range: {start, end}}} = result;
-			const range = new monaco.Range(start.line, start.character, end.line, end.character);
+			const range = new monaco.Range(start.line + 1, start.character + 1, end.line + 1, end.character + 1);
 			return {
 				range,
 				text

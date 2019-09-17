@@ -94,6 +94,9 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.1.14 (9/16/2019)
+#### Bug fix
+- Fix 1.1.13 to return ranges based on 1 (as monaco expects) rather than 0 (as kusto language server returns).
 ### 1.1.13 (9/14/2019)
 #### Added
 - Introduce a new function in language service called `getCommandAndLocationInContext`.
