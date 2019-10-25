@@ -112,6 +112,7 @@ export interface LanguageService {
     getAdminCommand(text: string): Promise<{isAdminCommand: boolean, adminCommandWithoutLeadingComments: string}>;
     findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
     findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
+    getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{name: string, type: string}[]>;
 }
 
 export interface LanguageSettings {
@@ -788,6 +789,35 @@ export type CmSchema = {
         })
 
         return Promise.as(references);
+    }
+
+    getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{name: string, type: string}[]> {
+        if (!this._languageSettings.useIntellisenseV2) {
+            return Promise.as([]);
+        }
+
+        const script = this.parseDocumentV2(document);
+        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
+
+        if (!currentBlock) {
+            return Promise.as([]);
+        }
+
+        const text = currentBlock.Text;
+
+
+        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text);
+        const queryParamStatements = this.toArray(parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.QueryParametersStatement));
+        if (!queryParamStatements || queryParamStatements.length == 0) {
+            return Promise.as([]);
+        }
+
+        const queryParams = [];
+        queryParamStatements.forEach((paramStatement: Kusto.Language.Syntax.QueryParametersStatement) => {
+            paramStatement.WalkElements((el: any) => el.ReferencedSymbol && el.ReferencedSymbol.Type ? queryParams.push({name: el.ReferencedSymbol.Name, type: el.ReferencedSymbol.Type.Name}) : undefined);
+        });
+
+        return Promise.as(queryParams);
     }
 
     doRename(document: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined> {
