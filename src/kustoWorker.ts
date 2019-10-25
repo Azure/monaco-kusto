@@ -56,21 +56,6 @@ export class KustoWorker {
 		return commandInContext;
 	}
 
-	getQueryParams(uri: string, cursorOffest: number): Promise<{name: string, type: string}[]> {
-		const document = this._getTextDocument(uri);
-		if (!document) {
-			console.error(`getQueryParams: document is ${document}. uri is ${uri}`);
-			return null;
-		}
-
-		const queryParams = this._languageService.getQueryParams(document, cursorOffest);
-		if (queryParams === undefined) {
-			return null;
-		}
-
-		return queryParams;
-	}
-
 	/**
 	 * Get command in cotext and the command range.
 	 * This method will basically convert generate microsoft language service interface to monaco interface.
