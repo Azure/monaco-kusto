@@ -31,6 +31,7 @@
 
 <script>
 	var getCurrentCommand;
+	var getQueryParams;
 	var setDM;
 	var setHelp;
 	var setKuskus;
@@ -64,6 +65,16 @@
 				})
 			});
 		})};
+		getQueryParams = () => {
+			monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const model = editor.getModel();
+			workerAccessor(model.uri).then(worker => {
+				worker.getQueryParams(model.uri.toString(), model.getOffsetAt(editor.getPosition())).then(queryParams => {
+					currentCommand.innerHTML = JSON.stringify(queryParams);
+				})
+			});
+		});
+		}
 
 		setDM = () => {
 			monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
@@ -297,6 +308,9 @@
 </div>
 <div>
 	<button onclick="getCurrentCommand()">Show current Command and position</button>
+</div>
+<div>
+	<button onclick="getQueryParams()">Show current query params</button>
 </div>
 <div id="currentCommand">
 
