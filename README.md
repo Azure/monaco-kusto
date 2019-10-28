@@ -94,6 +94,10 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ```
 
 ## Changelog
+### 1.1.16 (10/28/2019)
+#### Added
+- Updated language service
+- Fix corrupt monaco.d.ts
 ### 1.1.15 (10/25/2019)
 #### Added
 - Introduce a new function in language service called `getQueryParams`. it will return an array of all delcared query parameters for the query on cursor.
