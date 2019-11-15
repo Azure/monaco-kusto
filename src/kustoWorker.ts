@@ -2,209 +2,214 @@ import Promise = monaco.Promise;
 import IWorkerContext = monaco.worker.IWorkerContext;
 
 import * as kustoService from './languageService/kustoLanguageService';
-import { EngineSchema, ClusterType, Schema, showSchema } from './languageService/schema';
+import { EngineSchema, ClusterType, Schema, showSchema, InputParameter } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
 import { ColorizationRange } from './languageService/kustoLanguageService';
 
 export class KustoWorker {
+    // --- model sync -----------------------
 
-	// --- model sync -----------------------
+    private _ctx: IWorkerContext;
+    private _languageService: kustoService.LanguageService;
+    private _languageId: string;
+    private _languageSettings: kustoService.LanguageSettings;
 
-	private _ctx:IWorkerContext;
-	private _languageService: kustoService.LanguageService;
-	private _languageId: string;
-	private _languageSettings: kustoService.LanguageSettings;
+    constructor(ctx: IWorkerContext, createData: ICreateData) {
+        this._ctx = ctx;
+        this._languageSettings = createData.languageSettings;
+        this._languageService = kustoService.getKustoLanguageService();
+        this._languageService.configure(this._languageSettings);
+    }
 
-	constructor(ctx:IWorkerContext, createData: ICreateData) {
-		this._ctx = ctx;
-		this._languageSettings = createData.languageSettings;
-		this._languageService = kustoService.getKustoLanguageService();
-		this._languageService.configure(this._languageSettings);
-	}
+    // --- language service host ---------------
 
-	// --- language service host ---------------
-
-	setSchema(schema: Schema) {
-		return this._languageService.setSchema(schema);
-	}
+    setSchema(schema: Schema) {
+        return this._languageService.setSchema(schema);
+    }
 
     setSchemaFromShowSchema(schema: any, clusterConnectionString: string, databaseInContextName: string) {
-		return this._languageService.setSchemaFromShowSchema(schema, clusterConnectionString, databaseInContextName);
-	};
+        return this._languageService.setSchemaFromShowSchema(schema, clusterConnectionString, databaseInContextName);
+    }
 
-	normalizeSchema(schema: showSchema.Result, clusterConnectionString: string, databaseInContextName: string) {
-		return this._languageService.normalizeSchema(schema, clusterConnectionString, databaseInContextName);
-	}
+    normalizeSchema(schema: showSchema.Result, clusterConnectionString: string, databaseInContextName: string) {
+        return this._languageService.normalizeSchema(schema, clusterConnectionString, databaseInContextName);
+    }
 
-	getSchema(): Promise<Schema> {
-		return this._languageService.getSchema();
-	}
+    getSchema(): Promise<Schema> {
+        return this._languageService.getSchema();
+    }
 
-	getCommandInContext(uri: string, cursorOffest: number): Promise<string | null> {
-		const document = this._getTextDocument(uri);
-		if (!document) {
-			console.error(`getCommandInContext: document is ${document}. uri is ${uri}`);
-			return null;
-		}
+    getCommandInContext(uri: string, cursorOffest: number): Promise<string | null> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`getCommandInContext: document is ${document}. uri is ${uri}`);
+            return null;
+        }
 
-		const commandInContext = this._languageService.getCommandInContext(document, cursorOffest);
-		if (commandInContext === undefined) {
-			return null;
-		}
+        const commandInContext = this._languageService.getCommandInContext(document, cursorOffest);
+        if (commandInContext === undefined) {
+            return null;
+        }
 
-		return commandInContext;
-	}
+        return commandInContext;
+    }
 
-	getQueryParams(uri: string, cursorOffest: number): Promise<{name: string, type: string}[]> {
-		const document = this._getTextDocument(uri);
-		if (!document) {
-			console.error(`getQueryParams: document is ${document}. uri is ${uri}`);
-			return null;
-		}
+    getQueryParams(uri: string, cursorOffest: number): Promise<{ name: string; type: string }[]> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`getQueryParams: document is ${document}. uri is ${uri}`);
+            return null;
+        }
 
-		const queryParams = this._languageService.getQueryParams(document, cursorOffest);
-		if (queryParams === undefined) {
-			return null;
-		}
+        const queryParams = this._languageService.getQueryParams(document, cursorOffest);
+        if (queryParams === undefined) {
+            return null;
+        }
 
-		return queryParams;
-	}
+        return queryParams;
+    }
 
-	/**
-	 * Get command in cotext and the command range.
-	 * This method will basically convert generate microsoft language service interface to monaco interface.
-	 * @param uri document URI
-	 * @param cursorOffset offset from start of doucment to cursor
-	 */
-	getCommandAndLocationInContext(
-		uri: string,
-		cursorOffset: number): Promise<{text: string, range: monaco.IRange} | null> {
-		const document = this._getTextDocument(uri);
-		if (!document) {
-			console.error(`getCommandAndLocationInContext: document is ${document}. uri is ${uri}`);
-			return Promise.as(null);
-		}
+    /**
+     * Get command in cotext and the command range.
+     * This method will basically convert generate microsoft language service interface to monaco interface.
+     * @param uri document URI
+     * @param cursorOffset offset from start of doucment to cursor
+     */
+    getCommandAndLocationInContext(
+        uri: string,
+        cursorOffset: number
+    ): Promise<{ text: string; range: monaco.IRange } | null> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`getCommandAndLocationInContext: document is ${document}. uri is ${uri}`);
+            return Promise.as(null);
+        }
 
-		return this._languageService.getCommandAndLocationInContext(document, cursorOffset).then(result => {
-			if (!result) {
-				return null;
-			}
+        return this._languageService.getCommandAndLocationInContext(document, cursorOffset).then(result => {
+            if (!result) {
+                return null;
+            }
 
-			// convert to monaco object.
-			const {text, location: {range: {start, end}}} = result;
-			const range = new monaco.Range(start.line + 1, start.character + 1, end.line + 1, end.character + 1);
-			return {
-				range,
-				text
-			}
-		});
-	}
+            // convert to monaco object.
+            const {
+                text,
+                location: {
+                    range: { start, end }
+                }
+            } = result;
+            const range = new monaco.Range(start.line + 1, start.character + 1, end.line + 1, end.character + 1);
+            return {
+                range,
+                text
+            };
+        });
+    }
 
-	getCommandsInDocument(uri: string): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]> {
-		const document = this._getTextDocument(uri);
-		if (!document) {
-			console.error(`getCommandInDocument: document is ${document}. uri is ${uri}`);
-			return null;
-		}
+    getCommandsInDocument(uri: string): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`getCommandInDocument: document is ${document}. uri is ${uri}`);
+            return null;
+        }
 
-		return this._languageService.getCommandsInDocument(document);
-	}
+        return this._languageService.getCommandsInDocument(document);
+    }
 
     doComplete(uri: string, position: ls.Position): Promise<ls.CompletionList> {
-		let document = this._getTextDocument(uri);
-		let completions = this._languageService.doComplete(document, position);
-		return completions;
-	}
+        let document = this._getTextDocument(uri);
+        let completions = this._languageService.doComplete(document, position);
+        return completions;
+    }
 
-	doValidation(uri: string, intervals: {start: number, end: number}[]): Promise<ls.Diagnostic[]> {
-		const document = this._getTextDocument(uri);
-		const diagnostics = this._languageService.doValidation(document, intervals);
-		return diagnostics;
-	}
+    doValidation(uri: string, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]> {
+        const document = this._getTextDocument(uri);
+        const diagnostics = this._languageService.doValidation(document, intervals);
+        return diagnostics;
+    }
 
-	doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]> {
-		const document = this._getTextDocument(uri);
-		const formatted = this._languageService.doRangeFormat(document, range);
-		return formatted;
-	}
+    doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]> {
+        const document = this._getTextDocument(uri);
+        const formatted = this._languageService.doRangeFormat(document, range);
+        return formatted;
+    }
 
-	doFolding(uri: string): Promise<FoldingRange[]> {
-		const document = this._getTextDocument(uri);
-		const folding = this._languageService.doFolding(document);
-		return folding;
-	}
+    doFolding(uri: string): Promise<FoldingRange[]> {
+        const document = this._getTextDocument(uri);
+        const folding = this._languageService.doFolding(document);
+        return folding;
+    }
 
-	doDocumentFormat(uri: string): Promise<ls.TextEdit[]> {
-		const document = this._getTextDocument(uri);
-		const formatted = this._languageService.doDocumentformat(document);
-		return formatted;
-	}
+    doDocumentFormat(uri: string): Promise<ls.TextEdit[]> {
+        const document = this._getTextDocument(uri);
+        const formatted = this._languageService.doDocumentformat(document);
+        return formatted;
+    }
 
-	doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]> {
-		const document = this._getTextDocument(uri);
-		const formatted = this._languageService.doCurrentCommandFormat(document, caretPosition)
-		return formatted;
-	}
+    doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]> {
+        const document = this._getTextDocument(uri);
+        const formatted = this._languageService.doCurrentCommandFormat(document, caretPosition);
+        return formatted;
+    }
 
-	// Colorize document. if offsets provided, will only colorize commands at these offsets. otherwise - will color the entire document.
-	doColorization(
-		uri: string,
-		colorizationIntervals: {start: number, end: number}[]):
-			Promise<ColorizationRange[]> {
-		const document = this._getTextDocument(uri);
-		const colorizationInfo: Promise<ColorizationRange[]> = this._languageService.doColorization(document, colorizationIntervals);
-		return colorizationInfo;
-	}
+    // Colorize document. if offsets provided, will only colorize commands at these offsets. otherwise - will color the entire document.
+    doColorization(uri: string, colorizationIntervals: { start: number; end: number }[]): Promise<ColorizationRange[]> {
+        const document = this._getTextDocument(uri);
+        const colorizationInfo: Promise<ColorizationRange[]> = this._languageService.doColorization(
+            document,
+            colorizationIntervals
+        );
+        return colorizationInfo;
+    }
 
-	getClientDirective(text: string): Promise<{isClientDirective: boolean, directiveWithoutLeadingComments: string}> {
-		return this._languageService.getClientDirective(text);
-	}
+    getClientDirective(text: string): Promise<{ isClientDirective: boolean; directiveWithoutLeadingComments: string }> {
+        return this._languageService.getClientDirective(text);
+    }
 
-	getAdminCommand(text: string): Promise<{isAdminCommand: boolean, adminCommandWithoutLeadingComments: string}> {
-		return this._languageService.getAdminCommand(text);
-	}
+    getAdminCommand(text: string): Promise<{ isAdminCommand: boolean; adminCommandWithoutLeadingComments: string }> {
+        return this._languageService.getAdminCommand(text);
+    }
 
-	findDefinition(uri: string, position: ls.Position) {
-		const document = this._getTextDocument(uri);
-		const definition = this._languageService.findDefinition(document, position);
-		return definition;
-	}
+    findDefinition(uri: string, position: ls.Position) {
+        const document = this._getTextDocument(uri);
+        const definition = this._languageService.findDefinition(document, position);
+        return definition;
+    }
 
-	findReferences(uri: string, position: ls.Position) {
-		let document = this._getTextDocument(uri);
-		const references = this._languageService.findReferences(document, position);
-		return references;
-	}
+    findReferences(uri: string, position: ls.Position) {
+        let document = this._getTextDocument(uri);
+        const references = this._languageService.findReferences(document, position);
+        return references;
+    }
 
-	doRename(uri: string, position: ls.Position, newName: string) {
-		const document = this._getTextDocument(uri);
-		const workspaceEdit = this._languageService.doRename(document, position, newName);
-		return workspaceEdit;
-	}
+    doRename(uri: string, position: ls.Position, newName: string) {
+        const document = this._getTextDocument(uri);
+        const workspaceEdit = this._languageService.doRename(document, position, newName);
+        return workspaceEdit;
+    }
 
-	doHover(uri: string, position: ls.Position) {
-		let document = this._getTextDocument(uri);
-		let hover = this._languageService.doHover(document, position);
-		return hover;
-	}
+    doHover(uri: string, position: ls.Position) {
+        let document = this._getTextDocument(uri);
+        let hover = this._languageService.doHover(document, position);
+        return hover;
+    }
 
-	private _getTextDocument(uri: string): ls.TextDocument {
-		let models = this._ctx.getMirrorModels();
-		for (let model of models) {
-			if (model.uri.toString() === uri) {
-				return ls.TextDocument.create(uri, this._languageId, model.version, model.getValue());
-			}
-		}
-		return null;
-	}
+    private _getTextDocument(uri: string): ls.TextDocument {
+        let models = this._ctx.getMirrorModels();
+        for (let model of models) {
+            if (model.uri.toString() === uri) {
+                return ls.TextDocument.create(uri, this._languageId, model.version, model.getValue());
+            }
+        }
+        return null;
+    }
 }
 
 export interface ICreateData {
-	languageId: string;
-	languageSettings: kustoService.LanguageSettings;
+    languageId: string;
+    languageSettings: kustoService.LanguageSettings;
 }
 
-export function create(ctx:IWorkerContext, createData: ICreateData): KustoWorker {
-	return new KustoWorker(ctx, createData);
+export function create(ctx: IWorkerContext, createData: ICreateData): KustoWorker {
+    return new KustoWorker(ctx, createData);
 }
