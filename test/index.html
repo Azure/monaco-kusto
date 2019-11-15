@@ -30,6 +30,7 @@
 <script src="../release/min/Kusto.Language.Bridge.min.js"></script>
 
 <script>
+	var setHelpWithParameter;
 	var getCurrentCommand;
 	var getQueryParams;
 	var setDM;
@@ -53,7 +54,6 @@
 			theme: 'kusto-light',
 			folding: true
 		});
-
 		getCurrentCommand = () => {
 			monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
 			const model = editor.getModel();
@@ -244,6 +244,12 @@
 				worker.setSchemaFromShowSchema(schema, "https://help.kusto.windows.net", 'Samples');
 			});
 		});
+		setHelpWithParameter = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const model = editor.getModel();
+			workerAccessor(model.uri).then(worker => {
+				worker.setSchemaFromShowSchema(schema, "https://help.kusto.windows.net", 'Samples', [{name: 'region', type: 'System.String', cslType: 'string'}]);
+			});
+		});
 		setKuskus = () => monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
 			const model = editor.getModel();
 			workerAccessor(model.uri).then(worker => {
@@ -288,6 +294,7 @@
 <div>
 	<button onclick="setKuskus()">Kuskus</button>
 	<button onclick="setHelp()">Help</button>
+	<button onclick="setHelpWithParameter()">Help with injected parameter</button>
 	<button onclick="setDM()">DM</button>
 </div>
 <div>

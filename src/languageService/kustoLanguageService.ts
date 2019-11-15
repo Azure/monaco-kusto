@@ -98,7 +98,8 @@ export interface LanguageService {
     setSchemaFromShowSchema(
         schema: s.showSchema.Result,
         clusterConnectionString: string,
-        databaseInContextName: string): Promise<void>;
+        databaseInContextName: string,
+        globalParameters?: s.ScalarParameter[]): Promise<void>;
     normalizeSchema(
             schema: s.showSchema.Result,
             clusterConnectionString: string,
@@ -107,7 +108,7 @@ export interface LanguageService {
     getCommandInContext(document: ls.TextDocument, cursorOffset: number): Promise<string>;
     getCommandAndLocationInContext(document: ls.TextDocument, cursorOffset: number): Promise<{text: string, location: ls.Location} | null>;
     getCommandsInDocument(document: ls.TextDocument): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]>;
-    configure(languageSettings: LanguageSettings);
+    configure(languageSettings: LanguageSettings): void;
     getClientDirective(text: string): Promise<{isClientDirective: boolean, directiveWithoutLeadingComments: string}>;
     getAdminCommand(text: string): Promise<{isAdminCommand: boolean, adminCommandWithoutLeadingComments: string}>;
     findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
@@ -567,15 +568,16 @@ export type CmSchema = {
     setSchema(schema: s.Schema): Promise<void> {
         this._schema = schema;
         if (this._languageSettings.useIntellisenseV2) {
-            const kustoJsSchemaV2: GlobalState = schema && schema.clusterType === 'Engine'
+            let kustoJsSchemaV2: GlobalState = schema && schema.clusterType === 'Engine'
                 ? this.convertToKustoJsSchemaV2(schema)
                 : null;
+
             this._kustoJsSchemaV2 = kustoJsSchemaV2;
             this._script = undefined;
             this._parsePropertiesV2 = undefined;
         }
 
-        // Since V2 doesn't support control commands, we're initializing V1 intellisense for both cases and we'll going to use V1 intellisense for contorl commands.
+        // since V2 doesn't support control commands, we're initializing V1 intellisense for both cases and we'll going to use V1 intellisense for contorl commands.
         return new Promise((resolve, reject) => {
             const kustoJsSchema = schema
                 ? KustoLanguageService.convertToKustoJsSchema(schema)
@@ -592,9 +594,10 @@ export type CmSchema = {
      * @param clusterConnectionString cluster connection string
      * @param databaseInContextName name of database in context
      */
-    setSchemaFromShowSchema(schema: s.showSchema.Result, clusterConnectionString: string, databaseInContextName: string): Promise<void> {
+    setSchemaFromShowSchema(
+        schema: s.showSchema.Result, clusterConnectionString: string, databaseInContextName: string, globalParameters: s.ScalarParameter[]): Promise<void> {
             return this.normalizeSchema(schema, clusterConnectionString, databaseInContextName)
-                .then(normalized => this.setSchema(normalized));
+                .then(normalized => this.setSchema({...normalized, globalParameters}));
     }
 
     /**
@@ -1054,37 +1057,43 @@ export type CmSchema = {
         return `let ${fn.name} = ${signature} ${fn.body}`
     }
 
-    private static convertToDatabaseSymbol(db: s.Database, globalState: GlobalState, addFunctions: boolean): sym.DatabaseSymbol {
-        const createColumnSymbol: (col: s.ScalarParameter) => sym.ColumnSymbol = col =>
-            new sym.ColumnSymbol(col.name, sym.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(col.type)));
+    private static createColumnSymbol(col: s.ScalarParameter):sym.ColumnSymbol {
+        return new sym.ColumnSymbol(col.name, sym.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(col.type)));
+    }
 
+    private static createParameterSymbol(param: s.ScalarParameter): sym.ParameterSymbol {
+        const paramSymbol: sym.ScalarSymbol = Kusto.Language.Symbols.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(param.type));
+        return new sym.ParameterSymbol(param.name, paramSymbol);
+    }
 
-        const createParameterSymbol: (param: s.InputParameter) => sym.Parameter  = param =>  {
-            if (!param.columns) {
-                const paramSymbol = Kusto.Language.Symbols.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(param.type));
-                return new sym.Parameter.$ctor2(param.name, paramSymbol);
-            }
-
-            if (param.columns.length == 0) {
-                return new sym.Parameter.ctor(
-                    param.name,
-                    sym.ParameterTypeKind.Tabular,
-                    sym.ArgumentKind.Expression,
-                    null,
-                    null,
-                    false,
-                    null,
-                    1,
-                    1,
-                    null);
-            }
-
-            const argumentType = new sym.TableSymbol.ctor(param.columns.map(col => createColumnSymbol(col)))
-            return new sym.Parameter.$ctor2(param.name, argumentType);
+    private static createParameter(param: s.InputParameter): sym.Parameter {
+        if (!param.columns) {
+            const paramSymbol: sym.ScalarSymbol = Kusto.Language.Symbols.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(param.type));
+            return new sym.Parameter.$ctor2(param.name, paramSymbol);
         }
 
+        if (param.columns.length == 0) {
+            return new sym.Parameter.ctor(
+                param.name,
+                sym.ParameterTypeKind.Tabular,
+                sym.ArgumentKind.Expression,
+                null,
+                null,
+                false,
+                null,
+                1,
+                1,
+                null);
+        }
+
+        const argumentType = new sym.TableSymbol.ctor(param.columns.map(col => KustoLanguageService.createColumnSymbol(col)));
+        return new sym.Parameter.$ctor2(param.name, argumentType);
+    }
+
+    private static convertToDatabaseSymbol(db: s.Database, globalState: GlobalState, addFunctions: boolean): sym.DatabaseSymbol {
+
         const createFunctionSymbol: (fn: s.Function) => sym.FunctionSymbol = fn => {
-            var parameters = fn.inputParameters.map(param => createParameterSymbol(param));
+            const parameters: sym.Parameter[] = fn.inputParameters.map(param => KustoLanguageService.createParameter(param));
 
             // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
             return new sym.FunctionSymbol.$ctor16(fn.name, fn.body, parameters);
@@ -1092,7 +1101,7 @@ export type CmSchema = {
 
 
         const createTableSymbol: (tbl: s.Table) => sym.TableSymbol = tbl => {
-            const columnSymbols = tbl.columns.map(col => createColumnSymbol(col));
+            const columnSymbols = tbl.columns.map(col => KustoLanguageService.createColumnSymbol(col));
             return new sym.TableSymbol.$ctor3(tbl.name, columnSymbols);
         }
 
@@ -1162,6 +1171,13 @@ export type CmSchema = {
 
         if (databaseInContext) {
             globalState = globalState.WithDatabase(databaseInContext);
+        }
+
+
+        // Inject gloabl parameters to global scope.
+        if (schema.globalParameters) {
+            const parameters = schema.globalParameters.map(param => KustoLanguageService.createParameterSymbol(param));
+            globalState = globalState.WithParameters(parameters);
         }
 
         return globalState;
