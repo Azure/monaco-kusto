@@ -114,6 +114,7 @@ export interface LanguageService {
     findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
     findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
     getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{name: string, type: string}[]>;
+    getGlobalParams(document: ls.TextDocument): Promise<{name: string, type: string}[]>;
 }
 
 export interface LanguageSettings {
@@ -821,6 +822,17 @@ export type CmSchema = {
         });
 
         return Promise.as(queryParams);
+    }
+
+    getGlobalParams(document: ls.TextDocument): Promise<{name: string, type: string}[]> {
+        if (!this._languageSettings.useIntellisenseV2) {
+            return Promise.as([]);
+        }
+
+        const script = this.parseDocumentV2(document);
+        const params = this.toArray<sym.ParameterSymbol>(this._kustoJsSchemaV2.Parameters);
+        const result = params.map(param => ({name: param.Name, type: param.Type.Name}));
+        return Promise.as(result);
     }
 
     doRename(document: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined> {

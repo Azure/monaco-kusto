@@ -64,6 +64,7 @@ declare module monaco.languages.kusto {
         ): Promise<{ isClientDirective: boolean; directiveWithoutLeadingComments: string }>;
         getAdminCommand(text: string): Promise<{ isAdminCommand: boolean; adminCommandWithoutLeadingComments: string }>;
         getQueryParams(uri: string, cursorOffest: number): Promise<{ name: string; type: string }[]>;
+        getGlobalParams(uri: string): Promise<{ name: string; type: string }[]>;
     }
 
     /**

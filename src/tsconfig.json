@@ -1,10 +1,11 @@
 {
-  "compilerOptions": {
-    "module": "umd",
-    "moduleResolution": "node",
-    "outDir": "../out",
-    "target": "es5",
-    "alwaysStrict": true,
-    "declaration": true
-  }
+    "compilerOptions": {
+        "module": "umd",
+        "moduleResolution": "node",
+        "outDir": "../out",
+        "target": "es5",
+        "alwaysStrict": true,
+        "declaration": true,
+        "skipLibCheck": true
+    }
 }

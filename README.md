@@ -99,11 +99,17 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Changelog
 
+### 1.1.18 (11/18/2019)
+
+#### Added
+
+-   Abiltiy to get global parameters in scope (getGlobalParams)).
+
 ### 1.1.17 (11/14/2019)
 
 #### Added
 
--   Ability to injet global parameters to intellisense
+-   Ability to injet global parameters to intellisense (in setSchema)
 
 ### 1.1.16 (10/28/2019)
 

@@ -70,6 +70,21 @@ export class KustoWorker {
         return queryParams;
     }
 
+    getGlobalParams(uri: string): Promise<{ name: string; type: string }[]> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`getGLobalParams: document is ${document}. uri is ${uri}`);
+            return null;
+        }
+
+        const globalParams = this._languageService.getGlobalParams(document);
+        if (globalParams === undefined) {
+            return null;
+        }
+
+        return globalParams;
+    }
+
     /**
      * Get command in cotext and the command range.
      * This method will basically convert generate microsoft language service interface to monaco interface.
