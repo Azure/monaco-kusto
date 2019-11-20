@@ -5,12 +5,12 @@ import * as s from './schema';
 
 // polyfill string endsWith
 if (!String.prototype.endsWith) {
-	String.prototype.endsWith = function(search, this_len) {
-		if (this_len === undefined || this_len > this.length) {
-			this_len = this.length;
-		}
-		return this.substring(this_len - search.length, this_len) === search;
-	};
+    String.prototype.endsWith = function (search, this_len) {
+        if (this_len === undefined || this_len > this.length) {
+            this_len = this.length;
+        }
+        return this.substring(this_len - search.length, this_len) === search;
+    };
 }
 
 // If we're running in a web worker - which doesn't share global context with the main thread -
@@ -45,7 +45,7 @@ class ParseProperties {
     constructor(private version: number, private uri: string, private rulesProvider?: k.IntelliSenseRulesProviderBase, private parseMode?: k.ParseMode) { }
 
     isParseNeeded(document: ls.TextDocument, rulesProvider?: k.IntelliSenseRulesProviderBase, parseMode?: k.ParseMode) {
-        if (document.uri === this.uri && (!rulesProvider || rulesProvider === this.rulesProvider) && document.version <= this.version  && parseMode && parseMode <= this.parseMode) {
+        if (document.uri === this.uri && (!rulesProvider || rulesProvider === this.rulesProvider) && document.version <= this.version && parseMode && parseMode <= this.parseMode) {
             return false;
         }
 
@@ -90,8 +90,8 @@ export interface LanguageService {
     doDocumentformat(document: ls.TextDocument): Promise<ls.TextEdit[]>;
     doCurrentCommandFormat(document: ls.TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
     doFolding(document: ls.TextDocument): Promise<FoldingRange[]>;
-    doValidation(document: ls.TextDocument, intervals: {start: number, end: number}[]): Promise<ls.Diagnostic[]>;
-    doColorization(document: ls.TextDocument, intervals: {start: number, end: number}[]): Promise<ColorizationRange[]>;
+    doValidation(document: ls.TextDocument, intervals: { start: number, end: number }[]): Promise<ls.Diagnostic[]>;
+    doColorization(document: ls.TextDocument, intervals: { start: number, end: number }[]): Promise<ColorizationRange[]>;
     doRename(doucment: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: ls.TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
     setSchema(schema: s.Schema): Promise<void>;
@@ -101,20 +101,20 @@ export interface LanguageService {
         databaseInContextName: string,
         globalParameters?: s.ScalarParameter[]): Promise<void>;
     normalizeSchema(
-            schema: s.showSchema.Result,
-            clusterConnectionString: string,
-            databaseInContextName: string): Promise<s.EngineSchema>;
+        schema: s.showSchema.Result,
+        clusterConnectionString: string,
+        databaseInContextName: string): Promise<s.EngineSchema>;
     getSchema(): Promise<s.Schema>;
     getCommandInContext(document: ls.TextDocument, cursorOffset: number): Promise<string>;
-    getCommandAndLocationInContext(document: ls.TextDocument, cursorOffset: number): Promise<{text: string, location: ls.Location} | null>;
-    getCommandsInDocument(document: ls.TextDocument): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]>;
+    getCommandAndLocationInContext(document: ls.TextDocument, cursorOffset: number): Promise<{ text: string, location: ls.Location } | null>;
+    getCommandsInDocument(document: ls.TextDocument): Promise<{ absoluteStart: number, absoluteEnd: number, text: string }[]>;
     configure(languageSettings: LanguageSettings): void;
-    getClientDirective(text: string): Promise<{isClientDirective: boolean, directiveWithoutLeadingComments: string}>;
-    getAdminCommand(text: string): Promise<{isAdminCommand: boolean, adminCommandWithoutLeadingComments: string}>;
+    getClientDirective(text: string): Promise<{ isClientDirective: boolean, directiveWithoutLeadingComments: string }>;
+    getAdminCommand(text: string): Promise<{ isAdminCommand: boolean, adminCommandWithoutLeadingComments: string }>;
     findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
     findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
-    getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{name: string, type: string}[]>;
-    getGlobalParams(document: ls.TextDocument): Promise<{name: string, type: string}[]>;
+    getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string, type: string }[]>;
+    getGlobalParams(document: ls.TextDocument): Promise<{ name: string, type: string }[]>;
 }
 
 export interface LanguageSettings {
@@ -147,19 +147,19 @@ export type CmSchema = {
  * An exception to that rule is tokenization (and syntax highlighting which depends on it) -
  * since it's not currently part of the Microosft language service protocol. Thus tokenize() _does_ 'leak' kusto types to the callers.
  */
- class KustoLanguageService implements LanguageService {
+class KustoLanguageService implements LanguageService {
     private _kustoJsSchema: k.KustoIntelliSenseQuerySchema | CmSchema | undefined;
     private _kustoJsSchemaV2: GlobalState;
     private _languageSettings: LanguageSettings;
     private _schema: s.Schema;
-    private _schemaCache: {[cluster: string]: {[dbName: string]: {database: s.Database, symbol: sym.DatabaseSymbol, includesFunctions: boolean}}};
+    private _schemaCache: { [cluster: string]: { [dbName: string]: { database: s.Database, symbol: sym.DatabaseSymbol, includesFunctions: boolean } } };
     private _parser: k.CslCommandParser;
     private _script: k2.CodeScript;
     private _parsePropertiesV1: ParseProperties
     private _parsePropertiesV2: ParseProperties
     private _rulesProvider: k.CslIntelliSenseRulesProvider | k.CslQueryIntelliSenseRulesProvider | k.DataManagerIntelliSenseRulesProvider | k.ClusterManagerIntelliSenseRulesProvider;
     private _newlineAppendPipePolicy: Kusto.Data.IntelliSense.ApplyPolicy;
-    private _toOptionKind: {[completionKind in k2.CompletionKind]: k.OptionKind} = {
+    private _toOptionKind: { [completionKind in k2.CompletionKind]: k.OptionKind } = {
         [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
         [k2.CompletionKind.Cluster]: k.OptionKind.Database,
         [k2.CompletionKind.Column]: k.OptionKind.Column,
@@ -182,7 +182,7 @@ export type CmSchema = {
         [k2.CompletionKind.Unknown]: k.OptionKind.None,
         [k2.CompletionKind.Variable]: k.OptionKind.Parameter,
         [k2.CompletionKind.CommandPrefix]: k.OptionKind.None
-     }
+    }
 
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
 
@@ -206,15 +206,15 @@ export type CmSchema = {
     }
 
     doComplete(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
-        return this._languageSettings.useIntellisenseV2
+        return this.isIntellisenseV2()
             ? this.doCompleteV2(document, position)
-            :  this.doCompleteV1(document, position);
+            : this.doCompleteV1(document, position);
     }
 
-    private disabledCompletionItemsV2: {[value: string]: k2.CompletionKind}= {
+    private disabledCompletionItemsV2: { [value: string]: k2.CompletionKind } = {
         // plugins
         'cosmosdb_sql_request': k2.CompletionKind.TabularFunction,
-        'http_request':  k2.CompletionKind.TabularFunction,
+        'http_request': k2.CompletionKind.TabularFunction,
         'http_request_post': k2.CompletionKind.TabularFunction,
         // functions
         'distance': k2.CompletionKind.ScalarFunction,
@@ -245,42 +245,45 @@ export type CmSchema = {
         }
 
         let items: ls.CompletionItem[] = this.toArray<k2.CompletionItem>(completionItems.Items)
-        .filter(item => !(
-            item
-            && item.MatchText
-            && disabledItems[item.MatchText] !== undefined
-            && (disabledItems[item.MatchText] === k2.CompletionKind.Unknown ||  disabledItems[item.MatchText] === item.Kind)))
-        .map((kItem, i) => {
-            const v1CompletionOption = new k.CompletionOption(this._toOptionKind[kItem.Kind] || k.OptionKind.None, kItem.DisplayText);
-            const helpTopic: k.CslTopicDocumentation = this.getTopic(v1CompletionOption);
-            // If we have AfterText it means that the cursor should no be placed at end of suggested text.
-            // In that case we switch to snippet format and represent the point where the cursor should be as
-            // as '\$0'
-            const {textToInsert, format} = (kItem.AfterText && kItem.AfterText.length > 0)
-                ? {
-                    textToInsert: kItem.EditText + '\$0' + kItem.AfterText,
-                    format: ls.InsertTextFormat.Snippet
-                }
-                : {
-                    textToInsert: kItem.EditText,
-                    format: ls.InsertTextFormat.PlainText
-                };
+            .filter(item => !(
+                item
+                && item.MatchText
+                && disabledItems[item.MatchText] !== undefined
+                && (disabledItems[item.MatchText] === k2.CompletionKind.Unknown || disabledItems[item.MatchText] === item.Kind)))
+            .map((kItem, i) => {
+                const v1CompletionOption = new k.CompletionOption(this._toOptionKind[kItem.Kind] || k.OptionKind.None, kItem.DisplayText);
+                const helpTopic: k.CslTopicDocumentation = this.getTopic(v1CompletionOption);
+                // If we have AfterText it means that the cursor should no be placed at end of suggested text.
+                // In that case we switch to snippet format and represent the point where the cursor should be as
+                // as '\$0'
+                const { textToInsert, format } = (kItem.AfterText && kItem.AfterText.length > 0)
+                    ? {
+                        textToInsert: kItem.EditText + '\$0' + kItem.AfterText,
+                        format: ls.InsertTextFormat.Snippet
+                    }
+                    : {
+                        textToInsert: kItem.EditText,
+                        format: ls.InsertTextFormat.PlainText
+                    };
 
-            const lsItem = ls.CompletionItem.create(kItem.DisplayText);
+                const lsItem = ls.CompletionItem.create(kItem.DisplayText);
 
-            const startPosition = document.positionAt(completionItems.EditStart);
-            const endPosition = document.positionAt(completionItems.EditStart + completionItems.EditLength);
-            lsItem.textEdit = ls.TextEdit.replace(ls.Range.create(startPosition, endPosition), textToInsert);
-            lsItem.sortText = this.getSortText(i + 1);
-            lsItem.kind = this.kustoKindToLsKindV2(kItem.Kind);
-            lsItem.insertTextFormat = format;
-            lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;
-            lsItem.documentation = helpTopic ? {value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown} : undefined;
-            return lsItem;
-        });
+                const startPosition = document.positionAt(completionItems.EditStart);
+                const endPosition = document.positionAt(completionItems.EditStart + completionItems.EditLength);
+                lsItem.textEdit = ls.TextEdit.replace(ls.Range.create(startPosition, endPosition), textToInsert);
+                lsItem.sortText = this.getSortText(i + 1);
+                lsItem.kind = this.kustoKindToLsKindV2(kItem.Kind);
+                lsItem.insertTextFormat = format;
+                lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;
+                lsItem.documentation = helpTopic ? { value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown } : undefined;
+                return lsItem;
+            });
 
         return Promise.as(ls.CompletionList.create(items));
     }
+
+    private isIntellisenseV2 = () =>
+        this._languageSettings.useIntellisenseV2 && this._schema && this._schema.clusterType === 'Engine';
 
     /**
      * when trying to get a topic we need the funtion name (abs, tolower, ETC).
@@ -299,9 +302,9 @@ export type CmSchema = {
         }
 
         return k.CslDocumentation.Instance.GetTopic(completionOption);
-     }
+    }
 
-    private disabledCompletionItemsV1: {[value: string]: k.OptionKind}= {
+    private disabledCompletionItemsV1: { [value: string]: k.OptionKind } = {
         'capacity': k.OptionKind.Policy,
         'callout': k.OptionKind.Policy,
         'encoding': k.OptionKind.Policy,
@@ -338,7 +341,7 @@ export type CmSchema = {
 
         let context = this._rulesProvider.AnalyzeCommand$1(commandTextUntilCursor, currentCommand).Context;
 
-        let  result = { v: null };
+        let result = { v: null };
         this._rulesProvider.TryMatchAnyRule(commandTextWithoutLastWord, result);
         let rule: k.IntelliSenseRule = result.v;
 
@@ -353,22 +356,22 @@ export type CmSchema = {
             };
 
             let options: ls.CompletionItem[] = completionOptions
-            .filter(option => !(
-                option
-                && option.Value
-                && this.disabledCompletionItemsV1[option.Value] === option.Kind))
-            .map((option: k.CompletionOption, ordinal:number) => {
-                const { insertText, insertTextFormat } = this.getTextToInsert(rule, option)
-                const helpTopic: k.CslTopicDocumentation = k.CslDocumentation.Instance.GetTopic(option);
-                const item = ls.CompletionItem.create(option.Value);
-                item.kind = this.kustoKindToLsKind(option.Kind);
-                item.insertText = insertText;
-                item.insertTextFormat = insertTextFormat;
-                item.sortText = this.getSortText(ordinal + 1);
-                item.detail = helpTopic ? helpTopic.ShortDescription : undefined;
-                item.documentation = helpTopic ? {value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown} : undefined;
-                return item;
-            });
+                .filter(option => !(
+                    option
+                    && option.Value
+                    && this.disabledCompletionItemsV1[option.Value] === option.Kind))
+                .map((option: k.CompletionOption, ordinal: number) => {
+                    const { insertText, insertTextFormat } = this.getTextToInsert(rule, option)
+                    const helpTopic: k.CslTopicDocumentation = k.CslDocumentation.Instance.GetTopic(option);
+                    const item = ls.CompletionItem.create(option.Value);
+                    item.kind = this.kustoKindToLsKind(option.Kind);
+                    item.insertText = insertText;
+                    item.insertTextFormat = insertTextFormat;
+                    item.sortText = this.getSortText(ordinal + 1);
+                    item.detail = helpTopic ? helpTopic.ShortDescription : undefined;
+                    item.documentation = helpTopic ? { value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown } : undefined;
+                    return item;
+                });
 
             return Promise.as(ls.CompletionList.create(options));
         }
@@ -377,16 +380,16 @@ export type CmSchema = {
     }
 
     doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {
-        const text:string = document.getText();
+        const text: string = document.getText();
         const rangeStartOffset = document.offsetAt(range.start);
         const rangeEndOffset = document.offsetAt(range.end)
-        let textInRange:string = text.substring(rangeStartOffset, rangeEndOffset);
+        let textInRange: string = text.substring(rangeStartOffset, rangeEndOffset);
 
         // if the range includes a trailing newiline (it usually will be if we're highlighting the current command),
         // we don't want to replace that newline, thus we'll reduce the range to not include the trailing newline.
         const newRange = KustoLanguageService.trimTrailingNewlineFromRange(textInRange, rangeStartOffset, document, range);
 
-        const formattedText:string = Kusto.Data.Common.CslQueryParser.PrettifyQuery(textInRange, '');
+        const formattedText: string = Kusto.Data.Common.CslQueryParser.PrettifyQuery(textInRange, '');
         return Promise.as([ls.TextEdit.replace(newRange, formattedText)]);
     }
 
@@ -435,9 +438,9 @@ export type CmSchema = {
         });
     }
 
-    doValidation(document: ls.TextDocument, changeIntervals: {start: number, end: number}[]): Promise<ls.Diagnostic[]> {
+    doValidation(document: ls.TextDocument, changeIntervals: { start: number, end: number }[]): Promise<ls.Diagnostic[]> {
         // didn't implement validation for v1.
-        if (!this._languageSettings.useIntellisenseV2) {
+        if (!this.isIntellisenseV2()) {
             return Promise.as([]);
         }
 
@@ -463,14 +466,14 @@ export type CmSchema = {
         return Promise.as(lsDiagnostics);
     }
 
-     private toLsDiagnostics(diagnostics: Kusto.Language.Diagnostic[], document: ls.TextDocument) {
-         return diagnostics.filter(diag => diag.HasLocation).map((diag): ls.Diagnostic => {
-             const start = document.positionAt(diag.Start);
-             const end = document.positionAt(diag.Start + diag.Length);
-             const range = ls.Range.create(start, end);
-             return ls.Diagnostic.create(range, diag.Message, ls.DiagnosticSeverity.Error);
-         });
-     }
+    private toLsDiagnostics(diagnostics: Kusto.Language.Diagnostic[], document: ls.TextDocument) {
+        return diagnostics.filter(diag => diag.HasLocation).map((diag): ls.Diagnostic => {
+            const start = document.positionAt(diag.Start);
+            const end = document.positionAt(diag.Start + diag.Length);
+            const range = ls.Range.create(start, end);
+            return ls.Diagnostic.create(range, diag.Message, ls.DiagnosticSeverity.Error);
+        });
+    }
 
     /**
      * Colorize one or more kusto blocks (a.k.a commands), or just the entire document.
@@ -481,13 +484,13 @@ export type CmSchema = {
      * colorize all blocks that intersect these changes.
      * The code will try to only parse once if this is the same command.
      */
-    doColorization(document: ls.TextDocument, changeIntervals: {start: number, end: number}[]): Promise<ColorizationRange[]> {
+    doColorization(document: ls.TextDocument, changeIntervals: { start: number, end: number }[]): Promise<ColorizationRange[]> {
         if (!this._languageSettings.useSemanticColorization) {
             return Promise.as([]);
         }
 
         // V1 intellisense
-        if (!this._languageSettings.useIntellisenseV2) {
+        if (!this.isIntellisenseV2()) {
 
             // Handle specific ranges changes (and not the whole doc)
             if (changeIntervals.length > 0) {
@@ -496,7 +499,7 @@ export type CmSchema = {
                 const affectedCommands = this.toArray(this._parser.Results).filter(command =>
                     // a command is affected if it intersects at least on of changed ranges.
                     command // command can be null. we're filtering all nulls in the array.
-                        ? changeIntervals.some(({start: changeStart, end: changeEnd}) =>
+                        ? changeIntervals.some(({ start: changeStart, end: changeEnd }) =>
                             // both intervals intersect if either the start or the end of interval A is inside interval B.
                             // If we deleted something at the end of a command, the interval will not intersect the current command.
                             // so we also want consider affected commands commands the end where the interval begins.
@@ -512,7 +515,8 @@ export type CmSchema = {
                     return Promise.as([{
                         classifications: [],
                         absoluteStart: changeIntervals[0].start,
-                        absoluteEnd: changeIntervals[0].end}]);
+                        absoluteEnd: changeIntervals[0].end
+                    }]);
                 }
 
                 return Promise.as(affectedCommands.map(command => {
@@ -529,7 +533,7 @@ export type CmSchema = {
             // Entire document requested
             this.parseDocumentV1(document, k.ParseMode.TokenizeAllText);
             const classifications = this.getClassificationsFromParseResult();
-            return Promise.as([{classifications, absoluteStart: 0, absoluteEnd: document.getText().length}]);
+            return Promise.as([{ classifications, absoluteStart: 0, absoluteEnd: document.getText().length }]);
         }
 
         // V2 intellisense
@@ -552,19 +556,19 @@ export type CmSchema = {
             return this.toArray<k2.ClassifiedRange>(block.Service.GetClassifications(block.Start, block.Length).Classifications);
         }).reduce((prev, curr) => prev.concat(curr), []);
 
-        return Promise.as([{classifications, absoluteStart: 0, absoluteEnd: document.getText().length}]);
+        return Promise.as([{ classifications, absoluteStart: 0, absoluteEnd: document.getText().length }]);
     }
 
-     private getAffectedBlocks(blocks: k2.CodeBlock[], changeIntervals: { start: number; end: number; }[]) {
-         return blocks.filter(block =>
-             // a command is affected if it intersects at least on of changed ranges.
-             block // command can be null. we're filtering all nulls in the array.
-                 ? changeIntervals.some(({ start: changeStart, end: changeEnd }) =>
-                     // both intervals intersect if either the start or the end of interval A is inside interval B.
-                     (block.Start >= changeStart && block.Start <= changeEnd)
-                     || (changeStart >= block.Start && changeStart <= block.End + 1))
-                 : false);
-     }
+    private getAffectedBlocks(blocks: k2.CodeBlock[], changeIntervals: { start: number; end: number; }[]) {
+        return blocks.filter(block =>
+            // a command is affected if it intersects at least on of changed ranges.
+            block // command can be null. we're filtering all nulls in the array.
+                ? changeIntervals.some(({ start: changeStart, end: changeEnd }) =>
+                    // both intervals intersect if either the start or the end of interval A is inside interval B.
+                    (block.Start >= changeStart && block.Start <= changeEnd)
+                    || (changeStart >= block.Start && changeStart <= block.End + 1))
+                : false);
+    }
 
     setSchema(schema: s.Schema): Promise<void> {
         this._schema = schema;
@@ -597,8 +601,8 @@ export type CmSchema = {
      */
     setSchemaFromShowSchema(
         schema: s.showSchema.Result, clusterConnectionString: string, databaseInContextName: string, globalParameters: s.ScalarParameter[]): Promise<void> {
-            return this.normalizeSchema(schema, clusterConnectionString, databaseInContextName)
-                .then(normalized => this.setSchema({...normalized, globalParameters}));
+        return this.normalizeSchema(schema, clusterConnectionString, databaseInContextName)
+            .then(normalized => this.setSchema({ ...normalized, globalParameters }));
     }
 
     /**
@@ -608,25 +612,25 @@ export type CmSchema = {
      * @param databaseInContextName database in context name
      */
     normalizeSchema(schema: s.showSchema.Result, clusterConnectionString: string, databaseInContextName: string): Promise<s.EngineSchema> {
-        const databases: s.EngineSchema["cluster"]["databases"] = Object.keys(schema.Databases).map(key => schema.Databases[key]).map(({Name, Tables, Functions, MinorVersion, MajorVersion}: s.showSchema.Database)  => ({
+        const databases: s.EngineSchema["cluster"]["databases"] = Object.keys(schema.Databases).map(key => schema.Databases[key]).map(({ Name, Tables, Functions, MinorVersion, MajorVersion }: s.showSchema.Database) => ({
             name: Name,
             minorVersion: MinorVersion,
             majorVersion: MajorVersion,
-            tables: Object.keys(Tables).map(key => Tables[key]).map(({Name, OrderedColumns}: s.showSchema.Table) => ({
+            tables: Object.keys(Tables).map(key => Tables[key]).map(({ Name, OrderedColumns }: s.showSchema.Table) => ({
                 name: Name,
-                columns: OrderedColumns.map(({Name, Type, CslType}: s.showSchema.Column) => ({
+                columns: OrderedColumns.map(({ Name, Type, CslType }: s.showSchema.Column) => ({
                     name: Name,
                     type: CslType,
                 }))
             })),
-            functions: Object.keys(Functions).map(key => Functions[key]).map(({Name, Body, InputParameters}) => ({
+            functions: Object.keys(Functions).map(key => Functions[key]).map(({ Name, Body, InputParameters }) => ({
                 name: Name,
                 body: Body,
                 inputParameters: InputParameters.map(inputParam => ({
                     name: inputParam.Name,
                     type: inputParam.Type,
                     cslType: inputParam.CslType,
-                    columns: inputParam.Columns ? inputParam.Columns.map(col => ({name: col.Name, type: col.Type, cslType: col.CslType})) : []
+                    columns: inputParam.Columns ? inputParam.Columns.map(col => ({ name: col.Name, type: col.Type, cslType: col.CslType })) : []
                 }))
             }))
         }));
@@ -648,14 +652,14 @@ export type CmSchema = {
     }
 
     getCommandInContext(document: ls.TextDocument, cursorOffset: number): Promise<string | null> {
-        return this._languageSettings.useIntellisenseV2
+        return this.isIntellisenseV2()
             ? this.getCommandInContextV2(document, cursorOffset)
             : this.getCommandInContextV1(document, cursorOffset);
     }
 
     getCommandAndLocationInContext(document: ls.TextDocument, cursorOffset: number) {
         // We are going to remove v1 intellisense. no use to keep parity.
-        if (!this._languageSettings.useIntellisenseV2) {
+        if (!this.isIntellisenseV2()) {
             return Promise.as(null);
         }
 
@@ -679,7 +683,7 @@ export type CmSchema = {
         this.parseDocumentV1(document, k.ParseMode.CommandTokensOnly);
         const command = this.getCurrentCommand(document, cursorOffset);
         if (!command) {
-            return Promise.as( null);
+            return Promise.as(null);
         }
 
         return Promise.as(command.Text)
@@ -699,35 +703,35 @@ export type CmSchema = {
     /**
      * Retrun an array of commands in document. each command contains the range and text.
      */
-    getCommandsInDocument(document: ls.TextDocument): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]> {
-        return this._languageSettings.useIntellisenseV2
+    getCommandsInDocument(document: ls.TextDocument): Promise<{ absoluteStart: number, absoluteEnd: number, text: string }[]> {
+        return this.isIntellisenseV2()
             ? this.getCommandsInDocumentV2(document)
             : this.getCommandsInDocumentV1(document);
     }
 
-    getCommandsInDocumentV1(document: ls.TextDocument): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]> {
+    getCommandsInDocumentV1(document: ls.TextDocument): Promise<{ absoluteStart: number, absoluteEnd: number, text: string }[]> {
         this.parseDocumentV1(document, k.ParseMode.CommandTokensOnly);
         let commands = this.toArray(this._parser.Results);
-        return Promise.as(commands.map(({AbsoluteStart, AbsoluteEnd, Text}) => ({absoluteStart:AbsoluteStart, absoluteEnd: AbsoluteEnd, text: Text})));
+        return Promise.as(commands.map(({ AbsoluteStart, AbsoluteEnd, Text }) => ({ absoluteStart: AbsoluteStart, absoluteEnd: AbsoluteEnd, text: Text })));
     }
 
-    getCommandsInDocumentV2(document: ls.TextDocument): Promise<{absoluteStart: number, absoluteEnd: number, text: string}[]> {
+    getCommandsInDocumentV2(document: ls.TextDocument): Promise<{ absoluteStart: number, absoluteEnd: number, text: string }[]> {
         const script = this.parseDocumentV2(document);
         let commands = this.toArray<k2.CodeBlock>(script.Blocks);
-        return Promise.as(commands.map(({Start, End, Text}) => ({absoluteStart:Start, absoluteEnd: End, text: Text})));
+        return Promise.as(commands.map(({ Start, End, Text }) => ({ absoluteStart: Start, absoluteEnd: End, text: Text })));
     }
 
-    getClientDirective(text: string): Promise<{isClientDirective: boolean, directiveWithoutLeadingComments: string}> {
+    getClientDirective(text: string): Promise<{ isClientDirective: boolean, directiveWithoutLeadingComments: string }> {
         let outParam: { v: string | null } = { v: null };
-        const isClientDirective =  k.CslCommandParser.IsClientDirective(text, outParam);
+        const isClientDirective = k.CslCommandParser.IsClientDirective(text, outParam);
         return Promise.as({
             isClientDirective,
             directiveWithoutLeadingComments: outParam.v
         });
     }
 
-    getAdminCommand(text: string): Promise<{isAdminCommand: boolean, adminCommandWithoutLeadingComments: string}> {
-        let outParam : {v: string | null } = {v: null };
+    getAdminCommand(text: string): Promise<{ isAdminCommand: boolean, adminCommandWithoutLeadingComments: string }> {
+        let outParam: { v: string | null } = { v: null };
         const isAdminCommand = k.CslCommandParser.IsAdminCommand$1(text, outParam);
         return Promise.as({
             isAdminCommand,
@@ -736,7 +740,7 @@ export type CmSchema = {
     }
 
     findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]> {
-        if (!this._languageSettings.useIntellisenseV2) {
+        if (!this.isIntellisenseV2()) {
             return Promise.as([]);
         }
 
@@ -765,7 +769,7 @@ export type CmSchema = {
     }
 
     findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]> {
-        if (!this._languageSettings.useIntellisenseV2) {
+        if (!this.isIntellisenseV2()) {
             return Promise.as([]);
         }
 
@@ -795,8 +799,8 @@ export type CmSchema = {
         return Promise.as(references);
     }
 
-    getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{name: string, type: string}[]> {
-        if (!this._languageSettings.useIntellisenseV2) {
+    getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string, type: string }[]> {
+        if (!this.isIntellisenseV2()) {
             return Promise.as([]);
         }
 
@@ -818,25 +822,25 @@ export type CmSchema = {
 
         const queryParams = [];
         queryParamStatements.forEach((paramStatement: Kusto.Language.Syntax.QueryParametersStatement) => {
-            paramStatement.WalkElements((el: any) => el.ReferencedSymbol && el.ReferencedSymbol.Type ? queryParams.push({name: el.ReferencedSymbol.Name, type: el.ReferencedSymbol.Type.Name}) : undefined);
+            paramStatement.WalkElements((el: any) => el.ReferencedSymbol && el.ReferencedSymbol.Type ? queryParams.push({ name: el.ReferencedSymbol.Name, type: el.ReferencedSymbol.Type.Name }) : undefined);
         });
 
         return Promise.as(queryParams);
     }
 
-    getGlobalParams(document: ls.TextDocument): Promise<{name: string, type: string}[]> {
-        if (!this._languageSettings.useIntellisenseV2) {
+    getGlobalParams(document: ls.TextDocument): Promise<{ name: string, type: string }[]> {
+        if (!this.isIntellisenseV2()) {
             return Promise.as([]);
         }
 
         const script = this.parseDocumentV2(document);
         const params = this.toArray<sym.ParameterSymbol>(this._kustoJsSchemaV2.Parameters);
-        const result = params.map(param => ({name: param.Name, type: param.Type.Name}));
+        const result = params.map(param => ({ name: param.Name, type: param.Type.Name }));
         return Promise.as(result);
     }
 
     doRename(document: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined> {
-        if (!this._languageSettings.useIntellisenseV2) {
+        if (!this.isIntellisenseV2()) {
             return Promise.as(undefined);
         }
 
@@ -854,12 +858,11 @@ export type CmSchema = {
         const declarations = relatedElements.filter(e => e.Kind == k2.RelatedElementKind.Declaration);
 
         // A declaration must be one of the elements
-        if (!declarations || declarations.length == 0)
-        {
+        if (!declarations || declarations.length == 0) {
             return Promise.as(undefined);
         }
 
-        const edits =  relatedElements.map(edit => {
+        const edits = relatedElements.map(edit => {
             const start = document.positionAt(edit.Start);
             const end = document.positionAt(edit.End);
             const range = ls.Range.create(start, end);
@@ -867,12 +870,12 @@ export type CmSchema = {
         })
 
         // create a workspace edit
-        const workspaceEdit: ls.WorkspaceEdit = {changes: {[document.uri]: edits}};
+        const workspaceEdit: ls.WorkspaceEdit = { changes: { [document.uri]: edits } };
         return Promise.as(workspaceEdit);
     }
 
     doHover(document: ls.TextDocument, position: ls.Position): Promise<ls.Hover | undefined> {
-        if (!this._languageSettings.useIntellisenseV2) {
+        if (!this.isIntellisenseV2()) {
             return Promise.as(undefined);
         }
 
@@ -896,7 +899,7 @@ export type CmSchema = {
             return Promise.as(undefined);
         }
 
-        return Promise.as({contents: quickInfo.Text});
+        return Promise.as({ contents: quickInfo.Text });
     }
 
     //#region dummy schema for manual testing
@@ -908,8 +911,8 @@ export type CmSchema = {
             tables: [{
                 name: 'KustoLogs',
                 columns: [{
-                  name: 'Source',
-                  type: 'string'
+                    name: 'Source',
+                    type: 'string'
                 }, {
                     name: 'Timestamp',
                     type: 'datetime'
@@ -940,7 +943,7 @@ export type CmSchema = {
             }]
         };
 
-        const languageServiceSchema : s.EngineSchema = {
+        const languageServiceSchema: s.EngineSchema = {
             clusterType: 'Engine',
             cluster: {
                 connectionString: 'https://kuskus.kusto.windows.net;fed=true',
@@ -991,9 +994,9 @@ export type CmSchema = {
                     database.functions.forEach(fn => {
                         const kFunction = new k.KustoIntelliSenseFunctionEntity();
                         kFunction.Name = fn.name,
-                        kFunction.CallName = s.getCallName(fn),
-                        kFunction.Expression = s.getExpression(fn),
-                        functions.push(kFunction);
+                            kFunction.CallName = s.getCallName(fn),
+                            kFunction.Expression = s.getExpression(fn),
+                            functions.push(kFunction);
                     });
 
                     kDatabase.Tables = new Bridge.ArrayEnumerable(tables);
@@ -1005,7 +1008,7 @@ export type CmSchema = {
                     }
                 });
                 kCluster.Databases = new Bridge.ArrayEnumerable(databases);
-                const kSchema  = new k.KustoIntelliSenseQuerySchema(kCluster, kDatabaseInContext);
+                const kSchema = new k.KustoIntelliSenseQuerySchema(kCluster, kDatabaseInContext);
                 return kSchema;
             case 'ClusterManager':
                 const accounts = schema.accounts.map(account => {
@@ -1035,10 +1038,10 @@ export type CmSchema = {
         }
     }
 
-        /**
-     * Returns something like '(x: string, y: datetime)'
-     * @param params scalar parameters
-     */
+    /**
+ * Returns something like '(x: string, y: datetime)'
+ * @param params scalar parameters
+ */
     private static scalarParametersToSignature(params: s.ScalarParameter[]) {
         const signatureWithoutParens = params.map(param => `${param.name}: ${param.cslType}`).join(', ');
         return `(${signatureWithoutParens})`;
@@ -1069,7 +1072,7 @@ export type CmSchema = {
         return `let ${fn.name} = ${signature} ${fn.body}`
     }
 
-    private static createColumnSymbol(col: s.ScalarParameter):sym.ColumnSymbol {
+    private static createColumnSymbol(col: s.ScalarParameter): sym.ColumnSymbol {
         return new sym.ColumnSymbol(col.name, sym.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(col.type)));
     }
 
@@ -1129,7 +1132,7 @@ export type CmSchema = {
     }
 
     private convertToKustoJsSchemaV2(schema: s.EngineSchema): GlobalState {
-        let  cached = this._schemaCache[schema.cluster.connectionString];
+        let cached = this._schemaCache[schema.cluster.connectionString];
 
         // create a cache entry for the cluster if non yet exists.
         if (!cached) {
@@ -1138,7 +1141,7 @@ export type CmSchema = {
         }
 
         // Remove deleted databases from cache
-        const schemaDbLookup: {[dbName: string]: s.Database} = schema.cluster.databases.reduce((prev, curr) => prev[curr.name] = curr, {});
+        const schemaDbLookup: { [dbName: string]: s.Database } = schema.cluster.databases.reduce((prev, curr) => prev[curr.name] = curr, {});
         Object.keys(cached).map(dbName => {
             if (!schemaDbLookup[dbName]) {
                 delete cached.dbName;
@@ -1160,7 +1163,7 @@ export type CmSchema = {
                 // only add functions for the database in context (it's very time consuming)
 
                 const databaseSymbol = KustoLanguageService.convertToDatabaseSymbol(db, globalState, shouldIncludeFunctions);
-                cached[db.name] = {database: db, symbol: databaseSymbol, includesFunctions: shouldIncludeFunctions};
+                cached[db.name] = { database: db, symbol: databaseSymbol, includesFunctions: shouldIncludeFunctions };
             }
 
             const databaseSymbol = cached[db.name].symbol;
@@ -1197,26 +1200,26 @@ export type CmSchema = {
 
     private getClassificationsFromParseResult(offset: number = 0) {
         const classifications = this.toArray(this._parser.Results)
-        .map(command => this.toArray(command.Tokens))
-       .reduce((prev, curr) => prev.concat(curr), [])
-       .map((cslCommandToken): k2.ClassifiedRange => {
-            const range = new k2.ClassifiedRange(
-                this.tokenKindToClassificationKind(cslCommandToken.TokenKind),
-                cslCommandToken.AbsoluteStart + offset,
-                cslCommandToken.Length
-            );
-            // todo: shouldn't we remove it
-            range.End = cslCommandToken.AbsoluteEnd + offset;
+            .map(command => this.toArray(command.Tokens))
+            .reduce((prev, curr) => prev.concat(curr), [])
+            .map((cslCommandToken): k2.ClassifiedRange => {
+                const range = new k2.ClassifiedRange(
+                    this.tokenKindToClassificationKind(cslCommandToken.TokenKind),
+                    cslCommandToken.AbsoluteStart + offset,
+                    cslCommandToken.Length
+                );
+                // todo: shouldn't we remove it
+                range.End = cslCommandToken.AbsoluteEnd + offset;
 
-            return range;
-       });
+                return range;
+            });
 
-       return classifications;
+        return classifications;
     }
 
-     /**
-     * trim trailing newlines from range
-     */
+    /**
+    * trim trailing newlines from range
+    */
     private static trimTrailingNewlineFromRange(textInRange: string, rangeStartOffset: number, document: ls.TextDocument, range: ls.Range) {
         let currentIndex = textInRange.length - 1;
         while (textInRange[currentIndex] === '\r' || textInRange[currentIndex] === '\n') {
@@ -1234,8 +1237,8 @@ export type CmSchema = {
      * @param order - The number to be converted to a sorting-string. order should start at 1.
      * @returns A string repenting the order.
      */
-    private getSortText(order: number):string {
-        if (order <= 0 ) {
+    private getSortText(order: number): string {
+        if (order <= 0) {
             throw new RangeError(`order should be a number >= 1. instead got ${order}`);
         }
 
@@ -1268,10 +1271,10 @@ export type CmSchema = {
     private parseTextV1(text: string, parseMode: k.ParseMode) {
         this._parser.Parse(
             this._schema.clusterType === 'Engine'
-                    ? this._rulesProvider as any
-                    : null,
-                text,
-                parseMode);
+                ? this._rulesProvider as any
+                : null,
+            text,
+            parseMode);
     }
 
     private parseDocumentV1(document: ls.TextDocument, parseMode: k.ParseMode) {
@@ -1333,7 +1336,7 @@ export type CmSchema = {
         return block;
     }
 
-    private getTextToInsert(rule: k.IntelliSenseRule, option: k.CompletionOption): {insertText: string, insertTextFormat: ls.InsertTextFormat} {
+    private getTextToInsert(rule: k.IntelliSenseRule, option: k.CompletionOption): { insertText: string, insertTextFormat: ls.InsertTextFormat } {
         const beforeApplyInfo = rule.GetBeforeApplyInfo(option.Value);
         const afterApplyInfo = rule.GetAfterApplyInfo(option.Value);
 
@@ -1354,7 +1357,7 @@ export type CmSchema = {
             insertTextFormat = ls.InsertTextFormat.Snippet;
         }
 
-        return {insertText, insertTextFormat};
+        return { insertText, insertTextFormat };
     }
 
     /**
@@ -1363,7 +1366,7 @@ export type CmSchema = {
      * @param stringToInsert string to insert
      * @param offsetFromEnd a negative number that will represent offset to the left. 0 means simple concat
      */
-    private insertToString(originalString:string, stringToInsert:string, offsetFromEnd: number): string {
+    private insertToString(originalString: string, stringToInsert: string, offsetFromEnd: number): string {
         var index = originalString.length + offsetFromEnd;
 
         if (offsetFromEnd >= 0 || index < 0) {
@@ -1381,7 +1384,7 @@ export type CmSchema = {
         return text.replace(lastWordRegex, '');
     }
 
-    private createRulesProvider(schema: k.KustoIntelliSenseQuerySchema | CmSchema |  undefined, clusterType: s.ClusterType) {
+    private createRulesProvider(schema: k.KustoIntelliSenseQuerySchema | CmSchema | undefined, clusterType: s.ClusterType) {
         var queryParameters: any = new (List(String))();
         var availableClusters: any = new (List(String))();
         this._parser = new k.CslCommandParser();
@@ -1430,14 +1433,14 @@ export type CmSchema = {
         [k.OptionKind.ColumnNumeric]: ls.CompletionItemKind.Field,
         [k.OptionKind.ColumnDateTime]: ls.CompletionItemKind.Field,
         [k.OptionKind.ColumnTimespan]: ls.CompletionItemKind.Field,
-        [k.OptionKind.FunctionServerSide]:ls.CompletionItemKind.Field,
+        [k.OptionKind.FunctionServerSide]: ls.CompletionItemKind.Field,
         [k.OptionKind.FunctionAggregation]: ls.CompletionItemKind.Field,
         [k.OptionKind.FunctionFilter]: ls.CompletionItemKind.Field,
         [k.OptionKind.FunctionScalar]: ls.CompletionItemKind.Field,
         [k.OptionKind.ClientDirective]: ls.CompletionItemKind.Enum
     }
 
-    private _kustoKindtolsKindV2: {[k in k2.CompletionKind]: ls.CompletionItemKind} = {
+    private _kustoKindtolsKindV2: { [k in k2.CompletionKind]: ls.CompletionItemKind } = {
         [k2.CompletionKind.AggregateFunction]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Cluster]: ls.CompletionItemKind.Class,
         [k2.CompletionKind.Column]: ls.CompletionItemKind.Function,
@@ -1446,7 +1449,7 @@ export type CmSchema = {
         [k2.CompletionKind.Keyword]: ls.CompletionItemKind.Method,
         [k2.CompletionKind.Literal]: ls.CompletionItemKind.Property,
         [k2.CompletionKind.Parameter]: ls.CompletionItemKind.Variable,
-        [k2.CompletionKind.Punctuation] :ls.CompletionItemKind.Interface,
+        [k2.CompletionKind.Punctuation]: ls.CompletionItemKind.Interface,
         [k2.CompletionKind.QueryPrefix]: ls.CompletionItemKind.Function,
         [k2.CompletionKind.RenderChart]: ls.CompletionItemKind.Method,
         [k2.CompletionKind.ScalarFunction]: ls.CompletionItemKind.Field,
@@ -1458,7 +1461,7 @@ export type CmSchema = {
         [k2.CompletionKind.TabularPrefix]: ls.CompletionItemKind.Field,
         // datatable, externaldata
         [k2.CompletionKind.TabularSuffix]: ls.CompletionItemKind.Field,
-        [k2.CompletionKind.Unknown] : ls.CompletionItemKind.Interface,
+        [k2.CompletionKind.Unknown]: ls.CompletionItemKind.Interface,
         [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
         [k2.CompletionKind.CommandPrefix]: ls.CompletionItemKind.Field
     }
@@ -1477,8 +1480,8 @@ export type CmSchema = {
         return (Bridge as any).toArray(bridgeList);
     }
 
-    private _tokenKindToClassificationKind: {[k in TokenKind]: k2.ClassificationKind} = {
-        [TokenKind.TableToken] : k2.ClassificationKind.Table,
+    private _tokenKindToClassificationKind: { [k in TokenKind]: k2.ClassificationKind } = {
+        [TokenKind.TableToken]: k2.ClassificationKind.Table,
         [TokenKind.TableColumnToken]: k2.ClassificationKind.Column,
         [TokenKind.OperatorToken]: k2.ClassificationKind.QueryOperator,
         [TokenKind.SubOperatorToken]: k2.ClassificationKind.Function,
@@ -1506,7 +1509,7 @@ export type CmSchema = {
 
 let languageService = new KustoLanguageService(
     KustoLanguageService.dummySchema,
-    {includeControlCommands: true, useIntellisenseV2: false, useSemanticColorization: true});
+    { includeControlCommands: true, useIntellisenseV2: false, useSemanticColorization: true });
 
 /**
  * Obtain an instance of the kusto language service.

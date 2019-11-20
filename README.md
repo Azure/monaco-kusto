@@ -99,6 +99,12 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Changelog
 
+### 1.1.19 (11/18/2019)
+
+#### Bug fix
+
+-   fix exception in CM & DM clusters when intellisenseV2 is on
+
 ### 1.1.18 (11/18/2019)
 
 #### Added
