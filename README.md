@@ -99,6 +99,12 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Changelog
 
+### 2.0.0 (11/20/2019)
+
+#### Added
+
+-   **[Breaking]** Change default to use intellisense V2
+
 ### 1.1.19 (11/18/2019)
 
 #### Bug fix
