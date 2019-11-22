@@ -99,6 +99,18 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Changelog
 
+### 2.0.2
+
+#### Bug fix
+
+-   null pointer exception fix.
+
+### 2.0.1
+
+#### Bug fix
+
+-   actually made the change described in 2.0.0
+
 ### 2.0.0 (11/20/2019)
 
 #### Added

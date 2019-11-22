@@ -470,6 +470,10 @@ class KustoLanguageService implements LanguageService {
     }
 
     doFolding(document: ls.TextDocument): Promise<FoldingRange[]> {
+        if (!document) {
+            return Promise.as([]);
+        }
+
         return this.getCommandsInDocument(document).then(commands => {
             return commands.map(
                 (command): FoldingRange => {
