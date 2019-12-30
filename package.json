@@ -20,7 +20,8 @@
         "compile": "gulp compile",
         "watch": "gulp watch",
         "prepublish": "gulp release",
-        "test": "jest"
+        "@comment test": " no tests available - disable for now",
+        "_test": "jest"
     },
     "main": "./release/min/monaco.contribution.js",
     "types": "./release/min/monaco.contribution.d.ts",
