@@ -8,6 +8,7 @@ var uglify = require('gulp-uglify');
 var rimraf = require('rimraf');
 var es = require('event-stream');
 var notify = require('gulp-notify');
+var runSequence = require('run-sequence');
 
 gulp.task('clean-release', function(cb) {
     rimraf('release/*', { maxBusyTries: 1 }, cb);
@@ -56,7 +57,9 @@ gulp.task('bundles', ['compile-without-clean', 'clean-release', 'clean-bundle'],
     bundleOne('kustoMode');
     bundleOne('kustoWorker', [], cb);
 });
-gulp.task('release', ['clean-out', 'releasePack']);
+gulp.task('release', function(callback) {
+    runSequence('clean-out', 'releasePack', callback);
+});
 
 gulp.task('releasePack', ['bundles'], function() {
     return merge(

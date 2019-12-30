@@ -43,6 +43,7 @@
         "monaco-languages": "0.9.0",
         "object-assign": "4.1.0",
         "rimraf": "2.5.2",
+        "run-sequence": "^2.2.1",
         "ts-jest": "^22.0.0",
         "typescript": "3.0.3",
         "vscode-languageserver-protocol-foldingprovider": "^1.0.1",
