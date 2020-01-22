@@ -135,6 +135,7 @@ export interface LanguageService {
     findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
     getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]>;
     getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]>;
+    getReferencedGlobalParams(document: ls.TextDocument, offset: number): Promise<{name: string, type: string}[]>;
 }
 
 export interface LanguageSettings {
@@ -930,7 +931,8 @@ class KustoLanguageService implements LanguageService {
 
         const text = currentBlock.Text;
 
-        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text);
+        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
+
         const queryParamStatements = this.toArray(
             parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.QueryParametersStatement)
         );
@@ -950,12 +952,45 @@ class KustoLanguageService implements LanguageService {
         return Promise.as(queryParams);
     }
 
-    getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]> {
+    getReferencedGlobalParams(document: ls.TextDocument, cursorOffset: number): Promise<{name: string, type: string}[]> {
         if (!this.isIntellisenseV2()) {
             return Promise.as([]);
         }
 
         const script = this.parseDocumentV2(document);
+        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
+
+        if (!currentBlock) {
+            return Promise.as([]);
+        }
+
+        const text = currentBlock.Text;
+
+        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
+
+        // We take the ambient parameters
+        const ambientParameters = this.toArray<sym.ParameterSymbol>(this._kustoJsSchemaV2.Parameters);
+
+        // We take all referenced symbols in the query
+        const referencedSymbols = this.toArray<Kusto.Language.Syntax.SyntaxNode>(parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.Expression))
+            .filter(epression => epression.ReferencedSymbol !== null)
+            .map(x => x.ReferencedSymbol)  as sym.ParameterSymbol[];
+
+        // The Intersection between them is the ambient parameters that are used in the query.
+        // Note: Ideally we would use Set here (or at least array.Include), but were' compiling down to es2015.
+        const intersection = referencedSymbols
+            .filter(referencedSymbol => ambientParameters
+                .filter(ambientParameter => ambientParameter === referencedSymbol).length > 0)
+
+        const result = intersection.map(param => ({ name: param.Name, type: param.Type.Name }));
+        return Promise.as(result);
+    }
+
+    getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]> {
+        if (!this.isIntellisenseV2()) {
+            return Promise.as([]);
+        }
+
         const params = this.toArray<sym.ParameterSymbol>(this._kustoJsSchemaV2.Parameters);
         const result = params.map(param => ({ name: param.Name, type: param.Type.Name }));
         return Promise.as(result);

@@ -34,6 +34,7 @@
 	var getCurrentCommand;
 	var getQueryParams;
 	var getGlobalParams;
+	var getReferencedGlobalParams;
 	var setDM;
 	var setHelp;
 	var setKuskus;
@@ -83,6 +84,17 @@
 			workerAccessor(model.uri).then(worker => {
 				worker.getGlobalParams(model.uri.toString()).then(queryParams => {
 					currentCommand.innerHTML = JSON.stringify(queryParams);
+				})
+			});
+		});
+		}
+
+		getReferencedGlobalParams = () => {
+			monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+			const model = editor.getModel();
+			workerAccessor(model.uri).then(worker => {
+				worker.getReferencedGlobalParams(model.uri.toString(), model.getOffsetAt(editor.getPosition())).then(referencedParams => {
+					currentCommand.innerHTML = JSON.stringify(referencedParams);
 				})
 			});
 		});
@@ -330,7 +342,8 @@
 </div>
 <div>
 	<button onclick="getQueryParams()">Show current query params</button>
-	<button onclick="getGlobalParams()">Show current global params</button>
+	<button onclick="getGlobalParams()">Show all global params</button>
+	<button onclick="getReferencedGlobalParams()">Show Refernced global params</button>
 </div>
 <div id="currentCommand">
 

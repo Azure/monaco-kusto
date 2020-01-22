@@ -63,8 +63,28 @@ declare module monaco.languages.kusto {
             text: string
         ): Promise<{ isClientDirective: boolean; directiveWithoutLeadingComments: string }>;
         getAdminCommand(text: string): Promise<{ isAdminCommand: boolean; adminCommandWithoutLeadingComments: string }>;
+
+        /**
+         * Get all declared query parameters declared in current block if any.
+         */
         getQueryParams(uri: string, cursorOffest: number): Promise<{ name: string; type: string }[]>;
+
+        /**
+         * Get all the ambient parameters defind in global scope.
+         * Ambient parameters are parameters that are not defined in the syntax such as in a query paramter declaration.
+         * These are parameters that are injected from outside, usually by a UX application that would like to offer
+         * the user intellisense for a symbol, without forcing them to write a query declaration statement.
+         * Usually  the same application injects the query declaration statement and the parameter values when
+         * executing the query (so it will execute correctly)
+         */
         getGlobalParams(uri: string): Promise<{ name: string; type: string }[]>;
+        /**
+         * Get the global parameters that are actually being referenced in query.
+         * This is different from getQueryParams that will return the parameters declare using a query declaration
+         * statement.
+         * It is also different from getGlobalParams that will return all global parameters whether used or not.
+         */
+        getReferencedGlobalParams(uri: string): Promise<{ name: string; type: string }[]>;
     }
 
     /**
