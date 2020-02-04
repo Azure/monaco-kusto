@@ -99,9 +99,17 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Changelog
 
-### 2.0.4
+### 2.0.5
+
 #### Added
-- Added `getReferencedGlobalParams` that returns the global (ambient) parameters that are actually being referenced in the query.
+
+-   Added `setParameters` that set parameters to the schema without providing the entire schema.
+
+### 2.0.4
+
+#### Added
+
+-   Added `getReferencedGlobalParams` that returns the global (ambient) parameters that are actually being referenced in the query.
 
 ### 2.0.3
 

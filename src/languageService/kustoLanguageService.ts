@@ -107,6 +107,7 @@ export interface LanguageService {
     ): Promise<ColorizationRange[]>;
     doRename(doucment: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: ls.TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
+    setParameters(parameters: s.ScalarParameter[]);
     setSchema(schema: s.Schema): Promise<void>;
     setSchemaFromShowSchema(
         schema: s.showSchema.Result,
@@ -135,7 +136,7 @@ export interface LanguageService {
     findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
     getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]>;
     getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]>;
-    getReferencedGlobalParams(document: ls.TextDocument, offset: number): Promise<{name: string, type: string}[]>;
+    getReferencedGlobalParams(document: ls.TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
 }
 
 export interface LanguageSettings {
@@ -676,6 +677,18 @@ class KustoLanguageService implements LanguageService {
         });
     }
 
+    setParameters(parameters: s.ScalarParameter[]): Promise<void> {
+        if (!this._languageSettings.useIntellisenseV2 || this._schema.clusterType !== 'Engine') {
+            return Promise.as(undefined);
+        }
+
+        this._schema.globalParameters = parameters;
+        const symbols = parameters.map(param => KustoLanguageService.createParameterSymbol(param));
+        this._kustoJsSchemaV2 = this._kustoJsSchemaV2.WithParameters(symbols);
+
+        return Promise.as(undefined);
+    }
+
     /**
      * A combination of normalizeSchema and setSchema
      * @param schema schema json as received from .show schema as json
@@ -952,7 +965,10 @@ class KustoLanguageService implements LanguageService {
         return Promise.as(queryParams);
     }
 
-    getReferencedGlobalParams(document: ls.TextDocument, cursorOffset: number): Promise<{name: string, type: string}[]> {
+    getReferencedGlobalParams(
+        document: ls.TextDocument,
+        cursorOffset: number
+    ): Promise<{ name: string; type: string }[]> {
         if (!this.isIntellisenseV2()) {
             return Promise.as([]);
         }
@@ -972,15 +988,18 @@ class KustoLanguageService implements LanguageService {
         const ambientParameters = this.toArray<sym.ParameterSymbol>(this._kustoJsSchemaV2.Parameters);
 
         // We take all referenced symbols in the query
-        const referencedSymbols = this.toArray<Kusto.Language.Syntax.SyntaxNode>(parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.Expression))
+        const referencedSymbols = this.toArray<Kusto.Language.Syntax.SyntaxNode>(
+            parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.Expression)
+        )
             .filter(epression => epression.ReferencedSymbol !== null)
-            .map(x => x.ReferencedSymbol)  as sym.ParameterSymbol[];
+            .map(x => x.ReferencedSymbol) as sym.ParameterSymbol[];
 
         // The Intersection between them is the ambient parameters that are used in the query.
         // Note: Ideally we would use Set here (or at least array.Include), but were' compiling down to es2015.
-        const intersection = referencedSymbols
-            .filter(referencedSymbol => ambientParameters
-                .filter(ambientParameter => ambientParameter === referencedSymbol).length > 0)
+        const intersection = referencedSymbols.filter(
+            referencedSymbol =>
+                ambientParameters.filter(ambientParameter => ambientParameter === referencedSymbol).length > 0
+        );
 
         const result = intersection.map(param => ({ name: param.Name, type: param.Type.Name }));
         return Promise.as(result);

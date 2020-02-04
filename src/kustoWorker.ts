@@ -2,7 +2,14 @@ import Promise = monaco.Promise;
 import IWorkerContext = monaco.worker.IWorkerContext;
 
 import * as kustoService from './languageService/kustoLanguageService';
-import { EngineSchema, ClusterType, Schema, showSchema, InputParameter } from './languageService/schema';
+import {
+    EngineSchema,
+    ClusterType,
+    Schema,
+    showSchema,
+    InputParameter,
+    ScalarParameter
+} from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
 import { ColorizationRange } from './languageService/kustoLanguageService';
@@ -222,6 +229,10 @@ export class KustoWorker {
         let document = this._getTextDocument(uri);
         let hover = this._languageService.doHover(document, position);
         return hover;
+    }
+
+    setParameters(parameters: ScalarParameter[]) {
+        return this._languageService.setParameters(parameters);
     }
 
     private _getTextDocument(uri: string): ls.TextDocument {
