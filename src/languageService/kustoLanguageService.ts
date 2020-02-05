@@ -679,7 +679,7 @@ class KustoLanguageService implements LanguageService {
 
     setParameters(parameters: s.ScalarParameter[]): Promise<void> {
         if (!this._languageSettings.useIntellisenseV2 || this._schema.clusterType !== 'Engine') {
-            return Promise.as(undefined);
+            throw new Error("setParameters requires intellisense V2 and Engine cluster")
         }
 
         this._schema.globalParameters = parameters;
