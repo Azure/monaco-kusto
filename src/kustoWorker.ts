@@ -12,7 +12,8 @@ import {
 } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
-import { ColorizationRange, RenderOptions } from './languageService/kustoLanguageService';
+import { ColorizationRange } from './languageService/kustoLanguageService';
+import { RenderInfo } from './languageService/renderInfo';
 
 export class KustoWorker {
     // --- model sync -----------------------
@@ -107,19 +108,31 @@ export class KustoWorker {
         return referencedParams;
     }
 
-    getVisualizationOptions(uri: string, cursorOffset: number): Promise<RenderOptions | undefined> {
+    toRange(range: ls.Range): monaco.Range {
+        if (!range) {
+            return void 0;
+        }
+        return new monaco.Range(
+            range.start.line + 1,
+            range.start.character + 1,
+            range.end.line + 1,
+            range.end.character + 1
+        );
+    }
+
+    getRenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null> {
         const document = this._getTextDocument(uri);
         if (!document) {
-            console.error(`getVisualizationOptions: document is ${document}. uri is ${uri}`);
+            console.error(`getRenderInfo: document is ${document}. uri is ${uri}`);
         }
 
-        const visualizationOptions = this._languageService.getVisualizationOptions(document, cursorOffset);
+        return this._languageService.getRenderInfo(document, cursorOffset).then(result => {
+            if (!result) {
+                return null;
+            }
 
-        if (visualizationOptions === undefined) {
-            return null;
-        }
-
-        return visualizationOptions;
+            return result;
+        });
     }
 
     /**

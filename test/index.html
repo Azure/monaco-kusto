@@ -36,7 +36,7 @@
             var getQueryParams;
             var getGlobalParams;
             var getReferencedGlobalParams;
-            var getVisualizationOptions;
+            var getRenderInfo;
             var setDM;
             var setHelp;
             var setKuskus;
@@ -115,14 +115,14 @@
                     });
                 };
 
-                getVisualizationOptions = () => {
+                getRenderInfo = () => {
                     monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
                         const model = editor.getModel();
                         workerAccessor(model.uri).then(worker => {
                             worker
-                                .getVisualizationOptions(model.uri.toString(), model.getOffsetAt(editor.getPosition()))
-                                .then(visualizationOptions => {
-                                    currentCommand.innerHTML = JSON.stringify(visualizationOptions);
+                                .getRenderInfo(model.uri.toString(), model.getOffsetAt(editor.getPosition()))
+                                .then(renderInfo => {
+                                    currentCommand.innerHTML = JSON.stringify(renderInfo);
                                 });
                         });
                     });
@@ -407,7 +407,7 @@
             <button onclick="getQueryParams()">Show current query params</button>
             <button onclick="getGlobalParams()">Show all global params</button>
             <button onclick="getReferencedGlobalParams()">Show Refernced global params</button>
-            <button onclick="getVisualizationOptions()">Show Visualization Options</button>
+            <button onclick="getRenderInfo()">Show Visualization Options</button>
         </div>
         <div id="currentCommand"></div>
     </body>

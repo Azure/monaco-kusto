@@ -33,6 +33,7 @@ import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
 import { Database, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
+import { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 
 let List = System.Collections.Generic.List$1;
 
@@ -137,7 +138,7 @@ export interface LanguageService {
     getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]>;
     getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]>;
     getReferencedGlobalParams(document: ls.TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
-    getVisualizationOptions(document: ls.TextDocument, cursorOffset: number): Promise<RenderOptions | undefined>;
+    getRenderInfo(document: ls.TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
 }
 
 export interface LanguageSettings {
@@ -148,49 +149,6 @@ export interface LanguageSettings {
     useTokenColorization?: boolean;
     disabledCompletionItems?: string[];
 }
-
-export declare type VisualizationType =
-    | 'anomalychart'
-    | 'areachart'
-    | 'barchart'
-    | 'columnchart'
-    | 'ladderchart'
-    | 'linechart'
-    | 'piechart'
-    | 'pivotchart'
-    | 'scatterchart'
-    | 'stackedareachart'
-    | 'timechart'
-    | 'table'
-    | 'timeline'
-    | 'timepivot'
-    | 'card';
-
-export declare type Scale = 'linear' | 'log';
-export declare type LegendVisibility = 'visible' | 'hidden';
-export declare type YSplit = 'none' | 'axes' | 'panels';
-export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100';
-
-export interface RenderOptions {
-    visualization?: VisualizationType;
-    title?: string;
-    xcolumn?: string;
-    series?: string[];
-    ycolumns?: string[];
-    xtitle?: string;
-    ytitle?: string;
-    xaxis?: Scale;
-    yaxis?: Scale;
-    legend?: LegendVisibility;
-    ySplit?: YSplit;
-    accumulate?: boolean;
-    kind?: Kind;
-    anomalycolumns?: string[];
-    ymin?: number;
-    ymax?: number;
-}
-
-export type RenderOptionKeys = keyof RenderOptions;
 
 export type CmSchema = {
     accounts: k.KustoIntelliSenseAccountEntity[];
@@ -980,15 +938,8 @@ class KustoLanguageService implements LanguageService {
         }
 
         const script = this.parseDocumentV2(document);
-        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
 
-        if (!currentBlock) {
-            return Promise.as([]);
-        }
-
-        const text = currentBlock.Text;
-
-        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
+        const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
 
         const queryParamStatements = this.toArray(
             parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.QueryParametersStatement)
@@ -1009,7 +960,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.as(queryParams);
     }
 
-    getVisualizationOptions(document: ls.TextDocument, cursorOffset: number): Promise<RenderOptions | undefined> {
+    getRenderInfo(document: ls.TextDocument, cursorOffset: number): Promise<RenderInfo | undefined> {
         const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
         if (!parsedAndAnalyzed) {
             return Promise.as(undefined);
@@ -1025,6 +976,10 @@ class KustoLanguageService implements LanguageService {
 
         // assuming a single render statement
         const renderStatement = renderStatements[0] as Kusto.Language.Syntax.RenderOperator;
+
+        // Start and end relative to block start.
+        const startOffset = renderStatement.TextStart;
+        const endOffset = renderStatement.End;
 
         const visualization: VisualizationType = renderStatement.ChartType.Text as VisualizationType;
 
@@ -1074,7 +1029,12 @@ class KustoLanguageService implements LanguageService {
             {} as RenderOptions
         );
 
-        return Promise.as({ visualization, ...props });
+        const renderOptions: RenderOptions = { visualization, ...props };
+        const renderInfo: RenderInfo = {
+            options: renderOptions,
+            location: { startOffset, endOffset }
+        };
+        return Promise.as(renderInfo);
     }
 
     getReferencedGlobalParams(

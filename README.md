@@ -103,7 +103,7 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 #### Added
 
--   Added `getVisualizationOptions` that returns the render command visualization options in a query.
+-   Added `getRenderInfo` that returns the render command visualization options in a query.
 
 ### 2.0.5
 
