@@ -13,6 +13,7 @@ import {
 import * as ls from 'vscode-languageserver-types';
 import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
 import { ColorizationRange } from './languageService/kustoLanguageService';
+import { RenderInfo } from './languageService/renderInfo';
 
 export class KustoWorker {
     // --- model sync -----------------------
@@ -105,6 +106,21 @@ export class KustoWorker {
         }
 
         return referencedParams;
+    }
+
+    getRenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`getRenderInfo: document is ${document}. uri is ${uri}`);
+        }
+
+        return this._languageService.getRenderInfo(document, cursorOffset).then(result => {
+            if (!result) {
+                return null;
+            }
+
+            return result;
+        });
     }
 
     /**

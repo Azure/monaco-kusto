@@ -16,174 +16,188 @@ import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
 import { EngineSchema, Schema } from './languageService/schema';
 
 export interface WorkerAccessor {
-	(first: Uri, ...more: Uri[]): Promise<KustoWorker>
+    (first: Uri, ...more: Uri[]): Promise<KustoWorker>;
 }
 
 // --- diagnostics ---
 
 export class DiagnosticsAdapter {
+    private _disposables: IDisposable[] = [];
+    private _contentListener: { [uri: string]: IDisposable } = Object.create(null);
+    private _configurationListener: { [uri: string]: IDisposable } = Object.create(null);
+    private _schemaListener: { [uri: string]: IDisposable } = Object.create(null);
 
-	private _disposables: IDisposable[] = [];
-	private _contentListener: { [uri: string]: IDisposable } = Object.create(null);
-	private _configurationListener: {[uri: string] : IDisposable} = Object.create(null);
-	private _schemaListener: {[uri: string] : IDisposable} = Object.create(null);
+    constructor(
+        private _languageId: string,
+        private _worker: WorkerAccessor,
+        defaults: LanguageServiceDefaultsImpl,
+        onSchemaChange: monaco.IEvent<Schema>
+    ) {
+        const onModelAdd = (model: monaco.editor.IModel): void => {
+            let modeId = model.getModeId();
+            if (modeId !== this._languageId) {
+                return;
+            }
 
-	constructor(private _languageId: string, private _worker: WorkerAccessor, defaults: LanguageServiceDefaultsImpl, onSchemaChange: monaco.IEvent<Schema>) {
-		const onModelAdd = (model: monaco.editor.IModel): void => {
-			let modeId = model.getModeId();
-			if (modeId !== this._languageId) {
-				return;
-			}
+            const debouncedValidation = _.debounce(
+                (intervals?: { start: number; end: number }[]) => this._doValidate(model, modeId, intervals),
+                500
+            );
 
-			const debouncedValidation = _.debounce(
-				(intervals?: {start: number, end: number}[]) =>
-					this._doValidate(model, modeId, intervals),
-				500
-			);
+            this._contentListener[model.uri.toString()] = model.onDidChangeContent(e => {
+                const intervalsToValidate = changeEventToIntervals(e);
+                debouncedValidation(intervalsToValidate);
+            });
 
-			this._contentListener[model.uri.toString()] = model.onDidChangeContent(e => {
-				const intervalsToValidate = changeEventToIntervals(e);
-				debouncedValidation(intervalsToValidate)
-			});
+            this._configurationListener[model.uri.toString()] = defaults.onDidChange(() => {
+                self.setTimeout(() => this._doValidate(model, modeId, []), 0);
+            });
 
-			this._configurationListener[model.uri.toString()] = defaults.onDidChange(() => {
-				self.setTimeout(() => this._doValidate(model, modeId, []), 0);
-			});
+            this._schemaListener[model.uri.toString()] = onSchemaChange(() => {
+                self.setTimeout(() => this._doValidate(model, modeId, []), 0);
+            });
+        };
 
-			this._schemaListener[model.uri.toString()] = onSchemaChange(() => {
-				self.setTimeout(() => this._doValidate(model, modeId, []), 0);
-			})
-		};
+        const onModelRemoved = (model: monaco.editor.IModel): void => {
+            monaco.editor.setModelMarkers(model, this._languageId, []);
 
-		const onModelRemoved = (model: monaco.editor.IModel): void => {
-			monaco.editor.setModelMarkers(model, this._languageId, []);
+            let uriStr = model.uri.toString();
 
-			let uriStr = model.uri.toString();
+            let contentListener = this._contentListener[uriStr];
+            if (contentListener) {
+                contentListener.dispose();
+                delete this._contentListener[uriStr];
+            }
 
-			let contentListener = this._contentListener[uriStr];
-			if (contentListener) {
-				contentListener.dispose();
-				delete this._contentListener[uriStr];
-			}
+            let configurationListener = this._configurationListener[uriStr];
+            if (configurationListener) {
+                configurationListener.dispose();
+                delete this._configurationListener[uriStr];
+            }
 
-			let configurationListener = this._configurationListener[uriStr];
-			if (configurationListener) {
-				configurationListener.dispose();
-				delete this._configurationListener[uriStr];
-			}
+            let schemaListener = this._schemaListener[uriStr];
+            if (schemaListener) {
+                schemaListener.dispose();
+                delete this._schemaListener[uriStr];
+            }
+        };
 
-			let schemaListener = this._schemaListener[uriStr];
-			if (schemaListener) {
-				schemaListener.dispose();
-				delete this._schemaListener[uriStr];
-			}
-		};
+        this._disposables.push(monaco.editor.onDidCreateModel(onModelAdd));
+        this._disposables.push(monaco.editor.onWillDisposeModel(onModelRemoved));
+        this._disposables.push(
+            monaco.editor.onDidChangeModelLanguage(event => {
+                onModelRemoved(event.model);
+                onModelAdd(event.model);
+            })
+        );
 
-		this._disposables.push(monaco.editor.onDidCreateModel(onModelAdd));
-		this._disposables.push(monaco.editor.onWillDisposeModel(onModelRemoved));
-		this._disposables.push(monaco.editor.onDidChangeModelLanguage(event => {
-			onModelRemoved(event.model);
-			onModelAdd(event.model);
-		}));
+        this._disposables.push({
+            dispose: () => {
+                for (let key in this._contentListener) {
+                    this._contentListener[key].dispose();
+                }
+            }
+        });
 
-		this._disposables.push({
-			dispose: () => {
-				for (let key in this._contentListener) {
-					this._contentListener[key].dispose();
-				}
-			}
-		});
+        monaco.editor.getModels().forEach(onModelAdd);
+    }
 
-		monaco.editor.getModels().forEach(onModelAdd);
-	}
+    public dispose(): void {
+        this._disposables.forEach(d => d && d.dispose());
+        this._disposables = [];
+    }
 
-	public dispose(): void {
-		this._disposables.forEach(d => d && d.dispose());
-		this._disposables = [];
-	}
+    private _doValidate(
+        model: monaco.editor.IModel,
+        languageId: string,
+        intervals: { start: number; end: number }[]
+    ): void {
+        if (model.isDisposed()) {
+            return;
+        }
+        const resource = model.uri;
+        const versionNumberBefore = model.getVersionId();
+        this._worker(resource)
+            .then(worker => {
+                return worker.doValidation(resource.toString(), intervals);
+            })
+            .then(diagnostics => {
+                const newModel = monaco.editor.getModel(resource);
+                const versionId = newModel.getVersionId();
 
-	private _doValidate(model: monaco.editor.IModel, languageId: string, intervals: {start: number, end: number}[]): void {
-		if (model.isDisposed()) {
-			return;
-		}
-		const resource = model.uri;
-		const versionNumberBefore = model.getVersionId();
-		this._worker(resource).then(worker => {
-			return worker.doValidation(resource.toString(), intervals);
-		}).then(diagnostics => {
-			const newModel = monaco.editor.getModel(resource);
-			const versionId = newModel.getVersionId();
+                if (versionId !== versionNumberBefore) {
+                    return;
+                }
 
-			if (versionId !== versionNumberBefore) {
-				return;
-			}
-
-			const markers = diagnostics.map(d => toDiagnostics(resource, d));
-			let model = monaco.editor.getModel(resource);
-			if (model && model.getModeId() === languageId) {
-				monaco.editor.setModelMarkers(model, languageId, markers);
-			}
-		}).then(undefined, err => {
-			console.error(err);
-		});
-	}
+                const markers = diagnostics.map(d => toDiagnostics(resource, d));
+                let model = monaco.editor.getModel(resource);
+                if (model && model.getModeId() === languageId) {
+                    monaco.editor.setModelMarkers(model, languageId, markers);
+                }
+            })
+            .then(undefined, err => {
+                console.error(err);
+            });
+    }
 }
 
-
 function changeEventToIntervals(e: monaco.editor.IModelContentChangedEvent) {
-	return e.changes.map(change => ({
-		start: change.rangeOffset,
-		end: change.rangeOffset + change.text.length
-	}));
+    return e.changes.map(change => ({
+        start: change.rangeOffset,
+        end: change.rangeOffset + change.text.length
+    }));
 }
 
 function toSeverity(lsSeverity: number): monaco.MarkerSeverity {
-	switch (lsSeverity) {
-		case ls.DiagnosticSeverity.Error: return monaco.MarkerSeverity.Error;
-		case ls.DiagnosticSeverity.Warning: return monaco.MarkerSeverity.Warning;
-		case ls.DiagnosticSeverity.Information: return monaco.MarkerSeverity.Info;
-		case ls.DiagnosticSeverity.Hint: return monaco.MarkerSeverity.Hint;
-		default:
-			return monaco.MarkerSeverity.Info;
-	}
+    switch (lsSeverity) {
+        case ls.DiagnosticSeverity.Error:
+            return monaco.MarkerSeverity.Error;
+        case ls.DiagnosticSeverity.Warning:
+            return monaco.MarkerSeverity.Warning;
+        case ls.DiagnosticSeverity.Information:
+            return monaco.MarkerSeverity.Info;
+        case ls.DiagnosticSeverity.Hint:
+            return monaco.MarkerSeverity.Hint;
+        default:
+            return monaco.MarkerSeverity.Info;
+    }
 }
 
 function toDiagnostics(resource: Uri, diag: ls.Diagnostic): monaco.editor.IMarkerData {
-	let code = typeof diag.code === 'number' ? String(diag.code) : <string>diag.code;
+    let code = typeof diag.code === 'number' ? String(diag.code) : <string>diag.code;
 
-	return {
-		severity: toSeverity(diag.severity),
-		startLineNumber: diag.range.start.line + 1,
-		startColumn: diag.range.start.character + 1,
-		endLineNumber: diag.range.end.line + 1,
-		endColumn: diag.range.end.character + 1,
-		message: diag.message,
-		code: code,
-		source: diag.source
-	};
+    return {
+        severity: toSeverity(diag.severity),
+        startLineNumber: diag.range.start.line + 1,
+        startColumn: diag.range.start.character + 1,
+        endLineNumber: diag.range.end.line + 1,
+        endColumn: diag.range.end.character + 1,
+        message: diag.message,
+        code: code,
+        source: diag.source
+    };
 }
 
 // --- colorization ---
 function fromIRange(range: monaco.IRange): ls.Range {
-	if (!range) {
-		return undefined;
-	}
+    if (!range) {
+        return undefined;
+    }
 
-	if (range instanceof monaco.Range) {
-		return { start: fromPosition( range.getStartPosition()), end: fromPosition(range.getEndPosition()) };
-	}
+    if (range instanceof monaco.Range) {
+        return { start: fromPosition(range.getStartPosition()), end: fromPosition(range.getEndPosition()) };
+    }
 
-	const { startLineNumber, startColumn, endLineNumber, endColumn} = range;
-	range = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
-
+    const { startLineNumber, startColumn, endLineNumber, endColumn } = range;
+    range = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
 }
 
 function fromIModelContentChange(change: monaco.editor.IModelContentChange): ls.TextDocumentContentChangeEvent {
-	return {
-		range: fromIRange(change.range),
-		text: change.text,
-		rangeLength: change.rangeLength
-	}
+    return {
+        range: fromIRange(change.range),
+        text: change.text,
+        rangeLength: change.rangeLength
+    };
 }
 
 type kinds = keyof typeof ClassificationKind;
@@ -205,225 +219,252 @@ type kinds = keyof typeof ClassificationKind;
 // { token: 'number', foreground: '191970' }, // LetVariablesToken MidnightBlue
 // { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
 // { token: 'invalid', background: 'cd3131' },
-const classificationToColorLight: {[K in kinds]: string} = {
-	Column: 'C71585',
-	Comment: '008000',
-	Database: 'C71585',
-	Function: '0000FF',
-	Identifier: '000000',
-	Keyword: '0000FF',
-	Literal: 'B22222',
-	ScalarOperator: '000000',
-	MathOperator: '000000',
-	Command: '0000FF',
-	Parameter: '2B91AF',
-	PlainText: '000000',
-	Punctuation: '000000',
-	QueryOperator: 'CC3700',
-	QueryParameter: 'CC3700',
-	StringLiteral: 'B22222',
-	Table: 'C71585',
-	Type: '0000FF',
-	Variable: '191970',
-	Directive: '9400D3',
-	ClientParameter: 'b5cea8'
-}
+const classificationToColorLight: { [K in kinds]: string } = {
+    Column: 'C71585',
+    Comment: '008000',
+    Database: 'C71585',
+    Function: '0000FF',
+    Identifier: '000000',
+    Keyword: '0000FF',
+    Literal: 'B22222',
+    ScalarOperator: '000000',
+    MathOperator: '000000',
+    Command: '0000FF',
+    Parameter: '2B91AF',
+    PlainText: '000000',
+    Punctuation: '000000',
+    QueryOperator: 'CC3700',
+    QueryParameter: 'CC3700',
+    StringLiteral: 'B22222',
+    Table: 'C71585',
+    Type: '0000FF',
+    Variable: '191970',
+    Directive: '9400D3',
+    ClientParameter: 'b5cea8'
+};
 
-const classificationToColorDark: {[K in kinds]: string} = {
-	Column: '4ec9b0',
-	Comment: '608B4E',
-	Database: 'c586c0',
-	Function: 'dcdcaa',
-	Identifier: 'd4d4d4',
-	Keyword: '569cd6',
-	Literal: 'ce9178',
-	ScalarOperator: 'd4d4d4',
-	MathOperator: 'd4d4d4',
-	Command: 'd4d4d4',
-	Parameter: '2B91AF',
-	PlainText: 'd4d4d4',
-	Punctuation: 'd4d4d4',
-	QueryOperator: '9cdcfe',
-	QueryParameter: '9cdcfe',
-	StringLiteral: 'ce9178',
-	Table: 'c586c0',
-	Type: '569cd6',
-	Variable: 'd7ba7d',
-	Directive: 'b5cea8',
-	ClientParameter: 'b5cea8'
-}
+const classificationToColorDark: { [K in kinds]: string } = {
+    Column: '4ec9b0',
+    Comment: '608B4E',
+    Database: 'c586c0',
+    Function: 'dcdcaa',
+    Identifier: 'd4d4d4',
+    Keyword: '569cd6',
+    Literal: 'ce9178',
+    ScalarOperator: 'd4d4d4',
+    MathOperator: 'd4d4d4',
+    Command: 'd4d4d4',
+    Parameter: '2B91AF',
+    PlainText: 'd4d4d4',
+    Punctuation: 'd4d4d4',
+    QueryOperator: '9cdcfe',
+    QueryParameter: '9cdcfe',
+    StringLiteral: 'ce9178',
+    Table: 'c586c0',
+    Type: '569cd6',
+    Variable: 'd7ba7d',
+    Directive: 'b5cea8',
+    ClientParameter: 'b5cea8'
+};
 
 export class ColorizationAdapter {
+    private _disposables: IDisposable[] = [];
+    private _contentListener: { [uri: string]: IDisposable } = Object.create(null);
+    private _configurationListener: { [uri: string]: IDisposable } = Object.create(null);
+    private _schemaListener: { [uri: string]: IDisposable } = Object.create(null);
+    private decorations: string[] = [];
 
-	private _disposables: IDisposable[] = [];
-	private _contentListener: { [uri: string]: IDisposable } = Object.create(null);
-	private _configurationListener: {[uri: string] : IDisposable} = Object.create(null);
-	private _schemaListener: {[uri: string] : IDisposable} = Object.create(null);
-	private decorations: string[] = [];
+    constructor(
+        private _languageId: string,
+        private _worker: WorkerAccessor,
+        defaults: LanguageServiceDefaultsImpl,
+        onSchemaChange: monaco.IEvent<Schema>
+    ) {
+        injectCss();
 
-	constructor(private _languageId: string, private _worker: WorkerAccessor, defaults: LanguageServiceDefaultsImpl, onSchemaChange: monaco.IEvent<Schema>) {
-		injectCss();
+        const onModelAdd = (model: monaco.editor.IModel): void => {
+            let modeId = model.getModeId();
+            if (modeId !== this._languageId) {
+                return;
+            }
 
-		const onModelAdd = (model: monaco.editor.IModel): void => {
+            const debouncedColorization = _.debounce(
+                (intervals?: { start: number; end: number }[]) => this._doColorization(model, modeId, intervals),
+                500
+            );
 
-			let modeId = model.getModeId();
-			if (modeId !== this._languageId) {
-				return;
-			}
+            let handle: number;
+            this._contentListener[model.uri.toString()] = model.onDidChangeContent(e => {
+                // Changes are represented as a range in doc before change, plus the text that it was replaced with.
+                // We are interested in the range _after_ the change (since that's what we need to colorize).
+                // folowing logic calculates that.
+                const intervalsToColorize = changeEventToIntervals(e);
+                debouncedColorization(intervalsToColorize);
+            });
 
-			const debouncedColorization = _.debounce((intervals?: {start: number, end: number}[]) =>
-				this._doColorization(model, modeId, intervals), 500
-			);
+            this._configurationListener[model.uri.toString()] = defaults.onDidChange(() => {
+                self.setTimeout(() => this._doColorization(model, modeId, []), 0);
+            });
 
-			let handle: number;
-			this._contentListener[model.uri.toString()] = model.onDidChangeContent(e => {
-				// Changes are represented as a range in doc before change, plus the text that it was replaced with.
-				// We are interested in the range _after_ the change (since that's what we need to colorize).
-				// folowing logic calculates that.
-				const intervalsToColorize = changeEventToIntervals(e);
-				debouncedColorization(intervalsToColorize);
-			});
+            this._schemaListener[model.uri.toString()] = onSchemaChange(() => {
+                self.setTimeout(() => this._doColorization(model, modeId, []), 0);
+            });
+        };
 
-			this._configurationListener[model.uri.toString()] = defaults.onDidChange(() => {
-				self.setTimeout(() => this._doColorization(model, modeId, []), 0);
-			});
+        const onModelRemoved = (model: monaco.editor.IModel): void => {
+            model.deltaDecorations(this.decorations, []);
 
-			this._schemaListener[model.uri.toString()] = onSchemaChange(() => {
-				self.setTimeout(() => this._doColorization(model, modeId, []), 0);
-			});
-		};
+            let uriStr = model.uri.toString();
 
-		const onModelRemoved = (model: monaco.editor.IModel): void => {
-			model.deltaDecorations(this.decorations, []);
+            let contentListener = this._contentListener[uriStr];
+            if (contentListener) {
+                contentListener.dispose();
+                delete this._contentListener[uriStr];
+            }
 
-			let uriStr = model.uri.toString();
+            let configurationListener = this._configurationListener[uriStr];
+            if (configurationListener) {
+                configurationListener.dispose();
+                delete this._configurationListener[uriStr];
+            }
 
-			let contentListener = this._contentListener[uriStr];
-			if (contentListener) {
-				contentListener.dispose();
-				delete this._contentListener[uriStr];
-			}
+            let schemaListener = this._configurationListener[uriStr];
+            if (schemaListener) {
+                schemaListener.dispose();
+                delete this._schemaListener[uriStr];
+            }
+        };
 
-			let configurationListener = this._configurationListener[uriStr];
-			if (configurationListener) {
-				configurationListener.dispose();
-				delete this._configurationListener[uriStr];
-			}
+        this._disposables.push(monaco.editor.onDidCreateModel(onModelAdd));
+        this._disposables.push(monaco.editor.onWillDisposeModel(onModelRemoved));
+        this._disposables.push(
+            monaco.editor.onDidChangeModelLanguage(event => {
+                onModelRemoved(event.model);
+                onModelAdd(event.model);
+            })
+        );
 
-			let schemaListener = this._configurationListener[uriStr];
-			if (schemaListener) {
-				schemaListener.dispose();
-				delete this._schemaListener[uriStr];
-			}
+        this._disposables.push({
+            dispose: () => {
+                for (let key in this._contentListener) {
+                    this._contentListener[key].dispose();
+                }
+            }
+        });
 
-		};
+        monaco.editor.getModels().forEach(onModelAdd);
+    }
 
-		this._disposables.push(monaco.editor.onDidCreateModel(onModelAdd));
-		this._disposables.push(monaco.editor.onWillDisposeModel(onModelRemoved));
-		this._disposables.push(monaco.editor.onDidChangeModelLanguage(event => {
-			onModelRemoved(event.model);
-			onModelAdd(event.model);
-		}));
+    public dispose(): void {
+        this._disposables.forEach(d => d && d.dispose());
+        this._disposables = [];
+    }
 
-		this._disposables.push({
-			dispose: () => {
-				for (let key in this._contentListener) {
-					this._contentListener[key].dispose();
-				}
-			}
-		});
+    /**
+     * Return true if the range doesn't intersect any of the line ranges.
+     * @param range Range
+     * @param impactedLineRanges an array of line ranges
+     */
+    private _rangeDoesNotIntersectAny(
+        range: Range,
+        impactedLineRanges: { firstImpactedLine: number; lastImpactedLine: number }[]
+    ) {
+        return impactedLineRanges.every(
+            lineRange =>
+                range.startLineNumber > lineRange.lastImpactedLine || range.endLineNumber < lineRange.firstImpactedLine
+        );
+    }
 
-		monaco.editor.getModels().forEach(onModelAdd);
-	}
+    private _doColorization(
+        model: monaco.editor.IModel,
+        languageId: string,
+        intervals: { start: number; end: number }[]
+    ): void {
+        if (model.isDisposed()) {
+            return;
+        }
+        const resource = model.uri;
+        const versionNumberBeforeColorization = model.getVersionId();
+        this._worker(resource)
+            .then(worker => {
+                return worker.doColorization(resource.toString(), intervals);
+            })
+            .then(colorizationRanges => {
+                const newModel = monaco.editor.getModel(model.uri);
+                const versionId = newModel.getVersionId();
 
-	public dispose(): void {
-		this._disposables.forEach(d => d && d.dispose());
-		this._disposables = [];
-	}
+                // don't colorize an older version of the document.
+                if (versionId !== versionNumberBeforeColorization) {
+                    return;
+                }
 
-	/**
-	 * Return true if the range doesn't intersect any of the line ranges.
-	 * @param range Range
-	 * @param impactedLineRanges an array of line ranges
-	 */
-	private _rangeDoesNotIntersectAny(range: Range, impactedLineRanges: {firstImpactedLine: number, lastImpactedLine: number}[]) {
-		return impactedLineRanges.every(lineRange =>
-			range.startLineNumber > lineRange.lastImpactedLine || range.endLineNumber < lineRange.firstImpactedLine
-		);
-	}
+                const decorationRanges = colorizationRanges.map(colorizationRange => {
+                    const decorations = colorizationRange.classifications
+                        .map(classification => toDecoration(model, classification))
+                        // The following line will prevent things that aren't going to be colorized anyway to get a CSS class.
+                        // This will prevent the case where the non-semantic colorizer already figured out that a keyword needs
+                        // to be colorized, but the outdated semantic colorizer still thinks it's a plain text and wants it colored
+                        // in black.
+                        .filter(
+                            d => d.options.inlineClassName !== 'PlainText' && d.options.inlineClassName != 'Identifier'
+                        );
+                    const firstImpactedLine = model.getPositionAt(colorizationRange.absoluteStart).lineNumber;
+                    const endPosition = model.getPositionAt(colorizationRange.absoluteEnd);
 
-	private _doColorization(model: monaco.editor.IModel, languageId: string, intervals: {start: number, end: number}[]): void {
-		if (model.isDisposed()) {
-			return;
-		}
-		const resource = model.uri;
-		const versionNumberBeforeColorization = model.getVersionId();
-		this._worker(resource).then(worker => {
-			return worker.doColorization(resource.toString(), intervals);
-		}).then(colorizationRanges => {
-			const newModel = monaco.editor.getModel(model.uri);
-			const versionId = newModel.getVersionId();
+                    // A token that ends in the first column of the next line is not considered to be part of that line.
+                    const lastImpactedLine =
+                        endPosition.column == 1 && endPosition.lineNumber > 1
+                            ? endPosition.lineNumber - 1
+                            : endPosition.lineNumber;
 
-			// don't colorize an older version of the document.
-			if (versionId !== versionNumberBeforeColorization) {
-				return;
-			}
+                    return { decorations, firstImpactedLine, lastImpactedLine };
+                });
 
-			const decorationRanges = colorizationRanges.map(colorizationRange => {
-				const decorations = colorizationRange.classifications
-					.map(classification => toDecoration(model, classification))
-					// The following line will prevent things that aren't going to be colorized anyway to get a CSS class.
-					// This will prevent the case where the non-semantic colorizer already figured out that a keyword needs
-					// to be colorized, but the outdated semantic colorizer still thinks it's a plain text and wants it colored
-					// in black.
-					.filter(d => d.options.inlineClassName !== 'PlainText' && d.options.inlineClassName != 'Identifier')
-				const firstImpactedLine = model.getPositionAt(colorizationRange.absoluteStart).lineNumber;
-				const endPosition = model.getPositionAt(colorizationRange.absoluteEnd);
+                // Compute the previous decorations we want to replace with the new ones.
+                const oldDecorations = decorationRanges
+                    .map(range =>
+                        model
+                            .getLinesDecorations(range.firstImpactedLine, range.lastImpactedLine)
+                            .filter(d => classificationToColorLight[d.options.inlineClassName]) // Don't delete any other decorations
+                            .map(d => d.id)
+                    )
+                    .reduce((prev, curr) => prev.concat(curr), []);
 
-				// A token that ends in the first column of the next line is not considered to be part of that line.
-				const lastImpactedLine = endPosition.column == 1 && endPosition.lineNumber > 1
-					? endPosition.lineNumber - 1
-					: endPosition.lineNumber;
+                // Flatten decoration groups to an array of decorations
+                const newDecorations = decorationRanges.reduce(
+                    (prev: monaco.editor.IModelDeltaDecoration[], next) => prev.concat(next.decorations),
+                    []
+                );
 
-				return {decorations, firstImpactedLine, lastImpactedLine}
-			});
-
-			// Compute the previous decorations we want to replace with the new ones.
-			const oldDecorations = decorationRanges
-				.map(range => model
-					.getLinesDecorations(range.firstImpactedLine, range.lastImpactedLine)
-					.filter(d => classificationToColorLight[d.options.inlineClassName]) // Don't delete any other decorations
-					.map(d => d.id))
-				.reduce((prev, curr) => prev.concat(curr), []);
-
-			// Flatten decoration groups to an array of decorations
-			const newDecorations = decorationRanges.reduce((prev: monaco.editor.IModelDeltaDecoration[], next) => prev.concat(next.decorations), []);
-
-			if (model && model.getModeId() === languageId) {
-				this.decorations = model.deltaDecorations(oldDecorations, newDecorations);
-			}
-		}).then(undefined, err => {
-			console.error(err);
-		});
-	}
+                if (model && model.getModeId() === languageId) {
+                    this.decorations = model.deltaDecorations(oldDecorations, newDecorations);
+                }
+            })
+            .then(undefined, err => {
+                console.error(err);
+            });
+    }
 }
 
 /**
  * Gets all keys of an enum (the string keys not the numeric values).
  * @param e Enum type
  */
-function getEnumKeys<E>(e: any ) {
-    return Object.keys(e).filter(k => (typeof e[k]) === "number");
+function getEnumKeys<E>(e: any) {
+    return Object.keys(e).filter(k => typeof e[k] === 'number');
 }
 
 /**
  * Generates a mapping between ClassificationKind and color.
  */
-function getClassificationColorTriplets(): {classification: string, colorLight: string, colorDark: string}[] {
-	const keys = getEnumKeys(ClassificationKind);
-	const result =  keys
-		.map(key => ({classification:key, colorLight: classificationToColorLight[key], colorDark: classificationToColorDark[key]}));
-	return result;
+function getClassificationColorTriplets(): { classification: string; colorLight: string; colorDark: string }[] {
+    const keys = getEnumKeys(ClassificationKind);
+    const result = keys.map(key => ({
+        classification: key,
+        colorLight: classificationToColorLight[key],
+        colorDark: classificationToColorDark[key]
+    }));
+    return result;
 }
 
 /**
@@ -434,10 +475,14 @@ function getClassificationColorTriplets(): {classification: string, colorLight: 
  * .vs .Comment {color: '#111111';} .vs-dark .Comment {color: '#EEEEEE';}
  */
 function getCssForClassification(): string {
-	const classificationColorTriplets = getClassificationColorTriplets();
-	const cssInnerHtml = classificationColorTriplets.map(pair =>
-		`.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`).join('\n');
-	return cssInnerHtml;
+    const classificationColorTriplets = getClassificationColorTriplets();
+    const cssInnerHtml = classificationColorTriplets
+        .map(
+            pair =>
+                `.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`
+        )
+        .join('\n');
+    return cssInnerHtml;
 }
 
 /**
@@ -445,356 +490,430 @@ function getCssForClassification(): string {
  * TODO: make idempotent
  */
 function injectCss(): any {
-	const container = document.getElementsByTagName('head')[0];
-	var style = document.createElement('style');
-	style.type = 'text/css';
-	style.media = 'screen';
-	container.appendChild(style);
-	ClassificationKind
-	style.innerHTML = getCssForClassification();
+    const container = document.getElementsByTagName('head')[0];
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.media = 'screen';
+    container.appendChild(style);
+    ClassificationKind;
+    style.innerHTML = getCssForClassification();
 }
 
-function toDecoration(model: monaco.editor.ITextModel, classification: Kusto.Language.Editor.ClassifiedRange): monaco.editor.IModelDeltaDecoration {
-	const start = model.getPositionAt(classification.Start);
-	const end = model.getPositionAt(classification.Start + classification.Length);
-	const range = new Range(start.lineNumber, start.column, end.lineNumber, end.column);
-	const inlineClassName = (ClassificationKind as any).$names[classification.Kind];
-	return {
-		range,
-		options: {
-			inlineClassName,
-			stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
-		}
-	};
+function toDecoration(
+    model: monaco.editor.ITextModel,
+    classification: Kusto.Language.Editor.ClassifiedRange
+): monaco.editor.IModelDeltaDecoration {
+    const start = model.getPositionAt(classification.Start);
+    const end = model.getPositionAt(classification.Start + classification.Length);
+    const range = new Range(start.lineNumber, start.column, end.lineNumber, end.column);
+    const inlineClassName = (ClassificationKind as any).$names[classification.Kind];
+    return {
+        range,
+        options: {
+            inlineClassName,
+            stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
+        }
+    };
 }
 // --- completion ------
 
 function fromPosition(position: Position): ls.Position {
-	if (!position) {
-		return void 0;
-	}
-	return { character: position.column - 1, line: position.lineNumber - 1 };
+    if (!position) {
+        return void 0;
+    }
+    return { character: position.column - 1, line: position.lineNumber - 1 };
 }
 
 function fromRange(range: Range): ls.Range {
-	if (!range) {
-		return void 0;
-	}
-	return { start: fromPosition(range.getStartPosition()), end: fromPosition(range.getEndPosition()) };
+    if (!range) {
+        return void 0;
+    }
+    return { start: fromPosition(range.getStartPosition()), end: fromPosition(range.getEndPosition()) };
 }
 
 function toRange(range: ls.Range): Range {
-	if (!range) {
-		return void 0;
-	}
-	return new Range(range.start.line + 1, range.start.character + 1, range.end.line + 1, range.end.character + 1);
+    if (!range) {
+        return void 0;
+    }
+    return new Range(range.start.line + 1, range.start.character + 1, range.end.line + 1, range.end.character + 1);
 }
 
 function toCompletionItemKind(kind: number): monaco.languages.CompletionItemKind {
-	let mItemKind = monaco.languages.CompletionItemKind;
+    let mItemKind = monaco.languages.CompletionItemKind;
 
-	switch (kind) {
-		case ls.CompletionItemKind.Text: return mItemKind.Text;
-		case ls.CompletionItemKind.Method: return mItemKind.Method;
-		case ls.CompletionItemKind.Function: return mItemKind.Function;
-		case ls.CompletionItemKind.Constructor: return mItemKind.Constructor;
-		case ls.CompletionItemKind.Field: return mItemKind.Field;
-		case ls.CompletionItemKind.Variable: return mItemKind.Variable;
-		case ls.CompletionItemKind.Class: return mItemKind.Class;
-		case ls.CompletionItemKind.Interface: return mItemKind.Interface;
-		case ls.CompletionItemKind.Module: return mItemKind.Module;
-		case ls.CompletionItemKind.Property: return mItemKind.Property;
-		case ls.CompletionItemKind.Unit: return mItemKind.Unit;
-		case ls.CompletionItemKind.Value: return mItemKind.Value;
-		case ls.CompletionItemKind.Enum: return mItemKind.Enum;
-		case ls.CompletionItemKind.Keyword: return mItemKind.Keyword;
-		case ls.CompletionItemKind.Snippet: return mItemKind.Snippet;
-		case ls.CompletionItemKind.Color: return mItemKind.Color;
-		case ls.CompletionItemKind.File: return mItemKind.File;
-		case ls.CompletionItemKind.Reference: return mItemKind.Reference;
-	}
-	return mItemKind.Property;
+    switch (kind) {
+        case ls.CompletionItemKind.Text:
+            return mItemKind.Text;
+        case ls.CompletionItemKind.Method:
+            return mItemKind.Method;
+        case ls.CompletionItemKind.Function:
+            return mItemKind.Function;
+        case ls.CompletionItemKind.Constructor:
+            return mItemKind.Constructor;
+        case ls.CompletionItemKind.Field:
+            return mItemKind.Field;
+        case ls.CompletionItemKind.Variable:
+            return mItemKind.Variable;
+        case ls.CompletionItemKind.Class:
+            return mItemKind.Class;
+        case ls.CompletionItemKind.Interface:
+            return mItemKind.Interface;
+        case ls.CompletionItemKind.Module:
+            return mItemKind.Module;
+        case ls.CompletionItemKind.Property:
+            return mItemKind.Property;
+        case ls.CompletionItemKind.Unit:
+            return mItemKind.Unit;
+        case ls.CompletionItemKind.Value:
+            return mItemKind.Value;
+        case ls.CompletionItemKind.Enum:
+            return mItemKind.Enum;
+        case ls.CompletionItemKind.Keyword:
+            return mItemKind.Keyword;
+        case ls.CompletionItemKind.Snippet:
+            return mItemKind.Snippet;
+        case ls.CompletionItemKind.Color:
+            return mItemKind.Color;
+        case ls.CompletionItemKind.File:
+            return mItemKind.File;
+        case ls.CompletionItemKind.Reference:
+            return mItemKind.Reference;
+    }
+    return mItemKind.Property;
 }
 
 function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
-	if (!textEdit) {
-		return void 0;
-	}
-	return {
-		range: toRange(textEdit.range),
-		text: textEdit.newText
-	}
+    if (!textEdit) {
+        return void 0;
+    }
+    return {
+        range: toRange(textEdit.range),
+        text: textEdit.newText
+    };
 }
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
+    constructor(private _worker: WorkerAccessor) {}
 
-	constructor(private _worker: WorkerAccessor) {
-	}
+    public get triggerCharacters(): string[] {
+        return [' '];
+    }
 
-	public get triggerCharacters(): string[] {
-		return [' '];
-	}
+    provideCompletionItems(
+        model: monaco.editor.IReadOnlyModel,
+        position: Position,
+        context: monaco.languages.CompletionContext,
+        token: CancellationToken
+    ): Thenable<monaco.languages.CompletionList> {
+        const wordInfo = model.getWordUntilPosition(position);
+        const resource = model.uri;
 
-	provideCompletionItems(model: monaco.editor.IReadOnlyModel, position: Position, context: monaco.languages.CompletionContext, token: CancellationToken): Thenable<monaco.languages.CompletionList> {
-		const wordInfo = model.getWordUntilPosition(position);
-		const resource = model.uri;
+        return this._worker(resource)
+            .then(worker => {
+                return worker.doComplete(resource.toString(), fromPosition(position));
+            })
+            .then(info => {
+                if (!info) {
+                    return;
+                }
+                let items: monaco.languages.CompletionItem[] = info.items.map(entry => {
+                    let item: monaco.languages.CompletionItem = {
+                        label: entry.label,
+                        insertText: entry.insertText,
+                        sortText: entry.sortText,
+                        filterText: entry.filterText,
+                        documentation: entry.documentation,
+                        detail: entry.detail,
+                        kind: toCompletionItemKind(entry.kind)
+                    };
+                    if (entry.textEdit) {
+                        item.range = toRange(entry.textEdit.range);
+                        item.insertText = entry.textEdit.newText;
+                    }
+                    if (entry.insertTextFormat === ls.InsertTextFormat.Snippet) {
+                        item.insertTextRules = monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet;
+                    }
+                    return item;
+                });
 
-		return this._worker(resource).then(worker => {
-			return worker.doComplete(resource.toString(), fromPosition(position));
-		}).then(info => {
-			if (!info) {
-				return;
-			}
-			let items: monaco.languages.CompletionItem[] = info.items.map(entry => {
-				let item : monaco.languages.CompletionItem = {
-					label: entry.label,
-					insertText: entry.insertText,
-					sortText: entry.sortText,
-					filterText: entry.filterText,
-					documentation: entry.documentation,
-					detail: entry.detail,
-					kind: toCompletionItemKind(entry.kind),
-				};
-				if (entry.textEdit) {
-					item.range = toRange(entry.textEdit.range);
-					item.insertText = entry.textEdit.newText;
-				}
-				if (entry.insertTextFormat === ls.InsertTextFormat.Snippet) {
-					item.insertTextRules = monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet;
-				}
-				return item;
-			});
-
-			return {
-				isIncomplete: info.isIncomplete,
-				suggestions: items
-			};
-		});
-	}
+                return {
+                    isIncomplete: info.isIncomplete,
+                    suggestions: items
+                };
+            });
+    }
 }
 
 function isMarkupContent(thing: any): thing is ls.MarkupContent {
-	return thing && typeof thing === 'object' && typeof (<ls.MarkupContent>thing).kind === 'string';
+    return thing && typeof thing === 'object' && typeof (<ls.MarkupContent>thing).kind === 'string';
 }
 
 function toMarkdownString(entry: ls.MarkupContent | ls.MarkedString): monaco.IMarkdownString {
-	if (typeof entry === 'string') {
-		return {
-			value: entry
-		};
-	}
-	if (isMarkupContent(entry)) {
-		if (entry.kind === 'plaintext') {
-			return {
-				value: entry.value.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&')
-			};
-		}
-		return {
-			value: entry.value
-		};
-	}
+    if (typeof entry === 'string') {
+        return {
+            value: entry
+        };
+    }
+    if (isMarkupContent(entry)) {
+        if (entry.kind === 'plaintext') {
+            return {
+                value: entry.value.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&')
+            };
+        }
+        return {
+            value: entry.value
+        };
+    }
 
-	return { value: '```' + entry.value + '\n' + entry.value + '\n```\n' };
+    return { value: '```' + entry.value + '\n' + entry.value + '\n```\n' };
 }
 
-function toMarkedStringArray(contents: ls.MarkupContent | ls.MarkedString | ls.MarkedString[]): monaco.IMarkdownString[] {
-	if (!contents) {
-		return void 0;
-	}
-	if (Array.isArray(contents)) {
-		return contents.map(toMarkdownString);
-	}
-	return [toMarkdownString(contents)];
+function toMarkedStringArray(
+    contents: ls.MarkupContent | ls.MarkedString | ls.MarkedString[]
+): monaco.IMarkdownString[] {
+    if (!contents) {
+        return void 0;
+    }
+    if (Array.isArray(contents)) {
+        return contents.map(toMarkdownString);
+    }
+    return [toMarkdownString(contents)];
 }
 
 // --- definition ------
 
 function toLocation(location: ls.Location): monaco.languages.Location {
-	return {
-		uri: Uri.parse(location.uri),
-		range: toRange(location.range)
-	};
+    return {
+        uri: Uri.parse(location.uri),
+        range: toRange(location.range)
+    };
 }
 
 export class DefinitionAdapter {
+    constructor(private _worker: WorkerAccessor) {}
 
-	constructor(private _worker: WorkerAccessor) {
-	}
+    public provideDefinition(
+        model: monaco.editor.IReadOnlyModel,
+        position: Position,
+        token: CancellationToken
+    ): Thenable<monaco.languages.Definition> {
+        const resource = model.uri;
 
-	public provideDefinition(model: monaco.editor.IReadOnlyModel, position: Position, token: CancellationToken): Thenable<monaco.languages.Definition> {
-		const resource = model.uri;
-
-		return this._worker(resource).then(worker => {
-			return  worker.findDefinition(resource.toString(), fromPosition(position));
-		}).then(definition => {
-			if (!definition || definition.length == 0) {
-				return;
-			}
-			return [toLocation(definition[0])];
-		});
-	}
+        return this._worker(resource)
+            .then(worker => {
+                return worker.findDefinition(resource.toString(), fromPosition(position));
+            })
+            .then(definition => {
+                if (!definition || definition.length == 0) {
+                    return;
+                }
+                return [toLocation(definition[0])];
+            });
+    }
 }
 
 // --- references ------
 
 export class ReferenceAdapter implements monaco.languages.ReferenceProvider {
+    constructor(private _worker: WorkerAccessor) {}
 
-	constructor(private _worker: WorkerAccessor) {
-	}
+    provideReferences(
+        model: monaco.editor.IReadOnlyModel,
+        position: Position,
+        context: monaco.languages.ReferenceContext,
+        token: CancellationToken
+    ): Thenable<monaco.languages.Location[]> {
+        const resource = model.uri;
 
-	provideReferences(model: monaco.editor.IReadOnlyModel, position: Position, context: monaco.languages.ReferenceContext, token: CancellationToken): Thenable<monaco.languages.Location[]> {
-		const resource = model.uri;
-
-		return this._worker(resource).then(worker => {
-			return worker.findReferences(resource.toString(), fromPosition(position));
-		}).then(entries => {
-			if (!entries) {
-				return;
-			}
-			return entries.map(toLocation);
-		});
-	}
+        return this._worker(resource)
+            .then(worker => {
+                return worker.findReferences(resource.toString(), fromPosition(position));
+            })
+            .then(entries => {
+                if (!entries) {
+                    return;
+                }
+                return entries.map(toLocation);
+            });
+    }
 }
 
 // --- rename ------
 
 function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.WorkspaceEdit {
-	if (!edit || !edit.changes) {
-		return void 0;
-	}
-	let resourceEdits: monaco.languages.ResourceTextEdit[] = [];
-	for (let uri in edit.changes) {
-		let edits: monaco.languages.TextEdit[] = [];
-		for (let e of edit.changes[uri]) {
-			edits.push({
-				range: toRange(e.range),
-				text: e.newText
-			});
-		}
-		resourceEdits.push({ resource: Uri.parse(uri), edits: edits });
-	}
-	return {
-		edits: resourceEdits
-	}
+    if (!edit || !edit.changes) {
+        return void 0;
+    }
+    let resourceEdits: monaco.languages.ResourceTextEdit[] = [];
+    for (let uri in edit.changes) {
+        let edits: monaco.languages.TextEdit[] = [];
+        for (let e of edit.changes[uri]) {
+            edits.push({
+                range: toRange(e.range),
+                text: e.newText
+            });
+        }
+        resourceEdits.push({ resource: Uri.parse(uri), edits: edits });
+    }
+    return {
+        edits: resourceEdits
+    };
 }
 
 export class RenameAdapter implements monaco.languages.RenameProvider {
+    constructor(private _worker: WorkerAccessor) {}
 
-	constructor(private _worker: WorkerAccessor) {
-	}
+    provideRenameEdits(
+        model: monaco.editor.IReadOnlyModel,
+        position: Position,
+        newName: string,
+        token: CancellationToken
+    ): Thenable<monaco.languages.WorkspaceEdit> {
+        const resource = model.uri;
 
-	provideRenameEdits(
-		model: monaco.editor.IReadOnlyModel,
-		position: Position,
-		newName: string,
-		token: CancellationToken): Thenable<monaco.languages.WorkspaceEdit> {
-		const resource = model.uri;
-
-		return this._worker(resource).then(worker => {
-			return worker.doRename(resource.toString(), fromPosition(position), newName);
-		}).then(edit => {
-			return toWorkspaceEdit(edit);
-		});
-	}
+        return this._worker(resource)
+            .then(worker => {
+                return worker.doRename(resource.toString(), fromPosition(position), newName);
+            })
+            .then(edit => {
+                return toWorkspaceEdit(edit);
+            });
+    }
 }
-
 
 // --- document symbols ------
 
 function toSymbolKind(kind: ls.SymbolKind): monaco.languages.SymbolKind {
-	let mKind = monaco.languages.SymbolKind;
+    let mKind = monaco.languages.SymbolKind;
 
-	switch (kind) {
-		case ls.SymbolKind.File: return mKind.Array;
-		case ls.SymbolKind.Module: return mKind.Module;
-		case ls.SymbolKind.Namespace: return mKind.Namespace;
-		case ls.SymbolKind.Package: return mKind.Package;
-		case ls.SymbolKind.Class: return mKind.Class;
-		case ls.SymbolKind.Method: return mKind.Method;
-		case ls.SymbolKind.Property: return mKind.Property;
-		case ls.SymbolKind.Field: return mKind.Field;
-		case ls.SymbolKind.Constructor: return mKind.Constructor;
-		case ls.SymbolKind.Enum: return mKind.Enum;
-		case ls.SymbolKind.Interface: return mKind.Interface;
-		case ls.SymbolKind.Function: return mKind.Function;
-		case ls.SymbolKind.Variable: return mKind.Variable;
-		case ls.SymbolKind.Constant: return mKind.Constant;
-		case ls.SymbolKind.String: return mKind.String;
-		case ls.SymbolKind.Number: return mKind.Number;
-		case ls.SymbolKind.Boolean: return mKind.Boolean;
-		case ls.SymbolKind.Array: return mKind.Array;
-	}
-	return mKind.Function;
+    switch (kind) {
+        case ls.SymbolKind.File:
+            return mKind.Array;
+        case ls.SymbolKind.Module:
+            return mKind.Module;
+        case ls.SymbolKind.Namespace:
+            return mKind.Namespace;
+        case ls.SymbolKind.Package:
+            return mKind.Package;
+        case ls.SymbolKind.Class:
+            return mKind.Class;
+        case ls.SymbolKind.Method:
+            return mKind.Method;
+        case ls.SymbolKind.Property:
+            return mKind.Property;
+        case ls.SymbolKind.Field:
+            return mKind.Field;
+        case ls.SymbolKind.Constructor:
+            return mKind.Constructor;
+        case ls.SymbolKind.Enum:
+            return mKind.Enum;
+        case ls.SymbolKind.Interface:
+            return mKind.Interface;
+        case ls.SymbolKind.Function:
+            return mKind.Function;
+        case ls.SymbolKind.Variable:
+            return mKind.Variable;
+        case ls.SymbolKind.Constant:
+            return mKind.Constant;
+        case ls.SymbolKind.String:
+            return mKind.String;
+        case ls.SymbolKind.Number:
+            return mKind.Number;
+        case ls.SymbolKind.Boolean:
+            return mKind.Boolean;
+        case ls.SymbolKind.Array:
+            return mKind.Array;
+    }
+    return mKind.Function;
 }
 
 // --- formatting -----
 
-export class DocumentFormatAdapter implements monaco.languages.DocumentFormattingEditProvider  {
-		constructor(private _worker: WorkerAccessor) {
-		}
+export class DocumentFormatAdapter implements monaco.languages.DocumentFormattingEditProvider {
+    constructor(private _worker: WorkerAccessor) {}
 
-		provideDocumentFormattingEdits(model: monaco.editor.IReadOnlyModel, options: monaco.languages.FormattingOptions, token: CancellationToken): monaco.languages.TextEdit[] | Thenable<monaco.languages.TextEdit[]> {
-			const resource = model.uri;
-			return this._worker(resource).then(worker => {
-				return worker.doDocumentFormat(resource.toString()).then(edits => edits.map(edit => toTextEdit(edit)));
-			});
-		}
-	}
+    provideDocumentFormattingEdits(
+        model: monaco.editor.IReadOnlyModel,
+        options: monaco.languages.FormattingOptions,
+        token: CancellationToken
+    ): monaco.languages.TextEdit[] | Thenable<monaco.languages.TextEdit[]> {
+        const resource = model.uri;
+        return this._worker(resource).then(worker => {
+            return worker.doDocumentFormat(resource.toString()).then(edits => edits.map(edit => toTextEdit(edit)));
+        });
+    }
+}
 
-export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEditProvider  {
+export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEditProvider {
+    constructor(private _worker: WorkerAccessor) {}
 
-	constructor(private _worker: WorkerAccessor) {
-	}
-
-	provideDocumentRangeFormattingEdits(model: monaco.editor.IReadOnlyModel, range: Range, options: monaco.languages.FormattingOptions, token: CancellationToken): monaco.languages.TextEdit[] | Thenable<monaco.languages.TextEdit[]> {
-		const resource = model.uri;
-		return this._worker(resource).then(worker => {
-			return worker.doRangeFormat(resource.toString(), fromRange(range)).then(edits => edits.map(edit => toTextEdit(edit)));
-		});
-	}
+    provideDocumentRangeFormattingEdits(
+        model: monaco.editor.IReadOnlyModel,
+        range: Range,
+        options: monaco.languages.FormattingOptions,
+        token: CancellationToken
+    ): monaco.languages.TextEdit[] | Thenable<monaco.languages.TextEdit[]> {
+        const resource = model.uri;
+        return this._worker(resource).then(worker => {
+            return worker
+                .doRangeFormat(resource.toString(), fromRange(range))
+                .then(edits => edits.map(edit => toTextEdit(edit)));
+        });
+    }
 }
 
 // --- Folding ---
 export class FoldingAdapter implements monaco.languages.FoldingRangeProvider {
-	constructor(private _worker: WorkerAccessor) {
-	}
+    constructor(private _worker: WorkerAccessor) {}
 
-	provideFoldingRanges(model: monaco.editor.ITextModel, context: monaco.languages.FoldingContext, token: CancellationToken): monaco.languages.FoldingRange[] | PromiseLike<monaco.languages.FoldingRange[]> {
-		const resource = model.uri;
-		return this._worker(resource).then(worker => {
-			return worker.doFolding(resource.toString()).then(foldingRanges => foldingRanges.map((range): monaco.languages.FoldingRange => toFoldingRange(range)));
-		});
-	}
+    provideFoldingRanges(
+        model: monaco.editor.ITextModel,
+        context: monaco.languages.FoldingContext,
+        token: CancellationToken
+    ): monaco.languages.FoldingRange[] | PromiseLike<monaco.languages.FoldingRange[]> {
+        const resource = model.uri;
+        return this._worker(resource).then(worker => {
+            return worker
+                .doFolding(resource.toString())
+                .then(foldingRanges =>
+                    foldingRanges.map((range): monaco.languages.FoldingRange => toFoldingRange(range))
+                );
+        });
+    }
 }
 
 function toFoldingRange(range: FoldingRange): monaco.languages.FoldingRange {
-	return {
-		start: range.startLine + 1,
-		end: range.endLine + 1,
-		kind: monaco.languages.FoldingRangeKind.Region
-	}
+    return {
+        start: range.startLine + 1,
+        end: range.endLine + 1,
+        kind: monaco.languages.FoldingRangeKind.Region
+    };
 }
 
 // --- hover ------
 
 export class HoverAdapter implements monaco.languages.HoverProvider {
+    constructor(private _worker: WorkerAccessor) {}
 
-	constructor(private _worker: WorkerAccessor) {
-	}
+    provideHover(
+        model: monaco.editor.IReadOnlyModel,
+        position: Position,
+        token: CancellationToken
+    ): Thenable<monaco.languages.Hover> {
+        let resource = model.uri;
 
-	provideHover(model: monaco.editor.IReadOnlyModel, position: Position, token: CancellationToken): Thenable<monaco.languages.Hover> {
-		let resource = model.uri;
-
-		return this._worker(resource).then(worker => {
-			return worker.doHover(resource.toString(), fromPosition(position));
-		}).then(info => {
-			if (!info) {
-				return;
-			}
-			return <monaco.languages.Hover>{
-				range: toRange(info.range),
-				contents: toMarkedStringArray(info.contents)
-			};
-		});
-	}
+        return this._worker(resource)
+            .then(worker => {
+                return worker.doHover(resource.toString(), fromPosition(position));
+            })
+            .then(info => {
+                if (!info) {
+                    return;
+                }
+                return <monaco.languages.Hover>{
+                    range: toRange(info.range),
+                    contents: toMarkedStringArray(info.contents)
+                };
+            });
+    }
 }

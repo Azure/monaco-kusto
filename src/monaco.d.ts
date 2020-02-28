@@ -92,6 +92,11 @@ declare module monaco.languages.kusto {
          * It is also different from getGlobalParams that will return all global parameters whether used or not.
          */
         getReferencedGlobalParams(uri: string): Promise<{ name: string; type: string }[]>;
+
+        /**
+         * Get visualization options in render command if present (null otherwise).
+         */
+        getrenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null>;
     }
 
     /**
@@ -155,5 +160,53 @@ declare module monaco.languages.kusto {
 
     export type Schema = EngineSchema | ClusterMangerSchema | DataManagementSchema;
 
-    export var getKustoWorker: () => monaco.Promise<WorkerAccessor>;
+    export var getKustoWorker: () => Promise<WorkerAccessor>;
+
+    export declare type VisualizationType =
+        | 'anomalychart'
+        | 'areachart'
+        | 'barchart'
+        | 'columnchart'
+        | 'ladderchart'
+        | 'linechart'
+        | 'piechart'
+        | 'pivotchart'
+        | 'scatterchart'
+        | 'stackedareachart'
+        | 'timechart'
+        | 'table'
+        | 'timeline'
+        | 'timepivot'
+        | 'card';
+
+    export declare type Scale = 'linear' | 'log';
+    export declare type LegendVisibility = 'visible' | 'hidden';
+    export declare type YSplit = 'none' | 'axes' | 'panels';
+    export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100';
+
+    export interface RenderOptions {
+        visualization?: VisualizationType;
+        title?: string;
+        xcolumn?: string;
+        series?: string[];
+        ycolumns?: string[];
+        xtitle?: string;
+        ytitle?: string;
+        xaxis?: Scale;
+        yaxis?: Scale;
+        legend?: LegendVisibility;
+        ySplit?: YSplit;
+        accumulate?: boolean;
+        kind?: Kind;
+        anomalycolumns?: string[];
+        ymin?: number;
+        ymax?: number;
+    }
+
+    export interface RenderInfo {
+        options: RenderOptions;
+        location: { startOffset: number; endOffset: number };
+    }
+
+    export type RenderOptionKeys = keyof RenderOptions;
 }

@@ -33,6 +33,7 @@ import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
 import { Database, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
+import { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 
 let List = System.Collections.Generic.List$1;
 
@@ -137,6 +138,7 @@ export interface LanguageService {
     getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]>;
     getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]>;
     getReferencedGlobalParams(document: ls.TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
+    getRenderInfo(document: ls.TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
 }
 
 export interface LanguageSettings {
@@ -679,7 +681,7 @@ class KustoLanguageService implements LanguageService {
 
     setParameters(parameters: s.ScalarParameter[]): Promise<void> {
         if (!this._languageSettings.useIntellisenseV2 || this._schema.clusterType !== 'Engine') {
-            throw new Error("setParameters requires intellisense V2 and Engine cluster")
+            throw new Error('setParameters requires intellisense V2 and Engine cluster');
         }
 
         this._schema.globalParameters = parameters;
@@ -936,15 +938,8 @@ class KustoLanguageService implements LanguageService {
         }
 
         const script = this.parseDocumentV2(document);
-        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
 
-        if (!currentBlock) {
-            return Promise.as([]);
-        }
-
-        const text = currentBlock.Text;
-
-        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
+        const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
 
         const queryParamStatements = this.toArray(
             parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.QueryParametersStatement)
@@ -963,6 +958,83 @@ class KustoLanguageService implements LanguageService {
         });
 
         return Promise.as(queryParams);
+    }
+
+    getRenderInfo(document: ls.TextDocument, cursorOffset: number): Promise<RenderInfo | undefined> {
+        const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
+        if (!parsedAndAnalyzed) {
+            return Promise.as(undefined);
+        }
+
+        const renderStatements = this.toArray(
+            parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.RenderOperator)
+        );
+
+        if (!renderStatements || renderStatements.length === 0) {
+            return Promise.as(undefined);
+        }
+
+        // assuming a single render statement
+        const renderStatement = renderStatements[0] as Kusto.Language.Syntax.RenderOperator;
+
+        // Start and end relative to block start.
+        const startOffset = renderStatement.TextStart;
+        const endOffset = renderStatement.End;
+
+        const visualization: VisualizationType = renderStatement.ChartType.Text as VisualizationType;
+
+        const withClause = renderStatement.WithClause;
+
+        const properties = this.toArray(withClause.Properties);
+
+        const props = properties.reduce(
+            (
+                prev: RenderOptions,
+                property: Kusto.Language.Syntax.SeparatedElement$1<Kusto.Language.Syntax.NamedParameter>
+            ) => {
+                const name = property.Element$1.Name.SimpleName as RenderOptionKeys;
+
+                switch (name) {
+                    case 'xcolumn':
+                        const value = property.Element$1.Expression.ReferencedSymbol.Name;
+                        prev[name] = value;
+                        break;
+                    case 'ycolumns':
+                    case 'anomalycolumns':
+                        const nameNodes = this.toArray(
+                            (property.Element$1.Expression as Kusto.Language.Syntax.RenderNameList).Names
+                        );
+
+                        const values = nameNodes.map(
+                            (
+                                nameNode: Kusto.Language.Syntax.SeparatedElement$1<
+                                    Kusto.Language.Syntax.NameDeclaration
+                                >
+                            ) => nameNode.Element$1.SimpleName
+                        );
+                        prev[name] = values;
+                        break;
+                    case 'ymin':
+                    case 'ymax':
+                        const numericVal = parseFloat(property.Element$1.Expression.ConstantValue);
+                        prev[name] = numericVal;
+                    default:
+                        const val = property.Element$1.Expression.ConstantValue;
+                        prev[name] = val;
+                        break;
+                }
+
+                return prev;
+            },
+            {} as RenderOptions
+        );
+
+        const renderOptions: RenderOptions = { visualization, ...props };
+        const renderInfo: RenderInfo = {
+            options: renderOptions,
+            location: { startOffset, endOffset }
+        };
+        return Promise.as(renderInfo);
     }
 
     getReferencedGlobalParams(
@@ -1757,6 +1829,25 @@ class KustoLanguageService implements LanguageService {
     private tokenKindToClassificationKind(token: TokenKind): k2.ClassificationKind {
         const conversion = this._tokenKindToClassificationKind[token];
         return conversion || k2.ClassificationKind.PlainText;
+    }
+
+    private parseAndAnalyze(document: ls.TextDocument, cursorOffset: number): Kusto.Language.KustoCode | undefined {
+        if (!this.isIntellisenseV2()) {
+            return undefined;
+        }
+
+        const script = this.parseDocumentV2(document);
+        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
+
+        if (!currentBlock) {
+            return undefined;
+        }
+
+        const text = currentBlock.Text;
+
+        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
+
+        return parsedAndAnalyzed;
     }
 }
 
