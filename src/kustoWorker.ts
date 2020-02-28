@@ -108,18 +108,6 @@ export class KustoWorker {
         return referencedParams;
     }
 
-    toRange(range: ls.Range): monaco.Range {
-        if (!range) {
-            return void 0;
-        }
-        return new monaco.Range(
-            range.start.line + 1,
-            range.start.character + 1,
-            range.end.line + 1,
-            range.end.character + 1
-        );
-    }
-
     getRenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null> {
         const document = this._getTextDocument(uri);
         if (!document) {
