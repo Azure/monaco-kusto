@@ -137,6 +137,7 @@ export interface LanguageService {
     getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]>;
     getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]>;
     getReferencedGlobalParams(document: ls.TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
+    getVisualizationOptions(document: ls.TextDocument, cursorOffset: number): Promise<RenderOptions | undefined>;
 }
 
 export interface LanguageSettings {
@@ -147,6 +148,49 @@ export interface LanguageSettings {
     useTokenColorization?: boolean;
     disabledCompletionItems?: string[];
 }
+
+export declare type VisualizationType =
+    | 'anomalychart'
+    | 'areachart'
+    | 'barchart'
+    | 'columnchart'
+    | 'ladderchart'
+    | 'linechart'
+    | 'piechart'
+    | 'pivotchart'
+    | 'scatterchart'
+    | 'stackedareachart'
+    | 'timechart'
+    | 'table'
+    | 'timeline'
+    | 'timepivot'
+    | 'card';
+
+export declare type Scale = 'linear' | 'log';
+export declare type LegendVisibility = 'visible' | 'hidden';
+export declare type YSplit = 'none' | 'axes' | 'panels';
+export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100';
+
+export interface RenderOptions {
+    visualization?: VisualizationType;
+    title?: string;
+    xcolumn?: string;
+    series?: string[];
+    ycolumns?: string[];
+    xtitle?: string;
+    ytitle?: string;
+    xaxis?: Scale;
+    yaxis?: Scale;
+    legend?: LegendVisibility;
+    ySplit?: YSplit;
+    accumulate?: boolean;
+    kind?: Kind;
+    anomalycolumns?: string[];
+    ymin?: number;
+    ymax?: number;
+}
+
+export type RenderOptionKeys = keyof RenderOptions;
 
 export type CmSchema = {
     accounts: k.KustoIntelliSenseAccountEntity[];
@@ -679,7 +723,7 @@ class KustoLanguageService implements LanguageService {
 
     setParameters(parameters: s.ScalarParameter[]): Promise<void> {
         if (!this._languageSettings.useIntellisenseV2 || this._schema.clusterType !== 'Engine') {
-            throw new Error("setParameters requires intellisense V2 and Engine cluster")
+            throw new Error('setParameters requires intellisense V2 and Engine cluster');
         }
 
         this._schema.globalParameters = parameters;
@@ -963,6 +1007,74 @@ class KustoLanguageService implements LanguageService {
         });
 
         return Promise.as(queryParams);
+    }
+
+    async getVisualizationOptions(document: ls.TextDocument, cursorOffset: number): Promise<RenderOptions | undefined> {
+        const parsedAndAnalyzed = await this.parseAndAnalyze(document, cursorOffset);
+        if (!parsedAndAnalyzed) {
+            return Promise.as(undefined);
+        }
+
+        const renderStatements = this.toArray(
+            parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.RenderOperator)
+        );
+
+        if (!renderStatements || renderStatements.length === 0) {
+            return Promise.as(undefined);
+        }
+
+        // assuming a single render statement
+        const renderStatement = renderStatements[0] as Kusto.Language.Syntax.RenderOperator;
+
+        const visualization: VisualizationType = renderStatement.ChartType.Text as VisualizationType;
+
+        const withClause = renderStatement.WithClause;
+
+        const properties = this.toArray(withClause.Properties);
+
+        const props = properties.reduce(
+            (
+                prev: RenderOptions,
+                property: Kusto.Language.Syntax.SeparatedElement$1<Kusto.Language.Syntax.NamedParameter>
+            ) => {
+                const name = property.Element$1.Name.SimpleName as RenderOptionKeys;
+
+                switch (name) {
+                    case 'xcolumn':
+                        const value = property.Element$1.Expression.ReferencedSymbol.Name;
+                        prev[name] = value;
+                        break;
+                    case 'ycolumns':
+                    case 'anomalycolumns':
+                        const nameNodes = this.toArray(
+                            (property.Element$1.Expression as Kusto.Language.Syntax.RenderNameList).Names
+                        );
+
+                        const values = nameNodes.map(
+                            (
+                                nameNode: Kusto.Language.Syntax.SeparatedElement$1<
+                                    Kusto.Language.Syntax.NameDeclaration
+                                >
+                            ) => nameNode.Element$1.SimpleName
+                        );
+                        prev[name] = values;
+                        break;
+                    case 'ymin':
+                    case 'ymax':
+                        const numericVal = parseFloat(property.Element$1.Expression.ConstantValue);
+                        prev[name] = numericVal;
+                    default:
+                        const val = property.Element$1.Expression.ConstantValue;
+                        prev[name] = val;
+                        break;
+                }
+
+                return prev;
+            },
+            {} as RenderOptions
+        );
+
+        return { visualization, ...props };
     }
 
     getReferencedGlobalParams(
@@ -1757,6 +1869,28 @@ class KustoLanguageService implements LanguageService {
     private tokenKindToClassificationKind(token: TokenKind): k2.ClassificationKind {
         const conversion = this._tokenKindToClassificationKind[token];
         return conversion || k2.ClassificationKind.PlainText;
+    }
+
+    private parseAndAnalyze(
+        document: ls.TextDocument,
+        cursorOffset: number
+    ): Promise<Kusto.Language.KustoCode | undefined> {
+        if (!this.isIntellisenseV2()) {
+            return Promise.as(undefined);
+        }
+
+        const script = this.parseDocumentV2(document);
+        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
+
+        if (!currentBlock) {
+            return Promise.as(undefined);
+        }
+
+        const text = currentBlock.Text;
+
+        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
+
+        return Promise.as(parsedAndAnalyzed);
     }
 }
 

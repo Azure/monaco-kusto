@@ -92,6 +92,11 @@ declare module monaco.languages.kusto {
          * It is also different from getGlobalParams that will return all global parameters whether used or not.
          */
         getReferencedGlobalParams(uri: string): Promise<{ name: string; type: string }[]>;
+
+        /**
+         * Get visualization options in render command if present (null otherwise).
+         */
+        getVisualizationOptions(uri: string, cursorOffset: number): Promise<VisualizationOptions | null>;
     }
 
     /**
@@ -155,5 +160,5 @@ declare module monaco.languages.kusto {
 
     export type Schema = EngineSchema | ClusterMangerSchema | DataManagementSchema;
 
-    export var getKustoWorker: () => monaco.Promise<WorkerAccessor>;
+    export var getKustoWorker: () => Promise<WorkerAccessor>;
 }

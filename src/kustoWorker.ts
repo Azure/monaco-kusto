@@ -12,7 +12,7 @@ import {
 } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
-import { ColorizationRange } from './languageService/kustoLanguageService';
+import { ColorizationRange, RenderOptions } from './languageService/kustoLanguageService';
 
 export class KustoWorker {
     // --- model sync -----------------------
@@ -105,6 +105,21 @@ export class KustoWorker {
         }
 
         return referencedParams;
+    }
+
+    getVisualizationOptions(uri: string, cursorOffset: number): Promise<RenderOptions | undefined> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`getVisualizationOptions: document is ${document}. uri is ${uri}`);
+        }
+
+        const visualizationOptions = this._languageService.getVisualizationOptions(document, cursorOffset);
+
+        if (visualizationOptions === undefined) {
+            return null;
+        }
+
+        return visualizationOptions;
     }
 
     /**
