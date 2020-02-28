@@ -1009,8 +1009,8 @@ class KustoLanguageService implements LanguageService {
         return Promise.as(queryParams);
     }
 
-    async getVisualizationOptions(document: ls.TextDocument, cursorOffset: number): Promise<RenderOptions | undefined> {
-        const parsedAndAnalyzed = await this.parseAndAnalyze(document, cursorOffset);
+    getVisualizationOptions(document: ls.TextDocument, cursorOffset: number): Promise<RenderOptions | undefined> {
+        const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
         if (!parsedAndAnalyzed) {
             return Promise.as(undefined);
         }
@@ -1074,7 +1074,7 @@ class KustoLanguageService implements LanguageService {
             {} as RenderOptions
         );
 
-        return { visualization, ...props };
+        return Promise.as({ visualization, ...props });
     }
 
     getReferencedGlobalParams(
@@ -1871,26 +1871,23 @@ class KustoLanguageService implements LanguageService {
         return conversion || k2.ClassificationKind.PlainText;
     }
 
-    private parseAndAnalyze(
-        document: ls.TextDocument,
-        cursorOffset: number
-    ): Promise<Kusto.Language.KustoCode | undefined> {
+    private parseAndAnalyze(document: ls.TextDocument, cursorOffset: number): Kusto.Language.KustoCode | undefined {
         if (!this.isIntellisenseV2()) {
-            return Promise.as(undefined);
+            return undefined;
         }
 
         const script = this.parseDocumentV2(document);
         let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
 
         if (!currentBlock) {
-            return Promise.as(undefined);
+            return undefined;
         }
 
         const text = currentBlock.Text;
 
         const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
 
-        return Promise.as(parsedAndAnalyzed);
+        return parsedAndAnalyzed;
     }
 }
 
