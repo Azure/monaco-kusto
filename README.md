@@ -99,6 +99,12 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Changelog
 
+### 2.0.7
+
+#### Bug fix
+
+-   Fixed typings.
+
 ### 2.0.6
 
 #### Added
