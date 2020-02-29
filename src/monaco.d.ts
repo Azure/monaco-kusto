@@ -63,7 +63,7 @@ declare module monaco.languages.kusto {
         getCommandInContext(uri: string, cursorOffest: number): Promise<string | null>;
         getCommandAndLocationInContext(
             uri: string,
-            cursorOffset: number
+            range: monaco.IRange
         ): Promise<{ text: string; range: monaco.Range } | null>;
         getCommandsInDocument(uri: string): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]>;
         getClientDirective(
@@ -96,7 +96,7 @@ declare module monaco.languages.kusto {
         /**
          * Get visualization options in render command if present (null otherwise).
          */
-        getrenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null>;
+        getRenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null>;
     }
 
     /**
