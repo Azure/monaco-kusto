@@ -99,6 +99,12 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Changelog
 
+### 2.0.9
+
+#### Bug fix
+
+-   Fix `getRenderInfo` in cases where there is not with clause.
+
 ### 2.0.8
 
 #### Bug fix

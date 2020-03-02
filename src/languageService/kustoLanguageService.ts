@@ -985,6 +985,17 @@ class KustoLanguageService implements LanguageService {
 
         const withClause = renderStatement.WithClause;
 
+        if (!withClause) {
+            const info: RenderInfo = {
+                options: {
+                    visualization
+                },
+                location: { startOffset, endOffset }
+            };
+
+            return Promise.as(info);
+        }
+
         const properties = this.toArray(withClause.Properties);
 
         const props = properties.reduce(
