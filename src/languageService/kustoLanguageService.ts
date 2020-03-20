@@ -33,7 +33,7 @@ import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
 import { Database, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
-import { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
+import { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo, LegendVisibility } from './renderInfo';
 
 let List = System.Collections.Generic.List$1;
 
@@ -192,27 +192,29 @@ class KustoLanguageService implements LanguageService {
     private _newlineAppendPipePolicy: Kusto.Data.IntelliSense.ApplyPolicy;
     private _toOptionKind: { [completionKind in k2.CompletionKind]: k.OptionKind } = {
         [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
+        [k2.CompletionKind.BuiltInFunction]: k.OptionKind.FunctionServerSide,
         [k2.CompletionKind.Cluster]: k.OptionKind.Database,
         [k2.CompletionKind.Column]: k.OptionKind.Column,
+        [k2.CompletionKind.CommandPrefix]: k.OptionKind.None,
         [k2.CompletionKind.Database]: k.OptionKind.Database,
+        [k2.CompletionKind.DatabaseFunction]: k.OptionKind.FunctionServerSide,
+        [k2.CompletionKind.Example]: k.OptionKind.None,
         [k2.CompletionKind.Identifier]: k.OptionKind.None,
         [k2.CompletionKind.Keyword]: k.OptionKind.None,
-        [k2.CompletionKind.Literal]: k.OptionKind.Literal,
+        [k2.CompletionKind.LocalFunction]: k.OptionKind.FunctionLocal,
+        [k2.CompletionKind.MaterialiedView]: k.OptionKind.MaterializedView,
         [k2.CompletionKind.Parameter]: k.OptionKind.Parameter,
         [k2.CompletionKind.Punctuation]: k.OptionKind.None,
         [k2.CompletionKind.QueryPrefix]: k.OptionKind.Operator,
         [k2.CompletionKind.RenderChart]: k.OptionKind.Operator,
-        [k2.CompletionKind.ScalarFunction]: k.OptionKind.FunctionScalar,
         [k2.CompletionKind.ScalarInfix]: k.OptionKind.None,
         [k2.CompletionKind.ScalarPrefix]: k.OptionKind.None,
         [k2.CompletionKind.Syntax]: k.OptionKind.None,
         [k2.CompletionKind.Table]: k.OptionKind.Table,
-        [k2.CompletionKind.TabularFunction]: k.OptionKind.FunctionServerSide,
         [k2.CompletionKind.TabularPrefix]: k.OptionKind.None,
         [k2.CompletionKind.TabularSuffix]: k.OptionKind.None,
         [k2.CompletionKind.Unknown]: k.OptionKind.None,
-        [k2.CompletionKind.Variable]: k.OptionKind.Parameter,
-        [k2.CompletionKind.CommandPrefix]: k.OptionKind.None
+        [k2.CompletionKind.Variable]: k.OptionKind.Parameter
     };
 
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
@@ -239,13 +241,6 @@ class KustoLanguageService implements LanguageService {
     }
 
     private disabledCompletionItemsV2: { [value: string]: k2.CompletionKind } = {
-        // plugins
-        cosmosdb_sql_request: k2.CompletionKind.TabularFunction,
-        http_request: k2.CompletionKind.TabularFunction,
-        http_request_post: k2.CompletionKind.TabularFunction,
-        // functions
-        distance: k2.CompletionKind.ScalarFunction,
-        point: k2.CompletionKind.ScalarFunction,
         // render charts
         ladderchart: k2.CompletionKind.RenderChart,
         pivotchart: k2.CompletionKind.RenderChart,
@@ -1029,10 +1024,38 @@ class KustoLanguageService implements LanguageService {
                     case 'ymax':
                         const numericVal = parseFloat(property.Element$1.Expression.ConstantValue);
                         prev[name] = numericVal;
-                    default:
+                        break;
+                    case 'title':
+                    case 'xtitle':
+                    case 'ytitle':
+                    case 'visualization':
+                    case 'series':
+                        const strVal = property.Element$1.Expression.ConstantValue;
+                        prev[name] = strVal;
+                        break;
+                    case 'xaxis':
+                    case 'yaxis':
+                        const scale = property.Element$1.Expression.ConstantValue;
+                        prev[name] = scale;
+                        break;
+                    case 'legend':
+                        const legend = property.Element$1.Expression.ConstantValue;
+                        prev[name] = legend;
+                        break;
+                    case 'ySplit':
+                        const split = property.Element$1.Expression.ConstantValue;
+                        prev[name] = split;
+                        break;
+                    case 'accumulate':
+                        const accumulate = property.Element$1.Expression.ConstantValue;
+                        prev[name] = accumulate;
+                        break;
+                    case 'kind':
                         const val = property.Element$1.Expression.ConstantValue;
                         prev[name] = val;
                         break;
+                    default:
+                        assertNever(name);
                 }
 
                 return prev;
@@ -1778,28 +1801,30 @@ class KustoLanguageService implements LanguageService {
 
     private _kustoKindtolsKindV2: { [k in k2.CompletionKind]: ls.CompletionItemKind } = {
         [k2.CompletionKind.AggregateFunction]: ls.CompletionItemKind.Field,
+        [k2.CompletionKind.BuiltInFunction]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Cluster]: ls.CompletionItemKind.Class,
         [k2.CompletionKind.Column]: ls.CompletionItemKind.Function,
+        [k2.CompletionKind.CommandPrefix]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Database]: ls.CompletionItemKind.Class,
+        [k2.CompletionKind.DatabaseFunction]: ls.CompletionItemKind.Field,
+        [k2.CompletionKind.Example]: ls.CompletionItemKind.Text,
         [k2.CompletionKind.Identifier]: ls.CompletionItemKind.Method,
         [k2.CompletionKind.Keyword]: ls.CompletionItemKind.Method,
-        [k2.CompletionKind.Literal]: ls.CompletionItemKind.Property,
+        [k2.CompletionKind.LocalFunction]: ls.CompletionItemKind.Field,
+        [k2.CompletionKind.MaterialiedView]: ls.CompletionItemKind.Class,
         [k2.CompletionKind.Parameter]: ls.CompletionItemKind.Variable,
         [k2.CompletionKind.Punctuation]: ls.CompletionItemKind.Interface,
         [k2.CompletionKind.QueryPrefix]: ls.CompletionItemKind.Function,
         [k2.CompletionKind.RenderChart]: ls.CompletionItemKind.Method,
-        [k2.CompletionKind.ScalarFunction]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.ScalarInfix]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.ScalarPrefix]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Syntax]: ls.CompletionItemKind.Method,
         [k2.CompletionKind.Table]: ls.CompletionItemKind.Class,
-        [k2.CompletionKind.TabularFunction]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.TabularPrefix]: ls.CompletionItemKind.Field,
         // datatable, externaldata
         [k2.CompletionKind.TabularSuffix]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Unknown]: ls.CompletionItemKind.Interface,
-        [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
-        [k2.CompletionKind.CommandPrefix]: ls.CompletionItemKind.Field
+        [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable
     };
 
     private kustoKindToLsKind(kustoKind: k.OptionKind): ls.CompletionItemKind {
