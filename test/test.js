@@ -1,31 +1,48 @@
+var shim = {
+    'language-service/kusto.javascript.client.min': {
+        deps: ['language-service/bridge.min']
+    },
+    'language-service-next/Kusto.Language.Bridge.min': {
+        deps: ['language-service/kusto.javascript.client.min']
+    },
+    'vs/language/kusto/monaco.contribution': {
+        deps: ['vs/editor/editor.main']
+    },
+};
+
+var requirejs_dev_config = {
+    baseUrl: '../',
+    paths: {
+        'vs/language/kusto': '../out/amd',
+        'vs': '../out/vs',
+        'language-service': './node_modules/@kusto/language-service/',
+        'language-service-next': './node_modules/@kusto/language-service-next/',
+        'lodash-amd': './node_modules/lodash-amd/main',
+        'vscode-languageserver-types': '../node_modules/vscode-languageserver-types/lib/umd/main',
+        // For worker:
+        'xregexp': '../../../node_modules/xregexp/xregexp-all',
+    },
+    shim: shim
+}
+
+var requirejs_release_config = {
+    baseUrl: '../',
+    paths: {
+        'vs/language/kusto': `../release/min`,
+        'vs':'./out/vs',
+        'language-service': `../release`,
+        'language-service-next': `../release`,
+        'lodash-amd': './node_modules/lodash-amd/main',
+        'vscode-languageserver-types': '../node_modules/vscode-languageserver-types/lib/umd/main',
+    },
+    shim: shim
+}
+
 fetch('./test/mode.txt')
     .then(response => response.text())
     .then(mode => {
         mode = mode.trim();
-        requirejs.config({
-            baseUrl: '../',
-            paths: {
-                'vs/language/kusto': mode == 'out' ? '../out/amd' : `../release/min`,
-                'vs': mode == 'out' ? '../out/vs' :'./node_modules/monaco-editor-core/dev/vs',
-                'language-service': mode == 'out' ? './node_modules/@kusto/language-service/' : `../release`,
-                'language-service-next': mode == 'out' ? './node_modules/@kusto/language-service-next/' : `../release`,
-                'lodash-amd': './node_modules/lodash-amd/main',
-                'vscode-languageserver-types': '../node_modules/vscode-languageserver-types/lib/umd/main',
-                // For worker:
-                'xregexp': '../../../node_modules/xregexp/xregexp-all',
-            },
-            shim: {
-                'language-service/kusto.javascript.client.min': {
-                    deps: ['language-service/bridge.min']
-                },
-                'language-service-next/Kusto.Language.Bridge.min': {
-                    deps: ['language-service/kusto.javascript.client.min']
-                },
-                'vs/language/kusto/monaco.contribution': {
-                    deps: ['vs/editor/editor.main']
-                },
-            }
-        });
+        requirejs.config(mode == "dev" ? requirejs_dev_config : requirejs_release_config);
         requirejs(['vs/loader', 'vs/editor/editor.main', 'vs/editor/editor.main.nls', 'language-service/bridge.min', 'language-service/kusto.javascript.client.min',
         'language-service-next/Kusto.Language.Bridge.min', 'vs/language/kusto/monaco.contribution'], function () {
             var editor = monaco.editor.create(document.getElementById('container'), {

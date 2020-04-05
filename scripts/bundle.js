@@ -27,7 +27,7 @@ bundleOne('kustoWorker')
 function bundleOne(moduleId, exclude) {
 	requirejs.optimize({
 		baseUrl: './',
-		name: 'out/amd/' + moduleId,
+		name: 'vs/language/kusto/' + moduleId,
 		out: 'release/dev/' + moduleId + '.js',
 		exclude: exclude,
 		paths: {
@@ -46,7 +46,7 @@ function bundleOne(moduleId, exclude) {
 			name: 'lodash-amd',
 			location: path.join(REPO_ROOT, '/node_modules/lodash-amd'),
 			main: 'main.js'
-		}]
+		}],
 	}, function (buildResponse) {
 		const devFilePath = path.join(REPO_ROOT, 'release/dev/' + moduleId + '.js');
 		const minFilePath = path.join(REPO_ROOT, 'release/min/' + moduleId + '.js');
