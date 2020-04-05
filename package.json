@@ -17,10 +17,12 @@
         "url": "https://github.com/Azure/monaco-kusto"
     },
     "scripts": {
+        "copy_types_to_out": "mcopy ./node_modules/@kusto/language-service/kusto.javascript.client.min.js ./out/vs/language/kusto/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./out/vs/language/kusto/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./out/vs/language/kusto/bridge.min.js && node ./node_modules/copy-dir-cli/bin/copy ./node_modules/monaco-editor-core/dev/vs ./out/vs && node ./node_modules/copy-dir-cli/bin/copy ./node_modules/monaco-editor-core/dev/vs ./out/vs",
         "compile": "tsc -p ./src/tsconfig.json && tsc -p ./src/tsconfig.esm.json",
-        "watch": "tsc -p ./src --watch",
-        "release": "mkdirp release  && npm run compile && node ./scripts/release.js && node ./scripts/bundle && npm run copy_types_to_release",
-        "copy_types_to_release": "mcopy ./src/monaco.d.ts ./release/monaco.d.ts && mcopy ./node_modules/@kusto/language-service/kusto.javascript.client.min.js  ./release/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./release/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./release/bridge.min.js ./node_modules/@kusto/language-service/newtonsoft.json.min.js ./release/newtonsoft.json.min.js",
+        "watch": "npm run compile && npm run copy_types_to_out && concurrently \"echo \"out\" > test/mode.txt\" \"live-server ./ \" \"tsc -w -p ./src/tsconfig.json \"",
+        "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
+        "copy_types_to_release": "mcopy ./src/monaco.d.ts ./release/monaco.d.ts $$ mcopy ./out/amd/monaco.contribution.d.ts ./release/monaco.contribution.d.ts && mcopy ./node_modules/@kusto/language-service/kusto.javascript.client.min.js  ./release/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./release/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./release/bridge.min.js ./node_modules/@kusto/language-service/newtonsoft.json.min.js ./release/newtonsoft.json.min.js",
+        "release": "mkdirp release  && npm run compile && node ./scripts/release.js && node ./scripts/bundle.js && npm run copy_types_to_release && npm run test_release",
         "test": "jest",
         "clean": "rimraf ./out && rimraf ./release"
     },
@@ -30,14 +32,17 @@
         "@types/jest": "^21.1.8",
         "@types/lodash": "^4.14.109",
         "@types/xregexp": "^3.0.29",
+        "concurrently": "^5.1.0",
+        "copy-dir-cli": "0.0.3",
         "event-stream": "3.3.4",
         "jest": "^22.0.1",
+        "lodash-amd": "^4.17.15",
         "lodash.debounce": "^4.0.8",
         "merge-stream": "1.0.0",
         "minimatch": "^3.0.4",
         "monaco-editor-core": "0.15.5",
         "monaco-languages": "0.9.0",
-        "monaco-plugin-helpers": "^1.0.2",
+        "monaco-plugin-helpers": "^1.0.3",
         "object-assign": "4.1.0",
         "rimraf": "2.5.2",
         "terser": "^4.6.7",
@@ -49,7 +54,9 @@
     },
     "dependencies": {
         "@kusto/language-service": "0.0.30",
-        "@kusto/language-service-next": "0.0.34"
+        "@kusto/language-service-next": "0.0.34",
+        "live-server": "^1.2.1",
+        "requirejs": "^2.3.6"
     },
     "peerDependencies": {
         "monaco-editor": "^0.15.6"

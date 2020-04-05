@@ -20,18 +20,18 @@ const BUNDLED_FILE_HEADER = [
 	''
 ].join('\n');
 
-bundleOne('monaco.contribution', ['kustoMode']),
+bundleOne('monaco.contribution', ['vs/language/kusto/kustoMode']),
 bundleOne('kustoMode'),
 bundleOne('kustoWorker')
 
 function bundleOne(moduleId, exclude) {
 	requirejs.optimize({
-		baseUrl: '../',
+		baseUrl: './',
 		name: 'out/amd/' + moduleId,
 		out: 'release/dev/' + moduleId + '.js',
-		exclude: exclude ? exclude.map(function (file) { return 'out/amd/' + file }) : [],
+		exclude: exclude,
 		paths: {
-			'out/amd': REPO_ROOT + '/out/amd'
+			'vs/language/kusto': REPO_ROOT + '/out/amd'
 		},
 		optimize: 'none',
 		packages: [{
@@ -43,9 +43,9 @@ function bundleOne(moduleId, exclude) {
 			location: path.join(REPO_ROOT, '/node_modules/xregexp'),
 			main: 'xregexp-all.js'
 		}, {
-			name: 'lodash.debounce',
-			location: path.join(REPO_ROOT, '/node_modules/lodash.debounce'),
-			main: 'index.js'
+			name: 'lodash-amd',
+			location: path.join(REPO_ROOT, '/node_modules/lodash-amd'),
+			main: 'main.js'
 		}]
 	}, function (buildResponse) {
 		const devFilePath = path.join(REPO_ROOT, 'release/dev/' + moduleId + '.js');

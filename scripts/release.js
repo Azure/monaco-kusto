@@ -21,6 +21,6 @@ helpers.packageESM({
 		'node_modules': '_deps',
 		'vscode-languageserver-types/lib/esm': 'vscode-languageserver-types',
 		'/node_modules/xregexp': 'xregexp',
-		'/node_modules/lodash.debounce': 'lodash.debounce'
+		'/node_modules/lodash-amd': 'lodash-amd'
 	}
 });
