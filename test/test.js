@@ -30,10 +30,8 @@ var requirejs_release_config = {
     paths: {
         'vs/language/kusto': `../release/min`,
         'vs':'./out/vs',
-        'language-service': `../release`,
-        'language-service-next': `../release`,
-        'lodash-amd': './node_modules/lodash-amd/main',
-        'vscode-languageserver-types': '../node_modules/vscode-languageserver-types/lib/umd/main',
+        'language-service': `../release/min`,
+        'language-service-next': `../release/min`
     },
     shim: shim
 }

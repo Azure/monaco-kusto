@@ -6,8 +6,6 @@
         "target": "es5",
         "alwaysStrict": true,
         "declaration": true,
-        "skipLibCheck": true,
-        "sourceMap": true,
-        "sourceRoot": "../../src"
+        "skipLibCheck": true
     }
 }
