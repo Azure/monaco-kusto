@@ -10,7 +10,7 @@ helpers.packageESM({
 	entryPoints: [
 		'monaco.contribution.js',
 		'kustoMode.js',
-		'kustoWorker.js',
+		'kusto.worker.js',
 	],
 	resolveAlias: {
 	},
