@@ -133,6 +133,46 @@ fetch('./test/mode.txt')
                 });
             };
 
+            window.setCustomSchema = () => {
+
+                let table = {
+                    name: "table1",
+                    columns: [
+                        {
+                            name: "col1",
+                            type: "string",
+                        }
+                    ]
+                }
+
+                let database = {
+                    name: "customSchema",
+                    tables: [
+                        table
+                    ],
+                    majorVersion: 0,
+                    functions: [],
+                    minorVersion: 0
+                }
+
+                let customSchema = {
+                    clusterType: 'Engine',
+                    cluster: {
+                        connectionString: "",
+                        databases: [database]
+                    },
+                    database: database
+                }
+
+
+                monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+                    const model = editor.getModel();
+                    workerAccessor(model.uri).then(worker => {
+                        worker.setSchema(customSchema);
+                    });
+                });
+            };
+
             const schema = {
                 Plugins: [
                     {
