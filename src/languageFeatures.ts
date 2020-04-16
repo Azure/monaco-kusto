@@ -2,7 +2,7 @@ import { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import { KustoWorker } from './kustoWorker';
 
 import * as ls from 'vscode-languageserver-types';
-import * as _ from 'lodash-amd';
+import * as _ from 'lodash';
 
 import Uri = monaco.Uri;
 import Position = monaco.Position;

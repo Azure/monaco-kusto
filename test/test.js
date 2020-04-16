@@ -17,7 +17,7 @@ var requirejs_dev_config = {
         'vs': '../out/vs',
         'language-service': './node_modules/@kusto/language-service/',
         'language-service-next': './node_modules/@kusto/language-service-next/',
-        'lodash-amd': './node_modules/lodash-amd/main',
+        'lodash': './node_modules/lodash/lodash.min',
         'vscode-languageserver-types': '../node_modules/vscode-languageserver-types/lib/umd/main',
         // For worker:
         'xregexp': '../../../node_modules/xregexp/xregexp-all',

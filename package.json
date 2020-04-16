@@ -38,7 +38,7 @@
         "http-server": "^0.12.1",
         "jest": "^22.0.1",
         "live-server": "^1.2.1",
-        "lodash-amd": "^4.17.15",
+        "lodash": "^4.17.4",
         "merge-stream": "1.0.0",
         "minimatch": "^3.0.4",
         "monaco-editor-core": "0.15.5",

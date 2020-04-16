@@ -43,9 +43,9 @@ function bundleOne(moduleId, exclude) {
 			location: path.join(REPO_ROOT, '/node_modules/xregexp'),
 			main: 'xregexp-all.js'
 		}, {
-			name: 'lodash-amd',
-			location: path.join(REPO_ROOT, '/node_modules/lodash-amd'),
-			main: 'main.js'
+			name: 'lodash',
+			location: path.join(REPO_ROOT, '/node_modules/lodash'),
+			main: 'lodash.min.js'
 		}],
 	}, function (buildResponse) {
 		const devFilePath = path.join(REPO_ROOT, 'release/dev/' + moduleId + '.js');
