@@ -7,6 +7,8 @@
             data-name="vs/editor/editor.main"
             href="./node_modules/monaco-editor-core/dev/vs/editor/editor.main.css"
         />
+        <!--Override default .vs .Function style rule, otherwise intellisense is blue.-->
+        <style>.vs .Function {color: inherit !important} </style>
     </head>
     <body>
         <h2>Monaco Editor Kusto test page</h2>
