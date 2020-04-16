@@ -17,6 +17,10 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 2. clone repo and `npm install`
 4. run `npm run watch` from root repo and a live-server will automatically open the index.html
 
+## Build for release
+
+`npm run prepublishOnly`
+
 ## Usage
 
 1. npm i @kusto/monaco-kusto
