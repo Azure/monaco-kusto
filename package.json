@@ -17,7 +17,7 @@
         "url": "https://github.com/Azure/monaco-kusto"
     },
     "scripts": {
-        "copy_runtime_deps_to_out": "mcopy ./node_modules/@kusto/language-service/kusto.javascript.client.min.js ./out/vs/language/kusto/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./out/vs/language/kusto/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./out/vs/language/kusto/bridge.min.js && node ./node_modules/copy-dir-cli/bin/copy ./node_modules/monaco-editor-core/dev/vs ./out/vs && node ./node_modules/copy-dir-cli/bin/copy ./node_modules/monaco-editor-core/dev/vs ./out/vs",
+        "copy_runtime_deps_to_out": "mcopy ./node_modules/@kusto/language-service/kusto.javascript.client.min.js ./out/vs/language/kusto/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./out/vs/language/kusto/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./out/vs/language/kusto/bridge.min.js && node ./node_modules/copy-dir-cli/bin/copy ./node_modules/monaco-editor-core/dev/vs ./out/vs",
         "compile": "tsc -p ./src/tsconfig.json && tsc -p ./src/tsconfig.esm.json",
         "watch": "echo dev > test/mode.txt && tsc -p ./src/tsconfig.watch.json && npm run copy_runtime_deps_to_out && concurrently \"live-server ./ \" \"tsc -w -p ./src/tsconfig.watch.json \"",
         "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
