@@ -97,6 +97,7 @@ declare module monaco.languages.kusto {
          * Get visualization options in render command if present (null otherwise).
          */
         getRenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null>;
+        doDocumentFormat(uri: string): Promise<ls.TextEdit[]>;
     }
 
     /**
