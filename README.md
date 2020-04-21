@@ -14,15 +14,19 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ## Setting up a dev environment
 
 1. Install Node.js (v6.10.3 or later) from [https://nodejs.org/](https://nodejs.org/)
-2. (optional - you can probably use npm instead of yarn) Install Yarn from [https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)
-3. Open a new Kazzle environment, and then execute:
-    - `yarn install` (or `npm install`)
-4. You're set! Open `test/index.html` in your favorite browser and type some text.
-5. You can also use `yarn run watch` (or `npm watch`) to automatically recompile on save.
+2. clone repo and `npm install`
+4. run `npm run watch` from root repo and a live-server will automatically open the index.html
+
+## Build for release
+
+`npm run prepublishOnly`
 
 ## Usage
 
 1. npm i @kusto/monaco-kusto
+
+#### AMD:
+
 2. add the following to your `index.html` (or other entry point)
 
     ```xml
@@ -97,7 +101,78 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
     };
 ```
 
+#### ESM (webpack example)
+
+2. define the following aliases in `resolve.alias`:
+
+```
+'vs/language/kusto/kustoMode': 'kustoMode',
+'bridge.min': '@kusto/monaco-kusto/release/esm/bridge.min',
+'kusto.javascript.client.min': '@kusto/monaco-kusto/release/esm/kusto.javascript.client.min.js',
+'Kusto.Language.Bridge.min': '@kusto/monaco-kusto/release/esm/Kusto.Language.Bridge.min.js',
+'Kusto': '@kusto/monaco-kusto/release/esm/Kusto.Language.Bridge.min.js',
+'monaco.contribution': '@kusto/monaco-kusto/release/esm/monaco.contribution'
+```
+
+3. define following loaders in `module.rules`:
+
+```
+{ test: /bridge\.js/, parser: { system: false } },
+{ test: /kusto\.javascript\.client\.min\.js/, parser: { system: false } },
+{ test: /Kusto\.Language\.Bridge\.min\.js/, parser: { system: false } },
+{ test: /kustoLanguageService/, parser: { system: false } },
+```
+
+Also, add the following dependency (shim) as loaders:
+
+```
+{ test: /Kusto\.Language\.Bridge\.min/, loader: 'exports-loader?window.Kusto!imports-loader?bridge.min,kusto.javascript.client.min' },
+{ test: /kustoMonarchLanguageDefinition/, loader: 'imports-loader?Kusto' },
+```
+
+4. Add the following custom loader to replace the importScripts usage in KustoLanguageService and use it:
+```
+module.exports = function loader(source) {
+    source = `var Kusto = require("@kusto/language-service-next/Kusto.Language.Bridge.min");\n${source}`;
+
+    return source.replace(/importScripts.*/g,'');;
+}
+```
+
+5. Define the following function in your window:
+```
+window.MonacoEnvironment = { getWorkerUrl: function() { return "<path_and_full_name_of_kusto_worker_chunk>"} };
+```
+
+6. Add "@kusto/monaco-kusto/release/esm/kusto.worker.js" as entry point to your webpack configuration.
+
+7. You'll need to merge the runtime chunk of this entry point with this entry point output chunk to one chunk,
+and have this one call in getWorkerUrl in step 5.
+
+8. Create a monao.editor object from an HTML element:
+
+```
+this.editor = monaco.editor.create(editorElement, editorConfig)
+```
+
+9. call monaco.contribution api:
+```
+import('monaco.contribution').then(async (contribution: any) => {
+    const model = this.monaco && this.monaco.editor.createModel("", 'kusto');
+    this.editor.setModel(model);
+    const workerAccessor: monaco.languages.kusto.WorkerAccessor = await monaco.languages.kusto.getKustoWorker();
+    const worker: monaco.languages.kusto.KustoWorker = await workerAccessor(model.uri);
+})
+```
+
 ## Changelog
+
+### 2.1.0
+
+#### Added
+
+-   Added esm release bundles.
+-   Added package.json scripts to replace gulp completely.
 
 ### 2.0.9
 

@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "2.0.12",
+    "version": "2.1.0",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -17,10 +17,14 @@
         "url": "https://github.com/Azure/monaco-kusto"
     },
     "scripts": {
-        "compile": "gulp compile",
-        "watch": "gulp watch",
-        "prepublish": "gulp release",
-        "test": "jest"
+        "copy_runtime_deps_to_out": "mcopy ./node_modules/@kusto/language-service/kusto.javascript.client.min.js ./out/vs/language/kusto/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./out/vs/language/kusto/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./out/vs/language/kusto/bridge.min.js && node ./node_modules/copy-dir-cli/bin/copy ./node_modules/monaco-editor-core/dev/vs ./out/vs",
+        "compile": "tsc -p ./src/tsconfig.json && tsc -p ./src/tsconfig.esm.json",
+        "watch": "echo dev > test/mode.txt && tsc -p ./src/tsconfig.watch.json && npm run copy_runtime_deps_to_out && concurrently \"live-server ./ \" \"tsc -w -p ./src/tsconfig.watch.json \"",
+        "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
+        "copy_types_to_release": "mcopy ./src/monaco.d.ts ./release/esm/monaco.d.ts && mcopy ./out/amd/monaco.contribution.d.ts ./release/esm/monaco.contribution.d.ts && mcopy ./src/monaco.d.ts ./release/min/monaco.d.ts && mcopy ./out/amd/monaco.contribution.d.ts ./release/min/monaco.contribution.d.ts && mcopy ./node_modules/@kusto/language-service/kusto.javascript.client.min.js  ./release/min/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./release/min/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./release/min/bridge.min.js && mcopy ./node_modules/@kusto/language-service/newtonsoft.json.min.js ./release/min/newtonsoft.json.min.js",
+        "prepublishOnly": "mkdirp release  && npm run compile && node ./scripts/release.js && node ./scripts/bundle.js && npm run copy_runtime_deps_to_out && npm run copy_types_to_release && npm run test_release",
+        "test": "jest",
+        "clean": "mrmdir ./out && mrmdir ./release"
     },
     "main": "./release/min/monaco.contribution.js",
     "types": "./release/min/monaco.contribution.d.ts",
@@ -28,19 +32,21 @@
         "@types/jest": "^21.1.8",
         "@types/lodash": "^4.14.109",
         "@types/xregexp": "^3.0.29",
+        "concurrently": "^5.1.0",
+        "copy-dir-cli": "0.0.3",
         "event-stream": "3.3.4",
-        "gulp": "^3.9.1",
-        "gulp-requirejs": "0.1.3",
-        "gulp-tsb": "^2.0.0",
-        "gulp-uglify": "1.5.3",
+        "http-server": "^0.12.1",
         "jest": "^22.0.1",
+        "live-server": "^1.2.1",
         "lodash": "^4.17.4",
         "merge-stream": "1.0.0",
         "minimatch": "^3.0.4",
         "monaco-editor-core": "0.15.5",
         "monaco-languages": "0.9.0",
+        "monaco-plugin-helpers": "^1.0.3",
         "object-assign": "4.1.0",
-        "rimraf": "2.5.2",
+        "requirejs": "^2.3.6",
+        "terser": "^4.6.7",
         "ts-jest": "^22.0.0",
         "typescript": "3.0.3",
         "vscode-languageserver-protocol-foldingprovider": "^1.0.1",
