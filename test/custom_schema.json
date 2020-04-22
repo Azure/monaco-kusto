@@ -1,0 +1,2964 @@
+{
+    "clusterType": "Engine",
+    "cluster": {
+        "connectionString": "",
+        "databases": [
+            {
+                "name": "resouceSchema",
+                "tables": [
+                    {
+                        "name": "traces",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "message",
+                                "type": "string"
+                            },
+                            {
+                                "name": "severityLevel",
+                                "type": "int"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "customMeasurements",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemCount",
+                                "type": "int"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "customEvents",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "customMeasurements",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemCount",
+                                "type": "int"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "pageViews",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "url",
+                                "type": "string"
+                            },
+                            {
+                                "name": "duration",
+                                "type": "real"
+                            },
+                            {
+                                "name": "performanceBucket",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "customMeasurements",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemCount",
+                                "type": "int"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "requests",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "source",
+                                "type": "string"
+                            },
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "url",
+                                "type": "string"
+                            },
+                            {
+                                "name": "success",
+                                "type": "string"
+                            },
+                            {
+                                "name": "resultCode",
+                                "type": "string"
+                            },
+                            {
+                                "name": "duration",
+                                "type": "real"
+                            },
+                            {
+                                "name": "performanceBucket",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "customMeasurements",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemCount",
+                                "type": "int"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "dependencies",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "target",
+                                "type": "string"
+                            },
+                            {
+                                "name": "type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "data",
+                                "type": "string"
+                            },
+                            {
+                                "name": "success",
+                                "type": "string"
+                            },
+                            {
+                                "name": "resultCode",
+                                "type": "string"
+                            },
+                            {
+                                "name": "duration",
+                                "type": "real"
+                            },
+                            {
+                                "name": "performanceBucket",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "customMeasurements",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemCount",
+                                "type": "int"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "exceptions",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "problemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "handledAt",
+                                "type": "string"
+                            },
+                            {
+                                "name": "type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "message",
+                                "type": "string"
+                            },
+                            {
+                                "name": "assembly",
+                                "type": "string"
+                            },
+                            {
+                                "name": "method",
+                                "type": "string"
+                            },
+                            {
+                                "name": "outerType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "outerMessage",
+                                "type": "string"
+                            },
+                            {
+                                "name": "outerAssembly",
+                                "type": "string"
+                            },
+                            {
+                                "name": "outerMethod",
+                                "type": "string"
+                            },
+                            {
+                                "name": "innermostType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "innermostMessage",
+                                "type": "string"
+                            },
+                            {
+                                "name": "innermostAssembly",
+                                "type": "string"
+                            },
+                            {
+                                "name": "innermostMethod",
+                                "type": "string"
+                            },
+                            {
+                                "name": "severityLevel",
+                                "type": "int"
+                            },
+                            {
+                                "name": "details",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "customMeasurements",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemCount",
+                                "type": "int"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "availabilityResults",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "location",
+                                "type": "string"
+                            },
+                            {
+                                "name": "success",
+                                "type": "string"
+                            },
+                            {
+                                "name": "message",
+                                "type": "string"
+                            },
+                            {
+                                "name": "size",
+                                "type": "real"
+                            },
+                            {
+                                "name": "duration",
+                                "type": "real"
+                            },
+                            {
+                                "name": "performanceBucket",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "customMeasurements",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemCount",
+                                "type": "int"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "customMetrics",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "value",
+                                "type": "real"
+                            },
+                            {
+                                "name": "valueCount",
+                                "type": "int"
+                            },
+                            {
+                                "name": "valueSum",
+                                "type": "real"
+                            },
+                            {
+                                "name": "valueMin",
+                                "type": "real"
+                            },
+                            {
+                                "name": "valueMax",
+                                "type": "real"
+                            },
+                            {
+                                "name": "valueStdDev",
+                                "type": "real"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "performanceCounters",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "category",
+                                "type": "string"
+                            },
+                            {
+                                "name": "counter",
+                                "type": "string"
+                            },
+                            {
+                                "name": "instance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "value",
+                                "type": "real"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "browserTimings",
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "url",
+                                "type": "string"
+                            },
+                            {
+                                "name": "networkDuration",
+                                "type": "real"
+                            },
+                            {
+                                "name": "sendDuration",
+                                "type": "real"
+                            },
+                            {
+                                "name": "receiveDuration",
+                                "type": "real"
+                            },
+                            {
+                                "name": "processingDuration",
+                                "type": "real"
+                            },
+                            {
+                                "name": "totalDuration",
+                                "type": "real"
+                            },
+                            {
+                                "name": "performanceBucket",
+                                "type": "string"
+                            },
+                            {
+                                "name": "customDimensions",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "customMeasurements",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "operation_Name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_ParentId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "operation_SyntheticSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "session_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_Id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AuthenticatedId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "user_AccountId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "application_Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Model",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_OS",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_IP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_City",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_StateOrProvince",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_CountryOrRegion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_Browser",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "cloud_RoleInstance",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "appName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "iKey",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sdkVersion",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "itemCount",
+                                "type": "int"
+                            }
+                        ]
+                    }
+                ],
+                "majorVersion": 0,
+                "functions": [],
+                "minorVersion": 0
+            }
+        ]
+    },
+    "database": {
+        "name": "resouceSchema",
+        "tables": [
+            {
+                "name": "traces",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "message",
+                        "type": "string"
+                    },
+                    {
+                        "name": "severityLevel",
+                        "type": "int"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "customMeasurements",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemCount",
+                        "type": "int"
+                    }
+                ]
+            },
+            {
+                "name": "customEvents",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "customMeasurements",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemCount",
+                        "type": "int"
+                    }
+                ]
+            },
+            {
+                "name": "pageViews",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "url",
+                        "type": "string"
+                    },
+                    {
+                        "name": "duration",
+                        "type": "real"
+                    },
+                    {
+                        "name": "performanceBucket",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "customMeasurements",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemCount",
+                        "type": "int"
+                    }
+                ]
+            },
+            {
+                "name": "requests",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "source",
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "url",
+                        "type": "string"
+                    },
+                    {
+                        "name": "success",
+                        "type": "string"
+                    },
+                    {
+                        "name": "resultCode",
+                        "type": "string"
+                    },
+                    {
+                        "name": "duration",
+                        "type": "real"
+                    },
+                    {
+                        "name": "performanceBucket",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "customMeasurements",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemCount",
+                        "type": "int"
+                    }
+                ]
+            },
+            {
+                "name": "dependencies",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "target",
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "data",
+                        "type": "string"
+                    },
+                    {
+                        "name": "success",
+                        "type": "string"
+                    },
+                    {
+                        "name": "resultCode",
+                        "type": "string"
+                    },
+                    {
+                        "name": "duration",
+                        "type": "real"
+                    },
+                    {
+                        "name": "performanceBucket",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "customMeasurements",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemCount",
+                        "type": "int"
+                    }
+                ]
+            },
+            {
+                "name": "exceptions",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "problemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "handledAt",
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "message",
+                        "type": "string"
+                    },
+                    {
+                        "name": "assembly",
+                        "type": "string"
+                    },
+                    {
+                        "name": "method",
+                        "type": "string"
+                    },
+                    {
+                        "name": "outerType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "outerMessage",
+                        "type": "string"
+                    },
+                    {
+                        "name": "outerAssembly",
+                        "type": "string"
+                    },
+                    {
+                        "name": "outerMethod",
+                        "type": "string"
+                    },
+                    {
+                        "name": "innermostType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "innermostMessage",
+                        "type": "string"
+                    },
+                    {
+                        "name": "innermostAssembly",
+                        "type": "string"
+                    },
+                    {
+                        "name": "innermostMethod",
+                        "type": "string"
+                    },
+                    {
+                        "name": "severityLevel",
+                        "type": "int"
+                    },
+                    {
+                        "name": "details",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "customMeasurements",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemCount",
+                        "type": "int"
+                    }
+                ]
+            },
+            {
+                "name": "availabilityResults",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "location",
+                        "type": "string"
+                    },
+                    {
+                        "name": "success",
+                        "type": "string"
+                    },
+                    {
+                        "name": "message",
+                        "type": "string"
+                    },
+                    {
+                        "name": "size",
+                        "type": "real"
+                    },
+                    {
+                        "name": "duration",
+                        "type": "real"
+                    },
+                    {
+                        "name": "performanceBucket",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "customMeasurements",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemCount",
+                        "type": "int"
+                    }
+                ]
+            },
+            {
+                "name": "customMetrics",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "value",
+                        "type": "real"
+                    },
+                    {
+                        "name": "valueCount",
+                        "type": "int"
+                    },
+                    {
+                        "name": "valueSum",
+                        "type": "real"
+                    },
+                    {
+                        "name": "valueMin",
+                        "type": "real"
+                    },
+                    {
+                        "name": "valueMax",
+                        "type": "real"
+                    },
+                    {
+                        "name": "valueStdDev",
+                        "type": "real"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    }
+                ]
+            },
+            {
+                "name": "performanceCounters",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "category",
+                        "type": "string"
+                    },
+                    {
+                        "name": "counter",
+                        "type": "string"
+                    },
+                    {
+                        "name": "instance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "value",
+                        "type": "real"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    }
+                ]
+            },
+            {
+                "name": "browserTimings",
+                "columns": [
+                    {
+                        "name": "timestamp",
+                        "type": "datetime"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "url",
+                        "type": "string"
+                    },
+                    {
+                        "name": "networkDuration",
+                        "type": "real"
+                    },
+                    {
+                        "name": "sendDuration",
+                        "type": "real"
+                    },
+                    {
+                        "name": "receiveDuration",
+                        "type": "real"
+                    },
+                    {
+                        "name": "processingDuration",
+                        "type": "real"
+                    },
+                    {
+                        "name": "totalDuration",
+                        "type": "real"
+                    },
+                    {
+                        "name": "performanceBucket",
+                        "type": "string"
+                    },
+                    {
+                        "name": "customDimensions",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "customMeasurements",
+                        "type": "dynamic"
+                    },
+                    {
+                        "name": "operation_Name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_ParentId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "operation_SyntheticSource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "session_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_Id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AuthenticatedId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_AccountId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "application_Version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Model",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_OS",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_IP",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_City",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_StateOrProvince",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_CountryOrRegion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_Browser",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "cloud_RoleInstance",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "appName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "iKey",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sdkVersion",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemId",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemType",
+                        "type": "string"
+                    },
+                    {
+                        "name": "itemCount",
+                        "type": "int"
+                    }
+                ]
+            }
+        ],
+        "majorVersion": 0,
+        "functions": [],
+        "minorVersion": 0
+    }
+}
