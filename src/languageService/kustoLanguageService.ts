@@ -97,6 +97,7 @@ export interface ColorizationRange {
 
 export interface LanguageService {
     doComplete(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList>;
+    doPrettifyQuery(query: string, appendText: string): Promise<string>;
     doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]>;
     doDocumentformat(document: ls.TextDocument): Promise<ls.TextEdit[]>;
     doCurrentCommandFormat(document: ls.TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
@@ -423,6 +424,10 @@ class KustoLanguageService implements LanguageService {
         }
 
         return Promise.as(ls.CompletionList.create([]));
+    }
+
+    doPrettifyQuery(query: string, appendText: string): Promise<string> {
+        return Promise.as(Kusto.Data.Common.CslQueryParser.PrettifyQuery(query, appendText));
     }
 
     doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {

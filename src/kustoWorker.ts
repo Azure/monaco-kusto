@@ -181,6 +181,10 @@ export class KustoWorker {
         return diagnostics;
     }
 
+    doPrettifyQuery(query: string, appendText: string): Promise<string> {
+        return this._languageService.doPrettifyQuery(query, appendText);
+    }
+
     doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]> {
         const document = this._getTextDocument(uri);
         const formatted = this._languageService.doRangeFormat(document, range);

@@ -98,9 +98,10 @@ declare module monaco.languages.kusto {
          */
         getRenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null>;
         doDocumentFormat(uri: string): Promise<ls.TextEdit[]>;
-        doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]>
-        doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>
-        doValidation(uri: string, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>
+        doPrettifyQuery(query: string, appendText: string): Promise<string>;
+        doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]>;
+        doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
+        doValidation(uri: string, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>;
     }
 
     /**
