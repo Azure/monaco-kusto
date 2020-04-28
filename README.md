@@ -167,6 +167,12 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.1
+
+#### Bug fix
+
+-   Fix `doRangeFormat` to work with all kind of user text selection.
+
 ### 2.1.0
 
 #### Added

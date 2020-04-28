@@ -426,22 +426,28 @@ class KustoLanguageService implements LanguageService {
     }
 
     doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {
-        const text: string = document.getText();
-        const rangeStartOffset = document.offsetAt(range.start);
-        const rangeEndOffset = document.offsetAt(range.end);
-        let textInRange: string = text.substring(rangeStartOffset, rangeEndOffset);
+        const rangeStartOffset: number = document.offsetAt(range.start);
+        const rangeEndOffset: number = document.offsetAt(range.end);
+        const commands = this.getCommandsInDocument(document).then(commands => {
+            const commandsInRange = commands.map(command => {
+                // Chose only selected text from command.
+                const commandSelectionStart = Math.max(rangeStartOffset, command.absoluteStart) - command.absoluteStart;
+                const commandSelectionEnd = Math.min(rangeEndOffset, command.absoluteEnd) - command.absoluteStart;
 
-        // if the range includes a trailing newiline (it usually will be if we're highlighting the current command),
-        // we don't want to replace that newline, thus we'll reduce the range to not include the trailing newline.
-        const newRange = KustoLanguageService.trimTrailingNewlineFromRange(
-            textInRange,
-            rangeStartOffset,
-            document,
-            range
-        );
+                command.text = commandSelectionStart > commandSelectionEnd ? "" : command.text.substring(commandSelectionStart, commandSelectionEnd);
 
-        const formattedText: string = Kusto.Data.Common.CslQueryParser.PrettifyQuery(textInRange, '');
-        return Promise.as([ls.TextEdit.replace(newRange, formattedText)]);
+                return command;
+            }).filter(command => command.text.trim() != "");
+
+            const formattedCommands: string[] = commandsInRange.map(command =>
+                Kusto.Data.Common.CslQueryParser.PrettifyQuery(command.text, '')
+            );
+            const formattedText: string = formattedCommands.join('\r\n\r\n');
+
+            return [ls.TextEdit.replace(range, formattedText)];
+        });
+
+        return commands;
     }
 
     doDocumentformat(document: ls.TextDocument): Promise<ls.TextEdit[]> {
