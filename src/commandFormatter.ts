@@ -19,8 +19,6 @@ export default class KustoCommandFormatter {
                     label: 'Format Command Under Cursor',
                     keybindings: [monaco.KeyMod.chord(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_K, monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_F)],
                     run: (ed: monaco.editor.IStandaloneCodeEditor) => {
-                        const prevSelection = editor.getSelection();
-                        editor.setSelection(this.editor.getCurrentCommandRange(this.cursorPosition));
                         editor.trigger('KustoCommandFormatter', 'editor.action.formatSelection', null);
                     },
                     contextMenuGroupId: '1_modification'
