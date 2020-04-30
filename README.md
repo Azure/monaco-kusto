@@ -167,6 +167,12 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.2
+
+#### Bug fix
+
+-   Fix `getCommandsInDocumentV2` not to take new lines as command.
+
 ### 2.1.1
 
 #### Bug fix

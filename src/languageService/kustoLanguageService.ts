@@ -849,7 +849,7 @@ class KustoLanguageService implements LanguageService {
         document: ls.TextDocument
     ): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]> {
         const script = this.parseDocumentV2(document);
-        let commands = this.toArray<k2.CodeBlock>(script.Blocks);
+        let commands = this.toArray<k2.CodeBlock>(script.Blocks).filter(command => command.Text.trim() != "");
         return Promise.as(
             commands.map(({ Start, End, Text }) => ({ absoluteStart: Start, absoluteEnd: End, text: Text }))
         );
