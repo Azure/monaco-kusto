@@ -378,6 +378,16 @@ fetch('./test/mode.txt')
                     monacoSettings.disabledCompletionItems = [];
                     monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                 });
+            window.checkAfterKustoDoComplete = () => {
+                // Allways return 1 result.
+                monaco.languages.kusto.afterKustoDoComplete = (completionItems) => {
+                    completionItems.items = completionItems.items.map(item => {
+                        item.label += " afterKustDoComplete WORKS";
+                        return item;
+                    })
+                    return completionItems;
+                }
+            }
             window.setHelp();
         });
     });

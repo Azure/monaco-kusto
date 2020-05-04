@@ -213,4 +213,8 @@ declare module monaco.languages.kusto {
     }
 
     export type RenderOptionKeys = keyof RenderOptions;
+
+    export type AfterKustoDoComplete = (list: ls.CompletionList) => Promise<ls.CompletionList>;
+
+    export var afterKustoDoComplete: AfterKustoDoComplete = null;
 }
