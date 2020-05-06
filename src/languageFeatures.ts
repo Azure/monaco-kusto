@@ -595,7 +595,7 @@ function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
 }
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor, private languageSettings: monaco.languages.kusto.LanguageSettings) {}
 
     public get triggerCharacters(): string[] {
         return [' '];
@@ -609,13 +609,13 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
     ): Thenable<monaco.languages.CompletionList> {
         const wordInfo = model.getWordUntilPosition(position);
         const resource = model.uri;
-        const afterKustoDoComplete = monaco.languages.kusto.afterKustoDoComplete;
+        const onDidProvideCompletionItems: monaco.languages.kusto.OnDidProvideCompletionItems = this.languageSettings.onDidProvideCompletionItems;
 
         return this._worker(resource)
             .then(worker => {
                 return worker.doComplete(resource.toString(), fromPosition(position));
             })
-            .then(info => afterKustoDoComplete ? afterKustoDoComplete(info) : info)
+            .then(info => onDidProvideCompletionItems ? onDidProvideCompletionItems(info) : info)
             .then(info => {
                 if (!info) {
                     return;

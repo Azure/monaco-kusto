@@ -72,14 +72,11 @@ function getKustoWorker(): monaco.Promise<any> {
     });
 }
 
-const afterKustoDoComplete: monaco.languages.kusto.AfterKustoDoComplete = monaco.languages.kusto && monaco.languages.kusto.afterKustoDoComplete;
-
 // Export API
 function createAPI(): typeof monaco.languages.kusto {
     return {
         kustoDefaults,
-        getKustoWorker,
-        afterKustoDoComplete
+        getKustoWorker
     };
 }
 monaco.languages.kusto = createAPI();

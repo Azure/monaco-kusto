@@ -19,6 +19,7 @@ declare module monaco.languages.kusto {
         useSemanticColorization?: boolean;
         useTokenColorization?: boolean;
         disabledCompletionItems?: string[];
+        onDidProvideCompletionItems?: monaco.languages.kusto.OnDidProvideCompletionItems;
     }
 
     export interface LanguageServiceDefaults {
@@ -214,7 +215,5 @@ declare module monaco.languages.kusto {
 
     export type RenderOptionKeys = keyof RenderOptions;
 
-    export type AfterKustoDoComplete = (list: ls.CompletionList) => Promise<ls.CompletionList>;
-
-    export var afterKustoDoComplete: AfterKustoDoComplete = null;
+    export type OnDidProvideCompletionItems = (list: ls.CompletionList) => Promise<ls.CompletionList>;
 }
