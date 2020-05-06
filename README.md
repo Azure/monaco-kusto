@@ -171,7 +171,7 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 #### Added
 
--   Added `monaco.languages.kusto.afterKustoDoComplete` as callback function for doComplete operations.
+-   Added `onDidProvideCompletionItems` to languages settings as callback function for doComplete operations.
 
 ### 2.1.2
 
