@@ -378,6 +378,19 @@ fetch('./test/mode.txt')
                     monacoSettings.disabledCompletionItems = [];
                     monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                 });
+            window.checkOnDidProvideCompletionItems = () => {
+                monaco.languages.kusto.getKustoWorker().then(workerAccessor => {
+                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    monacoSettings.onDidProvideCompletionItems = (completionItems) => {
+                        completionItems.items = completionItems.items.map(item => {
+                            item.label += " onDidProvideCompletionItems WORKS";
+                            return item;
+                        })
+                        return completionItems;
+                    };
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                });
+            }
             window.setHelp();
         });
     });

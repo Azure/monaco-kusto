@@ -167,6 +167,12 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.3
+
+#### Added
+
+-   Added `onDidProvideCompletionItems` to languages settings as callback function for doComplete operations.
+
 ### 2.1.2
 
 #### Bug fix

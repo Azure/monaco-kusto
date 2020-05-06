@@ -148,6 +148,7 @@ export interface LanguageSettings {
     useSemanticColorization?: boolean;
     useTokenColorization?: boolean;
     disabledCompletionItems?: string[];
+    onDidProvideCompletionItems?: monaco.languages.kusto.OnDidProvideCompletionItems;
 }
 
 export type CmSchema = {

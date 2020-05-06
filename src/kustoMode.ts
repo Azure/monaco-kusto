@@ -59,7 +59,7 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
     disposables.push(
         monaco.languages.registerCompletionItemProvider(
             language,
-            new languageFeatures.CompletionAdapter(workerAccessor)
+            new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings)
         )
     );
 
