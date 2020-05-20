@@ -110,9 +110,11 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
         monaco.languages.registerReferenceProvider(language, new languageFeatures.ReferenceAdapter(workerAccessor))
     );
 
-    disposables.push(
-        monaco.languages.registerHoverProvider(language, new languageFeatures.HoverAdapter(workerAccessor))
-    );
+    if (defaults.languageSettings.enableHover) {
+        disposables.push(
+            monaco.languages.registerHoverProvider(language, new languageFeatures.HoverAdapter(workerAccessor))
+        );
+    }
 
     monaco.languages.registerDocumentFormattingEditProvider(
         language,
