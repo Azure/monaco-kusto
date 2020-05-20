@@ -167,6 +167,12 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.4
+
+#### Added
+
+-   Added `enableHover` option to languages settingss.
+
 ### 2.1.3
 
 #### Added

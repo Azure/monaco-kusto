@@ -20,6 +20,7 @@ declare module monaco.languages.kusto {
         useTokenColorization?: boolean;
         disabledCompletionItems?: string[];
         onDidProvideCompletionItems?: monaco.languages.kusto.OnDidProvideCompletionItems;
+        enableHover?: boolean;
     }
 
     export interface LanguageServiceDefaults {
