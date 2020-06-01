@@ -18,7 +18,7 @@ export declare type VisualizationType =
 export declare type Scale = 'linear' | 'log';
 export declare type LegendVisibility = 'visible' | 'hidden';
 export declare type YSplit = 'none' | 'axes' | 'panels';
-export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100';
+export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100' | 'map';
 
 export interface RenderOptions {
     visualization?: VisualizationType;

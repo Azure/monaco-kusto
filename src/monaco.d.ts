@@ -100,9 +100,9 @@ declare module monaco.languages.kusto {
          */
         getRenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null>;
         doDocumentFormat(uri: string): Promise<ls.TextEdit[]>;
-        doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]>
-        doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>
-        doValidation(uri: string, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>
+        doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]>;
+        doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
+        doValidation(uri: string, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>;
     }
 
     /**
@@ -188,7 +188,7 @@ declare module monaco.languages.kusto {
     export declare type Scale = 'linear' | 'log';
     export declare type LegendVisibility = 'visible' | 'hidden';
     export declare type YSplit = 'none' | 'axes' | 'panels';
-    export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100';
+    export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100' | 'map';
 
     export interface RenderOptions {
         visualization?: VisualizationType;
