@@ -15,7 +15,7 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 1. Install Node.js (v6.10.3 or later) from [https://nodejs.org/](https://nodejs.org/)
 2. clone repo and `npm install`
-4. run `npm run watch` from root repo and a live-server will automatically open the index.html
+3. run `npm run watch` from root repo and a live-server will automatically open the index.html
 
 ## Build for release
 
@@ -131,6 +131,7 @@ Also, add the following dependency (shim) as loaders:
 ```
 
 4. Add the following custom loader to replace the importScripts usage in KustoLanguageService and use it:
+
 ```
 module.exports = function loader(source) {
     source = `var Kusto = require("@kusto/language-service-next/Kusto.Language.Bridge.min");\n${source}`;
@@ -140,6 +141,7 @@ module.exports = function loader(source) {
 ```
 
 5. Define the following function in your window:
+
 ```
 window.MonacoEnvironment = { getWorkerUrl: function() { return "<path_and_full_name_of_kusto_worker_chunk>"} };
 ```
@@ -147,7 +149,7 @@ window.MonacoEnvironment = { getWorkerUrl: function() { return "<path_and_full_n
 6. Add "@kusto/monaco-kusto/release/esm/kusto.worker.js" as entry point to your webpack configuration.
 
 7. You'll need to merge the runtime chunk of this entry point with this entry point output chunk to one chunk,
-and have this one call in getWorkerUrl in step 5.
+   and have this one call in getWorkerUrl in step 5.
 
 8. Create a monao.editor object from an HTML element:
 
@@ -156,6 +158,7 @@ this.editor = monaco.editor.create(editorElement, editorConfig)
 ```
 
 9. call monaco.contribution api:
+
 ```
 import('monaco.contribution').then(async (contribution: any) => {
     const model = this.monaco && this.monaco.editor.createModel("", 'kusto');
@@ -166,6 +169,10 @@ import('monaco.contribution').then(async (contribution: any) => {
 ```
 
 ## Changelog
+
+### 2.1.5
+
+-   Updated render kind typing to include map.
 
 ### 2.1.4
 
