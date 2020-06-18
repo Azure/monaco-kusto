@@ -44,7 +44,7 @@ export class DiagnosticsAdapter {
                 500
             );
 
-            this._contentListener[model.uri.toString()] = model.onDidChangeContent(e => {
+            this._contentListener[model.uri.toString()] = model.onDidChangeContent((e) => {
                 const intervalsToValidate = changeEventToIntervals(e);
                 debouncedValidation(intervalsToValidate);
             });
@@ -85,7 +85,7 @@ export class DiagnosticsAdapter {
         this._disposables.push(monaco.editor.onDidCreateModel(onModelAdd));
         this._disposables.push(monaco.editor.onWillDisposeModel(onModelRemoved));
         this._disposables.push(
-            monaco.editor.onDidChangeModelLanguage(event => {
+            monaco.editor.onDidChangeModelLanguage((event) => {
                 onModelRemoved(event.model);
                 onModelAdd(event.model);
             })
@@ -96,14 +96,14 @@ export class DiagnosticsAdapter {
                 for (let key in this._contentListener) {
                     this._contentListener[key].dispose();
                 }
-            }
+            },
         });
 
         monaco.editor.getModels().forEach(onModelAdd);
     }
 
     public dispose(): void {
-        this._disposables.forEach(d => d && d.dispose());
+        this._disposables.forEach((d) => d && d.dispose());
         this._disposables = [];
     }
 
@@ -118,10 +118,10 @@ export class DiagnosticsAdapter {
         const resource = model.uri;
         const versionNumberBefore = model.getVersionId();
         this._worker(resource)
-            .then(worker => {
+            .then((worker) => {
                 return worker.doValidation(resource.toString(), intervals);
             })
-            .then(diagnostics => {
+            .then((diagnostics) => {
                 const newModel = monaco.editor.getModel(resource);
                 const versionId = newModel.getVersionId();
 
@@ -129,22 +129,22 @@ export class DiagnosticsAdapter {
                     return;
                 }
 
-                const markers = diagnostics.map(d => toDiagnostics(resource, d));
+                const markers = diagnostics.map((d) => toDiagnostics(resource, d));
                 let model = monaco.editor.getModel(resource);
                 if (model && model.getModeId() === languageId) {
                     monaco.editor.setModelMarkers(model, languageId, markers);
                 }
             })
-            .then(undefined, err => {
+            .then(undefined, (err) => {
                 console.error(err);
             });
     }
 }
 
 function changeEventToIntervals(e: monaco.editor.IModelContentChangedEvent) {
-    return e.changes.map(change => ({
+    return e.changes.map((change) => ({
         start: change.rangeOffset,
-        end: change.rangeOffset + change.text.length
+        end: change.rangeOffset + change.text.length,
     }));
 }
 
@@ -174,7 +174,7 @@ function toDiagnostics(resource: Uri, diag: ls.Diagnostic): monaco.editor.IMarke
         endColumn: diag.range.end.character + 1,
         message: diag.message,
         code: code,
-        source: diag.source
+        source: diag.source,
     };
 }
 
@@ -196,7 +196,7 @@ function fromIModelContentChange(change: monaco.editor.IModelContentChange): ls.
     return {
         range: fromIRange(change.range),
         text: change.text,
-        rangeLength: change.rangeLength
+        rangeLength: change.rangeLength,
     };
 }
 
@@ -241,7 +241,9 @@ const classificationToColorLight: { [K in kinds]: string } = {
     Type: '0000FF',
     Variable: '191970',
     Directive: '9400D3',
-    ClientParameter: 'b5cea8'
+    ClientParameter: 'b5cea8',
+    SchemaMember: 'C71585',
+    SignatureParameter: '2B91AF',
 };
 
 const classificationToColorDark: { [K in kinds]: string } = {
@@ -266,7 +268,9 @@ const classificationToColorDark: { [K in kinds]: string } = {
     Type: '569cd6',
     Variable: 'd7ba7d',
     Directive: 'b5cea8',
-    ClientParameter: 'b5cea8'
+    ClientParameter: 'b5cea8',
+    SchemaMember: '4ec9b0',
+    SignatureParameter: '2B91AF',
 };
 
 export class ColorizationAdapter {
@@ -296,7 +300,7 @@ export class ColorizationAdapter {
             );
 
             let handle: number;
-            this._contentListener[model.uri.toString()] = model.onDidChangeContent(e => {
+            this._contentListener[model.uri.toString()] = model.onDidChangeContent((e) => {
                 // Changes are represented as a range in doc before change, plus the text that it was replaced with.
                 // We are interested in the range _after_ the change (since that's what we need to colorize).
                 // folowing logic calculates that.
@@ -340,7 +344,7 @@ export class ColorizationAdapter {
         this._disposables.push(monaco.editor.onDidCreateModel(onModelAdd));
         this._disposables.push(monaco.editor.onWillDisposeModel(onModelRemoved));
         this._disposables.push(
-            monaco.editor.onDidChangeModelLanguage(event => {
+            monaco.editor.onDidChangeModelLanguage((event) => {
                 onModelRemoved(event.model);
                 onModelAdd(event.model);
             })
@@ -351,14 +355,14 @@ export class ColorizationAdapter {
                 for (let key in this._contentListener) {
                     this._contentListener[key].dispose();
                 }
-            }
+            },
         });
 
         monaco.editor.getModels().forEach(onModelAdd);
     }
 
     public dispose(): void {
-        this._disposables.forEach(d => d && d.dispose());
+        this._disposables.forEach((d) => d && d.dispose());
         this._disposables = [];
     }
 
@@ -372,7 +376,7 @@ export class ColorizationAdapter {
         impactedLineRanges: { firstImpactedLine: number; lastImpactedLine: number }[]
     ) {
         return impactedLineRanges.every(
-            lineRange =>
+            (lineRange) =>
                 range.startLineNumber > lineRange.lastImpactedLine || range.endLineNumber < lineRange.firstImpactedLine
         );
     }
@@ -388,10 +392,10 @@ export class ColorizationAdapter {
         const resource = model.uri;
         const versionNumberBeforeColorization = model.getVersionId();
         this._worker(resource)
-            .then(worker => {
+            .then((worker) => {
                 return worker.doColorization(resource.toString(), intervals);
             })
-            .then(colorizationRanges => {
+            .then((colorizationRanges) => {
                 const newModel = monaco.editor.getModel(model.uri);
                 const versionId = newModel.getVersionId();
 
@@ -400,15 +404,16 @@ export class ColorizationAdapter {
                     return;
                 }
 
-                const decorationRanges = colorizationRanges.map(colorizationRange => {
+                const decorationRanges = colorizationRanges.map((colorizationRange) => {
                     const decorations = colorizationRange.classifications
-                        .map(classification => toDecoration(model, classification))
+                        .map((classification) => toDecoration(model, classification))
                         // The following line will prevent things that aren't going to be colorized anyway to get a CSS class.
                         // This will prevent the case where the non-semantic colorizer already figured out that a keyword needs
                         // to be colorized, but the outdated semantic colorizer still thinks it's a plain text and wants it colored
                         // in black.
                         .filter(
-                            d => d.options.inlineClassName !== 'PlainText' && d.options.inlineClassName != 'Identifier'
+                            (d) =>
+                                d.options.inlineClassName !== 'PlainText' && d.options.inlineClassName != 'Identifier'
                         );
                     const firstImpactedLine = model.getPositionAt(colorizationRange.absoluteStart).lineNumber;
                     const endPosition = model.getPositionAt(colorizationRange.absoluteEnd);
@@ -424,11 +429,11 @@ export class ColorizationAdapter {
 
                 // Compute the previous decorations we want to replace with the new ones.
                 const oldDecorations = decorationRanges
-                    .map(range =>
+                    .map((range) =>
                         model
                             .getLinesDecorations(range.firstImpactedLine, range.lastImpactedLine)
-                            .filter(d => classificationToColorLight[d.options.inlineClassName]) // Don't delete any other decorations
-                            .map(d => d.id)
+                            .filter((d) => classificationToColorLight[d.options.inlineClassName]) // Don't delete any other decorations
+                            .map((d) => d.id)
                     )
                     .reduce((prev, curr) => prev.concat(curr), []);
 
@@ -442,7 +447,7 @@ export class ColorizationAdapter {
                     this.decorations = model.deltaDecorations(oldDecorations, newDecorations);
                 }
             })
-            .then(undefined, err => {
+            .then(undefined, (err) => {
                 console.error(err);
             });
     }
@@ -453,7 +458,7 @@ export class ColorizationAdapter {
  * @param e Enum type
  */
 function getEnumKeys<E>(e: any) {
-    return Object.keys(e).filter(k => typeof e[k] === 'number');
+    return Object.keys(e).filter((k) => typeof e[k] === 'number');
 }
 
 /**
@@ -461,10 +466,10 @@ function getEnumKeys<E>(e: any) {
  */
 function getClassificationColorTriplets(): { classification: string; colorLight: string; colorDark: string }[] {
     const keys = getEnumKeys(ClassificationKind);
-    const result = keys.map(key => ({
+    const result = keys.map((key) => ({
         classification: key,
         colorLight: classificationToColorLight[key],
-        colorDark: classificationToColorDark[key]
+        colorDark: classificationToColorDark[key],
     }));
     return result;
 }
@@ -480,7 +485,7 @@ function getCssForClassification(): string {
     const classificationColorTriplets = getClassificationColorTriplets();
     const cssInnerHtml = classificationColorTriplets
         .map(
-            pair =>
+            (pair) =>
                 `.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`
         )
         .join('\n');
@@ -513,8 +518,8 @@ function toDecoration(
         range,
         options: {
             inlineClassName,
-            stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
-        }
+            stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+        },
     };
 }
 // --- completion ------
@@ -590,7 +595,7 @@ function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
     }
     return {
         range: toRange(textEdit.range),
-        text: textEdit.newText
+        text: textEdit.newText,
     };
 }
 
@@ -609,18 +614,19 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
     ): Thenable<monaco.languages.CompletionList> {
         const wordInfo = model.getWordUntilPosition(position);
         const resource = model.uri;
-        const onDidProvideCompletionItems: monaco.languages.kusto.OnDidProvideCompletionItems = this.languageSettings.onDidProvideCompletionItems;
+        const onDidProvideCompletionItems: monaco.languages.kusto.OnDidProvideCompletionItems = this.languageSettings
+            .onDidProvideCompletionItems;
 
         return this._worker(resource)
-            .then(worker => {
+            .then((worker) => {
                 return worker.doComplete(resource.toString(), fromPosition(position));
             })
-            .then(info => onDidProvideCompletionItems ? onDidProvideCompletionItems(info) : info)
-            .then(info => {
+            .then((info) => (onDidProvideCompletionItems ? onDidProvideCompletionItems(info) : info))
+            .then((info) => {
                 if (!info) {
                     return;
                 }
-                let items: monaco.languages.CompletionItem[] = info.items.map(entry => {
+                let items: monaco.languages.CompletionItem[] = info.items.map((entry) => {
                     let item: monaco.languages.CompletionItem = {
                         label: entry.label,
                         insertText: entry.insertText,
@@ -628,7 +634,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                         filterText: entry.filterText,
                         documentation: entry.documentation,
                         detail: entry.detail,
-                        kind: toCompletionItemKind(entry.kind)
+                        kind: toCompletionItemKind(entry.kind),
                     };
                     if (entry.textEdit) {
                         item.range = toRange(entry.textEdit.range);
@@ -642,7 +648,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
 
                 return {
                     isIncomplete: info.isIncomplete,
-                    suggestions: items
+                    suggestions: items,
                 };
             });
     }
@@ -655,17 +661,17 @@ function isMarkupContent(thing: any): thing is ls.MarkupContent {
 function toMarkdownString(entry: ls.MarkupContent | ls.MarkedString): monaco.IMarkdownString {
     if (typeof entry === 'string') {
         return {
-            value: entry
+            value: entry,
         };
     }
     if (isMarkupContent(entry)) {
         if (entry.kind === 'plaintext') {
             return {
-                value: entry.value.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&')
+                value: entry.value.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&'),
             };
         }
         return {
-            value: entry.value
+            value: entry.value,
         };
     }
 
@@ -689,7 +695,7 @@ function toMarkedStringArray(
 function toLocation(location: ls.Location): monaco.languages.Location {
     return {
         uri: Uri.parse(location.uri),
-        range: toRange(location.range)
+        range: toRange(location.range),
     };
 }
 
@@ -704,10 +710,10 @@ export class DefinitionAdapter {
         const resource = model.uri;
 
         return this._worker(resource)
-            .then(worker => {
+            .then((worker) => {
                 return worker.findDefinition(resource.toString(), fromPosition(position));
             })
-            .then(definition => {
+            .then((definition) => {
                 if (!definition || definition.length == 0) {
                     return;
                 }
@@ -730,10 +736,10 @@ export class ReferenceAdapter implements monaco.languages.ReferenceProvider {
         const resource = model.uri;
 
         return this._worker(resource)
-            .then(worker => {
+            .then((worker) => {
                 return worker.findReferences(resource.toString(), fromPosition(position));
             })
-            .then(entries => {
+            .then((entries) => {
                 if (!entries) {
                     return;
                 }
@@ -754,13 +760,13 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.W
         for (let e of edit.changes[uri]) {
             edits.push({
                 range: toRange(e.range),
-                text: e.newText
+                text: e.newText,
             });
         }
         resourceEdits.push({ resource: Uri.parse(uri), edits: edits });
     }
     return {
-        edits: resourceEdits
+        edits: resourceEdits,
     };
 }
 
@@ -776,10 +782,10 @@ export class RenameAdapter implements monaco.languages.RenameProvider {
         const resource = model.uri;
 
         return this._worker(resource)
-            .then(worker => {
+            .then((worker) => {
                 return worker.doRename(resource.toString(), fromPosition(position), newName);
             })
-            .then(edit => {
+            .then((edit) => {
                 return toWorkspaceEdit(edit);
             });
     }
@@ -842,8 +848,8 @@ export class DocumentFormatAdapter implements monaco.languages.DocumentFormattin
         token: CancellationToken
     ): monaco.languages.TextEdit[] | Thenable<monaco.languages.TextEdit[]> {
         const resource = model.uri;
-        return this._worker(resource).then(worker => {
-            return worker.doDocumentFormat(resource.toString()).then(edits => edits.map(edit => toTextEdit(edit)));
+        return this._worker(resource).then((worker) => {
+            return worker.doDocumentFormat(resource.toString()).then((edits) => edits.map((edit) => toTextEdit(edit)));
         });
     }
 }
@@ -858,10 +864,10 @@ export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEd
         token: CancellationToken
     ): monaco.languages.TextEdit[] | Thenable<monaco.languages.TextEdit[]> {
         const resource = model.uri;
-        return this._worker(resource).then(worker => {
+        return this._worker(resource).then((worker) => {
             return worker
                 .doRangeFormat(resource.toString(), fromRange(range))
-                .then(edits => edits.map(edit => toTextEdit(edit)));
+                .then((edits) => edits.map((edit) => toTextEdit(edit)));
         });
     }
 }
@@ -876,10 +882,10 @@ export class FoldingAdapter implements monaco.languages.FoldingRangeProvider {
         token: CancellationToken
     ): monaco.languages.FoldingRange[] | PromiseLike<monaco.languages.FoldingRange[]> {
         const resource = model.uri;
-        return this._worker(resource).then(worker => {
+        return this._worker(resource).then((worker) => {
             return worker
                 .doFolding(resource.toString())
-                .then(foldingRanges =>
+                .then((foldingRanges) =>
                     foldingRanges.map((range): monaco.languages.FoldingRange => toFoldingRange(range))
                 );
         });
@@ -890,7 +896,7 @@ function toFoldingRange(range: FoldingRange): monaco.languages.FoldingRange {
     return {
         start: range.startLine + 1,
         end: range.endLine + 1,
-        kind: monaco.languages.FoldingRangeKind.Region
+        kind: monaco.languages.FoldingRangeKind.Region,
     };
 }
 
@@ -907,16 +913,16 @@ export class HoverAdapter implements monaco.languages.HoverProvider {
         let resource = model.uri;
 
         return this._worker(resource)
-            .then(worker => {
+            .then((worker) => {
                 return worker.doHover(resource.toString(), fromPosition(position));
             })
-            .then(info => {
+            .then((info) => {
                 if (!info) {
                     return;
                 }
                 return <monaco.languages.Hover>{
                     range: toRange(info.range),
-                    contents: toMarkedStringArray(info.contents)
+                    contents: toMarkedStringArray(info.contents),
                 };
             });
     }

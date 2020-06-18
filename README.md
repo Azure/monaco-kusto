@@ -170,6 +170,10 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.6
+
+-   Update language service.
+
 ### 2.1.5
 
 -   Updated render kind typing to include map.
