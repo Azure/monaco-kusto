@@ -5,7 +5,7 @@ import * as s from './schema';
 
 // polyfill string endsWith
 if (!String.prototype.endsWith) {
-    String.prototype.endsWith = function(search, this_len) {
+    String.prototype.endsWith = function (search, this_len) {
         if (this_len === undefined || this_len > this.length) {
             this_len = this.length;
         }
@@ -83,7 +83,7 @@ export enum TokenKind {
     LetVariablesToken = 65536,
     PluginToken = 131072,
     BracketRangeToken = 262144,
-    ClientDirectiveToken = 524288
+    ClientDirectiveToken = 524288,
 }
 
 /**
@@ -210,12 +210,13 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.RenderChart]: k.OptionKind.Operator,
         [k2.CompletionKind.ScalarInfix]: k.OptionKind.None,
         [k2.CompletionKind.ScalarPrefix]: k.OptionKind.None,
+        [k2.CompletionKind.ScalarType]: k.OptionKind.DataType,
         [k2.CompletionKind.Syntax]: k.OptionKind.None,
         [k2.CompletionKind.Table]: k.OptionKind.Table,
         [k2.CompletionKind.TabularPrefix]: k.OptionKind.None,
         [k2.CompletionKind.TabularSuffix]: k.OptionKind.None,
         [k2.CompletionKind.Unknown]: k.OptionKind.None,
-        [k2.CompletionKind.Variable]: k.OptionKind.Parameter
+        [k2.CompletionKind.Variable]: k.OptionKind.Parameter,
     };
 
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
@@ -248,7 +249,7 @@ class KustoLanguageService implements LanguageService {
         timeline: k2.CompletionKind.RenderChart,
         timepivot: k2.CompletionKind.RenderChart,
         '3Dchart': k2.CompletionKind.RenderChart,
-        list: k2.CompletionKind.RenderChart
+        list: k2.CompletionKind.RenderChart,
     };
 
     doCompleteV2(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
@@ -260,7 +261,7 @@ class KustoLanguageService implements LanguageService {
 
         let disabledItems = this.disabledCompletionItemsV2;
         if (this._languageSettings.disabledCompletionItems) {
-            this._languageSettings.disabledCompletionItems.map(item => {
+            this._languageSettings.disabledCompletionItems.map((item) => {
                 // logic will treat unknown as a '*' wildcard, meaning that if the key is in the object
                 // the completion item will be suppressed.
                 disabledItems[item] = k2.CompletionKind.Unknown;
@@ -269,7 +270,7 @@ class KustoLanguageService implements LanguageService {
 
         let items: ls.CompletionItem[] = this.toArray<k2.CompletionItem>(completionItems.Items)
             .filter(
-                item =>
+                (item) =>
                     !(
                         item &&
                         item.MatchText &&
@@ -291,11 +292,11 @@ class KustoLanguageService implements LanguageService {
                     kItem.AfterText && kItem.AfterText.length > 0
                         ? {
                               textToInsert: kItem.EditText + '$0' + kItem.AfterText,
-                              format: ls.InsertTextFormat.Snippet
+                              format: ls.InsertTextFormat.Snippet,
                           }
                         : {
                               textToInsert: kItem.EditText,
-                              format: ls.InsertTextFormat.PlainText
+                              format: ls.InsertTextFormat.PlainText,
                           };
 
                 const lsItem = ls.CompletionItem.create(kItem.DisplayText);
@@ -358,7 +359,7 @@ class KustoLanguageService implements LanguageService {
         sharding: k.OptionKind.Policy,
         'restricted-viewers': k.OptionKind.Policy,
         attach: k.OptionKind.Command,
-        purge: k.OptionKind.Command
+        purge: k.OptionKind.Command,
     };
 
     doCompleteV1(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
@@ -403,7 +404,8 @@ class KustoLanguageService implements LanguageService {
 
             let options: ls.CompletionItem[] = completionOptions
                 .filter(
-                    option => !(option && option.Value && this.disabledCompletionItemsV1[option.Value] === option.Kind)
+                    (option) =>
+                        !(option && option.Value && this.disabledCompletionItemsV1[option.Value] === option.Kind)
                 )
                 .map((option: k.CompletionOption, ordinal: number) => {
                     const { insertText, insertTextFormat } = this.getTextToInsert(rule, option);
@@ -429,18 +431,24 @@ class KustoLanguageService implements LanguageService {
     doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {
         const rangeStartOffset: number = document.offsetAt(range.start);
         const rangeEndOffset: number = document.offsetAt(range.end);
-        const commands = this.getCommandsInDocument(document).then(commands => {
-            const commandsInRange = commands.map(command => {
-                // Chose only selected text from command.
-                const commandSelectionStart = Math.max(rangeStartOffset, command.absoluteStart) - command.absoluteStart;
-                const commandSelectionEnd = Math.min(rangeEndOffset, command.absoluteEnd) - command.absoluteStart;
+        const commands = this.getCommandsInDocument(document).then((commands) => {
+            const commandsInRange = commands
+                .map((command) => {
+                    // Chose only selected text from command.
+                    const commandSelectionStart =
+                        Math.max(rangeStartOffset, command.absoluteStart) - command.absoluteStart;
+                    const commandSelectionEnd = Math.min(rangeEndOffset, command.absoluteEnd) - command.absoluteStart;
 
-                command.text = commandSelectionStart > commandSelectionEnd ? "" : command.text.substring(commandSelectionStart, commandSelectionEnd);
+                    command.text =
+                        commandSelectionStart > commandSelectionEnd
+                            ? ''
+                            : command.text.substring(commandSelectionStart, commandSelectionEnd);
 
-                return command;
-            }).filter(command => command.text.trim() != "");
+                    return command;
+                })
+                .filter((command) => command.text.trim() != '');
 
-            const formattedCommands: string[] = commandsInRange.map(command =>
+            const formattedCommands: string[] = commandsInRange.map((command) =>
                 Kusto.Data.Common.CslQueryParser.PrettifyQuery(command.text, '')
             );
             const formattedText: string = formattedCommands.join('\r\n\r\n');
@@ -452,8 +460,8 @@ class KustoLanguageService implements LanguageService {
     }
 
     doDocumentformat(document: ls.TextDocument): Promise<ls.TextEdit[]> {
-        const commands = this.getCommandsInDocument(document).then(commands => {
-            const formattedCommands = commands.map(command =>
+        const commands = this.getCommandsInDocument(document).then((commands) => {
+            const formattedCommands = commands.map((command) =>
                 Kusto.Data.Common.CslQueryParser.PrettifyQuery(command.text, '')
             );
             const formattedDocument = formattedCommands.join('\r\n\r\n');
@@ -480,7 +488,7 @@ class KustoLanguageService implements LanguageService {
             return Promise.as([]);
         }
 
-        return this.getCommandsInDocument(document).then(commands => {
+        return this.getCommandsInDocument(document).then((commands) => {
             return commands.map(
                 (command): FoldingRange => {
                     // don't count the last empty line as part of the folded range (cnosider linux, mac, pc newlines)
@@ -497,7 +505,7 @@ class KustoLanguageService implements LanguageService {
                         startLine: startPosition.line,
                         startColumn: startPosition.character,
                         endLine: endPosition.line,
-                        endColumn: endPosition.character
+                        endColumn: endPosition.character,
                     };
                 }
             );
@@ -520,7 +528,7 @@ class KustoLanguageService implements LanguageService {
         }
 
         const diagnostics = blocks
-            .map(block => {
+            .map((block) => {
                 const diagnostics = this.toArray<Kusto.Language.Diagnostic>(block.Service.GetDiagnostics());
                 if (diagnostics) {
                     return diagnostics;
@@ -537,7 +545,7 @@ class KustoLanguageService implements LanguageService {
 
     private toLsDiagnostics(diagnostics: Kusto.Language.Diagnostic[], document: ls.TextDocument) {
         return diagnostics
-            .filter(diag => diag.HasLocation)
+            .filter((diag) => diag.HasLocation)
             .map(
                 (diag): ls.Diagnostic => {
                     const start = document.positionAt(diag.Start);
@@ -571,7 +579,7 @@ class KustoLanguageService implements LanguageService {
             if (changeIntervals.length > 0) {
                 this.parseDocumentV1(document, k.ParseMode.CommandTokensOnly);
 
-                const affectedCommands = this.toArray(this._parser.Results).filter(command =>
+                const affectedCommands = this.toArray(this._parser.Results).filter((command) =>
                     // a command is affected if it intersects at least on of changed ranges.
                     command // command can be null. we're filtering all nulls in the array.
                         ? changeIntervals.some(
@@ -593,19 +601,19 @@ class KustoLanguageService implements LanguageService {
                         {
                             classifications: [],
                             absoluteStart: changeIntervals[0].start,
-                            absoluteEnd: changeIntervals[0].end
-                        }
+                            absoluteEnd: changeIntervals[0].end,
+                        },
                     ]);
                 }
 
                 return Promise.as(
-                    affectedCommands.map(command => {
+                    affectedCommands.map((command) => {
                         this.parseTextV1(command.Text, k.ParseMode.TokenizeAllText);
                         const classifications = this.getClassificationsFromParseResult(command.AbsoluteStart);
                         return {
                             classifications,
                             absoluteStart: command.AbsoluteStart,
-                            absoluteEnd: command.AbsoluteEnd
+                            absoluteEnd: command.AbsoluteEnd,
                         };
                     })
                 );
@@ -624,12 +632,12 @@ class KustoLanguageService implements LanguageService {
             const affectedBlocks = this.getAffectedBlocks(blocks, changeIntervals);
 
             return Promise.as(
-                affectedBlocks.map(block => ({
+                affectedBlocks.map((block) => ({
                     classifications: this.toArray<k2.ClassifiedRange>(
                         block.Service.GetClassifications(block.Start, block.End).Classifications
                     ),
                     absoluteStart: block.Start,
-                    absoluteEnd: block.End
+                    absoluteEnd: block.End,
                 }))
             );
         }
@@ -637,7 +645,7 @@ class KustoLanguageService implements LanguageService {
         // Entire document requested
         const blocks = this.toArray<k2.CodeBlock>(script.Blocks);
         const classifications = blocks
-            .map(block => {
+            .map((block) => {
                 return this.toArray<k2.ClassifiedRange>(
                     block.Service.GetClassifications(block.Start, block.Length).Classifications
                 );
@@ -648,7 +656,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     private getAffectedBlocks(blocks: k2.CodeBlock[], changeIntervals: { start: number; end: number }[]) {
-        return blocks.filter(block =>
+        return blocks.filter((block) =>
             // a command is affected if it intersects at least on of changed ranges.
             block // command can be null. we're filtering all nulls in the array.
                 ? changeIntervals.some(
@@ -687,7 +695,7 @@ class KustoLanguageService implements LanguageService {
         }
 
         this._schema.globalParameters = parameters;
-        const symbols = parameters.map(param => KustoLanguageService.createParameterSymbol(param));
+        const symbols = parameters.map((param) => KustoLanguageService.createParameterSymbol(param));
         this._kustoJsSchemaV2 = this._kustoJsSchemaV2.WithParameters(symbols);
 
         return Promise.as(undefined);
@@ -705,7 +713,7 @@ class KustoLanguageService implements LanguageService {
         databaseInContextName: string,
         globalParameters: s.ScalarParameter[]
     ): Promise<void> {
-        return this.normalizeSchema(schema, clusterConnectionString, databaseInContextName).then(normalized =>
+        return this.normalizeSchema(schema, clusterConnectionString, databaseInContextName).then((normalized) =>
             this.setSchema({ ...normalized, globalParameters })
         );
     }
@@ -722,47 +730,47 @@ class KustoLanguageService implements LanguageService {
         databaseInContextName: string
     ): Promise<s.EngineSchema> {
         const databases: s.EngineSchema['cluster']['databases'] = Object.keys(schema.Databases)
-            .map(key => schema.Databases[key])
+            .map((key) => schema.Databases[key])
             .map(({ Name, Tables, Functions, MinorVersion, MajorVersion }: s.showSchema.Database) => ({
                 name: Name,
                 minorVersion: MinorVersion,
                 majorVersion: MajorVersion,
                 tables: Object.keys(Tables)
-                    .map(key => Tables[key])
+                    .map((key) => Tables[key])
                     .map(({ Name, OrderedColumns }: s.showSchema.Table) => ({
                         name: Name,
                         columns: OrderedColumns.map(({ Name, Type, CslType }: s.showSchema.Column) => ({
                             name: Name,
-                            type: CslType
-                        }))
+                            type: CslType,
+                        })),
                     })),
                 functions: Object.keys(Functions)
-                    .map(key => Functions[key])
+                    .map((key) => Functions[key])
                     .map(({ Name, Body, InputParameters }) => ({
                         name: Name,
                         body: Body,
-                        inputParameters: InputParameters.map(inputParam => ({
+                        inputParameters: InputParameters.map((inputParam) => ({
                             name: inputParam.Name,
                             type: inputParam.Type,
                             cslType: inputParam.CslType,
                             columns: inputParam.Columns
-                                ? inputParam.Columns.map(col => ({
+                                ? inputParam.Columns.map((col) => ({
                                       name: col.Name,
                                       type: col.Type,
-                                      cslType: col.CslType
+                                      cslType: col.CslType,
                                   }))
-                                : []
-                        }))
-                    }))
+                                : [],
+                        })),
+                    })),
             }));
 
         const result: s.EngineSchema = {
             clusterType: 'Engine',
             cluster: {
                 connectionString: clusterConnectionString,
-                databases: databases
+                databases: databases,
             },
-            database: databases.filter(db => db.name === databaseInContextName)[0]
+            database: databases.filter((db) => db.name === databaseInContextName)[0],
         };
 
         return Promise.as(result);
@@ -796,7 +804,7 @@ class KustoLanguageService implements LanguageService {
         const text = block.Text;
         return Promise.as({
             text,
-            location
+            location,
         });
     }
 
@@ -841,7 +849,7 @@ class KustoLanguageService implements LanguageService {
             commands.map(({ AbsoluteStart, AbsoluteEnd, Text }) => ({
                 absoluteStart: AbsoluteStart,
                 absoluteEnd: AbsoluteEnd,
-                text: Text
+                text: Text,
             }))
         );
     }
@@ -850,7 +858,7 @@ class KustoLanguageService implements LanguageService {
         document: ls.TextDocument
     ): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]> {
         const script = this.parseDocumentV2(document);
-        let commands = this.toArray<k2.CodeBlock>(script.Blocks).filter(command => command.Text.trim() != "");
+        let commands = this.toArray<k2.CodeBlock>(script.Blocks).filter((command) => command.Text.trim() != '');
         return Promise.as(
             commands.map(({ Start, End, Text }) => ({ absoluteStart: Start, absoluteEnd: End, text: Text }))
         );
@@ -861,7 +869,7 @@ class KustoLanguageService implements LanguageService {
         const isClientDirective = k.CslCommandParser.IsClientDirective(text, outParam);
         return Promise.as({
             isClientDirective,
-            directiveWithoutLeadingComments: outParam.v
+            directiveWithoutLeadingComments: outParam.v,
         });
     }
 
@@ -870,7 +878,7 @@ class KustoLanguageService implements LanguageService {
         const isAdminCommand = k.CslCommandParser.IsAdminCommand$1(text, outParam);
         return Promise.as({
             isAdminCommand,
-            adminCommandWithoutLeadingComments: outParam.v
+            adminCommandWithoutLeadingComments: outParam.v,
         });
     }
 
@@ -923,7 +931,7 @@ class KustoLanguageService implements LanguageService {
             return Promise.as([]);
         }
 
-        const references = relatedElements.map(relatedElement => {
+        const references = relatedElements.map((relatedElement) => {
             const start = document.positionAt(relatedElement.Start);
             const end = document.positionAt(relatedElement.End);
             const range = ls.Range.create(start, end);
@@ -990,9 +998,9 @@ class KustoLanguageService implements LanguageService {
         if (!withClause) {
             const info: RenderInfo = {
                 options: {
-                    visualization
+                    visualization,
                 },
-                location: { startOffset, endOffset }
+                location: { startOffset, endOffset },
             };
 
             return Promise.as(info);
@@ -1073,7 +1081,7 @@ class KustoLanguageService implements LanguageService {
         const renderOptions: RenderOptions = { visualization, ...props };
         const renderInfo: RenderInfo = {
             options: renderOptions,
-            location: { startOffset, endOffset }
+            location: { startOffset, endOffset },
         };
         return Promise.as(renderInfo);
     }
@@ -1104,17 +1112,17 @@ class KustoLanguageService implements LanguageService {
         const referencedSymbols = this.toArray<Kusto.Language.Syntax.SyntaxNode>(
             parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.Expression)
         )
-            .filter(epression => epression.ReferencedSymbol !== null)
-            .map(x => x.ReferencedSymbol) as sym.ParameterSymbol[];
+            .filter((epression) => epression.ReferencedSymbol !== null)
+            .map((x) => x.ReferencedSymbol) as sym.ParameterSymbol[];
 
         // The Intersection between them is the ambient parameters that are used in the query.
         // Note: Ideally we would use Set here (or at least array.Include), but were' compiling down to es2015.
         const intersection = referencedSymbols.filter(
-            referencedSymbol =>
-                ambientParameters.filter(ambientParameter => ambientParameter === referencedSymbol).length > 0
+            (referencedSymbol) =>
+                ambientParameters.filter((ambientParameter) => ambientParameter === referencedSymbol).length > 0
         );
 
-        const result = intersection.map(param => ({ name: param.Name, type: param.Type.Name }));
+        const result = intersection.map((param) => ({ name: param.Name, type: param.Type.Name }));
         return Promise.as(result);
     }
 
@@ -1124,7 +1132,7 @@ class KustoLanguageService implements LanguageService {
         }
 
         const params = this.toArray<sym.ParameterSymbol>(this._kustoJsSchemaV2.Parameters);
-        const result = params.map(param => ({ name: param.Name, type: param.Type.Name }));
+        const result = params.map((param) => ({ name: param.Name, type: param.Type.Name }));
         return Promise.as(result);
     }
 
@@ -1144,14 +1152,14 @@ class KustoLanguageService implements LanguageService {
         const relatedInfo = currentBLock.Service.GetRelatedElements(document.offsetAt(position));
 
         const relatedElements = this.toArray<k2.RelatedElement>(relatedInfo.Elements);
-        const declarations = relatedElements.filter(e => e.Kind == k2.RelatedElementKind.Declaration);
+        const declarations = relatedElements.filter((e) => e.Kind == k2.RelatedElementKind.Declaration);
 
         // A declaration must be one of the elements
         if (!declarations || declarations.length == 0) {
             return Promise.as(undefined);
         }
 
-        const edits = relatedElements.map(edit => {
+        const edits = relatedElements.map((edit) => {
             const start = document.positionAt(edit.Start);
             const end = document.positionAt(edit.End);
             const range = ls.Range.create(start, end);
@@ -1203,18 +1211,18 @@ class KustoLanguageService implements LanguageService {
                     columns: [
                         {
                             name: 'Source',
-                            type: 'string'
+                            type: 'string',
                         },
                         {
                             name: 'Timestamp',
-                            type: 'datetime'
+                            type: 'datetime',
                         },
                         {
                             name: 'Directory',
-                            type: 'string'
-                        }
-                    ]
-                }
+                            type: 'string',
+                        },
+                    ],
+                },
             ],
             functions: [
                 {
@@ -1226,13 +1234,13 @@ class KustoLanguageService implements LanguageService {
                                 {
                                     name: 'Timestamp',
                                     type: 'System.DateTime',
-                                    cslType: 'datetime'
-                                }
-                            ]
-                        }
+                                    cslType: 'datetime',
+                                },
+                            ],
+                        },
                     ],
                     body:
-                        "{\r\n    union \r\n    (T | count | project V='Volume', Metric = strcat(Count/1e9, ' Billion records')),\r\n    (T | summarize FirstRecord=min(Timestamp)| project V='Volume', Metric = strcat(toint((now()-FirstRecord)/1d), ' Days of data (from: ', format_datetime(FirstRecord, 'yyyy-MM-dd'),')')),\r\n    (T | where Timestamp > ago(1h) | count | project V='Velocity', Metric = strcat(Count/1e6, ' Million records / hour')),\r\n    (T | summarize Latency=now()-max(Timestamp) | project V='Velocity', Metric = strcat(Latency / 1sec, ' seconds latency')),\r\n    (T | take 1 | project V='Variety', Metric=tostring(pack_all()))\r\n    | order by V \r\n}"
+                        "{\r\n    union \r\n    (T | count | project V='Volume', Metric = strcat(Count/1e9, ' Billion records')),\r\n    (T | summarize FirstRecord=min(Timestamp)| project V='Volume', Metric = strcat(toint((now()-FirstRecord)/1d), ' Days of data (from: ', format_datetime(FirstRecord, 'yyyy-MM-dd'),')')),\r\n    (T | where Timestamp > ago(1h) | count | project V='Velocity', Metric = strcat(Count/1e6, ' Million records / hour')),\r\n    (T | summarize Latency=now()-max(Timestamp) | project V='Velocity', Metric = strcat(Latency / 1sec, ' seconds latency')),\r\n    (T | take 1 | project V='Variety', Metric=tostring(pack_all()))\r\n    | order by V \r\n}",
                 },
                 {
                     name: 'FindCIDPast24h',
@@ -1240,21 +1248,21 @@ class KustoLanguageService implements LanguageService {
                         {
                             name: 'clientActivityId',
                             type: 'System.String',
-                            cslType: 'string'
-                        }
+                            cslType: 'string',
+                        },
                     ],
-                    body: '{ KustoLogs | where Timestamp > now(-1d) | where ClientActivityId == clientActivityId}   '
-                }
-            ]
+                    body: '{ KustoLogs | where Timestamp > now(-1d) | where ClientActivityId == clientActivityId}   ',
+                },
+            ],
         };
 
         const languageServiceSchema: s.EngineSchema = {
             clusterType: 'Engine',
             cluster: {
                 connectionString: 'https://kuskus.kusto.windows.net;fed=true',
-                databases: [database]
+                databases: [database],
             },
-            database: database
+            database: database,
         };
 
         return languageServiceSchema;
@@ -1276,15 +1284,15 @@ class KustoLanguageService implements LanguageService {
 
                 kCluster.ConnectionString = schema.cluster.connectionString;
                 const databases = [];
-                schema.cluster.databases.forEach(database => {
+                schema.cluster.databases.forEach((database) => {
                     const kDatabase = new k.KustoIntelliSenseDatabaseEntity();
                     kDatabase.Name = database.name;
                     const tables = [];
-                    database.tables.forEach(table => {
+                    database.tables.forEach((table) => {
                         const kTable = new k.KustoIntelliSenseTableEntity();
                         kTable.Name = table.name;
                         const cols = [];
-                        table.columns.forEach(column => {
+                        table.columns.forEach((column) => {
                             const kColumn = new k.KustoIntelliSenseColumnEntity();
                             kColumn.Name = column.name;
                             kColumn.TypeCode = k.EntityDataType[getEntityDataTypeFromCslType(column.type)];
@@ -1294,7 +1302,7 @@ class KustoLanguageService implements LanguageService {
                         tables.push(kTable);
                     });
                     const functions = [];
-                    database.functions.forEach(fn => {
+                    database.functions.forEach((fn) => {
                         const kFunction = new k.KustoIntelliSenseFunctionEntity();
                         (kFunction.Name = fn.name),
                             (kFunction.CallName = s.getCallName(fn)),
@@ -1314,13 +1322,13 @@ class KustoLanguageService implements LanguageService {
                 const kSchema = new k.KustoIntelliSenseQuerySchema(kCluster, kDatabaseInContext);
                 return kSchema;
             case 'ClusterManager':
-                const accounts = schema.accounts.map(account => {
+                const accounts = schema.accounts.map((account) => {
                     const kAccount = new k.KustoIntelliSenseAccountEntity();
                     kAccount.Name = account;
                     return kAccount;
                 });
 
-                const services = schema.services.map(service => {
+                const services = schema.services.map((service) => {
                     const kService = new k.KustoIntelliSenseServiceEntity();
                     kService.Name = service;
                     return kService;
@@ -1331,7 +1339,7 @@ class KustoLanguageService implements LanguageService {
                 const result: CmSchema = {
                     accounts,
                     services,
-                    connectionString
+                    connectionString,
                 };
                 return result;
             case 'DataManagement':
@@ -1346,7 +1354,7 @@ class KustoLanguageService implements LanguageService {
      * @param params scalar parameters
      */
     private static scalarParametersToSignature(params: s.ScalarParameter[]) {
-        const signatureWithoutParens = params.map(param => `${param.name}: ${param.cslType}`).join(', ');
+        const signatureWithoutParens = params.map((param) => `${param.name}: ${param.cslType}`).join(', ');
         return `(${signatureWithoutParens})`;
     }
 
@@ -1356,7 +1364,7 @@ class KustoLanguageService implements LanguageService {
      */
     private static inputParameterToSignature(params: s.InputParameter[]) {
         const signatureWithoutParens = params
-            .map(param => {
+            .map((param) => {
                 if (param.columns) {
                     const tableSignature = this.scalarParametersToSignature(param.columns);
                     return `${param.name}: ${tableSignature}`;
@@ -1378,14 +1386,14 @@ class KustoLanguageService implements LanguageService {
     }
 
     private static createColumnSymbol(col: s.ScalarParameter): sym.ColumnSymbol {
-        return new sym.ColumnSymbol(col.name, sym.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(col.type)));
+        return new sym.ColumnSymbol(col.name, sym.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(col.type)), null);
     }
 
     private static createParameterSymbol(param: s.ScalarParameter): sym.ParameterSymbol {
         const paramSymbol: sym.ScalarSymbol = Kusto.Language.Symbols.ScalarTypes.GetSymbol(
             getCslTypeNameFromClrType(param.type)
         );
-        return new sym.ParameterSymbol(param.name, paramSymbol);
+        return new sym.ParameterSymbol(param.name, paramSymbol, null);
     }
 
     private static createParameter(param: s.InputParameter): sym.Parameter {
@@ -1407,12 +1415,13 @@ class KustoLanguageService implements LanguageService {
                 null,
                 1,
                 1,
+                null,
                 null
             );
         }
 
         const argumentType = new sym.TableSymbol.ctor(
-            param.columns.map(col => KustoLanguageService.createColumnSymbol(col))
+            param.columns.map((col) => KustoLanguageService.createColumnSymbol(col))
         );
         return new sym.Parameter.$ctor2(param.name, argumentType);
     }
@@ -1422,23 +1431,23 @@ class KustoLanguageService implements LanguageService {
         globalState: GlobalState,
         addFunctions: boolean
     ): sym.DatabaseSymbol {
-        const createFunctionSymbol: (fn: s.Function) => sym.FunctionSymbol = fn => {
-            const parameters: sym.Parameter[] = fn.inputParameters.map(param =>
+        const createFunctionSymbol: (fn: s.Function) => sym.FunctionSymbol = (fn) => {
+            const parameters: sym.Parameter[] = fn.inputParameters.map((param) =>
                 KustoLanguageService.createParameter(param)
             );
 
             // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
-            return new sym.FunctionSymbol.$ctor16(fn.name, fn.body, parameters);
+            return new sym.FunctionSymbol.$ctor16(fn.name, fn.body, parameters, null);
         };
 
-        const createTableSymbol: (tbl: s.Table) => sym.TableSymbol = tbl => {
-            const columnSymbols = tbl.columns.map(col => KustoLanguageService.createColumnSymbol(col));
+        const createTableSymbol: (tbl: s.Table) => sym.TableSymbol = (tbl) => {
+            const columnSymbols = tbl.columns.map((col) => KustoLanguageService.createColumnSymbol(col));
             return new sym.TableSymbol.$ctor3(tbl.name, columnSymbols);
         };
 
-        const createDatabaseSymbol: (db: s.Database) => sym.DatabaseSymbol = db => {
-            const tableSymbols: sym.Symbol[] = db.tables.map(tbl => createTableSymbol(tbl));
-            const functionSymbols = db.functions.map(fun => createFunctionSymbol(fun));
+        const createDatabaseSymbol: (db: s.Database) => sym.DatabaseSymbol = (db) => {
+            const tableSymbols: sym.Symbol[] = db.tables.map((tbl) => createTableSymbol(tbl));
+            const functionSymbols = db.functions.map((fun) => createFunctionSymbol(fun));
             return new sym.DatabaseSymbol.ctor(db.name, tableSymbols.concat(functionSymbols));
         };
 
@@ -1461,7 +1470,7 @@ class KustoLanguageService implements LanguageService {
             (prev, curr) => (prev[curr.name] = curr),
             {}
         );
-        Object.keys(cached).map(dbName => {
+        Object.keys(cached).map((dbName) => {
             if (!schemaDbLookup[dbName]) {
                 delete cached.dbName;
             }
@@ -1473,7 +1482,7 @@ class KustoLanguageService implements LanguageService {
         let databaseInContext: sym.DatabaseSymbol | undefined = undefined;
 
         // Update out-of-data databses to cache
-        const databases = schema.cluster.databases.map(db => {
+        const databases = schema.cluster.databases.map((db) => {
             const shouldIncludeFunctions = db.name === currentDatabaseName;
 
             const cachedDb = cached[db.name];
@@ -1515,7 +1524,9 @@ class KustoLanguageService implements LanguageService {
 
         // Inject gloabl parameters to global scope.
         if (schema.globalParameters) {
-            const parameters = schema.globalParameters.map(param => KustoLanguageService.createParameterSymbol(param));
+            const parameters = schema.globalParameters.map((param) =>
+                KustoLanguageService.createParameterSymbol(param)
+            );
             globalState = globalState.WithParameters(parameters);
         }
 
@@ -1524,7 +1535,7 @@ class KustoLanguageService implements LanguageService {
 
     private getClassificationsFromParseResult(offset: number = 0) {
         const classifications = this.toArray(this._parser.Results)
-            .map(command => this.toArray(command.Tokens))
+            .map((command) => this.toArray(command.Tokens))
             .reduce((prev, curr) => prev.concat(curr), [])
             .map(
                 (cslCommandToken): k2.ClassifiedRange => {
@@ -1646,14 +1657,14 @@ class KustoLanguageService implements LanguageService {
         let commands = this.toArray(this._parser.Results);
 
         let command = commands.filter(
-            command => command.AbsoluteStart <= caretAbsolutePosition && command.AbsoluteEnd >= caretAbsolutePosition
+            (command) => command.AbsoluteStart <= caretAbsolutePosition && command.AbsoluteEnd >= caretAbsolutePosition
         )[0];
 
         // There is an edge case when cursor appears at the end of the command
         // which is not yet considered to be part of the parsed command (therefore: +1 for the AbsoluteEdit property)
         if (!command) {
             command = commands.filter(
-                command =>
+                (command) =>
                     command.AbsoluteStart <= caretAbsolutePosition && command.AbsoluteEnd + 1 >= caretAbsolutePosition
             )[0];
 
@@ -1803,10 +1814,10 @@ class KustoLanguageService implements LanguageService {
         [k.OptionKind.FunctionAggregation]: ls.CompletionItemKind.Field,
         [k.OptionKind.FunctionFilter]: ls.CompletionItemKind.Field,
         [k.OptionKind.FunctionScalar]: ls.CompletionItemKind.Field,
-        [k.OptionKind.ClientDirective]: ls.CompletionItemKind.Enum
+        [k.OptionKind.ClientDirective]: ls.CompletionItemKind.Enum,
     };
 
-    private _kustoKindtolsKindV2: { [k in k2.CompletionKind]: ls.CompletionItemKind } = {
+    private _kustoKindToLsKindV2: { [k in k2.CompletionKind]: ls.CompletionItemKind } = {
         [k2.CompletionKind.AggregateFunction]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.BuiltInFunction]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Cluster]: ls.CompletionItemKind.Class,
@@ -1825,13 +1836,14 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.RenderChart]: ls.CompletionItemKind.Method,
         [k2.CompletionKind.ScalarInfix]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.ScalarPrefix]: ls.CompletionItemKind.Field,
+        [k2.CompletionKind.ScalarType]: ls.CompletionItemKind.TypeParameter,
         [k2.CompletionKind.Syntax]: ls.CompletionItemKind.Method,
         [k2.CompletionKind.Table]: ls.CompletionItemKind.Class,
         [k2.CompletionKind.TabularPrefix]: ls.CompletionItemKind.Field,
         // datatable, externaldata
         [k2.CompletionKind.TabularSuffix]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Unknown]: ls.CompletionItemKind.Interface,
-        [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable
+        [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
     };
 
     private kustoKindToLsKind(kustoKind: k.OptionKind): ls.CompletionItemKind {
@@ -1840,7 +1852,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     private kustoKindToLsKindV2(kustoKind: k2.CompletionKind): ls.CompletionItemKind {
-        let res = this._kustoKindtolsKindV2[kustoKind];
+        let res = this._kustoKindToLsKindV2[kustoKind];
         return res ? res : ls.CompletionItemKind.Variable;
     }
 
@@ -1867,7 +1879,7 @@ class KustoLanguageService implements LanguageService {
         [TokenKind.LetVariablesToken]: k2.ClassificationKind.Identifier, // TODO ?
         [TokenKind.PluginToken]: k2.ClassificationKind.Function,
         [TokenKind.BracketRangeToken]: k2.ClassificationKind.Keyword, // TODO ?
-        [TokenKind.ClientDirectiveToken]: k2.ClassificationKind.Keyword // TODO ?
+        [TokenKind.ClientDirectiveToken]: k2.ClassificationKind.Keyword, // TODO ?
     };
     private tokenKindToClassificationKind(token: TokenKind): k2.ClassificationKind {
         const conversion = this._tokenKindToClassificationKind[token];
@@ -1897,7 +1909,7 @@ class KustoLanguageService implements LanguageService {
 let languageService = new KustoLanguageService(KustoLanguageService.dummySchema, {
     includeControlCommands: true,
     useIntellisenseV2: true,
-    useSemanticColorization: true
+    useSemanticColorization: true,
 });
 
 /**
