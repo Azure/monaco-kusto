@@ -12,7 +12,7 @@ import {
 } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
-import { ColorizationRange } from './languageService/kustoLanguageService';
+import { ColorizationRange, StringToken } from './languageService/kustoLanguageService';
 import { RenderInfo } from './languageService/renderInfo';
 
 export class KustoWorker {
@@ -123,7 +123,7 @@ export class KustoWorker {
         });
     }
 
-    getStringOnCursor(uri: string, cursorOffset: number): Promise<string | null> {
+    getStringOnCursor(uri: string, cursorOffset: number): Promise<StringToken | null> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getStringOnCursor: document is ${document}. uri is ${uri}`);

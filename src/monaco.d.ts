@@ -102,7 +102,7 @@ declare module monaco.languages.kusto {
         /**
          * Get the token on cursor right now
          */
-        getStringOnCursor(uri: string, cursorOffset: number): Promise<string | null>;
+        getStringOnCursor(uri: string, cursorOffset: number): Promise<StringToken | null>;
         doDocumentFormat(uri: string): Promise<ls.TextEdit[]>;
         doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]>;
         doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
@@ -221,4 +221,21 @@ declare module monaco.languages.kusto {
     export type RenderOptionKeys = keyof RenderOptions;
 
     export type OnDidProvideCompletionItems = (list: ls.CompletionList) => Promise<ls.CompletionList>;
+
+    /**
+     * Represents a string literal token.
+     */
+    export interface StringToken {
+        start: number;
+        end: number;
+        /**
+         * The value of a literal without surrounding quotes
+         */
+        valueText: string;
+
+        /**
+         * The token text (including all surrounding quotes, type ETC.)
+         */
+        text: string;
+    }
 }
