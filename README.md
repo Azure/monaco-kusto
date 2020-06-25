@@ -170,6 +170,10 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.8
+
+-   Added getStringOnCursor to get current string on cursor.
+
 ### 2.1.6
 
 -   Update language service.

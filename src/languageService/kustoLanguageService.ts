@@ -139,6 +139,7 @@ export interface LanguageService {
     getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]>;
     getReferencedGlobalParams(document: ls.TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
     getRenderInfo(document: ls.TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
+    getStringOnCursor(document: ls.TextDocument, cursorOffset: number): Promise<string | undefined>;
 }
 
 export interface LanguageSettings {
@@ -952,7 +953,7 @@ class KustoLanguageService implements LanguageService {
         const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
 
         const queryParamStatements = this.toArray(
-            parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.QueryParametersStatement)
+            parsedAndAnalyzed.kustoCode.Syntax.GetDescendants(Kusto.Language.Syntax.QueryParametersStatement)
         );
         if (!queryParamStatements || queryParamStatements.length == 0) {
             return Promise.as([]);
@@ -977,7 +978,7 @@ class KustoLanguageService implements LanguageService {
         }
 
         const renderStatements = this.toArray(
-            parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.RenderOperator)
+            parsedAndAnalyzed.kustoCode.Syntax.GetDescendants(Kusto.Language.Syntax.RenderOperator)
         );
 
         if (!renderStatements || renderStatements.length === 0) {
@@ -1084,6 +1085,22 @@ class KustoLanguageService implements LanguageService {
             location: { startOffset, endOffset },
         };
         return Promise.as(renderInfo);
+    }
+
+    getStringOnCursor(document: ls.TextDocument, cursorOffset: number): Promise<string | undefined> {
+        const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
+        if (!parsedAndAnalyzed) {
+            return Promise.as(undefined);
+        }
+
+        const blockOffset = cursorOffset - parsedAndAnalyzed.codeBlock.Start;
+        const token = parsedAndAnalyzed.kustoCode.Syntax.GetTokenAt(blockOffset);
+        const { IsLiteral, Kind, ValueText } = token;
+        if (!IsLiteral || Kind !== Kusto.Language.Syntax.SyntaxKind.StringLiteralToken) {
+            return Promise.as(undefined);
+        }
+
+        return Promise.as(ValueText);
     }
 
     getReferencedGlobalParams(
@@ -1886,7 +1903,10 @@ class KustoLanguageService implements LanguageService {
         return conversion || k2.ClassificationKind.PlainText;
     }
 
-    private parseAndAnalyze(document: ls.TextDocument, cursorOffset: number): Kusto.Language.KustoCode | undefined {
+    private parseAndAnalyze(
+        document: ls.TextDocument,
+        cursorOffset: number
+    ): { kustoCode: Kusto.Language.KustoCode; codeBlock: k2.CodeBlock } | undefined {
         if (!this.isIntellisenseV2()) {
             return undefined;
         }
@@ -1902,7 +1922,7 @@ class KustoLanguageService implements LanguageService {
 
         const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
 
-        return parsedAndAnalyzed;
+        return { kustoCode: parsedAndAnalyzed, codeBlock: currentBlock };
     }
 }
 

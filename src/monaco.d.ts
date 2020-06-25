@@ -99,6 +99,10 @@ declare module monaco.languages.kusto {
          * Get visualization options in render command if present (null otherwise).
          */
         getRenderInfo(uri: string, cursorOffset: number): Promise<RenderInfo | null>;
+        /**
+         * Get the token on cursor right now
+         */
+        getStringOnCursor(uri: string, cursorOffset: number): Promise<string | null>;
         doDocumentFormat(uri: string): Promise<ls.TextEdit[]>;
         doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]>;
         doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>;

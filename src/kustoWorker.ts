@@ -8,7 +8,7 @@ import {
     Schema,
     showSchema,
     InputParameter,
-    ScalarParameter
+    ScalarParameter,
 } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
@@ -114,7 +114,22 @@ export class KustoWorker {
             console.error(`getRenderInfo: document is ${document}. uri is ${uri}`);
         }
 
-        return this._languageService.getRenderInfo(document, cursorOffset).then(result => {
+        return this._languageService.getRenderInfo(document, cursorOffset).then((result) => {
+            if (!result) {
+                return null;
+            }
+
+            return result;
+        });
+    }
+
+    getStringOnCursor(uri: string, cursorOffset: number): Promise<string | null> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`getStringOnCursor: document is ${document}. uri is ${uri}`);
+        }
+
+        return this._languageService.getStringOnCursor(document, cursorOffset).then((result) => {
             if (!result) {
                 return null;
             }
@@ -139,7 +154,7 @@ export class KustoWorker {
             return Promise.as(null);
         }
 
-        return this._languageService.getCommandAndLocationInContext(document, cursorOffset).then(result => {
+        return this._languageService.getCommandAndLocationInContext(document, cursorOffset).then((result) => {
             if (!result) {
                 return null;
             }
@@ -148,13 +163,13 @@ export class KustoWorker {
             const {
                 text,
                 location: {
-                    range: { start, end }
-                }
+                    range: { start, end },
+                },
             } = result;
             const range = new monaco.Range(start.line + 1, start.character + 1, end.line + 1, end.character + 1);
             return {
                 range,
-                text
+                text,
             };
         });
     }
