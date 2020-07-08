@@ -170,6 +170,10 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.9
+
+- Add DocString to onHover tooltip
+
 ### 2.1.6
 
 -   Update language service.
