@@ -1199,8 +1199,9 @@ class KustoLanguageService implements LanguageService {
             return Promise.as(undefined);
         }
 
-        // \n\n doesn't work in a markdown, it won't create an empty line. So instead use "\n\n&nbsp;\n\n".
-        return Promise.as({ contents: quickInfo.Text.replace("\n\n", "\n\n&nbsp;\n\n") });
+        // Instead of just an empty line between the first line (the signature) and the second line (the description)
+        // add an horizontal line (* * * in markdown) between them.
+        return Promise.as({ contents: quickInfo.Text.replace("\n\n", "\n* * *\n") });
     }
 
     //#region dummy schema for manual testing
