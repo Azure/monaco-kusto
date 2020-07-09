@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "2.1.7",
+    "version": "2.1.8",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -35,8 +35,8 @@
         "concurrently": "^5.1.0",
         "copy-dir-cli": "0.0.3",
         "event-stream": "3.3.4",
-        "http-server": "^0.12.1",
-        "jest": "^22.0.1",
+        "http-server": "^0.12.3",
+        "jest": "^26.1.0",
         "live-server": "^1.2.1",
         "lodash": "^4.17.4",
         "merge-stream": "1.0.0",
@@ -47,7 +47,7 @@
         "object-assign": "4.1.0",
         "requirejs": "^2.3.6",
         "terser": "^4.6.7",
-        "ts-jest": "^22.0.0",
+        "ts-jest": "^26.1.1",
         "typescript": "3.0.3",
         "vscode-languageserver-protocol-foldingprovider": "^1.0.1",
         "vscode-languageserver-types": "3.6.1",
