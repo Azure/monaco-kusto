@@ -3,15 +3,18 @@
 export interface Column {
     name: string;
     type: string;
+    docstring?: string;
 }
 export interface Table {
     name: string;
     columns: Column[];
+    docstring?: string;
 }
 export interface ScalarParameter {
     name: string;
     type?: string;
     cslType?: string;
+    docstring?: string;
 }
 
 // an input parameter either be a scalar in which case it has a name, type and cslType, or it can be columnar, in which case
@@ -22,6 +25,7 @@ export interface Function {
     name: string;
     body: string;
     inputParameters: InputParameter[];
+    docstring?: string;
 }
 export interface Database {
     name: string;
@@ -130,11 +134,13 @@ export namespace showSchema {
         Name: string;
         Type: string;
         CslType: string;
+        DocString?: string;
     }
 
     export interface Table {
         Name: string;
         OrderedColumns: Column[];
+        DocString?: string;
     }
 
     export interface Tables {
@@ -145,6 +151,7 @@ export namespace showSchema {
         Name: string;
         Type?: string;
         CslType?: string;
+        DocString?: string;
     }
 
     export type InputParameter = ScalarParameter & { Columns?: ScalarParameter[] };

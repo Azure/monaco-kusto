@@ -737,18 +737,21 @@ class KustoLanguageService implements LanguageService {
                 majorVersion: MajorVersion,
                 tables: Object.keys(Tables)
                     .map((key) => Tables[key])
-                    .map(({ Name, OrderedColumns }: s.showSchema.Table) => ({
+                    .map(({ Name, OrderedColumns, DocString }: s.showSchema.Table) => ({
                         name: Name,
-                        columns: OrderedColumns.map(({ Name, Type, CslType }: s.showSchema.Column) => ({
+                        docstring: DocString,
+                        columns: OrderedColumns.map(({ Name, Type, DocString, CslType }: s.showSchema.Column) => ({
                             name: Name,
                             type: CslType,
+                            docstring: DocString
                         })),
                     })),
                 functions: Object.keys(Functions)
                     .map((key) => Functions[key])
-                    .map(({ Name, Body, InputParameters }) => ({
+                    .map(({ Name, Body, DocString, InputParameters }) => ({
                         name: Name,
                         body: Body,
+                        docstring: DocString,
                         inputParameters: InputParameters.map((inputParam) => ({
                             name: inputParam.Name,
                             type: inputParam.Type,
@@ -1196,7 +1199,8 @@ class KustoLanguageService implements LanguageService {
             return Promise.as(undefined);
         }
 
-        return Promise.as({ contents: quickInfo.Text });
+        // \n\n doesn't work in a markdown, it won't create an empty line. So instead use "\n\n&nbsp;\n\n".
+        return Promise.as({ contents: quickInfo.Text.replace("\n\n", "\n\n&nbsp;\n\n") });
     }
 
     //#region dummy schema for manual testing
@@ -1222,6 +1226,7 @@ class KustoLanguageService implements LanguageService {
                             type: 'string',
                         },
                     ],
+                    docstring: "A dummy description to test that docstring shows as expected when hovering over a table",
                 },
             ],
             functions: [
@@ -1239,6 +1244,7 @@ class KustoLanguageService implements LanguageService {
                             ],
                         },
                     ],
+                    docstring: "A dummy description to test that docstring shows as expected when hovering over a function",
                     body:
                         "{\r\n    union \r\n    (T | count | project V='Volume', Metric = strcat(Count/1e9, ' Billion records')),\r\n    (T | summarize FirstRecord=min(Timestamp)| project V='Volume', Metric = strcat(toint((now()-FirstRecord)/1d), ' Days of data (from: ', format_datetime(FirstRecord, 'yyyy-MM-dd'),')')),\r\n    (T | where Timestamp > ago(1h) | count | project V='Velocity', Metric = strcat(Count/1e6, ' Million records / hour')),\r\n    (T | summarize Latency=now()-max(Timestamp) | project V='Velocity', Metric = strcat(Latency / 1sec, ' seconds latency')),\r\n    (T | take 1 | project V='Variety', Metric=tostring(pack_all()))\r\n    | order by V \r\n}",
                 },
@@ -1386,7 +1392,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     private static createColumnSymbol(col: s.ScalarParameter): sym.ColumnSymbol {
-        return new sym.ColumnSymbol(col.name, sym.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(col.type)), null);
+        return new sym.ColumnSymbol(col.name, sym.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(col.type)), col.docstring);
     }
 
     private static createParameterSymbol(param: s.ScalarParameter): sym.ParameterSymbol {
@@ -1437,12 +1443,14 @@ class KustoLanguageService implements LanguageService {
             );
 
             // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
-            return new sym.FunctionSymbol.$ctor16(fn.name, fn.body, parameters, null);
+            return new sym.FunctionSymbol.$ctor16(fn.name, fn.body, parameters, fn.docstring);
         };
 
         const createTableSymbol: (tbl: s.Table) => sym.TableSymbol = (tbl) => {
             const columnSymbols = tbl.columns.map((col) => KustoLanguageService.createColumnSymbol(col));
-            return new sym.TableSymbol.$ctor3(tbl.name, columnSymbols);
+            const symbol = new sym.TableSymbol.$ctor3(tbl.name, columnSymbols);
+            symbol.Description = tbl.docstring;
+            return symbol;
         };
 
         const createDatabaseSymbol: (db: s.Database) => sym.DatabaseSymbol = (db) => {

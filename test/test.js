@@ -158,16 +158,19 @@ fetch('./test/mode.txt')
                         Tables: {
                             StormEvents: {
                                 Name: 'StormEvents',
+                                DocString: "A dummy description to test that docstring shows as expected when hovering over a table",
                                 OrderedColumns: [
                                     {
                                         Name: 'StartTime',
                                         Type: 'System.DateTime',
-                                        CslType: 'datetime'
+                                        CslType: 'datetime',
+                                        DocString: 'The start time'
                                     },
                                     {
                                         Name: 'EndTime',
                                         Type: 'System.DateTime',
-                                        CslType: 'datetime'
+                                        CslType: 'datetime',
+                                        DocString: 'The end time'
                                     },
                                     {
                                         Name: 'EpisodeId',
@@ -218,7 +221,8 @@ fetch('./test/mode.txt')
                                     {
                                         Name: 'myLimit',
                                         Type: 'System.Int64',
-                                        CslType: 'long'
+                                        CslType: 'long',
+                                        DocString: "Demo for a parameter"
                                     }
                                 ],
                                 Body: '{     StormEvents     | limit myLimit }  ',
