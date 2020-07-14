@@ -58,6 +58,12 @@ export interface DataManagementSchema {
     clusterType: 'DataManagement';
 }
 
+/**
+ * Schema types:
+ * Engine – The main schema type. Contains clusters, databases, tables, table columns and functions.
+ * Cluster Manager – Internal only. A schema for clusters that manages other clusters.
+ * Data Management – Internal only. A schema for ingestion point operations.
+ */
 export type Schema = EngineSchema | ClusterMangerSchema | DataManagementSchema;
 
 const dotnetTypeToKustoType = {

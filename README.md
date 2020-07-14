@@ -8,15 +8,16 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 -   code folding / outlining
 -   Hovers
 -   Find definition
--   find all refernces
+-   find all references
 -   rename symbol
 
 ## Setting a schema
 There are 2 APIs to set a Kusto schema:
-1. `setSchema` - the passed schema is of type `ClusterType` (defined in `schema.ts`). The logic to find the cluster/database in context from the schema is:
-    - cluster: first cluster with empty connection string
-    - database: the database in ROOT.database
-2. `setSchemaFromShowSchema` - a method to set a schema from the result of the Kusto query `.show schema as json`. The result is a list of databases (see interface `Result` in `schema.ts`), so when this method is used, it also requires a cluster URI and the database in context.
+1. `setSchema` - the passed schema is of type `ClusterType` (defined in `schema.ts`).
+    The database in ROOT.database will be the one in context.
+2. `setSchemaFromShowSchema` - a method to set a schema from the result of the Kusto query `.show schema as json`.
+   The result is a list of databases (see interface `Result` in `schema.ts`), so when this method is used,
+   it also requires a cluster URI and the name of the database in context.
 
 ## Setting up a dev environment
 
