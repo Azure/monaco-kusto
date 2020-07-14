@@ -1556,8 +1556,6 @@ class KustoLanguageService implements LanguageService {
                         cslCommandToken.AbsoluteStart + offset,
                         cslCommandToken.Length
                     );
-                    // todo: shouldn't we remove it
-                    range.End = cslCommandToken.AbsoluteEnd + offset;
 
                     return range;
                 }
