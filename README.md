@@ -178,6 +178,10 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.11
+
+- Upgrade to latest bridge.net which fixes an exception from indexOf.
+
 ### 2.1.10
 
 - Schema with no functions was throwing "Cannot read property 'map' of undefined".

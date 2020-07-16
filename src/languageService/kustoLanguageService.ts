@@ -696,7 +696,7 @@ class KustoLanguageService implements LanguageService {
 
         this._schema.globalParameters = parameters;
         const symbols = parameters.map((param) => KustoLanguageService.createParameterSymbol(param));
-        this._kustoJsSchemaV2 = this._kustoJsSchemaV2.WithParameters(symbols);
+        this._kustoJsSchemaV2 = this._kustoJsSchemaV2.WithParameters(KustoLanguageService.toBridgeList(symbols));
 
         return Promise.as(undefined);
     }
@@ -1444,7 +1444,7 @@ class KustoLanguageService implements LanguageService {
             );
 
             // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
-            return new sym.FunctionSymbol.$ctor16(fn.name, fn.body, parameters, fn.docstring);
+            return new sym.FunctionSymbol.$ctor16(fn.name, fn.body, KustoLanguageService.toBridgeList(parameters), fn.docstring);
         };
 
         const createTableSymbol: (tbl: s.Table) => sym.TableSymbol = (tbl) => {
@@ -1539,7 +1539,7 @@ class KustoLanguageService implements LanguageService {
             const parameters = schema.globalParameters.map((param) =>
                 KustoLanguageService.createParameterSymbol(param)
             );
-            globalState = globalState.WithParameters(parameters);
+            globalState = globalState.WithParameters(KustoLanguageService.toBridgeList(parameters));
         }
 
         return globalState;
@@ -1870,6 +1870,11 @@ class KustoLanguageService implements LanguageService {
 
     private toArray<T>(bridgeList: System.Collections.Generic.IEnumerable$1<T>): T[] {
         return (Bridge as any).toArray(bridgeList);
+    }
+
+    private static toBridgeList(array): any {
+        // copied from bridge.js from the implementation of Enumerable.prototype.toList
+        return new (System.Collections.Generic.List$1(System.Object).$ctor1)(array);
     }
 
     private _tokenKindToClassificationKind: { [k in TokenKind]: k2.ClassificationKind } = {
