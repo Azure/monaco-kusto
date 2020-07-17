@@ -171,6 +171,10 @@ export class KustoWorker {
 
     doComplete(uri: string, position: ls.Position): Promise<ls.CompletionList> {
         let document = this._getTextDocument(uri);
+        if (!document) {
+            return null;
+        }
+
         let completions = this._languageService.doComplete(document, position);
         return completions;
     }

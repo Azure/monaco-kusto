@@ -178,13 +178,17 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.12
+
+-   Allow formatting commands in cursor location.
+
 ### 2.1.10
 
-- Schema with no functions was throwing "Cannot read property 'map' of undefined".
+-   Schema with no functions was throwing "Cannot read property 'map' of undefined".
 
 ### 2.1.9
 
-- Add DocString to onHover tooltip
+-    Add DocString to onHover tooltip
 
 ### 2.1.6
 
