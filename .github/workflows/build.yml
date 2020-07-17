@@ -1,0 +1,36 @@
+name: pr-builds
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: npm install
+      run: | 
+        cd $GITHUB_WORKSPACE
+        npm install
+
+    - name: Creates release folder
+      run: mkdir -p release
+
+    - name: compile 
+      run: npm run compile 
+    
+    - name: run release script 
+      run: node ./scripts/release.js
+    
+    - name: run bundle script
+      run: node ./scripts/bundle.js
+    
+    - name: copy runtime dependencies to out folder
+      run: npm run copy_runtime_deps_to_out
+    
+    - name: copy types to out folder
+      run: npm run copy_types_to_release
