@@ -26,10 +26,10 @@ jobs:
       run: npm run compile 
     
     - name: run release script 
-      run: node ./script/release.js
+      run: node ./scripts/release.js
     
     - name: run bundle script
-      run: node ./script/bundle.js
+      run: node ./scripts/bundle.js
     
     - name: copy runtime dependencies to out folder
       run: npm run copy_runtime_deps_to_out
