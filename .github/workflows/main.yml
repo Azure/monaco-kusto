@@ -1,0 +1,41 @@
+name: NPMPublish
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  compile-and-publish:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: npm install
+      run: | 
+        cd $GITHUB_WORKSPACE
+        npm install
+
+    - name: Creates release folder
+      run: mkdir -p release
+
+    - name: compile 
+      run: npm run compile 
+    
+    - name: run release script 
+      run: node ./scripts/release.js
+    
+    - name: run bundle script
+      run: node ./scripts/bundle.js
+    
+    - name: copy runtime dependencies to out folder
+      run: npm run copy_runtime_deps_to_out
+    
+    - name: copy types to out folder
+      run: npm run copy_types_to_release
+    
+#     - name: NPM publish 
+#       uses: JS-DevTools/npm-publish@v1
