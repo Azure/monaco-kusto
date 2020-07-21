@@ -433,11 +433,11 @@ class KustoLanguageService implements LanguageService {
         const rangeEndOffset: number = document.offsetAt(range.end);
         const commands = this.getFormattedCommandsInDocumentV2(document, rangeStartOffset, rangeEndOffset);
 
-        if (!commands.rangeBeforeFormat || commands.formattedCommands.length === 0) {
+        if (!commands.originalRange || commands.formattedCommands.length === 0) {
             return Promise.as([]);
         }
 
-        return Promise.as([ls.TextEdit.replace(commands.rangeBeforeFormat, commands.formattedCommands.join(''))]);
+        return Promise.as([ls.TextEdit.replace(commands.originalRange, commands.formattedCommands.join(''))]);
     }
 
     doDocumentformat(document: ls.TextDocument): Promise<ls.TextEdit[]> {
@@ -450,18 +450,11 @@ class KustoLanguageService implements LanguageService {
         return Promise.as([ls.TextEdit.replace(fullDocRange, formattedDoc)]);
     }
 
+    // Method is not triggered, instead doRangeFormat is invoked with the range of the caret's line.
     doCurrentCommandFormat(document: ls.TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]> {
-        const positionResponse = { v: 0 };
-        const script = this.parseDocumentV2(document);
-        if (script.TryGetTextPosition(caretPosition.line, caretPosition.character, positionResponse)) {
-            const command = script.GetBlockAtPosition(positionResponse.v);
-            const start = document.positionAt(command.Start);
-            const end = document.positionAt(command.End);
-            const range = ls.Range.create(start, end);
-            return this.doRangeFormat(document, range);
-        }
-
-        return Promise.as(null);
+        const offset = document.offsetAt(caretPosition);
+        const range = this.createRange(document, offset - 1, offset + 1);
+        return this.doRangeFormat(document, range);
     }
 
     doFolding(document: ls.TextDocument): Promise<FoldingRange[]> {
@@ -839,19 +832,30 @@ class KustoLanguageService implements LanguageService {
     }
 
     getFormattedCommandsInDocumentV2(document: ls.TextDocument, rangeStart?: number, rangeEnd?: number): {
-        formattedCommands: string[], rangeBeforeFormat?: ls.Range
+        formattedCommands: string[], originalRange?: ls.Range
      } {
         const script = this.parseDocumentV2(document);
 
         const commands = this
             .toArray<k2.CodeBlock>(script.Blocks)
             .filter((command) => {
-                const newLineLength = "\r\n".length;
                 if (!command.Text || command.Text.trim() == '') return false;
                 if (rangeStart == null || rangeEnd == null) return true;
+
+                // calculate command end position without \r\n.
+                let commandEnd = command.End;
+                const commandText = command.Text;
+                for (var i = commandText.length - 1; i >= 0; i--) {
+                    if (commandText[i] != '\r' && commandText[i] != '\n') {
+                        break;
+                    } else {
+                        commandEnd--;
+                    }
+                }
+
                 if (command.Start > rangeStart && command.Start < rangeEnd) return true;
-                if (command.End - newLineLength - 2 > rangeStart && command.End < rangeEnd) return true;
-                if (command.Start <= rangeStart && command.End >= rangeEnd) return true;
+                if (commandEnd > rangeStart && commandEnd < rangeEnd) return true;
+                if (command.Start <= rangeStart && commandEnd >= rangeEnd) return true;
             });
 
         if (commands.length === 0) {
@@ -873,8 +877,8 @@ class KustoLanguageService implements LanguageService {
             return command.Service.GetFormattedText(formatter).Text;
         });
 
-        const rangeBeforeFormat = this.createRange(document, commands[0].Start, commands[commands.length - 1].End)
-        return { formattedCommands, rangeBeforeFormat }
+        const originalRange = this.createRange(document, commands[0].Start, commands[commands.length - 1].End)
+        return { formattedCommands, originalRange }
     }
 
     getCommandsInDocumentV2(
