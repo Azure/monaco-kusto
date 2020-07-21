@@ -431,55 +431,29 @@ class KustoLanguageService implements LanguageService {
     doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {
         const rangeStartOffset: number = document.offsetAt(range.start);
         const rangeEndOffset: number = document.offsetAt(range.end);
-        const commands = this.getCommandsInDocument(document).then((commands) => {
-            const commandsInRange = commands
-                .map((command) => {
-                    // Chose only selected text from command.
-                    const commandSelectionStart =
-                        Math.max(rangeStartOffset, command.absoluteStart) - command.absoluteStart;
-                    const commandSelectionEnd = Math.min(rangeEndOffset, command.absoluteEnd) - command.absoluteStart;
+        const commands = this.getFormattedCommandsInDocumentV2(document, rangeStartOffset, rangeEndOffset);
 
-                    command.text =
-                        commandSelectionStart > commandSelectionEnd
-                            ? ''
-                            : command.text.substring(commandSelectionStart, commandSelectionEnd);
+        if (!commands.originalRange || commands.formattedCommands.length === 0) {
+            return Promise.as([]);
+        }
 
-                    return command;
-                })
-                .filter((command) => command.text.trim() != '');
-
-            const formattedCommands: string[] = commandsInRange.map((command) =>
-                Kusto.Data.Common.CslQueryParser.PrettifyQuery(command.text, '')
-            );
-            const formattedText: string = formattedCommands.join('\r\n\r\n');
-
-            return [ls.TextEdit.replace(range, formattedText)];
-        });
-
-        return commands;
+        return Promise.as([ls.TextEdit.replace(commands.originalRange, commands.formattedCommands.join(''))]);
     }
 
     doDocumentformat(document: ls.TextDocument): Promise<ls.TextEdit[]> {
-        const commands = this.getCommandsInDocument(document).then((commands) => {
-            const formattedCommands = commands.map((command) =>
-                Kusto.Data.Common.CslQueryParser.PrettifyQuery(command.text, '')
-            );
-            const formattedDocument = formattedCommands.join('\r\n\r\n');
+        const startPos = document.positionAt(0);
+        const endPos = document.positionAt(document.getText().length);
+        const fullDocRange = ls.Range.create(startPos, endPos);
 
-            const startPos = document.positionAt(0);
-            const endPos = document.positionAt(document.getText().length);
-            const fullDocRange = ls.Range.create(startPos, endPos);
-            return [ls.TextEdit.replace(fullDocRange, formattedDocument)];
-        });
+        const formattedDoc = this.getFormattedCommandsInDocumentV2(document).formattedCommands.join('');
 
-        return commands;
+        return Promise.as([ls.TextEdit.replace(fullDocRange, formattedDoc)]);
     }
 
+    // Method is not triggered, instead doRangeFormat is invoked with the range of the caret's line.
     doCurrentCommandFormat(document: ls.TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]> {
-        const command: k.CslCommand = this.getCurrentCommand(document, document.offsetAt(caretPosition));
-        const start = document.positionAt(command.AbsoluteStart);
-        const end = document.positionAt(command.AbsoluteEnd);
-        const range = ls.Range.create(start, end);
+        const offset = document.offsetAt(caretPosition);
+        const range = this.createRange(document, offset - 1, offset + 1);
         return this.doRangeFormat(document, range);
     }
 
@@ -855,6 +829,56 @@ class KustoLanguageService implements LanguageService {
                 text: Text,
             }))
         );
+    }
+
+    getFormattedCommandsInDocumentV2(document: ls.TextDocument, rangeStart?: number, rangeEnd?: number): {
+        formattedCommands: string[], originalRange?: ls.Range
+     } {
+        const script = this.parseDocumentV2(document);
+
+        const commands = this
+            .toArray<k2.CodeBlock>(script.Blocks)
+            .filter((command) => {
+                if (!command.Text || command.Text.trim() == '') return false;
+                if (rangeStart == null || rangeEnd == null) return true;
+
+                // calculate command end position without \r\n.
+                let commandEnd = command.End;
+                const commandText = command.Text;
+                for (var i = commandText.length - 1; i >= 0; i--) {
+                    if (commandText[i] != '\r' && commandText[i] != '\n') {
+                        break;
+                    } else {
+                        commandEnd--;
+                    }
+                }
+
+                if (command.Start > rangeStart && command.Start < rangeEnd) return true;
+                if (commandEnd > rangeStart && commandEnd < rangeEnd) return true;
+                if (command.Start <= rangeStart && commandEnd >= rangeEnd) return true;
+            });
+
+        if (commands.length === 0) {
+            return { formattedCommands: [] };
+        }
+
+        const formattedCommands = commands.map((command) => {
+            const formatter = Kusto.Language.Editor.FormattingOptions.Default
+                .WithIndentationSize(0)
+                .WithInsertMissingTokens(true)
+                .WithPipeOperatorStyle(Kusto.Language.Editor.PlacementStyle.NewLine)
+                .WithSemicolonStyle(Kusto.Language.Editor.PlacementStyle.None)
+                .WithBrackettingStyle(k2.BrackettingStyle.Vertical);
+
+            if (rangeStart == null || rangeEnd == null || (rangeStart === command.Start && rangeEnd === command.End)) {
+                const result = command.Service.GetFormattedText(formatter);
+                return result.Text
+            }
+            return command.Service.GetFormattedText(formatter).Text;
+        });
+
+        const originalRange = this.createRange(document, commands[0].Start, commands[commands.length - 1].End)
+        return { formattedCommands, originalRange }
     }
 
     getCommandsInDocumentV2(
@@ -1864,6 +1888,10 @@ class KustoLanguageService implements LanguageService {
     private kustoKindToLsKindV2(kustoKind: k2.CompletionKind): ls.CompletionItemKind {
         let res = this._kustoKindToLsKindV2[kustoKind];
         return res ? res : ls.CompletionItemKind.Variable;
+    }
+
+    private createRange(document: ls.TextDocument, start: number, end: number): ls.Range {
+        return ls.Range.create(document.positionAt(start), document.positionAt(end));
     }
 
     private toArray<T>(bridgeList: System.Collections.Generic.IEnumerable$1<T>): T[] {
