@@ -1479,10 +1479,7 @@ class KustoLanguageService implements LanguageService {
         };
 
         const createDatabaseSymbol: (db: s.Database) => sym.DatabaseSymbol = (db) => {
-            if (!db.tables || db.tables.length === 0) {
-                throw new Error(`can't create a symbol for database '${db.name}'. Database has no tables.`);
-            }
-            const tableSymbols: sym.Symbol[] = db.tables.map((tbl) => createTableSymbol(tbl));
+            const tableSymbols: sym.Symbol[] = db.tables ? db.tables.map((tbl) => createTableSymbol(tbl)) : [];
             const functionSymbols = db.functions ? db.functions.map((fun) => createFunctionSymbol(fun)) : [];
             return new sym.DatabaseSymbol.ctor(db.name, tableSymbols.concat(functionSymbols));
         };
