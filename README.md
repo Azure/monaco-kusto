@@ -178,13 +178,17 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 2.1.13
+
+-   Fix error "Database has no tables".
+
 ### 2.1.12
 
 -   Allow formatting commands in cursor location.
 
 ### 2.1.11
 
-- Upgrade to latest bridge.net which fixes an exception from indexOf.
+-   Upgrade to latest bridge.net which fixes an exception from indexOf.
 
 ### 2.1.10
 
