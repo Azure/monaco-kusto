@@ -155,7 +155,7 @@ monaco.editor.defineTheme('kusto-dark2', {
     inherit: true,
     rules: [
     ],
-    colors: {"editor.background" : '1B1A19'} // gray 200
+    colors: {"editor.background" : '#1B1A19'} // gray 200
 });
 
 // Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
