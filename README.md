@@ -177,6 +177,9 @@ import('monaco.contribution').then(async (contribution: any) => {
 ```
 
 ## Changelog
+### 2.1.14
+
+- Add a theme with a darker background color.
 
 ### 2.1.13
 
