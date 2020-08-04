@@ -1,19 +1,11 @@
-import Promise = monaco.Promise;
 import IWorkerContext = monaco.worker.IWorkerContext;
 
 import * as kustoService from './languageService/kustoLanguageService';
-import {
-    EngineSchema,
-    ClusterType,
-    Schema,
-    showSchema,
-    InputParameter,
-    ScalarParameter
-} from './languageService/schema';
+import { Schema, showSchema, ScalarParameter } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
-import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider';
 import { ColorizationRange } from './languageService/kustoLanguageService';
 import { RenderInfo } from './languageService/renderInfo';
+import { FoldingRange } from 'vscode-languageserver-types';
 
 export class KustoWorker {
     // --- model sync -----------------------
@@ -114,7 +106,7 @@ export class KustoWorker {
             console.error(`getRenderInfo: document is ${document}. uri is ${uri}`);
         }
 
-        return this._languageService.getRenderInfo(document, cursorOffset).then(result => {
+        return this._languageService.getRenderInfo(document, cursorOffset).then((result) => {
             if (!result) {
                 return null;
             }
@@ -127,7 +119,7 @@ export class KustoWorker {
      * Get command in cotext and the command range.
      * This method will basically convert generate microsoft language service interface to monaco interface.
      * @param uri document URI
-     * @param cursorOffset offset from start of doucment to cursor
+     * @param cursorOffset offset from start of document to cursor
      */
     getCommandAndLocationInContext(
         uri: string,
@@ -136,10 +128,10 @@ export class KustoWorker {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getCommandAndLocationInContext: document is ${document}. uri is ${uri}`);
-            return Promise.as(null);
+            return Promise.resolve(null);
         }
 
-        return this._languageService.getCommandAndLocationInContext(document, cursorOffset).then(result => {
+        return this._languageService.getCommandAndLocationInContext(document, cursorOffset).then((result) => {
             if (!result) {
                 return null;
             }
@@ -148,13 +140,13 @@ export class KustoWorker {
             const {
                 text,
                 location: {
-                    range: { start, end }
-                }
+                    range: { start, end },
+                },
             } = result;
             const range = new monaco.Range(start.line + 1, start.character + 1, end.line + 1, end.character + 1);
             return {
                 range,
-                text
+                text,
             };
         });
     }
@@ -199,7 +191,7 @@ export class KustoWorker {
 
     doDocumentFormat(uri: string): Promise<ls.TextEdit[]> {
         const document = this._getTextDocument(uri);
-        const formatted = this._languageService.doDocumentformat(document);
+        const formatted = this._languageService.doDocumentFormat(document);
         return formatted;
     }
 

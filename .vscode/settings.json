@@ -1,10 +1,13 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-	"files.trimTrailingWhitespace": true,
-	"search.exclude": {
-		"**/node_modules": true,
-		"**/release": true,
-		"**/out": true
-	},
-	"typescript.tsdk": "node_modules\\typescript\\lib"
+    "files.trimTrailingWhitespace": true,
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/release": true,
+        "**/out": true
+    },
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "cSpell.words": ["kusto"],
+    "timeline.excludeSources": [],
+    "editor.formatOnSave": true
 }

@@ -8,12 +8,12 @@ import Uri = monaco.Uri;
 import Position = monaco.Position;
 import Range = monaco.Range;
 import Thenable = monaco.Thenable;
-import Promise = monaco.Promise;
 import CancellationToken = monaco.CancellationToken;
 import IDisposable = monaco.IDisposable;
-import { FoldingRange } from 'vscode-languageserver-protocol-foldingprovider/lib/protocol.foldingProvider';
 import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
-import { EngineSchema, Schema } from './languageService/schema';
+import { Schema } from './languageService/schema';
+import { FoldingRange } from 'vscode-languageserver-types';
+import { ClassifiedRange } from './languageService/kustoLanguageService';
 
 export interface WorkerAccessor {
     (first: Uri, ...more: Uri[]): Promise<KustoWorker>;
@@ -190,14 +190,6 @@ function fromIRange(range: monaco.IRange): ls.Range {
 
     const { startLineNumber, startColumn, endLineNumber, endColumn } = range;
     range = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
-}
-
-function fromIModelContentChange(change: monaco.editor.IModelContentChange): ls.TextDocumentContentChangeEvent {
-    return {
-        range: fromIRange(change.range),
-        text: change.text,
-        rangeLength: change.rangeLength,
-    };
 }
 
 type kinds = keyof typeof ClassificationKind;
@@ -508,12 +500,12 @@ function injectCss(): any {
 
 function toDecoration(
     model: monaco.editor.ITextModel,
-    classification: Kusto.Language.Editor.ClassifiedRange
+    classification: ClassifiedRange
 ): monaco.editor.IModelDeltaDecoration {
-    const start = model.getPositionAt(classification.Start);
-    const end = model.getPositionAt(classification.Start + classification.Length);
+    const start = model.getPositionAt(classification.start);
+    const end = model.getPositionAt(classification.start + classification.length);
     const range = new Range(start.lineNumber, start.column, end.lineNumber, end.column);
-    const inlineClassName = (ClassificationKind as any).$names[classification.Kind];
+    const inlineClassName = (ClassificationKind as any).$names[classification.kind];
     return {
         range,
         options: {
@@ -613,6 +605,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
         token: CancellationToken
     ): Thenable<monaco.languages.CompletionList> {
         const wordInfo = model.getWordUntilPosition(position);
+        const wordRange = new Range(position.lineNumber, wordInfo.startColumn, position.lineNumber, wordInfo.endColumn);
         const resource = model.uri;
         const onDidProvideCompletionItems: monaco.languages.kusto.OnDidProvideCompletionItems = this.languageSettings
             .onDidProvideCompletionItems;
@@ -634,6 +627,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                         filterText: entry.filterText,
                         documentation: entry.documentation,
                         detail: entry.detail,
+                        range: wordRange,
                         kind: toCompletionItemKind(entry.kind),
                     };
                     if (entry.textEdit) {
@@ -754,16 +748,19 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.W
     if (!edit || !edit.changes) {
         return void 0;
     }
-    let resourceEdits: monaco.languages.ResourceTextEdit[] = [];
+    let resourceEdits: monaco.languages.WorkspaceTextEdit[] = [];
     for (let uri in edit.changes) {
-        let edits: monaco.languages.TextEdit[] = [];
+        const _uri = Uri.parse(uri);
+        //let edits: monaco.languages.TextEdit[] = [];
         for (let e of edit.changes[uri]) {
-            edits.push({
-                range: toRange(e.range),
-                text: e.newText,
+            resourceEdits.push({
+                resource: _uri,
+                edit: {
+                    range: toRange(e.range),
+                    text: e.newText,
+                },
             });
         }
-        resourceEdits.push({ resource: Uri.parse(uri), edits: edits });
     }
     return {
         edits: resourceEdits,
