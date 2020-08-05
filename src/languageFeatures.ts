@@ -751,7 +751,6 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.W
     let resourceEdits: monaco.languages.WorkspaceTextEdit[] = [];
     for (let uri in edit.changes) {
         const _uri = Uri.parse(uri);
-        //let edits: monaco.languages.TextEdit[] = [];
         for (let e of edit.changes[uri]) {
             resourceEdits.push({
                 resource: _uri,

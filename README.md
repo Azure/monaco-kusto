@@ -182,7 +182,7 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ### 3.0.0
 
--   Upgrade to latest monaco (which includes may changes amongst them accessibility improvements)
+-   Upgrade to latest monaco (which includes many changes amongst them accessibility improvements)
 
 ### 2.1.15
 
