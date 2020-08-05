@@ -12,9 +12,11 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 -   rename symbol
 
 ## Setting a schema
+
 There are 2 APIs to set a Kusto schema:
+
 1. `setSchema` - the passed schema is of type `ClusterType` (defined in `schema.ts`).
-    The database in ROOT.database will be the one in context.
+   The database in ROOT.database will be the one in context.
 2. `setSchemaFromShowSchema` - a method to set a schema from the result of the Kusto query `.show schema as json`.
    The result is a list of databases (see interface `Result` in `schema.ts`), so when this method is used,
    it also requires a cluster URI and the name of the database in context.
@@ -177,11 +179,18 @@ import('monaco.contribution').then(async (contribution: any) => {
 ```
 
 ## Changelog
+
+### 3.0.0
+
+-   Upgrade to latest monaco (which includes many changes amongst them accessibility improvements)
+
 ### 2.1.15
-- Fix typo in 2.1.14.
+
+-   Fix typo in 2.1.14.
+
 ### 2.1.14
 
-- Add a theme with a darker background color.
+-   Add a theme with a darker background color.
 
 ### 2.1.13
 
@@ -201,7 +210,7 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ### 2.1.9
 
--    Add DocString to onHover tooltip
+-   Add DocString to onHover tooltip
 
 ### 2.1.6
 

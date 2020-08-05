@@ -1,7 +1,6 @@
 import Emitter = monaco.Emitter;
 import IEvent = monaco.IEvent;
 import IDisposable = monaco.IDisposable;
-import Promise = monaco.Promise;
 
 import * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
@@ -60,14 +59,14 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     useIntellisenseV2: true,
     useSemanticColorization: true,
     useTokenColorization: true,
-    enableHover: true
+    enableHover: true,
 };
 
 const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
-function getKustoWorker(): monaco.Promise<any> {
-    return new monaco.Promise((resolve, reject) => {
-        withMode(mode => {
+function getKustoWorker(): Promise<any> {
+    return new Promise((resolve, reject) => {
+        withMode((mode) => {
             mode.getKustoWorker().then(resolve, reject);
         });
     });
@@ -77,7 +76,7 @@ function getKustoWorker(): monaco.Promise<any> {
 function createAPI(): typeof monaco.languages.kusto {
     return {
         kustoDefaults,
-        getKustoWorker
+        getKustoWorker,
     };
 }
 monaco.languages.kusto = createAPI();
@@ -89,12 +88,12 @@ function withMode(callback: (module: typeof mode) => void): void {
 }
 
 monaco.languages.onLanguage('kusto', () => {
-    withMode(mode => mode.setupMode(kustoDefaults));
+    withMode((mode) => mode.setupMode(kustoDefaults));
 });
 
 monaco.languages.register({
     id: 'kusto',
-    extensions: ['.csl', '.kql']
+    extensions: ['.csl', '.kql'],
 });
 
 // TODO: asked if there's a cleaner way to register an editor contribution. looks like monaco has an internal contribution regstrar but it's no exposed in the API.
@@ -121,9 +120,9 @@ monaco.editor.defineTheme('kusto-light', {
         { token: 'keyword', foreground: '0000FF' }, // CslCommandToken, PluginToken Blue
         { token: 'number', foreground: '191970' }, // LetVariablesToken MidnightBlue
         { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
-        { token: 'invalid', background: 'cd3131' }
+        { token: 'invalid', background: 'cd3131' },
     ],
-    colors: {}
+    colors: {},
 });
 
 monaco.editor.defineTheme('kusto-dark', {
@@ -145,22 +144,21 @@ monaco.editor.defineTheme('kusto-dark', {
         { token: 'keyword', foreground: '569cd6' }, // CslCommandToken, PluginToken Blue
         { token: 'number', foreground: 'd7ba7d' }, // LetVariablesToken MidnightBlue
         { token: 'annotation', foreground: 'b5cea8' }, // ClientDirectiveToken DarkViolet
-        { token: 'invalid', background: 'cd3131' }
+        { token: 'invalid', background: 'cd3131' },
     ],
-    colors: {}
+    colors: {},
 });
 
 monaco.editor.defineTheme('kusto-dark2', {
     base: 'vs-dark',
     inherit: true,
-    rules: [
-    ],
-    colors: {"editor.background" : '#1B1A19'} // gray 200
+    rules: [],
+    colors: { 'editor.background': '#1B1A19' }, // gray 200
 });
 
 // Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
 // Most other language features are initialized in kustoMode.ts
-monaco.editor.onDidCreateEditor(editor => {
+monaco.editor.onDidCreateEditor((editor) => {
     // hook up extension methods to editor.
     extend(editor);
 

@@ -1,7 +1,6 @@
 import { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import { KustoWorker } from './kustoWorker';
 
-import Promise = monaco.Promise;
 import IDisposable = monaco.IDisposable;
 import Uri = monaco.Uri;
 
@@ -39,8 +38,8 @@ export class WorkerManager {
             return;
         }
 
-        this._worker.getProxy().then(proxy => {
-            proxy.getSchema().then(schema => {
+        this._worker.getProxy().then((proxy) => {
+            proxy.getSchema().then((schema) => {
                 this._storedState = { schema: schema };
                 this._stopWorker();
             });
@@ -67,6 +66,9 @@ export class WorkerManager {
     private _getClient(): Promise<KustoWorker> {
         this._lastUsedTime = Date.now();
 
+        // Since onDidProvideCompletionItems is not used in web worker, and since functions cannot be trivially serialized (throws exception unable to clone), We remove it here.
+        const { onDidProvideCompletionItems, ...languageSettings } = this._defaults.languageSettings;
+
         if (!this._client) {
             this._worker = monaco.editor.createWebWorker<KustoWorker>({
                 // module that exports the create() method and returns a `KustoWorker` instance
@@ -76,12 +78,12 @@ export class WorkerManager {
 
                 // passed in to the create() method
                 createData: {
-                    languageSettings: this._defaults.languageSettings,
-                    languageId: 'kusto'
-                }
+                    languageSettings: languageSettings,
+                    languageId: 'kusto',
+                },
             });
 
-            this._client = this._worker.getProxy().then(proxy => {
+            this._client = this._worker.getProxy().then((proxy) => {
                 // push state we held onto before killing the client.
                 if (this._storedState) {
                     return proxy.setSchema(this._storedState.schema).then(() => proxy);
@@ -96,12 +98,12 @@ export class WorkerManager {
     getLanguageServiceWorker(...resources: Uri[]): Promise<KustoWorker> {
         let _client: KustoWorker;
         return this._getClient()
-            .then(client => {
+            .then((client) => {
                 _client = client;
             })
-            .then(_ => {
+            .then((_) => {
                 return this._worker.withSyncedResources(resources);
             })
-            .then(_ => _client);
+            .then((_) => _client);
     }
 }

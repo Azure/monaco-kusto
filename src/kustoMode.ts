@@ -4,7 +4,6 @@ import { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import { KustoLanguageDefinition } from './languageService/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
 
-import Promise = monaco.Promise;
 import Uri = monaco.Uri;
 import IDisposable = monaco.IDisposable;
 import { WorkerAccessor } from './languageFeatures';
@@ -12,10 +11,10 @@ import { EngineSchema, Schema, InputParameter, ScalarParameter } from './languag
 
 let kustoWorker: WorkerAccessor;
 let resolveWorker: (value: languageFeatures.WorkerAccessor | PromiseLike<languageFeatures.WorkerAccessor>) => void;
-let rejectWorer: (err: any) => void;
+let rejectWorker: (err: any) => void;
 let workerPromise: Promise<WorkerAccessor> = new Promise((resolve, reject) => {
     resolveWorker = resolve;
-    rejectWorer = reject;
+    rejectWorker = reject;
 });
 
 /**
@@ -41,16 +40,16 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
         };
         const worker = client.getLanguageServiceWorker(...[first].concat(more));
         return worker.then(
-            worker =>
+            (worker) =>
                 ({
                     ...worker,
-                    setSchema: schema => augmentedSetSchema(schema, worker),
+                    setSchema: (schema) => augmentedSetSchema(schema, worker),
                     setSchemaFromShowSchema: (schema, connection, database, globalParameters?: ScalarParameter[]) => {
                         worker
                             .normalizeSchema(schema, connection, database)
-                            .then(schema => (globalParameters ? { ...schema, globalParameters } : schema))
-                            .then(normalized => augmentedSetSchema(normalized, worker));
-                    }
+                            .then((schema) => (globalParameters ? { ...schema, globalParameters } : schema))
+                            .then((normalized) => augmentedSetSchema(normalized, worker));
+                    },
                 } as KustoWorker)
         );
     };
@@ -69,8 +68,8 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
         monarchTokensProvider = monaco.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
     }
 
-    // listen to configuration changes and if we're switching from semantic to monarch colorizaiton, do the switch.
-    defaults.onDidChange(e => {
+    // listen to configuration changes and if we're switching from semantic to monarch colorization, do the switch.
+    defaults.onDidChange((e) => {
         if (!e.languageSettings.useTokenColorization && monarchTokensProvider !== undefined) {
             monarchTokensProvider.dispose();
             monarchTokensProvider = undefined;
@@ -126,12 +125,12 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
     monaco.languages.setLanguageConfiguration(language, {
         folding: {
             offSide: false,
-            markers: { start: /^\s*[\r\n]/gm, end: /^\s*[\r\n]/gm }
+            markers: { start: /^\s*[\r\n]/gm, end: /^\s*[\r\n]/gm },
         },
         comments: {
             lineComment: '//',
-            blockComment: null
-        }
+            blockComment: null,
+        },
     });
 
     return kustoWorker;
