@@ -24,6 +24,7 @@ if (typeof document == 'undefined') {
 }
 
 import * as ls from 'vscode-languageserver-types';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import { FoldingRange } from 'vscode-languageserver-types';
 import * as XRegExp from 'xregexp';
 import k = Kusto.Data.IntelliSense;
@@ -48,7 +49,7 @@ class ParseProperties {
         private parseMode?: k.ParseMode
     ) {}
 
-    isParseNeeded(document: ls.TextDocument, rulesProvider?: k.IntelliSenseRulesProviderBase, parseMode?: k.ParseMode) {
+    isParseNeeded(document: TextDocument, rulesProvider?: k.IntelliSenseRulesProviderBase, parseMode?: k.ParseMode) {
         if (
             document.uri === this.uri &&
             (!rulesProvider || rulesProvider === this.rulesProvider) &&
@@ -121,18 +122,15 @@ export interface ColorizationRange {
 }
 
 export interface LanguageService {
-    doComplete(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList>;
-    doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]>;
-    doDocumentFormat(document: ls.TextDocument): Promise<ls.TextEdit[]>;
-    doCurrentCommandFormat(document: ls.TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
-    doFolding(document: ls.TextDocument): Promise<FoldingRange[]>;
-    doValidation(document: ls.TextDocument, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>;
-    doColorization(
-        document: ls.TextDocument,
-        intervals: { start: number; end: number }[]
-    ): Promise<ColorizationRange[]>;
-    doRename(doucment: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
-    doHover(document: ls.TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
+    doComplete(document: TextDocument, position: ls.Position): Promise<ls.CompletionList>;
+    doRangeFormat(document: TextDocument, range: ls.Range): Promise<ls.TextEdit[]>;
+    doDocumentFormat(document: TextDocument): Promise<ls.TextEdit[]>;
+    doCurrentCommandFormat(document: TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
+    doFolding(document: TextDocument): Promise<FoldingRange[]>;
+    doValidation(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>;
+    doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
+    doRename(doucment: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
+    doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
     setParameters(parameters: s.ScalarParameter[]);
     setSchema(schema: s.Schema): Promise<void>;
     setSchemaFromShowSchema(
@@ -147,23 +145,23 @@ export interface LanguageService {
         databaseInContextName: string
     ): Promise<s.EngineSchema>;
     getSchema(): Promise<s.Schema>;
-    getCommandInContext(document: ls.TextDocument, cursorOffset: number): Promise<string>;
+    getCommandInContext(document: TextDocument, cursorOffset: number): Promise<string>;
     getCommandAndLocationInContext(
-        document: ls.TextDocument,
+        document: TextDocument,
         cursorOffset: number
     ): Promise<{ text: string; location: ls.Location } | null>;
     getCommandsInDocument(
-        document: ls.TextDocument
+        document: TextDocument
     ): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]>;
     configure(languageSettings: LanguageSettings): void;
     getClientDirective(text: string): Promise<{ isClientDirective: boolean; directiveWithoutLeadingComments: string }>;
     getAdminCommand(text: string): Promise<{ isAdminCommand: boolean; adminCommandWithoutLeadingComments: string }>;
-    findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
-    findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]>;
-    getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]>;
-    getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]>;
-    getReferencedGlobalParams(document: ls.TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
-    getRenderInfo(document: ls.TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
+    findDefinition(document: TextDocument, position: ls.Position): Promise<ls.Location[]>;
+    findReferences(document: TextDocument, position: ls.Position): Promise<ls.Location[]>;
+    getQueryParams(document: TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]>;
+    getGlobalParams(document: TextDocument): Promise<{ name: string; type: string }[]>;
+    getReferencedGlobalParams(document: TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
+    getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
 }
 
 export interface LanguageSettings {
@@ -262,7 +260,7 @@ class KustoLanguageService implements LanguageService {
         this.createRulesProvider(this._kustoJsSchema, this._schema.clusterType);
     }
 
-    doComplete(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
+    doComplete(document: TextDocument, position: ls.Position): Promise<ls.CompletionList> {
         return this.isIntellisenseV2() ? this.doCompleteV2(document, position) : this.doCompleteV1(document, position);
     }
 
@@ -276,7 +274,7 @@ class KustoLanguageService implements LanguageService {
         list: k2.CompletionKind.RenderChart,
     };
 
-    doCompleteV2(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
+    doCompleteV2(document: TextDocument, position: ls.Position): Promise<ls.CompletionList> {
         if (!document) {
             return Promise.resolve(ls.CompletionList.create([]));
         }
@@ -390,7 +388,7 @@ class KustoLanguageService implements LanguageService {
         purge: k.OptionKind.Command,
     };
 
-    doCompleteV1(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
+    doCompleteV1(document: TextDocument, position: ls.Position): Promise<ls.CompletionList> {
         // TODO: fix typing in CslCommandParser to allow rulesProvider to be query only.
         let caretAbsolutePosition = document.offsetAt(position);
 
@@ -456,7 +454,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(ls.CompletionList.create([]));
     }
 
-    doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {
+    doRangeFormat(document: TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {
         if (!document) {
             return Promise.resolve([]);
         }
@@ -471,7 +469,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve([ls.TextEdit.replace(commands.originalRange, commands.formattedCommands.join(''))]);
     }
 
-    doDocumentFormat(document: ls.TextDocument): Promise<ls.TextEdit[]> {
+    doDocumentFormat(document: TextDocument): Promise<ls.TextEdit[]> {
         if (!document) {
             return Promise.resolve([]);
         }
@@ -485,13 +483,13 @@ class KustoLanguageService implements LanguageService {
     }
 
     // Method is not triggered, instead doRangeFormat is invoked with the range of the caret's line.
-    doCurrentCommandFormat(document: ls.TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]> {
+    doCurrentCommandFormat(document: TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]> {
         const offset = document.offsetAt(caretPosition);
         const range = this.createRange(document, offset - 1, offset + 1);
         return this.doRangeFormat(document, range);
     }
 
-    doFolding(document: ls.TextDocument): Promise<FoldingRange[]> {
+    doFolding(document: TextDocument): Promise<FoldingRange[]> {
         if (!document) {
             return Promise.resolve([]);
         }
@@ -499,7 +497,7 @@ class KustoLanguageService implements LanguageService {
         return this.getCommandsInDocument(document).then((commands) => {
             return commands.map(
                 (command): FoldingRange => {
-                    // don't count the last empty line as part of the folded range (cnosider linux, mac, pc newlines)
+                    // don't count the last empty line as part of the folded range (consider linux, mac, pc newlines)
                     if (command.text.endsWith('\r\n')) {
                         command.absoluteEnd -= 2;
                     } else if (command.text.endsWith('\r') || command.text.endsWith('\n')) {
@@ -520,10 +518,7 @@ class KustoLanguageService implements LanguageService {
         });
     }
 
-    doValidation(
-        document: ls.TextDocument,
-        changeIntervals: { start: number; end: number }[]
-    ): Promise<ls.Diagnostic[]> {
+    doValidation(document: TextDocument, changeIntervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]> {
         // didn't implement validation for v1.
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
@@ -551,7 +546,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(lsDiagnostics);
     }
 
-    private toLsDiagnostics(diagnostics: Kusto.Language.Diagnostic[], document: ls.TextDocument) {
+    private toLsDiagnostics(diagnostics: Kusto.Language.Diagnostic[], document: TextDocument) {
         return diagnostics
             .filter((diag) => diag.HasLocation)
             .map(
@@ -574,7 +569,7 @@ class KustoLanguageService implements LanguageService {
      * The code will try to only parse once if this is the same command.
      */
     doColorization(
-        document: ls.TextDocument,
+        document: TextDocument,
         changeIntervals: { start: number; end: number }[]
     ): Promise<ColorizationRange[]> {
         if (!document || !this._languageSettings.useSemanticColorization) {
@@ -806,13 +801,13 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(this._schema);
     }
 
-    getCommandInContext(document: ls.TextDocument, cursorOffset: number): Promise<string | null> {
+    getCommandInContext(document: TextDocument, cursorOffset: number): Promise<string | null> {
         return this.isIntellisenseV2()
             ? this.getCommandInContextV2(document, cursorOffset)
             : this.getCommandInContextV1(document, cursorOffset);
     }
 
-    getCommandAndLocationInContext(document: ls.TextDocument, cursorOffset: number) {
+    getCommandAndLocationInContext(document: TextDocument, cursorOffset: number) {
         // We are going to remove v1 intellisense. no use to keep parity.
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve(null);
@@ -834,7 +829,7 @@ class KustoLanguageService implements LanguageService {
         });
     }
 
-    getCommandInContextV1(document: ls.TextDocument, cursorOffset: number): Promise<string | null> {
+    getCommandInContextV1(document: TextDocument, cursorOffset: number): Promise<string | null> {
         this.parseDocumentV1(document, k.ParseMode.CommandTokensOnly);
         const command = this.getCurrentCommand(document, cursorOffset);
         if (!command) {
@@ -844,7 +839,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(command.Text);
     }
 
-    getCommandInContextV2(document: ls.TextDocument, cursorOffset: number): Promise<string | null> {
+    getCommandInContextV2(document: TextDocument, cursorOffset: number): Promise<string | null> {
         if (!document) {
             return Promise.resolve(null);
         }
@@ -863,7 +858,7 @@ class KustoLanguageService implements LanguageService {
      * Retrun an array of commands in document. each command contains the range and text.
      */
     getCommandsInDocument(
-        document: ls.TextDocument
+        document: TextDocument
     ): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]> {
         if (!document) {
             return Promise.resolve([]);
@@ -875,7 +870,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     getCommandsInDocumentV1(
-        document: ls.TextDocument
+        document: TextDocument
     ): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]> {
         this.parseDocumentV1(document, k.ParseMode.CommandTokensOnly);
         let commands = this.toArray(this._parser.Results);
@@ -889,7 +884,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     getFormattedCommandsInDocumentV2(
-        document: ls.TextDocument,
+        document: TextDocument,
         rangeStart?: number,
         rangeEnd?: number
     ): {
@@ -941,7 +936,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     getCommandsInDocumentV2(
-        document: ls.TextDocument
+        document: TextDocument
     ): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]> {
         const script = this.parseDocumentV2(document);
         let commands = this.toArray<k2.CodeBlock>(script.Blocks).filter((command) => command.Text.trim() != '');
@@ -968,7 +963,7 @@ class KustoLanguageService implements LanguageService {
         });
     }
 
-    findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]> {
+    findDefinition(document: TextDocument, position: ls.Position): Promise<ls.Location[]> {
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
@@ -997,7 +992,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve([location]);
     }
 
-    findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]> {
+    findReferences(document: TextDocument, position: ls.Position): Promise<ls.Location[]> {
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
@@ -1028,7 +1023,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(references);
     }
 
-    getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]> {
+    getQueryParams(document: TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]> {
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
@@ -1056,7 +1051,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(queryParams);
     }
 
-    getRenderInfo(document: ls.TextDocument, cursorOffset: number): Promise<RenderInfo | undefined> {
+    getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined> {
         const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
         if (!parsedAndAnalyzed) {
             return Promise.resolve(undefined);
@@ -1172,10 +1167,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(renderInfo);
     }
 
-    getReferencedGlobalParams(
-        document: ls.TextDocument,
-        cursorOffset: number
-    ): Promise<{ name: string; type: string }[]> {
+    getReferencedGlobalParams(document: TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]> {
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
@@ -1212,7 +1204,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(result);
     }
 
-    getGlobalParams(document: ls.TextDocument): Promise<{ name: string; type: string }[]> {
+    getGlobalParams(document: TextDocument): Promise<{ name: string; type: string }[]> {
         if (!this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
@@ -1222,7 +1214,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(result);
     }
 
-    doRename(document: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined> {
+    doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined> {
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve(undefined);
         }
@@ -1257,7 +1249,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(workspaceEdit);
     }
 
-    doHover(document: ls.TextDocument, position: ls.Position): Promise<ls.Hover | undefined> {
+    doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined> {
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve(undefined);
         }
@@ -1661,7 +1653,7 @@ class KustoLanguageService implements LanguageService {
     private static trimTrailingNewlineFromRange(
         textInRange: string,
         rangeStartOffset: number,
-        document: ls.TextDocument,
+        document: TextDocument,
         range: ls.Range
     ) {
         let currentIndex = textInRange.length - 1;
@@ -1719,7 +1711,7 @@ class KustoLanguageService implements LanguageService {
         );
     }
 
-    private parseDocumentV1(document: ls.TextDocument, parseMode: k.ParseMode) {
+    private parseDocumentV1(document: TextDocument, parseMode: k.ParseMode) {
         // already parsed a later version, or better parse mode for this uri
         if (
             this._parsePropertiesV1 &&
@@ -1733,7 +1725,7 @@ class KustoLanguageService implements LanguageService {
         this._parsePropertiesV1 = new ParseProperties(document.version, document.uri, this._rulesProvider, parseMode);
     }
 
-    private parseDocumentV2(document: ls.TextDocument) {
+    private parseDocumentV2(document: TextDocument) {
         if (this._parsePropertiesV2 && !this._parsePropertiesV2.isParseNeeded(document, this._rulesProvider)) {
             return this._script;
         }
@@ -1754,7 +1746,7 @@ class KustoLanguageService implements LanguageService {
      * @param document the document to extract the current command from
      * @param caretAbsolutePosition absolute caret position
      */
-    private getCurrentCommand(document: ls.TextDocument, caretAbsolutePosition: number): k.CslCommand | undefined {
+    private getCurrentCommand(document: TextDocument, caretAbsolutePosition: number): k.CslCommand | undefined {
         let commands = this.toArray(this._parser.Results);
 
         let command = commands.filter(
@@ -1957,7 +1949,7 @@ class KustoLanguageService implements LanguageService {
         return res ? res : ls.CompletionItemKind.Variable;
     }
 
-    private createRange(document: ls.TextDocument, start: number, end: number): ls.Range {
+    private createRange(document: TextDocument, start: number, end: number): ls.Range {
         return ls.Range.create(document.positionAt(start), document.positionAt(end));
     }
 
@@ -1996,7 +1988,7 @@ class KustoLanguageService implements LanguageService {
         return conversion || k2.ClassificationKind.PlainText;
     }
 
-    private parseAndAnalyze(document: ls.TextDocument, cursorOffset: number): Kusto.Language.KustoCode | undefined {
+    private parseAndAnalyze(document: TextDocument, cursorOffset: number): Kusto.Language.KustoCode | undefined {
         if (!document || !this.isIntellisenseV2()) {
             return undefined;
         }
