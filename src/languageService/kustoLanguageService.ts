@@ -277,6 +277,10 @@ class KustoLanguageService implements LanguageService {
     };
 
     doCompleteV2(document: ls.TextDocument, position: ls.Position): Promise<ls.CompletionList> {
+        if (!document) {
+            return Promise.resolve(ls.CompletionList.create([]));
+        }
+
         const script = this.parseDocumentV2(document);
         const cursorOffset = document.offsetAt(position);
         let currentcommand = this.getCurrentCommandV2(script, cursorOffset);
@@ -453,6 +457,9 @@ class KustoLanguageService implements LanguageService {
     }
 
     doRangeFormat(document: ls.TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {
+        if (!document) {
+            return Promise.resolve([]);
+        }
         const rangeStartOffset: number = document.offsetAt(range.start);
         const rangeEndOffset: number = document.offsetAt(range.end);
         const commands = this.getFormattedCommandsInDocumentV2(document, rangeStartOffset, rangeEndOffset);
@@ -465,6 +472,9 @@ class KustoLanguageService implements LanguageService {
     }
 
     doDocumentFormat(document: ls.TextDocument): Promise<ls.TextEdit[]> {
+        if (!document) {
+            return Promise.resolve([]);
+        }
         const startPos = document.positionAt(0);
         const endPos = document.positionAt(document.getText().length);
         const fullDocRange = ls.Range.create(startPos, endPos);
@@ -515,7 +525,7 @@ class KustoLanguageService implements LanguageService {
         changeIntervals: { start: number; end: number }[]
     ): Promise<ls.Diagnostic[]> {
         // didn't implement validation for v1.
-        if (!this.isIntellisenseV2()) {
+        if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
 
@@ -567,7 +577,7 @@ class KustoLanguageService implements LanguageService {
         document: ls.TextDocument,
         changeIntervals: { start: number; end: number }[]
     ): Promise<ColorizationRange[]> {
-        if (!this._languageSettings.useSemanticColorization) {
+        if (!document || !this._languageSettings.useSemanticColorization) {
             return Promise.resolve([]);
         }
 
@@ -804,7 +814,7 @@ class KustoLanguageService implements LanguageService {
 
     getCommandAndLocationInContext(document: ls.TextDocument, cursorOffset: number) {
         // We are going to remove v1 intellisense. no use to keep parity.
-        if (!this.isIntellisenseV2()) {
+        if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve(null);
         }
 
@@ -835,6 +845,10 @@ class KustoLanguageService implements LanguageService {
     }
 
     getCommandInContextV2(document: ls.TextDocument, cursorOffset: number): Promise<string | null> {
+        if (!document) {
+            return Promise.resolve(null);
+        }
+
         const script = this.parseDocumentV2(document);
         const block = this.getCurrentCommandV2(script, cursorOffset);
         if (!block) {
@@ -851,6 +865,10 @@ class KustoLanguageService implements LanguageService {
     getCommandsInDocument(
         document: ls.TextDocument
     ): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]> {
+        if (!document) {
+            return Promise.resolve([]);
+        }
+
         return this.isIntellisenseV2()
             ? this.getCommandsInDocumentV2(document)
             : this.getCommandsInDocumentV1(document);
@@ -951,7 +969,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     findDefinition(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]> {
-        if (!this.isIntellisenseV2()) {
+        if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
 
@@ -980,7 +998,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     findReferences(document: ls.TextDocument, position: ls.Position): Promise<ls.Location[]> {
-        if (!this.isIntellisenseV2()) {
+        if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
 
@@ -1011,7 +1029,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     getQueryParams(document: ls.TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]> {
-        if (!this.isIntellisenseV2()) {
+        if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
 
@@ -1158,7 +1176,7 @@ class KustoLanguageService implements LanguageService {
         document: ls.TextDocument,
         cursorOffset: number
     ): Promise<{ name: string; type: string }[]> {
-        if (!this.isIntellisenseV2()) {
+        if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
 
@@ -1205,7 +1223,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     doRename(document: ls.TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined> {
-        if (!this.isIntellisenseV2()) {
+        if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve(undefined);
         }
 
@@ -1240,7 +1258,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     doHover(document: ls.TextDocument, position: ls.Position): Promise<ls.Hover | undefined> {
-        if (!this.isIntellisenseV2()) {
+        if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve(undefined);
         }
 
@@ -1979,7 +1997,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     private parseAndAnalyze(document: ls.TextDocument, cursorOffset: number): Kusto.Language.KustoCode | undefined {
-        if (!this.isIntellisenseV2()) {
+        if (!document || !this.isIntellisenseV2()) {
             return undefined;
         }
 

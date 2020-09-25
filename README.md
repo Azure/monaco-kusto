@@ -180,6 +180,10 @@ import('monaco.contribution').then(async (contribution: any) => {
 
 ## Changelog
 
+### 3.0.1
+
+-   Fix exception "Cannot read property 'getText' of null TypeError: Cannot read property 'getText' of null at e.parseDocumentV2"
+
 ### 3.0.0
 
 -   Upgrade to latest monaco (which includes many changes amongst them accessibility improvements)
