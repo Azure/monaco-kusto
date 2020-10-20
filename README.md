@@ -11,31 +11,20 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 -   find all references
 -   rename symbol
 
-## Setting a schema
-
-There are 2 APIs to set a Kusto schema:
-
-1. `setSchema` - the passed schema is of type `ClusterType` (defined in `schema.ts`).
-   The database in ROOT.database will be the one in context.
-2. `setSchemaFromShowSchema` - a method to set a schema from the result of the Kusto query `.show schema as json`.
-   The result is a list of databases (see interface `Result` in `schema.ts`), so when this method is used,
-   it also requires a cluster URI and the name of the database in context.
-
-## Setting up a dev environment
-
-1. Install Node.js (v6.10.3 or later) from [https://nodejs.org/](https://nodejs.org/)
-2. clone repo and `npm install`
-3. run `npm run watch` from root repo and a live-server will automatically open the index.html
-
-## Build for release
-
-`npm run prepublishOnly`
-
 ## Usage
 
+### Sample project
+
+#### React
+
+See the [following path](samples/react) for a sample create-react-app project:
+
+### Instructions:
+
+1. npm i monaco-editor
 1. npm i @kusto/monaco-kusto
 
-#### AMD:
+#### AMD module system:
 
 2. add the following to your `index.html` (or other entry point)
 
@@ -51,65 +40,8 @@ There are 2 APIs to set a Kusto schema:
     Until we do, consumer of this package will have to add the aformentioned lines globally in order for the package to work.
     In the future we might load these programmatically ourselves (in fact - we already do this for the web monaco language service web worker).
 
-3. Monaco is using AMD module (actually it now supports ES modules, but we've still not update this pacakge to leverage that). In order to load monaco and monaco-kusto in your application you will need to monaco and monaco-ksuto as static files on your web server, and do do the following (this is in a React app and is taken from an older version of [react-monaco-editor](https://github.com/superRaytin/react-monaco-editor)
-
-```javascript
-  // The MIT License (MIT)
-  // Copyright (c) 2016-present Leon Shi
-  // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-  // documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-  // rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-  // permit persons to whom the Software is furnished to do so, subject to the following conditions:
-  // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-  // Software.
-  // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-  // WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-  // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-  // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  const requireConfig = {
-      url: 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js',
-      paths: {
-        'vs': `${process.env.PUBLIC_URL}/monaco-editor/min/vs`
-      }
-  };
-  componentDidMount() {
-    const context = this.props.context || window;
-    if (context.monaco !== undefined) {
-      this.initMonaco();
-      return;
-    }
-    const { requireConfig } = this.props;
-    const loaderUrl = requireConfig!.url || 'vs/loader.js';
-    const onGotAmdLoader = () => {
-      if (context.__REACT_MONACO_EDITOR_LOADER_ISPENDING__) {
-        // Do not use webpack
-        if (requireConfig!.paths && requireConfig!.paths!.vs) {
-          context.require.config(requireConfig);
-        }
-      }
-
-      // Load monaco
-      context.require(['vs/editor/editor.main'], () => {
-        context.require(['vs/language/kusto/monaco.contribution'], () => {
-          this.initMonaco();
-        });
-
-      });
-
-      // Call the delayed callbacks when AMD loader has been loaded
-      if (context.__REACT_MONACO_EDITOR_LOADER_ISPENDING__) {
-        context.__REACT_MONACO_EDITOR_LOADER_ISPENDING__ = false;
-        const loaderCallbacks = context.__REACT_MONACO_EDITOR_LOADER_CALLBACKS__;
-        if (loaderCallbacks && loaderCallbacks.length) {
-          let currentCallback = loaderCallbacks.shift();
-          while (currentCallback) {
-            currentCallback.fn.call(currentCallback.context);
-            currentCallback = loaderCallbacks.shift();
-          }
-        }
-      }
-    };
-```
+3. In order to load monaco and monaco-kusto in your application you will need to host monaco and monaco-kusto as static files on your web server, and use monaco's loader.js to load them.
+   for an example on how to do this, you can take a look at our sample code [here](samples/react/src/monaco-kusto.js)
 
 #### ESM (webpack example)
 
@@ -177,6 +109,26 @@ import('monaco.contribution').then(async (contribution: any) => {
     const worker: monaco.languages.kusto.KustoWorker = await workerAccessor(model.uri);
 })
 ```
+
+## Setting a schema
+
+There are 2 APIs to set a Kusto schema:
+
+1. `setSchema` - the passed schema is of type `ClusterType` (defined in `schema.ts`).
+   The database in ROOT.database will be the one in context.
+2. `setSchemaFromShowSchema` - a method to set a schema from the result of the Kusto query `.show schema as json`.
+   The result is a list of databases (see interface `Result` in `schema.ts`), so when this method is used,
+   it also requires a cluster URI and the name of the database in context.
+
+## Setting up a dev environment
+
+1. Install Node.js (v6.10.3 or later) from [https://nodejs.org/](https://nodejs.org/)
+2. clone repo and `npm install`
+3. run `npm run watch` from root repo and a live-server will automatically open the index.html
+
+## Build for release
+
+`npm run prepublishOnly`
 
 ## Changelog
 

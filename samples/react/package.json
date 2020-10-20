@@ -1,0 +1,50 @@
+{
+    "name": "react-monaco-kusto",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@kusto/monaco-kusto": "^3.1.0-beta.1",
+        "@monaco-editor/react": "^3.6.3",
+        "@testing-library/jest-dom": "^4.2.4",
+        "@testing-library/react": "^9.3.2",
+        "@testing-library/user-event": "^7.1.2",
+        "cpx": "^1.5.0",
+        "monaco-editor": "^0.21.2",
+        "react": "^16.14.0",
+        "react-dom": "^16.14.0",
+        "react-scripts": "3.4.3"
+    },
+    "devDependencies": {
+        "npm-run-all": "4.1.5"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "copy-monaco": "cpx \"node_modules/monaco-editor/**/*\" public/monaco-editor",
+        "copy-monaco-kusto": "cpx \"node_modules/@kusto/monaco-kusto/release/min/**/*\" public/monaco-editor/min/vs/language/kusto",
+        "prepublish": "npm-run-all copy-monaco copy-monaco-kusto",
+        "prepublish.explanation": "copying monaco and monaco-kusto to public folder so it will be available to load monaco and monaco-kusto in runtime (other method require ejecting create-react-app)"
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "singleQuote": true,
+        "printWidth": 120
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
+}
