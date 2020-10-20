@@ -2,13 +2,23 @@ This project integrates monaco-kusto in a create-react-app application.
 
 The following changes were made to a default create-react-app application:
 
-1. Used script tags to import Kusto language service (this piece of code is C# code transpiled to javascript. it has several issues that prevent it from being imported as a regular import statement).
+> in `index.html`: Used script tags to import Kusto language service and its dependencies.
 
-2. Added a prepare task to package.json that copies over monaco and monaco-kusto to the public folder (this is done because we're using UMD to require monaco and monaco-kusto in runtime. otherwise, we would have to eject create-react-app and play with webpack config as explained [here](https://github.com/microsoft/monaco-editor/blob/master/docs/integrate-esm.md) )
+_the files being imported using script tags are C# code files transpiled to javascript. it has several issues that prevent it from being imported as a regular import statement_
 
-3. Added monaco-kusto.js which takes care of loading monaco (by using @monaco-editor/react package) and then loading monaco-kusto
+<br/>
 
-4. Added KustoEditor.jsx which is a react component that uses monaco-kusto to initialize monaco + monaco-kusto and then creates an editor configure for the kusto language. It then pushes a static cluster schema (which it takes from schema.js).
+> in `package.json`: Added a `prepublish` task that copies over monaco and monaco-kusto to the `public/monaco-editor` folder.
+
+\_this is done because we're loading monaco and monaco-kusto in runtime (see `monaco-kusto.js`) using `require`. Otherwise, we would have to eject create-react-app and play with webpack config as explained [here](https://github.com/microsoft/monaco-editor/blob/master/docs/integrate-esm.md) ).
+
+<br/>
+
+> Added `monaco-kusto.js` which takes care of loading monaco (by using @monaco-editor/react package) and then loading monaco-kusto
+
+<br/>
+
+> Added `KustoEditor.js` which is a react component that uses monaco-kusto to initialize monaco + monaco-kusto and then creates an editor configured to the kusto language. It then pushes a static cluster schema (which it takes from schema.js).
 
 In real production apps, at least the following changes will have to be made:
 
