@@ -14,7 +14,7 @@ jobs:
 
     - name: npm install
       run: | 
-        cd $GITHUB_WORKSPACE
+        cd $GITHUB_WORKSPACE/package
         npm install
 
     - name: Creates release folder
