@@ -1,5 +1,7 @@
 name: pr-builds
-
+defaults:
+  run:
+    working-directory: package
 on:
   pull_request:
     branches: [ master ]
@@ -14,7 +16,6 @@ jobs:
 
     - name: npm install
       run: | 
-        cd $GITHUB_WORKSPACE
         npm install
 
     - name: Creates release folder

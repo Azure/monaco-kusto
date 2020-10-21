@@ -1,5 +1,7 @@
 name: NPMPublish
-
+defaults:
+  run:
+    working-directory: package
 on:
   push:
     branches: [ master ]
@@ -16,7 +18,6 @@ jobs:
 
     - name: npm install
       run: | 
-        cd $GITHUB_WORKSPACE
         npm install
 
     - name: Creates release folder
@@ -38,6 +39,6 @@ jobs:
       run: npm run copy_types_to_release
     
     - name: NPM publish 
-      uses: JS-DevTools/npm-publish@v1
       with:
           token: ${{ secrets.NPMPUBLISHTOKEN }}
+          package: ./package/package.json
