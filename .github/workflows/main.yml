@@ -16,28 +16,35 @@ jobs:
 
     - name: npm install
       run: | 
-        cd $GITHUB_WORKSPACE
+        cd $GITHUB_WORKSPACE/package
         npm install
 
     - name: Creates release folder
+      cd $GITHUB_WORKSPACE/package
       run: mkdir -p release
 
     - name: compile 
+      cd $GITHUB_WORKSPACE/package
       run: npm run compile 
     
     - name: run release script 
+      cd $GITHUB_WORKSPACE/package
       run: node ./scripts/release.js
     
     - name: run bundle script
+      cd $GITHUB_WORKSPACE/package
       run: node ./scripts/bundle.js
     
     - name: copy runtime dependencies to out folder
+      cd $GITHUB_WORKSPACE/package
       run: npm run copy_runtime_deps_to_out
     
     - name: copy types to out folder
+      cd $GITHUB_WORKSPACE/package
       run: npm run copy_types_to_release
     
     - name: NPM publish 
       uses: JS-DevTools/npm-publish@v1
       with:
           token: ${{ secrets.NPMPUBLISHTOKEN }}
+          package: ./package/package.json
