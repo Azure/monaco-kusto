@@ -233,6 +233,7 @@ fetch('./test/mode.txt')
                                             Type: 'System.Int64',
                                             CslType: 'long',
                                             DocString: 'Demo for a parameter',
+                                            CslDefaultValue: "6"
                                         },
                                     ],
                                     Body: '{     StormEvents     | limit myLimit }  ',

@@ -28,6 +28,8 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { FoldingRange } from 'vscode-languageserver-types';
 import * as XRegExp from 'xregexp';
 import k = Kusto.Data.IntelliSense;
+import parsing = Kusto.Language.Parsing;
+import syntax = Kusto.Language.Syntax;
 import k2 = Kusto.Language.Editor;
 import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
@@ -774,13 +776,14 @@ class KustoLanguageService implements LanguageService {
                             name: inputParam.Name,
                             type: inputParam.Type,
                             cslType: inputParam.CslType,
+                            cslDefaultValue: inputParam.CslDefaultValue,
                             columns: inputParam.Columns
                                 ? inputParam.Columns.map((col) => ({
                                       name: col.Name,
                                       type: col.Type,
                                       cslType: col.CslType,
                                   }))
-                                : [],
+                                : inputParam.Columns as undefined | null | []
                         })),
                     })),
             }));
@@ -1490,7 +1493,29 @@ class KustoLanguageService implements LanguageService {
             const paramSymbol: sym.ScalarSymbol = Kusto.Language.Symbols.ScalarTypes.GetSymbol(
                 getCslTypeNameFromClrType(param.type)
             );
-            return new sym.Parameter.$ctor2(param.name, paramSymbol);
+
+            let expression;
+            if (param.cslDefaultValue && typeof param.cslDefaultValue === "string") {
+                const parser = parsing.QueryGrammar.From(Kusto.Language.GlobalState.Default).ConstantExpression;
+                expression = parsing.SyntaxParsers.ParseFirst<parsing.Parser$2<parsing.LexicalToken, syntax.Expression>>(
+                    { prototype: parser }, 
+                    parser, 
+                    param.cslDefaultValue);
+            }
+
+            return new sym.Parameter.$ctor3(
+                param.name,
+                paramSymbol,
+                null,
+                null,
+                null,
+                false,
+                null,
+                1,
+                1,
+                expression,
+                null
+            );
         }
 
         if (param.columns.length == 0) {
