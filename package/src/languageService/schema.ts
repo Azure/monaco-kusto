@@ -15,6 +15,7 @@ export interface ScalarParameter {
     type?: string;
     cslType?: string;
     docstring?: string;
+    cslDefaultValue?: string;
 }
 
 // an input parameter either be a scalar in which case it has a name, type and cslType, or it can be columnar, in which case
@@ -158,6 +159,7 @@ export namespace showSchema {
         Type?: string;
         CslType?: string;
         DocString?: string;
+        CslDefaultValue?: string;
     }
 
     export type InputParameter = ScalarParameter & { Columns?: ScalarParameter[] };

@@ -1478,7 +1478,33 @@
                     }
                 ],
                 "majorVersion": 0,
-                "functions": [],
+                "functions": [
+                    {
+                        "name": "myFunction1",
+                        "inputParameters": [],
+                        "body": "{     StormEvents     | limit 100 }  ",
+                        "folder": "Demo",
+                        "docString": "Simple demo function",
+                        "functionKind": "Unknown",
+                        "outputColumns": []
+                    },
+                    {
+                        "name": "myFunction2",
+                        "inputParameters": [
+                            {
+                                "name": "p",
+                                "type": "System.Int32",
+                                "cslType": "int",
+                                "cslDefaultValue": "6"
+                            }
+                        ],
+                        "body": "{     StormEvents     | limit myLimit }  ",
+                        "folder": "Demo",
+                        "docString": "Demo function with parameter",
+                        "functionKind": "Unknown",
+                        "outputColumns": []
+                    }
+                ],
                 "minorVersion": 0
             }
         ]
@@ -2958,7 +2984,33 @@
             }
         ],
         "majorVersion": 0,
-        "functions": [],
+        "functions": [
+            {
+                "name": "myFunction1",
+                "inputParameters": [],
+                "body": "{     StormEvents     | limit 100 }  ",
+                "folder": "Demo",
+                "docString": "Simple demo function",
+                "functionKind": "Unknown",
+                "outputColumns": []
+            },
+            {
+                "name": "myFunction2",
+                "inputParameters": [
+                    {
+                        "name": "p",
+                        "type": "System.Int32",
+                        "cslType": "int",
+                        "cslDefaultValue": "6"
+                    }
+                ],
+                "body": "{     StormEvents     | limit myLimit }  ",
+                "folder": "Demo",
+                "docString": "Demo function with parameter",
+                "functionKind": "Unknown",
+                "outputColumns": []
+            }
+        ],
         "minorVersion": 0
     }
 }
