@@ -132,6 +132,9 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 3.1.0-beta.3
+- Missing tokens are no longer added when formatting the queries. 
+
 ### 3.0.1
 
 - Fix exception "Cannot read property 'getText' of null TypeError: Cannot read property 'getText' of null at e.parseDocumentV2"

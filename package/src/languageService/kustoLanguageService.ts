@@ -918,11 +918,12 @@ class KustoLanguageService implements LanguageService {
         }
 
         const formattedCommands = commands.map((command) => {
-            const formatter = Kusto.Language.Editor.FormattingOptions.Default.WithIndentationSize(0)
-                .WithInsertMissingTokens(true)
-                .WithPipeOperatorStyle(Kusto.Language.Editor.PlacementStyle.NewLine)
+            const formatter = Kusto.Language.Editor.FormattingOptions.Default
+                .WithIndentationSize(4)
+                .WithInsertMissingTokens(false)
+                .WithPipeOperatorStyle(Kusto.Language.Editor.PlacementStyle.Smart)
                 .WithSemicolonStyle(Kusto.Language.Editor.PlacementStyle.None)
-                .WithBrackettingStyle(k2.BrackettingStyle.Vertical);
+                .WithBrackettingStyle(k2.BrackettingStyle.Diagonal);
 
             if (rangeStart == null || rangeEnd == null || (rangeStart === command.Start && rangeEnd === command.End)) {
                 const result = command.Service.GetFormattedText(formatter);
