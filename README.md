@@ -134,7 +134,10 @@ There are 2 APIs to set a Kusto schema:
 
 ### 3.1.0-beta.4
 - A function validation fails (shows squiggly red lines), if the function is defined with a parameter that has a default value, but it is used without passing a value for that parameter.
-- Missing tokens are no longer added when formatting the queries. 
+- Fix bug: Scalars function parameters are always showing "Table expected" error with squiggly error red line when using setSchemaFromShowSchema.
+
+### 3.1.0-beta.3
+- Missing tokens are no longer added when formatting queries. 
 
 ### 3.0.1
 

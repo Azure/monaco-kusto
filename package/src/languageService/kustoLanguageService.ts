@@ -783,7 +783,7 @@ class KustoLanguageService implements LanguageService {
                                       type: col.Type,
                                       cslType: col.CslType,
                                   }))
-                                : [],
+                                : inputParam.Columns as undefined | null | []
                         })),
                     })),
             }));
