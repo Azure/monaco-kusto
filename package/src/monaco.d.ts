@@ -1,8 +1,8 @@
 // This file gets bundled as is with monaco-kusto.
 // Everything that needs to be exposed to consumers should be typed here.
 // This means that all declarations here are duplicated from the actual definitions around the code.
-// TODO: think about turning this around - have all other code depnedent on this file thus not needing the duplication.
-// this was done like this becuase that's the standard way all other monaco extentions work for some reason.
+// TODO: think about turning this around - have all other code dependent on this file thus not needing the duplication.
+// this was done like this because that's the standard way all other monaco extensions work for some reason.
 
 declare module monaco.editor {
     export interface ICodeEditor {
@@ -116,15 +116,18 @@ declare module monaco.languages.kusto {
     export interface Column {
         name: string;
         type: string;
+        docstring?: string;
     }
     export interface Table {
         name: string;
         columns: Column[];
+        docstring?: string;
     }
     export interface ScalarParameter {
         name: string;
         type?: string;
         cslType?: string;
+        cslDefaultValue?: string;
     }
 
     // an input parameter either be a scalar in which case it has a name, type and cslType, or it can be columnar, in which case
@@ -134,6 +137,7 @@ declare module monaco.languages.kusto {
     export interface Function {
         name: string;
         body: string;
+        docstring?: string;
         inputParameters: InputParameter[];
     }
     export interface Database {
