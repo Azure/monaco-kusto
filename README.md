@@ -133,7 +133,7 @@ There are 2 APIs to set a Kusto schema:
 ## Changelog
 
 ### 3.1.0-beta.3
-- Validation of my Functions ignore default values.  
+- A function validation fails (shows squiggly red lines), if the function is defined with a parameter that has a default value, but it is used without passing a value for that parameter.
 
 ### 3.0.1
 
