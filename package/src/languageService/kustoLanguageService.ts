@@ -241,6 +241,7 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.TabularSuffix]: k.OptionKind.None,
         [k2.CompletionKind.Unknown]: k.OptionKind.None,
         [k2.CompletionKind.Variable]: k.OptionKind.Parameter,
+        [k2.CompletionKind.Option]: k.OptionKind.Option,
     };
 
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
@@ -1498,8 +1499,8 @@ class KustoLanguageService implements LanguageService {
             if (param.cslDefaultValue && typeof param.cslDefaultValue === "string") {
                 const parser = parsing.QueryGrammar.From(Kusto.Language.GlobalState.Default).ConstantExpression;
                 expression = parsing.SyntaxParsers.ParseFirst<parsing.Parser$2<parsing.LexicalToken, syntax.Expression>>(
-                    { prototype: parser }, 
-                    parser, 
+                    { prototype: parser },
+                    parser,
                     param.cslDefaultValue);
             }
 
@@ -1963,6 +1964,7 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.TabularSuffix]: ls.CompletionItemKind.Field,
         [k2.CompletionKind.Unknown]: ls.CompletionItemKind.Interface,
         [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
+        [k2.CompletionKind.Option]: ls.CompletionItemKind.Text,
     };
 
     private kustoKindToLsKind(kustoKind: k.OptionKind): ls.CompletionItemKind {
