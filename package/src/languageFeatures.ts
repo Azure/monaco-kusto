@@ -236,6 +236,7 @@ const classificationToColorLight: { [K in kinds]: string } = {
     ClientParameter: 'b5cea8',
     SchemaMember: 'C71585',
     SignatureParameter: '2B91AF',
+    Option: '000000',
 };
 
 const classificationToColorDark: { [K in kinds]: string } = {
@@ -263,6 +264,7 @@ const classificationToColorDark: { [K in kinds]: string } = {
     ClientParameter: 'b5cea8',
     SchemaMember: '4ec9b0',
     SignatureParameter: '2B91AF',
+    Option: 'd4d4d4',
 };
 
 export class ColorizationAdapter {
