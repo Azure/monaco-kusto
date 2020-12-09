@@ -214,6 +214,22 @@ fetch('./test/mode.txt')
                                         },
                                     ],
                                 },
+                                MaterializedViewExamples: {
+                                    Name: 'MaterializedViewExamples',
+                                    EntityType: 'MaterializedViewTable',
+                                    OrderedColumns: [
+                                        {
+                                            Name: 'MVTimestamp',
+                                            Type: 'System.DateTime',
+                                            CslType: 'datetime',
+                                        },
+                                        {
+                                            Name: 'MVRequestCount',
+                                            Type: 'System.Int64',
+                                            CslType: 'long',
+                                        },
+                                    ],
+                                }
                             },
                             Functions: {
                                 MyFunction1: {
@@ -331,7 +347,7 @@ fetch('./test/mode.txt')
                             },
                         },
                     },
-                };
+                }; 
                 window.setHelp = () =>
                     monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
                         const model = editor.getModel();

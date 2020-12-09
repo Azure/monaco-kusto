@@ -7,6 +7,7 @@ export interface Column {
 }
 export interface Table {
     name: string;
+    entityType?: TableEntityType;
     columns: Column[];
     docstring?: string;
 }
@@ -47,6 +48,8 @@ export interface EngineSchema {
     database: Database | undefined; // a reference to the database that's in current context.
     globalParameters?: ScalarParameter[];
 }
+
+export type TableEntityType = 'Table' | 'ExternalTable' | 'MaterializedViewTable';
 
 export interface ClusterMangerSchema {
     clusterType: 'ClusterManager';
@@ -146,6 +149,7 @@ export namespace showSchema {
 
     export interface Table {
         Name: string;
+        EntityType: TableEntityType,
         OrderedColumns: Column[];
         DocString?: string;
     }

@@ -758,9 +758,10 @@ class KustoLanguageService implements LanguageService {
                 majorVersion: MajorVersion,
                 tables: Object.keys(Tables)
                     .map((key) => Tables[key])
-                    .map(({ Name, OrderedColumns, DocString }: s.showSchema.Table) => ({
+                    .map(({ Name, OrderedColumns, DocString, EntityType }: s.showSchema.Table) => ({
                         name: Name,
                         docstring: DocString,
+                        entityType: EntityType,
                         columns: OrderedColumns.map(({ Name, Type, DocString, CslType }: s.showSchema.Column) => ({
                             name: Name,
                             type: CslType,
@@ -1109,7 +1110,7 @@ class KustoLanguageService implements LanguageService {
                     case 'ycolumns':
                     case 'anomalycolumns':
                         const nameNodes = this.toArray(
-                            (property.Element$1.Expression as Kusto.Language.Syntax.RenderNameList).Names
+                            (property.Element$1.Expression as any).Names
                         );
 
                         const values = nameNodes.map(
@@ -1562,8 +1563,17 @@ class KustoLanguageService implements LanguageService {
 
         const createTableSymbol: (tbl: s.Table) => sym.TableSymbol = (tbl) => {
             const columnSymbols = tbl.columns.map((col) => KustoLanguageService.createColumnSymbol(col));
-            const symbol = new sym.TableSymbol.$ctor3(tbl.name, columnSymbols);
+            let symbol = new sym.TableSymbol.$ctor3(tbl.name, columnSymbols);
             symbol.Description = tbl.docstring;
+
+            switch (tbl.entityType) {
+                case 'MaterializedViewTable':
+                    symbol = symbol.WithIsMaterializedView(true);
+                case "ExternalTable":
+                    symbol = symbol.WithIsExternal(true);
+                default:
+            }
+
             return symbol;
         };
 
