@@ -132,6 +132,9 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 3.2.4
+- Bug fix: `union *` is auto-formatted into `union*`
+
 ### 3.2.3
 - Bug fix: Intellisense doesn't show columns when using this syntax `materialized_view("<table name>") | where ` 
 
