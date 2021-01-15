@@ -21,7 +21,15 @@ declare module monaco.languages.kusto {
         disabledCompletionItems?: string[];
         onDidProvideCompletionItems?: monaco.languages.kusto.OnDidProvideCompletionItems;
         enableHover?: boolean;
+        formatter?: FormatterOptions;
     }
+
+    export interface FormatterOptions {
+        indentationSize?: number;
+        pipeOperatorStyle?: FormatterPlacementStyle;
+    }
+    
+    export type FormatterPlacementStyle = 'None' | 'NewLine' | 'Smart';
 
     export interface LanguageServiceDefaults {
         readonly onDidChange: IEvent<LanguageServiceDefaults>;
