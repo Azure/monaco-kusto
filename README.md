@@ -132,6 +132,9 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 3.2.5
+- Expose formatting options
+
 ### 3.2.4
 - Bug fix: `union *` is auto-formatted into `union*`
 
