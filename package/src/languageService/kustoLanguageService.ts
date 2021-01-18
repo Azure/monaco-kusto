@@ -26,6 +26,7 @@ if (typeof document == 'undefined') {
 import * as ls from 'vscode-languageserver-types';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { FoldingRange } from 'vscode-languageserver-types';
+import { FormatterPlacementStyle, LanguageSettings } from './settings'
 import * as XRegExp from 'xregexp';
 import k = Kusto.Data.IntelliSense;
 import parsing = Kusto.Language.Parsing;
@@ -164,15 +165,6 @@ export interface LanguageService {
     getGlobalParams(document: TextDocument): Promise<{ name: string; type: string }[]>;
     getReferencedGlobalParams(document: TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
     getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
-}
-
-export interface LanguageSettings {
-    includeControlCommands?: boolean;
-    newlineAfterPipe?: boolean;
-    useIntellisenseV2: boolean;
-    useSemanticColorization?: boolean;
-    useTokenColorization?: boolean;
-    disabledCompletionItems?: string[];
 }
 
 export type CmSchema = {
@@ -888,6 +880,19 @@ class KustoLanguageService implements LanguageService {
         );
     }
 
+    toPlacementStyle(formatterPlacementStyle?: FormatterPlacementStyle): k2.PlacementStyle | undefined {
+        if (!formatterPlacementStyle) {
+            return undefined;
+        }
+    
+        switch (formatterPlacementStyle) {
+            case 'None': return k2.PlacementStyle.None
+            case 'NewLine': return k2.PlacementStyle.NewLine
+            case 'Smart': return k2.PlacementStyle.Smart
+            default: throw new Error('Unknown PlacementStyle')
+        }
+    }
+
     getFormattedCommandsInDocumentV2(
         document: TextDocument,
         rangeStart?: number,
@@ -923,10 +928,11 @@ class KustoLanguageService implements LanguageService {
         }
 
         const formattedCommands = commands.map((command) => {
+            const formatterOptions = this._languageSettings.formatter;            
             const formatter = Kusto.Language.Editor.FormattingOptions.Default
-                .WithIndentationSize(4)
+                .WithIndentationSize(formatterOptions?.indentationSize ?? 4)
                 .WithInsertMissingTokens(false)
-                .WithPipeOperatorStyle(Kusto.Language.Editor.PlacementStyle.Smart)
+                .WithPipeOperatorStyle(this.toPlacementStyle(formatterOptions?.pipeOperatorStyle) ?? k2.PlacementStyle.Smart)
                 .WithSemicolonStyle(Kusto.Language.Editor.PlacementStyle.None)
                 .WithBrackettingStyle(k2.BrackettingStyle.Diagonal);
 

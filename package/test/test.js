@@ -374,13 +374,25 @@ fetch('./test/mode.txt')
                 window.setSemanticOff = () =>
                     monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
                         const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
-                        monaco.useSemanticColorization = false;
+                        monacoSettings.useSemanticColorization = false;
+                        monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                    });
+                window.setNewLineFormatting = () =>
+                    monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
+                        const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                        monacoSettings.formatter.pipeOperatorStyle = 'NewLine';
+                        monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                    });
+                window.setSmartFormatting = () =>
+                    monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
+                        const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                        monacoSettings.formatter.pipeOperatorStyle = 'Smart';
                         monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                     });
                 window.setSemanticOn = () =>
                     monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
                         const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
-                        monaco.useSemanticColorization = true;
+                        monacoSettings.useSemanticColorization = true;
                         monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                     });
                 window.setIntellisenseV1 = () =>

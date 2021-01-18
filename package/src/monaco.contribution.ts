@@ -14,7 +14,7 @@ declare var require: <T>(moduleId: [string], callback: (module: T) => void) => v
 export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.LanguageServiceDefaults {
     private _onDidChange = new Emitter<monaco.languages.kusto.LanguageServiceDefaults>();
     private _languageSettings: monaco.languages.kusto.LanguageSettings;
-    // in miliseconds. For example - this is 2 minutes 2 * 60 * 1000
+    // in milliseconds. For example - this is 2 minutes 2 * 60 * 1000
     private _workerMaxIdleTime: number;
 
     constructor(languageSettings: monaco.languages.kusto.LanguageSettings) {
@@ -60,6 +60,10 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     useSemanticColorization: true,
     useTokenColorization: true,
     enableHover: true,
+    formatter: {
+        indentationSize: 4,
+        pipeOperatorStyle: 'Smart'
+    }
 };
 
 const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);

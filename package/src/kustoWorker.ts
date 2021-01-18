@@ -1,6 +1,7 @@
 import IWorkerContext = monaco.worker.IWorkerContext;
 
 import * as kustoService from './languageService/kustoLanguageService';
+import { LanguageSettings } from './languageService/settings';
 import { Schema, showSchema, ScalarParameter } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import { ColorizationRange } from './languageService/kustoLanguageService';
@@ -13,7 +14,7 @@ export class KustoWorker {
     private _ctx: IWorkerContext;
     private _languageService: kustoService.LanguageService;
     private _languageId: string;
-    private _languageSettings: kustoService.LanguageSettings;
+    private _languageSettings: LanguageSettings;
 
     constructor(ctx: IWorkerContext, createData: ICreateData) {
         this._ctx = ctx;
@@ -260,7 +261,7 @@ export class KustoWorker {
 
 export interface ICreateData {
     languageId: string;
-    languageSettings: kustoService.LanguageSettings;
+    languageSettings: LanguageSettings;
 }
 
 export function create(ctx: IWorkerContext, createData: ICreateData): KustoWorker {
