@@ -1282,13 +1282,26 @@ class KustoLanguageService implements LanguageService {
 
         const quickInfo = currentBLock.Service.GetQuickInfo(cursorOffset);
 
-        if (!quickInfo || !quickInfo.Text) {
+        if (!quickInfo || !quickInfo.Items) {
             return Promise.resolve(undefined);
         }
 
+        let items = this.toArray(quickInfo.Items)
+
+        if (!items) {
+            return Promise.resolve(undefined);
+        }
+        
+        // Errors are already shown in getDiagnostics. we don't want them in doHover.
+        items = items.filter(item => item.Kind !== k2.QuickInfoKind.Error )
+        const itemsText = items.map(item => item.Text.replace('\n\n', '\n* * *\n'));
+        // separate items by horizontal line.
+        const text = itemsText.join("\n* * *\n");
+
+
         // Instead of just an empty line between the first line (the signature) and the second line (the description)
         // add an horizontal line (* * * in markdown) between them.
-        return Promise.resolve({ contents: quickInfo.Text.replace('\n\n', '\n* * *\n') });
+        return Promise.resolve({ contents: text });
     }
 
     //#region dummy schema for manual testing
