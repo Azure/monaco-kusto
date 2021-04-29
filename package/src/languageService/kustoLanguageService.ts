@@ -132,7 +132,7 @@ export interface LanguageService {
     doFolding(document: TextDocument): Promise<FoldingRange[]>;
     doValidation(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>;
     doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
-    doRename(doucment: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
+    doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
     setParameters(parameters: s.ScalarParameter[]);
     setSchema(schema: s.Schema): Promise<void>;
@@ -175,17 +175,17 @@ export type CmSchema = {
 
 /**
  * Kusto Language service translates the kusto object model (transpiled from C# by Bridge.Net)
- * to the vscode language server types, which are used by vscode lanugage extensions.
+ * to the vscode language server types, which are used by vscode language extensions.
  * This should make things easier in the future to provide a vscode extension based on this translation layer.
  *
  * Further translations, if needed, to support specific editors (Atom, sublime, Etc)
  * should be done on top of this API, since it is (at least meant to be) a standard that is supported by multiple editors.
  *
- * Note1:  Currenlty monaco isn't using this object model so further translation will be necessary on calling modules.
+ * Note1:  Currently monaco isn't using this object model so further translation will be necessary on calling modules.
  *
  * Note2: This file is responsible for interacting with the kusto object model and exposing Microsoft language service types.
  * An exception to that rule is tokenization (and syntax highlighting which depends on it) -
- * since it's not currently part of the Microosft language service protocol. Thus tokenize() _does_ 'leak' kusto types to the callers.
+ * since it's not currently part of the Microsoft language service protocol. Thus tokenize() _does_ 'leak' kusto types to the callers.
  */
 class KustoLanguageService implements LanguageService {
     private _kustoJsSchema: k.KustoIntelliSenseQuerySchema | CmSchema | undefined;
@@ -342,8 +342,8 @@ class KustoLanguageService implements LanguageService {
         this._languageSettings.useIntellisenseV2 && this._schema && this._schema.clusterType === 'Engine';
 
     /**
-     * when trying to get a topic we need the funtion name (abs, tolower, ETC).
-     * The problem is that the 'Value' string also contains the  arguments (e.g abs(nubmer)), which means that we are
+     * when trying to get a topic we need the function name (abs, toLower, ETC).
+     * The problem is that the 'Value' string also contains the  arguments (e.g abs(number)), which means that we are
      * not able to correlate the option with its documentation.
      * This piece of code tries to strip this hwne getting topic.
      * @param completionOption the Completion option
@@ -732,7 +732,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     /**
-     * Converts the result of .show schema as json to a normalized schema used by kusto lagnuage service.
+     * Converts the result of .show schema as json to a normalized schema used by kusto language service.
      * @param schema result of show schema
      * @param clusterConnectionString cluster connection string`
      * @param databaseInContextName database in context name
@@ -1202,7 +1202,7 @@ class KustoLanguageService implements LanguageService {
         const referencedSymbols = this.toArray<Kusto.Language.Syntax.SyntaxNode>(
             parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.Expression)
         )
-            .filter((epression) => epression.ReferencedSymbol !== null)
+            .filter((expression) => expression.ReferencedSymbol !== null)
             .map((x) => x.ReferencedSymbol) as sym.ParameterSymbol[];
 
         // The Intersection between them is the ambient parameters that are used in the query.
@@ -1723,7 +1723,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     /**
-     * Maps numbers to strings, such that if a>b numerically, f(a)>f(b) lexicograhically.
+     * Maps numbers to strings, such that if a>b numerically, f(a)>f(b) lexicographically.
      * 1 -> "a", 26 -> "z", 27 -> "za", 28 -> "zb", 52 -> "zz", 53 ->"zza"
      * @param order - The number to be converted to a sorting-string. order should start at 1.
      * @returns A string repenting the order.
@@ -1840,7 +1840,7 @@ class KustoLanguageService implements LanguageService {
         const beforeApplyInfo = rule.GetBeforeApplyInfo(option.Value);
         const afterApplyInfo = rule.GetAfterApplyInfo(option.Value);
 
-        // this is the basic text to be insterted,
+        // this is the basic text to be inserted,
         // but we still need to figure out where the cursor will end up after completion is applied.
         let insertText = beforeApplyInfo.Text || '' + option.Value + afterApplyInfo.Text || '';
         let insertTextFormat: ls.InsertTextFormat = ls.InsertTextFormat.PlainText;
