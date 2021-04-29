@@ -53,7 +53,7 @@ declare module monaco.languages.kusto {
     export interface KustoWorker {
         /**
          * Sets an array of ambient parameters to be known by the language service.
-         * Language service assumes that these parameters will be provided externaly when query gets executed and does
+         * Language service assumes that these parameters will be provided externally when query gets executed and does
          * not error-out when they are being referenced in the query.
          * @param parameters the array of parameters
          */
@@ -70,7 +70,7 @@ declare module monaco.languages.kusto {
             clusterConnectionString: string,
             databaseInContextName: string
         ): Promise<EngineSchema>;
-        getCommandInContext(uri: string, cursorOffest: number): Promise<string | null>;
+        getCommandInContext(uri: string, cursorOffset: number): Promise<string | null>;
         getCommandAndLocationInContext(
             uri: string,
             offset: number
@@ -87,7 +87,7 @@ declare module monaco.languages.kusto {
         getQueryParams(uri: string, cursorOffest: number): Promise<{ name: string; type: string }[]>;
 
         /**
-         * Get all the ambient parameters defind in global scope.
+         * Get all the ambient parameters defined in global scope.
          * Ambient parameters are parameters that are not defined in the syntax such as in a query paramter declaration.
          * These are parameters that are injected from outside, usually by a UX application that would like to offer
          * the user intellisense for a symbol, without forcing them to write a query declaration statement.
