@@ -852,7 +852,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     /**
-     * Retrun an array of commands in document. each command contains the range and text.
+     * Return an array of commands in document. each command contains the range and text.
      */
     getCommandsInDocument(
         document: TextDocument
