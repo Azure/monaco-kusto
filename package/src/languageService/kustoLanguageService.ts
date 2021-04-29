@@ -1632,7 +1632,7 @@ class KustoLanguageService implements LanguageService {
 
         let databaseInContext: sym.DatabaseSymbol | undefined = undefined;
 
-        // Update out-of-data databses to cache
+        // Update out-of-data databases to cache
         const databases = schema.cluster.databases.map((db) => {
             const shouldIncludeFunctions = db.name === currentDatabaseName;
 
