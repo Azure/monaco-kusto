@@ -1673,7 +1673,7 @@ class KustoLanguageService implements LanguageService {
             globalState = globalState.WithDatabase(databaseInContext);
         }
 
-        // Inject gloabl parameters to global scope.
+        // Inject global parameters to global scope.
         if (schema.globalParameters) {
             const parameters = schema.globalParameters.map((param) =>
                 KustoLanguageService.createParameterSymbol(param)
