@@ -203,22 +203,22 @@ declare module monaco.languages.kusto {
     export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100' | 'map';
 
     export interface RenderOptions {
-        visualization?: VisualizationType;
-        title?: string;
-        xcolumn?: string;
-        series?: string[];
-        ycolumns?: string[];
-        xtitle?: string;
-        ytitle?: string;
-        xaxis?: Scale;
-        yaxis?: Scale;
-        legend?: LegendVisibility;
-        ySplit?: YSplit;
-        accumulate?: boolean;
-        kind?: Kind;
-        anomalycolumns?: string[];
-        ymin?: number;
-        ymax?: number;
+        visualization?: null | VisualizationType;
+        title?: null | string;
+        xcolumn?: null | string;
+        series?: null | string[];
+        ycolumns?: null | string[];
+        xtitle?: null | string;
+        ytitle?: null | string;
+        xaxis?: null | Scale;
+        yaxis?: null | Scale;
+        legend?: null | LegendVisibility;
+        ySplit?: null | YSplit;
+        accumulate?: null | boolean;
+        kind?: null | Kind;
+        anomalycolumns?: null | string[];
+        ymin?: null | number;
+        ymax?: null | number;
     }
 
     export interface RenderInfo {
