@@ -132,6 +132,8 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 3.2.8
+- fix: `RenderOptions` type missing `null` property union variants
 ### 3.2.7
 - fix: errors are shown twice on hover
 ### 3.2.6
