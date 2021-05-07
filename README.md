@@ -132,35 +132,52 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 3.2.9
+
+- feat: update language service to support python code strings
+
 ### 3.2.8
+
 - fix: `RenderOptions` type missing `null` property union variants
+
 ### 3.2.7
+
 - fix: errors are shown twice on hover
+
 ### 3.2.6
+
 - update language service.
+
 ### 3.2.5
+
 - Expose formatting options
 
 ### 3.2.4
+
 - Bug fix: `union *` is auto-formatted into `union*`
 
 ### 3.2.3
-- Bug fix: Intellisense doesn't show columns when using this syntax `materialized_view("<table name>") | where ` 
+
+- Bug fix: Intellisense doesn't show columns when using this syntax `materialized_view("<table name>") | where `
 
 ### 3.2.2
+
 - Bug Fix: In `mv-expand kind=array` kind is shown with a squiggly error line
 - Update @kusto/language-service-next
 
 ### 3.2.1
-- Colorize public query options. 
+
+- Colorize public query options.
 - Bug Fix: Format query hangs in some use cases.
 
 ### 3.2.0
+
 - A function validation fails (shows squiggly red lines), if the function is defined with a parameter that has a default value, but it is used without passing a value for that parameter.
 - Fix bug: Scalars function parameters are always showing "Table expected" error with squiggly error red line when using setSchemaFromShowSchema.
 
 ### 3.1.0-beta.3
-- Missing tokens are no longer added when formatting queries. 
+
+- Missing tokens are no longer added when formatting queries.
 
 ### 3.0.1
 
