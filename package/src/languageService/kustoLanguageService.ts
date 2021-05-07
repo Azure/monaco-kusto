@@ -26,7 +26,7 @@ if (typeof document == 'undefined') {
 import * as ls from 'vscode-languageserver-types';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { FoldingRange } from 'vscode-languageserver-types';
-import { FormatterPlacementStyle, LanguageSettings } from './settings'
+import { FormatterPlacementStyle, LanguageSettings } from './settings';
 import * as XRegExp from 'xregexp';
 import k = Kusto.Data.IntelliSense;
 import parsing = Kusto.Language.Parsing;
@@ -777,7 +777,7 @@ class KustoLanguageService implements LanguageService {
                                       type: col.Type,
                                       cslType: col.CslType,
                                   }))
-                                : inputParam.Columns as undefined | null | []
+                                : (inputParam.Columns as undefined | null | []),
                         })),
                     })),
             }));
@@ -884,12 +884,16 @@ class KustoLanguageService implements LanguageService {
         if (!formatterPlacementStyle) {
             return undefined;
         }
-    
+
         switch (formatterPlacementStyle) {
-            case 'None': return k2.PlacementStyle.None
-            case 'NewLine': return k2.PlacementStyle.NewLine
-            case 'Smart': return k2.PlacementStyle.Smart
-            default: throw new Error('Unknown PlacementStyle')
+            case 'None':
+                return k2.PlacementStyle.None;
+            case 'NewLine':
+                return k2.PlacementStyle.NewLine;
+            case 'Smart':
+                return k2.PlacementStyle.Smart;
+            default:
+                throw new Error('Unknown PlacementStyle');
         }
     }
 
@@ -928,11 +932,14 @@ class KustoLanguageService implements LanguageService {
         }
 
         const formattedCommands = commands.map((command) => {
-            const formatterOptions = this._languageSettings.formatter;            
-            const formatter = Kusto.Language.Editor.FormattingOptions.Default
-                .WithIndentationSize(formatterOptions?.indentationSize ?? 4)
+            const formatterOptions = this._languageSettings.formatter;
+            const formatter = Kusto.Language.Editor.FormattingOptions.Default.WithIndentationSize(
+                formatterOptions?.indentationSize ?? 4
+            )
                 .WithInsertMissingTokens(false)
-                .WithPipeOperatorStyle(this.toPlacementStyle(formatterOptions?.pipeOperatorStyle) ?? k2.PlacementStyle.Smart)
+                .WithPipeOperatorStyle(
+                    this.toPlacementStyle(formatterOptions?.pipeOperatorStyle) ?? k2.PlacementStyle.Smart
+                )
                 .WithSemicolonStyle(Kusto.Language.Editor.PlacementStyle.None)
                 .WithBrackettingStyle(k2.BrackettingStyle.Diagonal);
 
@@ -1084,7 +1091,7 @@ class KustoLanguageService implements LanguageService {
         const startOffset = renderStatement.TextStart;
         const endOffset = renderStatement.End;
 
-        const visualization: VisualizationType = renderStatement.ChartType.Text as VisualizationType;
+        const visualization: VisualizationType = renderStatement.ChartType.ValueText as VisualizationType;
 
         const withClause = renderStatement.WithClause;
 
@@ -1115,15 +1122,11 @@ class KustoLanguageService implements LanguageService {
                         break;
                     case 'ycolumns':
                     case 'anomalycolumns':
-                        const nameNodes = this.toArray(
-                            (property.Element$1.Expression as any).Names
-                        );
+                        const nameNodes = this.toArray((property.Element$1.Expression as any).Names);
 
                         const values = nameNodes.map(
                             (
-                                nameNode: Kusto.Language.Syntax.SeparatedElement$1<
-                                    Kusto.Language.Syntax.NameDeclaration
-                                >
+                                nameNode: Kusto.Language.Syntax.SeparatedElement$1<Kusto.Language.Syntax.NameDeclaration>
                             ) => nameNode.Element$1.SimpleName
                         );
                         prev[name] = values;
@@ -1286,18 +1289,17 @@ class KustoLanguageService implements LanguageService {
             return Promise.resolve(undefined);
         }
 
-        let items = this.toArray(quickInfo.Items)
+        let items = this.toArray(quickInfo.Items);
 
         if (!items) {
             return Promise.resolve(undefined);
         }
-        
-        // Errors are already shown in getDiagnostics. we don't want them in doHover.
-        items = items.filter(item => item.Kind !== k2.QuickInfoKind.Error )
-        const itemsText = items.map(item => item.Text.replace('\n\n', '\n* * *\n'));
-        // separate items by horizontal line.
-        const text = itemsText.join("\n* * *\n");
 
+        // Errors are already shown in getDiagnostics. we don't want them in doHover.
+        items = items.filter((item) => item.Kind !== k2.QuickInfoKind.Error);
+        const itemsText = items.map((item) => item.Text.replace('\n\n', '\n* * *\n'));
+        // separate items by horizontal line.
+        const text = itemsText.join('\n* * *\n');
 
         // Instead of just an empty line between the first line (the signature) and the second line (the description)
         // add an horizontal line (* * * in markdown) between them.
@@ -1515,14 +1517,10 @@ class KustoLanguageService implements LanguageService {
                 getCslTypeNameFromClrType(param.type)
             );
 
-            let expression;
-            if (param.cslDefaultValue && typeof param.cslDefaultValue === "string") {
-                const parser = parsing.QueryGrammar.From(Kusto.Language.GlobalState.Default).ConstantExpression;
-                expression = parsing.SyntaxParsers.ParseFirst<parsing.Parser$2<parsing.LexicalToken, syntax.Expression>>(
-                    { prototype: parser },
-                    parser,
-                    param.cslDefaultValue);
-            }
+            const expression =
+                param.cslDefaultValue && typeof param.cslDefaultValue === 'string'
+                    ? parsing.QueryParser.ParseLiteral$1(param.cslDefaultValue)
+                    : undefined;
 
             return new sym.Parameter.$ctor3(
                 param.name,
@@ -1588,7 +1586,7 @@ class KustoLanguageService implements LanguageService {
             switch (tbl.entityType) {
                 case 'MaterializedViewTable':
                     symbol = symbol.WithIsMaterializedView(true);
-                case "ExternalTable":
+                case 'ExternalTable':
                     symbol = symbol.WithIsExternal(true);
                 default:
             }
