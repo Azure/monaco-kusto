@@ -84,7 +84,7 @@ declare module monaco.languages.kusto {
         /**
          * Get all declared query parameters declared in current block if any.
          */
-        getQueryParams(uri: string, cursorOffest: number): Promise<{ name: string; type: string }[]>;
+        getQueryParams(uri: string, cursorOffset: number): Promise<{ name: string; type: string }[]>;
 
         /**
          * Get all the ambient parameters defined in global scope.
@@ -101,7 +101,7 @@ declare module monaco.languages.kusto {
          * statement.
          * It is also different from getGlobalParams that will return all global parameters whether used or not.
          */
-        getReferencedGlobalParams(uri: string): Promise<{ name: string; type: string }[]>;
+        getReferencedGlobalParams(uri: string, cursorOffset: number): Promise<{ name: string; type: string }[]>;
 
         /**
          * Get visualization options in render command if present (null otherwise).
