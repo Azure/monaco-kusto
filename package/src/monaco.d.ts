@@ -111,6 +111,7 @@ declare module monaco.languages.kusto {
         doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]>;
         doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
         doValidation(uri: string, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>;
+        setParameters(parameters: ScalarParameter[]): void;
     }
 
     /**
