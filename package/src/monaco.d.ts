@@ -14,6 +14,7 @@ declare module monaco.languages.kusto {
     export interface LanguageSettings {
         includeControlCommands?: boolean;
         newlineAfterPipe?: boolean;
+        syntaxErrorAsMarkDown?: SyntaxErrorAsMarkDownOptions;
         openSuggestionDialogAfterPreviousSuggestionAccepted?: boolean;
         useIntellisenseV2?: boolean;
         useSemanticColorization?: boolean;
@@ -22,6 +23,12 @@ declare module monaco.languages.kusto {
         onDidProvideCompletionItems?: monaco.languages.kusto.OnDidProvideCompletionItems;
         enableHover?: boolean;
         formatter?: FormatterOptions;
+    }
+
+    export interface SyntaxErrorAsMarkDownOptions {
+        header?: string;
+        icon?: string;
+        enableSyntaxErrorAsMarkDown?: boolean;
     }
 
     export interface FormatterOptions {

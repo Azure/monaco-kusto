@@ -30,7 +30,7 @@ export class DiagnosticsAdapter {
     constructor(
         private _languageId: string,
         private _worker: WorkerAccessor,
-        defaults: LanguageServiceDefaultsImpl,
+        private defaults: LanguageServiceDefaultsImpl,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
         const onModelAdd = (model: monaco.editor.IModel): void => {
@@ -49,7 +49,7 @@ export class DiagnosticsAdapter {
                 debouncedValidation(intervalsToValidate);
             });
 
-            this._configurationListener[model.uri.toString()] = defaults.onDidChange(() => {
+            this._configurationListener[model.uri.toString()] = this.defaults.onDidChange(() => {
                 self.setTimeout(() => this._doValidate(model, modeId, []), 0);
             });
 
@@ -121,18 +121,52 @@ export class DiagnosticsAdapter {
             .then((worker) => {
                 return worker.doValidation(resource.toString(), intervals);
             })
-            .then((diagnostics) => {
+            .then((diagnostics) => {                
                 const newModel = monaco.editor.getModel(resource);
                 const versionId = newModel.getVersionId();
-
+                
                 if (versionId !== versionNumberBefore) {
                     return;
                 }
-
+                
                 const markers = diagnostics.map((d) => toDiagnostics(resource, d));
                 let model = monaco.editor.getModel(resource);
                 if (model && model.getModeId() === languageId) {
-                    monaco.editor.setModelMarkers(model, languageId, markers);
+                   const syntaxErrorAsMarkDown = this.defaults.languageSettings.syntaxErrorAsMarkDown;
+                   
+                    if (!syntaxErrorAsMarkDown || !syntaxErrorAsMarkDown.enableSyntaxErrorAsMarkDown) {
+                        monaco.editor.setModelMarkers(model, languageId, markers);
+                    } else {
+                        // Add custom popup for syntax error: icon, header and message as markdown
+                        const header = syntaxErrorAsMarkDown.header ? `**${syntaxErrorAsMarkDown.header}** \n\n` : "";
+                        const icon = syntaxErrorAsMarkDown.icon ? `![](${syntaxErrorAsMarkDown.icon})` : "";
+                        const popupErrorHoverHeaderMessage = `${icon} ${header}`;
+                        
+                        const newDecorations = markers.map((marker: monaco.editor.IMarkerData) => {
+                            return {
+                                range: { 
+                                    startLineNumber: marker.startLineNumber, 
+                                    startColumn: marker.startColumn, 
+                                    endLineNumber: marker.endLineNumber, 
+                                    endColumn: marker.endColumn
+                                },
+                                options: {
+                                    hoverMessage: {
+                                        value: popupErrorHoverHeaderMessage + marker.message
+                                    },
+                                    className: "squiggly-error", // monaco syntax error style (red underline)
+                                    zIndex: 100 // This message will be the upper most mesage in the popup
+                                }
+                            };
+                        });
+
+                        // Remove previous syntax error decorations and set the new decorations
+                        const oldDecorations = model.getAllDecorations()
+                        .filter(decoration => decoration.options.className == "squiggly-error")
+                        .map(decoration => decoration.id);
+                        
+                        model.deltaDecorations(oldDecorations, newDecorations);
+                    }
                 }
             })
             .then(undefined, (err) => {
