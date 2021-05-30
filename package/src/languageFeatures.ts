@@ -121,14 +121,12 @@ export class DiagnosticsAdapter {
             .then((worker) => {
                 return worker.doValidation(resource.toString(), intervals);
             })
-            .then((diagnostics) => {                
+            .then((diagnostics) => {
                 const newModel = monaco.editor.getModel(resource);
                 const versionId = newModel.getVersionId();
-                
                 if (versionId !== versionNumberBefore) {
                     return;
                 }
-                
                 const markers = diagnostics.map((d) => toDiagnostics(resource, d));
                 let model = monaco.editor.getModel(resource);
                 if (model && model.getModeId() === languageId) {
@@ -162,9 +160,9 @@ export class DiagnosticsAdapter {
 
                         // Remove previous syntax error decorations and set the new decorations
                         const oldDecorations = model.getAllDecorations()
-                        .filter(decoration => decoration.options.className == "squiggly-error")
-                        .map(decoration => decoration.id);
-                        
+                                                .filter(decoration => decoration.options.className == "squiggly-error")
+                                                .map(decoration => decoration.id);
+
                         model.deltaDecorations(oldDecorations, newDecorations);
                     }
                 }
