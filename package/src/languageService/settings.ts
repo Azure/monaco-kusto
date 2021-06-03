@@ -9,11 +9,18 @@ export interface LanguageSettings {
     onDidProvideCompletionItems?: monaco.languages.kusto.OnDidProvideCompletionItems;
     enableHover?: boolean;
     formatter?: FormatterOptions;
+    syntaxErrorAsMarkDown?: SyntaxErrorAsMarkDownOptions;
 }
 
 export interface FormatterOptions {
     indentationSize?: number;
     pipeOperatorStyle?: FormatterPlacementStyle;
+}
+
+export interface SyntaxErrorAsMarkDownOptions {
+    header?: string;
+    icon?: string;
+    enableSyntaxErrorAsMarkDown?: boolean;
 }
 
 export type FormatterPlacementStyle = 'None' | 'NewLine' | 'Smart';

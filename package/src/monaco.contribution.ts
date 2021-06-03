@@ -63,7 +63,10 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     formatter: {
         indentationSize: 4,
         pipeOperatorStyle: 'Smart'
-    }
+    },
+    syntaxErrorAsMarkDown: {
+        enableSyntaxErrorAsMarkDown: false
+    }
 };
 
 const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
