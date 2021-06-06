@@ -389,6 +389,21 @@ fetch('./test/mode.txt')
                         monacoSettings.formatter.pipeOperatorStyle = 'Smart';
                         monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                     });
+                window.enableSyntaxErrorAsMarkDown = () => {
+                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    monacoSettings.syntaxErrorAsMarkDown = {
+                        enableSyntaxErrorAsMarkDown: true,
+                        header: "Error"
+                    };
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                };
+                window.disableSyntaxErrorAsMarkDown = () => {
+                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    monacoSettings.syntaxErrorAsMarkDown = {
+                        enableSyntaxErrorAsMarkDown: false
+                    };
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                };
                 window.setSemanticOn = () =>
                     monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
                         const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
