@@ -55,7 +55,7 @@
     },
     "dependencies": {
         "@kusto/language-service": "2.0.0-beta.0",
-        "@kusto/language-service-next": "0.0.46"
+        "@kusto/language-service-next": "0.0.48"
     },
     "peerDependencies": {
         "monaco-editor": "^0.20.0"
