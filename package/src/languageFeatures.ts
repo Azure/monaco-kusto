@@ -129,10 +129,16 @@ export class DiagnosticsAdapter {
                 }
                 const markers = diagnostics.map((d) => toDiagnostics(resource, d));
                 let model = monaco.editor.getModel(resource);
+                let oldDecorations = model.getAllDecorations()
+                                            .filter(decoration => decoration.options.className == "squiggly-error")
+                                            .map(decoration => decoration.id);
+
                 if (model && model.getModeId() === languageId) {
                    const syntaxErrorAsMarkDown = this.defaults.languageSettings.syntaxErrorAsMarkDown;
                    
                     if (!syntaxErrorAsMarkDown || !syntaxErrorAsMarkDown.enableSyntaxErrorAsMarkDown) {
+                        // Remove previous syntax error decorations and set the new markers (for example, when disabling syntaxErrorAsMarkDown after it was enabled)                
+                        model.deltaDecorations(oldDecorations, []);
                         monaco.editor.setModelMarkers(model, languageId, markers);
                     } else {
                         // Add custom popup for syntax error: icon, header and message as markdown
@@ -153,16 +159,33 @@ export class DiagnosticsAdapter {
                                         value: popupErrorHoverHeaderMessage + marker.message
                                     },
                                     className: "squiggly-error", // monaco syntax error style (red underline)
-                                    zIndex: 100 // This message will be the upper most mesage in the popup
+                                    zIndex: 100, // This message will be the upper most mesage in the popup
+                                    overviewRuler: {
+                                        // The color indication on the right ruler
+                                        color: "rgb(255, 18, 18, 0.7)",
+                                        position: monaco.editor.OverviewRulerLane.Right
+                                    },
+                                    minimap: {
+                                        color: "rgb(255, 18, 18, 0.7)",
+                                        position: monaco.editor.MinimapPosition.Inline
+                                    }
                                 }
                             };
                         });
+                        
+                        const oldMarkers = monaco.editor.getModelMarkers({
+                            owner:languageId, 
+                            resource: resource
+                        }).filter(marker => marker.severity == monaco.MarkerSeverity.Error);
+                        
+                        if (oldMarkers && oldMarkers.length > 0) {
+                            // In case there were previous markers, remove their decorations (for example, when enabling syntaxErrorAsMarkDown after it was disabled)
+                            oldDecorations = [];
+                            // Remove previous markers
+                            monaco.editor.setModelMarkers(model, languageId, []);
+                        }
 
                         // Remove previous syntax error decorations and set the new decorations
-                        const oldDecorations = model.getAllDecorations()
-                                                .filter(decoration => decoration.options.className == "squiggly-error")
-                                                .map(decoration => decoration.id);
-
                         model.deltaDecorations(oldDecorations, newDecorations);
                     }
                 }
