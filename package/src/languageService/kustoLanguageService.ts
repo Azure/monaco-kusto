@@ -490,26 +490,24 @@ class KustoLanguageService implements LanguageService {
         }
 
         return this.getCommandsInDocument(document).then((commands) => {
-            return commands.map(
-                (command): FoldingRange => {
-                    // don't count the last empty line as part of the folded range (consider linux, mac, pc newlines)
-                    if (command.text.endsWith('\r\n')) {
-                        command.absoluteEnd -= 2;
-                    } else if (command.text.endsWith('\r') || command.text.endsWith('\n')) {
-                        --command.absoluteEnd;
-                    }
-
-                    const startPosition = document.positionAt(command.absoluteStart);
-
-                    const endPosition = document.positionAt(command.absoluteEnd);
-                    return {
-                        startLine: startPosition.line,
-                        startCharacter: startPosition.character,
-                        endLine: endPosition.line,
-                        endCharacter: endPosition.character,
-                    };
+            return commands.map((command): FoldingRange => {
+                // don't count the last empty line as part of the folded range (consider linux, mac, pc newlines)
+                if (command.text.endsWith('\r\n')) {
+                    command.absoluteEnd -= 2;
+                } else if (command.text.endsWith('\r') || command.text.endsWith('\n')) {
+                    --command.absoluteEnd;
                 }
-            );
+
+                const startPosition = document.positionAt(command.absoluteStart);
+
+                const endPosition = document.positionAt(command.absoluteEnd);
+                return {
+                    startLine: startPosition.line,
+                    startCharacter: startPosition.character,
+                    endLine: endPosition.line,
+                    endCharacter: endPosition.character,
+                };
+            });
         });
     }
 
@@ -544,14 +542,12 @@ class KustoLanguageService implements LanguageService {
     private toLsDiagnostics(diagnostics: Kusto.Language.Diagnostic[], document: TextDocument) {
         return diagnostics
             .filter((diag) => diag.HasLocation)
-            .map(
-                (diag): ls.Diagnostic => {
-                    const start = document.positionAt(diag.Start);
-                    const end = document.positionAt(diag.Start + diag.Length);
-                    const range = ls.Range.create(start, end);
-                    return ls.Diagnostic.create(range, diag.Message, ls.DiagnosticSeverity.Error);
-                }
-            );
+            .map((diag): ls.Diagnostic => {
+                const start = document.positionAt(diag.Start);
+                const end = document.positionAt(diag.Start + diag.Length);
+                const range = ls.Range.create(start, end);
+                return ls.Diagnostic.create(range, diag.Message, ls.DiagnosticSeverity.Error);
+            });
     }
 
     /**
@@ -1350,8 +1346,7 @@ class KustoLanguageService implements LanguageService {
                     ],
                     docstring:
                         'A dummy description to test that docstring shows as expected when hovering over a function',
-                    body:
-                        "{\r\n    union \r\n    (T | count | project V='Volume', Metric = strcat(Count/1e9, ' Billion records')),\r\n    (T | summarize FirstRecord=min(Timestamp)| project V='Volume', Metric = strcat(toint((now()-FirstRecord)/1d), ' Days of data (from: ', format_datetime(FirstRecord, 'yyyy-MM-dd'),')')),\r\n    (T | where Timestamp > ago(1h) | count | project V='Velocity', Metric = strcat(Count/1e6, ' Million records / hour')),\r\n    (T | summarize Latency=now()-max(Timestamp) | project V='Velocity', Metric = strcat(Latency / 1sec, ' seconds latency')),\r\n    (T | take 1 | project V='Variety', Metric=tostring(pack_all()))\r\n    | order by V \r\n}",
+                    body: "{\r\n    union \r\n    (T | count | project V='Volume', Metric = strcat(Count/1e9, ' Billion records')),\r\n    (T | summarize FirstRecord=min(Timestamp)| project V='Volume', Metric = strcat(toint((now()-FirstRecord)/1d), ' Days of data (from: ', format_datetime(FirstRecord, 'yyyy-MM-dd'),')')),\r\n    (T | where Timestamp > ago(1h) | count | project V='Velocity', Metric = strcat(Count/1e6, ' Million records / hour')),\r\n    (T | summarize Latency=now()-max(Timestamp) | project V='Velocity', Metric = strcat(Latency / 1sec, ' seconds latency')),\r\n    (T | take 1 | project V='Variety', Metric=tostring(pack_all()))\r\n    | order by V \r\n}",
                 },
                 {
                     name: 'FindCIDPast24h',
@@ -1586,8 +1581,10 @@ class KustoLanguageService implements LanguageService {
             switch (tbl.entityType) {
                 case 'MaterializedViewTable':
                     symbol = symbol.WithIsMaterializedView(true);
+                    break;
                 case 'ExternalTable':
                     symbol = symbol.WithIsExternal(true);
+                    break;
                 default:
             }
 
@@ -1686,17 +1683,15 @@ class KustoLanguageService implements LanguageService {
         const classifications = this.toArray(this._parser.Results)
             .map((command) => this.toArray(command.Tokens))
             .reduce((prev, curr) => prev.concat(curr), [])
-            .map(
-                (cslCommandToken): k2.ClassifiedRange => {
-                    const range = new k2.ClassifiedRange(
-                        this.tokenKindToClassificationKind(cslCommandToken.TokenKind),
-                        cslCommandToken.AbsoluteStart + offset,
-                        cslCommandToken.Length
-                    );
+            .map((cslCommandToken): k2.ClassifiedRange => {
+                const range = new k2.ClassifiedRange(
+                    this.tokenKindToClassificationKind(cslCommandToken.TokenKind),
+                    cslCommandToken.AbsoluteStart + offset,
+                    cslCommandToken.Length
+                );
 
-                    return range;
-                }
-            );
+                return range;
+            });
 
         return classifications;
     }

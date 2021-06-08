@@ -132,6 +132,14 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 3.3.12
+
+- fix: external table erroneously shown for materialized views
+
+### 3.2.11
+
+- feat: update language service
+
 ### 3.2.10
 
 - feat: expose custom syntax error message options
