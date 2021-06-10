@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "3.2.12",
+    "version": "4.0.0",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -41,7 +41,7 @@
         "lodash": "^4.17.4",
         "merge-stream": "1.0.0",
         "minimatch": "^3.0.4",
-        "monaco-editor-core": "0.21.2",
+        "monaco-editor-core": "0.24.0",
         "monaco-languages": "1.10.0",
         "monaco-plugin-helpers": "^1.0.3",
         "object-assign": "4.1.0",
@@ -58,7 +58,7 @@
         "@kusto/language-service-next": "0.0.48"
     },
     "peerDependencies": {
-        "monaco-editor": "^0.20.0"
+        "monaco-editor": "^0.24.0"
     },
     "jest": {
         "rootDir": "src",
