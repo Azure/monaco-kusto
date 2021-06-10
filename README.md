@@ -132,9 +132,9 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
-### 3.3.13
+### 4.0.0
 
-- fix: update monaco-editor-core and monaco-editor version to 0.24.0
+- BREAKING CHANGE: update monaco-editor-core and monaco-editor version to 0.24.0
 
 ### 3.3.12
 
