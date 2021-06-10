@@ -132,6 +132,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 3.3.13
+
+- fix: update monaco-editor-core and monaco-editor version to 0.24.0
+
 ### 3.3.12
 
 - fix: external table erroneously shown for materialized views
