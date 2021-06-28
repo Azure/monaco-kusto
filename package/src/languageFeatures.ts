@@ -28,6 +28,7 @@ export class DiagnosticsAdapter {
     private _schemaListener: { [uri: string]: IDisposable } = Object.create(null);
 
     constructor(
+        private _monacoInstance: typeof monaco,
         private _languageId: string,
         private _worker: WorkerAccessor,
         private defaults: LanguageServiceDefaultsImpl,
@@ -59,7 +60,7 @@ export class DiagnosticsAdapter {
         };
 
         const onModelRemoved = (model: monaco.editor.IModel): void => {
-            monaco.editor.setModelMarkers(model, this._languageId, []);
+            this._monacoInstance.editor.setModelMarkers(model, this._languageId, []);
 
             let uriStr = model.uri.toString();
 
@@ -82,10 +83,10 @@ export class DiagnosticsAdapter {
             }
         };
 
-        this._disposables.push(monaco.editor.onDidCreateModel(onModelAdd));
-        this._disposables.push(monaco.editor.onWillDisposeModel(onModelRemoved));
+        this._disposables.push(this._monacoInstance.editor.onDidCreateModel(onModelAdd));
+        this._disposables.push(this._monacoInstance.editor.onWillDisposeModel(onModelRemoved));
         this._disposables.push(
-            monaco.editor.onDidChangeModelLanguage((event) => {
+            this._monacoInstance.editor.onDidChangeModelLanguage((event) => {
                 onModelRemoved(event.model);
                 onModelAdd(event.model);
             })
@@ -99,7 +100,7 @@ export class DiagnosticsAdapter {
             },
         });
 
-        monaco.editor.getModels().forEach(onModelAdd);
+        this._monacoInstance.editor.getModels().forEach(onModelAdd);
     }
 
     public dispose(): void {
@@ -122,13 +123,13 @@ export class DiagnosticsAdapter {
                 return worker.doValidation(resource.toString(), intervals);
             })
             .then((diagnostics) => {
-                const newModel = monaco.editor.getModel(resource);
+                const newModel = this._monacoInstance.editor.getModel(resource);
                 const versionId = newModel.getVersionId();
                 if (versionId !== versionNumberBefore) {
                     return;
                 }
                 const markers = diagnostics.map((d) => toDiagnostics(resource, d));
-                let model = monaco.editor.getModel(resource);
+                let model = this._monacoInstance.editor.getModel(resource);
                 let oldDecorations = model.getAllDecorations()
                                             .filter(decoration => decoration.options.className == "squiggly-error")
                                             .map(decoration => decoration.id);
@@ -139,7 +140,7 @@ export class DiagnosticsAdapter {
                     if (!syntaxErrorAsMarkDown || !syntaxErrorAsMarkDown.enableSyntaxErrorAsMarkDown) {
                         // Remove previous syntax error decorations and set the new markers (for example, when disabling syntaxErrorAsMarkDown after it was enabled)                
                         model.deltaDecorations(oldDecorations, []);
-                        monaco.editor.setModelMarkers(model, languageId, markers);
+                        this._monacoInstance.editor.setModelMarkers(model, languageId, markers);
                     } else {
                         // Add custom popup for syntax error: icon, header and message as markdown
                         const header = syntaxErrorAsMarkDown.header ? `**${syntaxErrorAsMarkDown.header}** \n\n` : "";
@@ -182,7 +183,7 @@ export class DiagnosticsAdapter {
                             // In case there were previous markers, remove their decorations (for example, when enabling syntaxErrorAsMarkDown after it was disabled)
                             oldDecorations = [];
                             // Remove previous markers
-                            monaco.editor.setModelMarkers(model, languageId, []);
+                            this._monacoInstance.editor.setModelMarkers(model, languageId, []);
                         }
 
                         // Remove previous syntax error decorations and set the new decorations
@@ -330,6 +331,7 @@ export class ColorizationAdapter {
     private decorations: string[] = [];
 
     constructor(
+        private _monacoInstance: typeof monaco,
         private _languageId: string,
         private _worker: WorkerAccessor,
         defaults: LanguageServiceDefaultsImpl,
@@ -390,10 +392,10 @@ export class ColorizationAdapter {
             }
         };
 
-        this._disposables.push(monaco.editor.onDidCreateModel(onModelAdd));
-        this._disposables.push(monaco.editor.onWillDisposeModel(onModelRemoved));
+        this._disposables.push(this._monacoInstance.editor.onDidCreateModel(onModelAdd));
+        this._disposables.push(this._monacoInstance.editor.onWillDisposeModel(onModelRemoved));
         this._disposables.push(
-            monaco.editor.onDidChangeModelLanguage((event) => {
+            this._monacoInstance.editor.onDidChangeModelLanguage((event) => {
                 onModelRemoved(event.model);
                 onModelAdd(event.model);
             })
@@ -407,7 +409,7 @@ export class ColorizationAdapter {
             },
         });
 
-        monaco.editor.getModels().forEach(onModelAdd);
+        this._monacoInstance.editor.getModels().forEach(onModelAdd);
     }
 
     public dispose(): void {
@@ -445,7 +447,7 @@ export class ColorizationAdapter {
                 return worker.doColorization(resource.toString(), intervals);
             })
             .then((colorizationRanges) => {
-                const newModel = monaco.editor.getModel(model.uri);
+                const newModel = this._monacoInstance.editor.getModel(model.uri);
                 const versionId = newModel.getVersionId();
 
                 // don't colorize an older version of the document.
