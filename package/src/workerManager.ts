@@ -17,7 +17,7 @@ export class WorkerManager {
     private _worker: monaco.editor.MonacoWebWorker<KustoWorker>;
     private _client: Promise<KustoWorker>;
 
-    constructor(defaults: LanguageServiceDefaultsImpl) {
+    constructor(private _monacoInstance: typeof monaco, defaults: LanguageServiceDefaultsImpl) {
         this._defaults = defaults;
         this._worker = null;
         this._idleCheckInterval = self.setInterval(() => this._checkIfIdle(), 30 * 1000);
@@ -70,7 +70,7 @@ export class WorkerManager {
         const { onDidProvideCompletionItems, ...languageSettings } = this._defaults.languageSettings;
 
         if (!this._client) {
-            this._worker = monaco.editor.createWebWorker<KustoWorker>({
+            this._worker = this._monacoInstance.editor.createWebWorker<KustoWorker>({
                 // module that exports the create() method and returns a `KustoWorker` instance
                 moduleId: 'vs/language/kusto/kustoWorker',
 

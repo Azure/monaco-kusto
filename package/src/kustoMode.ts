@@ -21,13 +21,13 @@ let workerPromise: Promise<WorkerAccessor> = new Promise((resolve, reject) => {
  * Called when Kusto language is first needed (a model has the language set)
  * @param defaults
  */
-export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor {
+export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance): WorkerAccessor {
     let onSchemaChange = new monaco.Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
     let disposables: IDisposable[] = [];
     let monarchTokensProvider: IDisposable;
 
-    const client = new WorkerManager(defaults);
+    const client = new WorkerManager(monacoInstance, defaults);
     disposables.push(client);
 
     const workerAccessor = (first: Uri, ...more: Uri[]): Promise<KustoWorker> => {
@@ -56,7 +56,7 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
 
     const language = 'kusto';
     disposables.push(
-        monaco.languages.registerCompletionItemProvider(
+        monacoInstance.languages.registerCompletionItemProvider(
             language,
             new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings)
         )
@@ -65,7 +65,7 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
     // Monaco tokenization runs in main thread so we're using a quick schema-unaware tokenization.
     // a web worker will run semantic colorization in the background (ColorizationAdapter).
     if (defaults.languageSettings.useTokenColorization) {
-        monarchTokensProvider = monaco.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
+        monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
     }
 
     // listen to configuration changes and if we're switching from semantic to monarch colorization, do the switch.
@@ -76,53 +76,53 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): WorkerAccessor
         }
 
         if (e.languageSettings.useTokenColorization && monarchTokensProvider == undefined) {
-            monarchTokensProvider = monaco.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
+            monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
         }
     });
 
-    disposables.push(new languageFeatures.DiagnosticsAdapter(language, workerAccessor, defaults, onSchemaChange.event));
+    disposables.push(new languageFeatures.DiagnosticsAdapter(monacoInstance, language, workerAccessor, defaults, onSchemaChange.event));
 
     disposables.push(
-        new languageFeatures.ColorizationAdapter(language, workerAccessor, defaults, onSchemaChange.event)
+        new languageFeatures.ColorizationAdapter(monacoInstance, language, workerAccessor, defaults, onSchemaChange.event)
     );
 
     disposables.push(
-        monaco.languages.registerDocumentRangeFormattingEditProvider(
+        monacoInstance.languages.registerDocumentRangeFormattingEditProvider(
             language,
             new languageFeatures.FormatAdapter(workerAccessor)
         )
     );
 
     disposables.push(
-        monaco.languages.registerFoldingRangeProvider(language, new languageFeatures.FoldingAdapter(workerAccessor))
+        monacoInstance.languages.registerFoldingRangeProvider(language, new languageFeatures.FoldingAdapter(workerAccessor))
     );
 
     disposables.push(
-        monaco.languages.registerDefinitionProvider(language, new languageFeatures.DefinitionAdapter(workerAccessor))
+        monacoInstance.languages.registerDefinitionProvider(language, new languageFeatures.DefinitionAdapter(workerAccessor))
     );
 
     disposables.push(
-        monaco.languages.registerRenameProvider(language, new languageFeatures.RenameAdapter(workerAccessor))
+        monacoInstance.languages.registerRenameProvider(language, new languageFeatures.RenameAdapter(workerAccessor))
     );
 
     disposables.push(
-        monaco.languages.registerReferenceProvider(language, new languageFeatures.ReferenceAdapter(workerAccessor))
+        monacoInstance.languages.registerReferenceProvider(language, new languageFeatures.ReferenceAdapter(workerAccessor))
     );
 
     if (defaults.languageSettings.enableHover) {
         disposables.push(
-            monaco.languages.registerHoverProvider(language, new languageFeatures.HoverAdapter(workerAccessor))
+            monacoInstance.languages.registerHoverProvider(language, new languageFeatures.HoverAdapter(workerAccessor))
         );
     }
 
-    monaco.languages.registerDocumentFormattingEditProvider(
+    monacoInstance.languages.registerDocumentFormattingEditProvider(
         language,
         new languageFeatures.DocumentFormatAdapter(workerAccessor)
     );
     kustoWorker = workerAccessor;
     resolveWorker(workerAccessor);
 
-    monaco.languages.setLanguageConfiguration(language, {
+    monacoInstance.languages.setLanguageConfiguration(language, {
         folding: {
             offSide: false,
             markers: { start: /^\s*[\r\n]/gm, end: /^\s*[\r\n]/gm },
