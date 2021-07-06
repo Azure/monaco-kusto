@@ -17,7 +17,10 @@ export default class KustoCommandHighlighter implements monaco.editor.IEditorCon
         // Note that selection update is triggered not only for selection changes, but also just when no text selection is occuring and cursor just moves around.
         // This case is counted as a 0-length selection starting and ending on the cursor position.
         this.editor.onDidChangeCursorSelection(changeEvent => {
-           
+            if (this.editor.getModel().getModeId() !== 'kusto') {
+                return;
+            }
+
             this.highlightCommandUnderCursor(changeEvent);
         })
     }
@@ -32,7 +35,7 @@ export default class KustoCommandHighlighter implements monaco.editor.IEditorCon
     private highlightCommandUnderCursor(changeEvent: monaco.editor.ICursorSelectionChangedEvent): void {
             // Looks like the user selected a bunch of text. we don't want to highlight the entire command in this case - since highlighting
             // the text is more helpful.
-            if (!changeEvent.selection.isEmpty() || this.editor.getModel().getModeId() !== 'kusto') {
+            if (!changeEvent.selection.isEmpty()) {
                 this.decorations = this.editor.deltaDecorations(this.decorations, []);
                 return;
             }
