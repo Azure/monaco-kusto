@@ -1,12 +1,13 @@
 export default class KustoCommandFormatter {
-    private cursorPosition: monaco.Position;
     private actionAdded: boolean = false;
 
     constructor(private editor: monaco.editor.IStandaloneCodeEditor) {
         // selection also represents no selection - for example the event gets triggered when moving cursor from point
         // a to point b. in the case start position will equal end position.
         editor.onDidChangeCursorSelection(changeEvent => {
-            this.cursorPosition = changeEvent.selection.getStartPosition();
+            if (this.editor.getModel().getModeId() !== 'kusto') {
+                return;
+            }
             // Theoretically you would expect this code to run only once in onDidCreateEditor.
             // Turns out that onDidCreateEditor is fired before the IStandaloneEditor is completely created (it is emmited by
             // the super ctor before the child ctor was able to fully run).
