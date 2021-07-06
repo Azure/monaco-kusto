@@ -6,6 +6,9 @@ export default class KustoCommandFormatter {
         // selection also represents no selection - for example the event gets triggered when moving cursor from point
         // a to point b. in the case start position will equal end position.
         editor.onDidChangeCursorSelection(changeEvent => {
+            if (this.editor.getModel().getModeId() !== 'kusto') {
+                return;
+            }
             this.cursorPosition = changeEvent.selection.getStartPosition();
             // Theoretically you would expect this code to run only once in onDidCreateEditor.
             // Turns out that onDidCreateEditor is fired before the IStandaloneEditor is completely created (it is emmited by
