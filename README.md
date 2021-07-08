@@ -132,6 +132,14 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 4.0.3
+
+- fix: update language service to latest version. fixes issues with scan operator being shown first in completion list.
+
+### 4.0.2
+
+- fix: don't do kusto specific highlighting when other language is selected.
+
 ### 4.0.0
 
 - BREAKING CHANGE: update monaco-editor-core and monaco-editor version to 0.24.0
