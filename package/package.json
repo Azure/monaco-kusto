@@ -58,7 +58,7 @@
         "@kusto/language-service-next": "0.0.50"
     },
     "peerDependencies": {
-        "monaco-editor": "^0.24.0"
+        "monaco-editor": "0.24.0"
     },
     "jest": {
         "rootDir": "src",
