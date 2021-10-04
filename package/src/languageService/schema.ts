@@ -185,6 +185,8 @@ export namespace showSchema {
     export interface Database {
         Name: string;
         Tables: Tables;
+        ExternalTables: Tables;
+        MaterializedViews: Table;
         MajorVersion: number;
         MinorVersion: number;
         Functions: Functions;
