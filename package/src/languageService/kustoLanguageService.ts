@@ -746,6 +746,7 @@ class KustoLanguageService implements LanguageService {
                 majorVersion: MajorVersion,
                 tables: [].concat(
                     ...([ [Tables, 'Table'], [MaterializedViews,'MaterializedView'], [ExternalTables, 'ExternalTable']] as [s.showSchema.Tables, s.TableEntityType][])
+                    .filter(([tableContainer]) => tableContainer)
                     .map(([tableContainer, tableEntity]) => Object
                         .values(tableContainer)
                         .map(({ Name, OrderedColumns, DocString }: s.showSchema.Table) => ({
