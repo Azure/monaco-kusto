@@ -132,6 +132,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 4.0.6
+
+- fix: `setSchemaFromShowSchema` now supports for external tables.
+
 ### 4.0.3
 
 - fix: update language service to latest version. fixes issues with scan operator being shown first in completion list.
