@@ -740,22 +740,27 @@ class KustoLanguageService implements LanguageService {
     ): Promise<s.EngineSchema> {
         const databases: s.EngineSchema['cluster']['databases'] = Object.keys(schema.Databases)
             .map((key) => schema.Databases[key])
-            .map(({ Name, Tables, Functions, MinorVersion, MajorVersion }: s.showSchema.Database) => ({
+            .map(({ Name, Tables, ExternalTables, MaterializedViews, Functions, MinorVersion, MajorVersion }: s.showSchema.Database) => ({
                 name: Name,
                 minorVersion: MinorVersion,
                 majorVersion: MajorVersion,
-                tables: Object.keys(Tables)
-                    .map((key) => Tables[key])
-                    .map(({ Name, OrderedColumns, DocString, EntityType }: s.showSchema.Table) => ({
-                        name: Name,
-                        docstring: DocString,
-                        entityType: EntityType,
-                        columns: OrderedColumns.map(({ Name, Type, DocString, CslType }: s.showSchema.Column) => ({
+                tables: [].concat(
+                    ...([ [Tables, 'Table'], [MaterializedViews,'MaterializedView'], [ExternalTables, 'ExternalTable']] as [s.showSchema.Tables, s.TableEntityType][])
+                    .filter(([tableContainer]) => tableContainer)
+                    .map(([tableContainer, tableEntity]) => Object
+                        .values(tableContainer)
+                        .map(({ Name, OrderedColumns, DocString }: s.showSchema.Table) => ({
                             name: Name,
-                            type: CslType,
                             docstring: DocString,
-                        })),
-                    })),
+                            entityType: tableEntity,
+                            columns: OrderedColumns.map(({ Name, Type, DocString, CslType }: s.showSchema.Column) => ({
+                                name: Name,
+                                type: CslType,
+                                docstring: DocString,
+                            })),
+                        }))
+                    )
+                ),
                 functions: Object.keys(Functions)
                     .map((key) => Functions[key])
                     .map(({ Name, Body, DocString, InputParameters }) => ({

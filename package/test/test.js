@@ -231,6 +231,45 @@ fetch('./test/mode.txt')
                                     ],
                                 }
                             },
+                            "ExternalTables": {
+                                "TaxiRides": {
+                                    "Name": "TaxiRides",
+                                    "Folder": "ExternalTables",
+                                    "DocString": "NYC taxi rides. Data source: https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page",
+                                    "OrderedColumns": [
+                                        {
+                                            "Name": "trip_id",
+                                            "Type": "System.Int64",
+                                            "CslType": "long"
+                                        },
+                                        {
+                                            "Name": "vendor_id",
+                                            "Type": "System.String",
+                                            "CslType": "string"
+                                        },
+                                        {
+                                            "Name": "pickup_datetime",
+                                            "Type": "System.DateTime",
+                                            "CslType": "datetime"
+                                        },
+                                        {
+                                            "Name": "dropoff_datetime",
+                                            "Type": "System.DateTime",
+                                            "CslType": "datetime"
+                                        },
+                                        {
+                                            "Name": "store_and_fwd_flag",
+                                            "Type": "System.String",
+                                            "CslType": "string"
+                                        },
+                                        {
+                                            "Name": "rate_code_id",
+                                            "Type": "System.Int32",
+                                            "CslType": "int"
+                                        },
+                                    ]
+                                }
+                            },
                             Functions: {
                                 MyFunction1: {
                                     Name: 'MyFunction1',
