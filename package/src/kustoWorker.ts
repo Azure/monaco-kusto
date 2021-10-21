@@ -2,7 +2,7 @@ import IWorkerContext = monaco.worker.IWorkerContext;
 
 import * as kustoService from './languageService/kustoLanguageService';
 import { LanguageSettings } from './languageService/settings';
-import { Schema, showSchema, ScalarParameter } from './languageService/schema';
+import { Schema, showSchema, ScalarParameter, Database } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import { ColorizationRange } from './languageService/kustoLanguageService';
 import { RenderInfo } from './languageService/renderInfo';
@@ -27,6 +27,24 @@ export class KustoWorker {
 
     setSchema(schema: Schema) {
         return this._languageService.setSchema(schema);
+    }
+
+    addClusterToSchema(uri: string, clusterName: string, databasesNames: string[]): Promise<void> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`addClusterToSchema: document is ${document}. uri is ${uri}`);
+            return null;
+        }
+        return this._languageService.addClusterToSchema(document, clusterName, databasesNames);
+    }
+
+    addDatabaseToSchema(uri: string, clusterName: string, databaseSchema: Database): Promise<void> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`addDatabaseToSchema: document is ${document}. uri is ${uri}`);
+            return null;
+        }
+        return this._languageService.addDatabaseToSchema(document, clusterName, databaseSchema);
     }
 
     setSchemaFromShowSchema(schema: any, clusterConnectionString: string, databaseInContextName: string) {
@@ -246,6 +264,16 @@ export class KustoWorker {
 
     setParameters(parameters: ScalarParameter[]) {
         return this._languageService.setParameters(parameters);
+    }
+
+    getClusterReferences(uri: string, cursorOffset: number): Promise<kustoService.ClusterReference[]> {
+        let document = this._getTextDocument(uri);
+        return this._languageService.getClusterReferences(document, cursorOffset);
+    }
+
+    getDatabaseReferences(uri: string, cursorOffset: number): Promise<kustoService.DatabaseReference[]> {
+        let document = this._getTextDocument(uri);
+        return this._languageService.getDatabaseReferences(document, cursorOffset);
     }
 
     private _getTextDocument(uri: string): ls.TextDocument {
