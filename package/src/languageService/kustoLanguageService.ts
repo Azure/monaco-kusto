@@ -289,20 +289,20 @@ class KustoLanguageService implements LanguageService {
     debugGlobalState(globals: GlobalState) {
         // iterate over clusters
         console.log(`globals.Clusters.Count: ${globals.Clusters.Count}`);
-        for (var i2=0; i2 < globals.Clusters.Count; i2++) {
-            const cluster = globals.Clusters.getItem(i2);            
+        for (let i=0; i < globals.Clusters.Count; i++) {
+            const cluster = globals.Clusters.getItem(i);
             console.log(`cluster: ${cluster.Name}`);            
 
             // iterate over databases
             console.log(`cluster.Databases.Count: ${cluster.Databases.Count}`);
-            for (var i3=0; i3 < cluster.Databases.Count; i3++) {
-                const database = cluster.Databases.getItem(i3);
+            for (let i2=0; i2 < cluster.Databases.Count; i2++) {
+                const database = cluster.Databases.getItem(i2);
                 console.log(`cluster.database: [${cluster.Name}].[${database.Name}]`);
                 
                 // iterate over tables
                 console.log(`cluster.Databases.Tables.Count: ${database.Tables.Count}`);
-                for (var i4=0; i4 < database.Tables.Count; i4++) {
-                    const table = database.Tables.getItem(i4);
+                for (let i3=0; i3 < database.Tables.Count; i3++) {
+                    const table = database.Tables.getItem(i3);
                     console.log(`cluster.database.table: [${cluster.Name}].[${database.Name}].[${table.Name}]`);
                 }
             }
@@ -565,17 +565,17 @@ class KustoLanguageService implements LanguageService {
         if (!clusterReferences) {
             return Promise.resolve([]);
         }
-        var newClustersReferences: ClusterReference[] = [];
-        var newClustersReferencesSet = new Set(); // used to remove duplicates
-        var clustersInGlobalStateSet = new Set(); // used to remove clusters that are already in the global state 
+        let newClustersReferences: ClusterReference[] = [];
+        let newClustersReferencesSet = new Set(); // used to remove duplicates
+        let clustersInGlobalStateSet = new Set(); // used to remove clusters that are already in the global state 
 
         // create a set of cluster names from Global State
-        for (var i=0; i < this._kustoJsSchemaV2.Clusters.Count; i++) {
+        for (let i=0; i < this._kustoJsSchemaV2.Clusters.Count; i++) {
             clustersInGlobalStateSet.add(this._kustoJsSchemaV2.Clusters.getItem(i).Name.toLowerCase());
         }
 
         // Keep only unique clusters that aren't already exist in the Global State
-        for (var i=0; i < clusterReferences.Count; i++) {
+        for (let i=0; i < clusterReferences.Count; i++) {
             const clusterReference: k2.ClusterReference = clusterReferences.getItem(i);
             const clusterHostName = clusterReference.Cluster;
 
@@ -602,9 +602,9 @@ class KustoLanguageService implements LanguageService {
         if (!databasesReferences) {
             return Promise.resolve([]);
         }
-        var newDatabasesReferences: DatabaseReference[] = [];
-        var newDatabasesReferencesSet = new Set();
-        for (var i1=0; i1 < databasesReferences.Count; i1++) {
+        let newDatabasesReferences: DatabaseReference[] = [];
+        let newDatabasesReferencesSet = new Set();
+        for (let i1=0; i1 < databasesReferences.Count; i1++) {
             const databaseReference: k2.DatabaseReference = databasesReferences.getItem(i1);
 
             // ignore duplicates
@@ -615,14 +615,14 @@ class KustoLanguageService implements LanguageService {
             newDatabasesReferencesSet.add(databaseReferenceUniqueId);
 
             // ignore references that are already in the GlobalState.
-            var found = false;
-            for (var i2=0; i2 < this._kustoJsSchemaV2.Clusters.Count; i2++) {
+            let found = false;
+            for (let i2=0; i2 < this._kustoJsSchemaV2.Clusters.Count; i2++) {
                 const clusterFromGlobalState = this._kustoJsSchemaV2.Clusters.getItem(i2);
                 const clusterNameFromGlobalState = clusterFromGlobalState.Name;
                 const referencedClusterName = databaseReference.Cluster;
                 
                 if (referencedClusterName.toLowerCase() === clusterNameFromGlobalState.toLowerCase()) {
-                    for (var i3=0; i3 < clusterFromGlobalState.Databases.Count; i3++) {
+                    for (let i3=0; i3 < clusterFromGlobalState.Databases.Count; i3++) {
                         const databaseFromGlobalState = clusterFromGlobalState.Databases.getItem(i3);
                         const referencedDatabaseName = databaseReference.Database;
                         if (referencedDatabaseName.toLowerCase() === databaseFromGlobalState.Name.toLowerCase() && databaseFromGlobalState.Tables.Count > 0) {
@@ -812,7 +812,7 @@ class KustoLanguageService implements LanguageService {
 
     addClusterToSchema(document: TextDocument, clusterName: string, databaseNames: string[]): Promise<void> {
         return new Promise((resolve) => {
-            var clusterNameOnly = Kusto.Language.KustoFacts.GetHostName(clusterName);
+            let clusterNameOnly = Kusto.Language.KustoFacts.GetHostName(clusterName);
             let cluster: sym.ClusterSymbol = this._kustoJsSchemaV2.GetCluster$1(clusterNameOnly);
             if (cluster) {
                 // add databases that are not already in the cluster.
@@ -841,7 +841,7 @@ class KustoLanguageService implements LanguageService {
 
     addDatabaseToSchema(document: TextDocument, clusterName: string, databaseSchema: s.Database): Promise<void> {
         return new Promise((resolve) => {
-            var clusterHostName = Kusto.Language.KustoFacts.GetHostName(clusterName);
+            let clusterHostName = Kusto.Language.KustoFacts.GetHostName(clusterName);
             let cluster: sym.ClusterSymbol = this._kustoJsSchemaV2.GetCluster$1(clusterHostName);
             if (!cluster) {
                 cluster = new sym.ClusterSymbol.$ctor1(clusterHostName, null, false);
@@ -1092,7 +1092,7 @@ class KustoLanguageService implements LanguageService {
             // calculate command end position without \r\n.
             let commandEnd = command.End;
             const commandText = command.Text;
-            for (var i = commandText.length - 1; i >= 0; i--) {
+            for (let i = commandText.length - 1; i >= 0; i--) {
                 if (commandText[i] != '\r' && commandText[i] != '\n') {
                     break;
                 } else {
@@ -2039,14 +2039,14 @@ class KustoLanguageService implements LanguageService {
      * @param offsetFromEnd a negative number that will represent offset to the left. 0 means simple concat
      */
     private insertToString(originalString: string, stringToInsert: string, offsetFromEnd: number): string {
-        var index = originalString.length + offsetFromEnd;
+        let index = originalString.length + offsetFromEnd;
 
         if (offsetFromEnd >= 0 || index < 0) {
             return originalString; // Cannot insert before or after the string
         }
 
-        var before = originalString.substring(0, index);
-        var after = originalString.substring(index);
+        let before = originalString.substring(0, index);
+        let after = originalString.substring(index);
 
         return before + stringToInsert + after;
     }
@@ -2060,8 +2060,8 @@ class KustoLanguageService implements LanguageService {
         schema: k.KustoIntelliSenseQuerySchema | CmSchema | undefined,
         clusterType: s.ClusterType
     ) {
-        var queryParameters: any = new (List(String))();
-        var availableClusters: any = new (List(String))();
+        let queryParameters: any = new (List(String))();
+        let availableClusters: any = new (List(String))();
         this._parser = new k.CslCommandParser();
 
         if (clusterType == 'Engine') {
