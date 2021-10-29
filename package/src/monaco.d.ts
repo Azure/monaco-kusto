@@ -119,6 +119,33 @@ declare module monaco.languages.kusto {
         doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
         doValidation(uri: string, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>;
         setParameters(parameters: ScalarParameter[]): void;
+        /**
+         * Get all the database references from the current command. 
+         * If database's schema is already cached it will not be returned.
+         * This method should be used to get all the cross-databases in a command, then schema for the database should be fetched and added with addDatabaseToSchema.
+         * @example
+         * If the current command includes: cluster('help').database('Samples') 
+         * it returns [{ clusterName: 'help', databaseName 'Samples' }]
+         */
+        getDatabaseReferences(uri: string, cursorOffset: number): Promise<DatabaseReference[]>;
+        /**
+         * Get all the cluster references from the current command.
+         * If cluster's schema is already cached it will not be returned.
+         * This method should be used to get all the cross-clusters in a command, then schema for the cluster should be fetched and added with addClusterToSchema.
+         * @example
+         * If the current command includes: cluster('help')
+         * it returns [{ clusterName: 'help' }]
+         */
+        getClusterReferences(uri: string, cursorOffset: number): Promise<ClusterReference[]>;
+        /**
+         * Adds a database's scheme. Useful with getDatabaseReferences to load schema for cross-cluster commands.
+         */
+        addDatabaseToSchema(uri: string, clusterName: string, databaseSchema: Database): Promise<void>;
+        /**
+         * Adds a cluster's scheme (database names only). Useful with getClusterReferences to load schema for cross-cluster commands.
+         * To load a full database schema call addDatabaseToSchema.
+         */
+        addClusterToSchema(uri: string, clusterName: string, databasesNames: string[]): Promise<void>;
     }
 
     /**
@@ -232,6 +259,15 @@ declare module monaco.languages.kusto {
     export interface RenderInfo {
         options: RenderOptions;
         location: { startOffset: number; endOffset: number };
+    }
+
+    export interface DatabaseReference {
+        databaseName: string;
+        clusterName: string; 
+    };
+
+    export interface ClusterReference {
+        clusterName: string; 
     }
 
     export type RenderOptionKeys = keyof RenderOptions;
