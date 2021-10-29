@@ -567,9 +567,16 @@ class KustoLanguageService implements LanguageService {
         }
         var newClustersReferences: ClusterReference[] = [];
         var newClustersReferencesSet = new Set(); // used to remove duplicates
+        var clustersInGlobalStateSet = new Set(); // used to remove clusters that are already in the global state 
 
-        for (var i1=0; i1 < clusterReferences.Count; i1++) {
-            const clusterReference: k2.ClusterReference = clusterReferences.getItem(i1);
+        // create a set of cluster names from Global State
+        for (var i=0; i < this._kustoJsSchemaV2.Clusters.Count; i++) {
+            clustersInGlobalStateSet.add(this._kustoJsSchemaV2.Clusters.getItem(i).Name.toLowerCase());
+        }
+
+        // Keep only unique clusters that aren't already exist in the Global State
+        for (var i=0; i < clusterReferences.Count; i++) {
+            const clusterReference: k2.ClusterReference = clusterReferences.getItem(i);
             const clusterHostName = clusterReference.Cluster;
 
             // ignore duplicates
@@ -578,18 +585,8 @@ class KustoLanguageService implements LanguageService {
             }
             newClustersReferencesSet.add(clusterHostName);
 
-            // ignore references that are already in the GlobalState.
-            var found = false;
-            for (var i2=0; i2 < this._kustoJsSchemaV2.Clusters.Count; i2++) {
-                const clusterFromGlobalState = this._kustoJsSchemaV2.Clusters.getItem(i2);
-                const clusterNameFromGlobalState = clusterFromGlobalState.Name;
-                if (clusterHostName.toLowerCase() === clusterNameFromGlobalState.toLowerCase()) {
-                    found=true;
-                    break;
-                }
-            }
-
-            if (!found) {
+            // ignore references that are already in the GlobalState.            
+            if (!clustersInGlobalStateSet.has(clusterHostName.toLowerCase())) {
                 newClustersReferences.push({ clusterName:  clusterHostName });
             }
         }
