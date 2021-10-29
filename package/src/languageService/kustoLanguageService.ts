@@ -825,32 +825,30 @@ class KustoLanguageService implements LanguageService {
     }
 
     addClusterToSchema(document: TextDocument, clusterName: string, databaseNames: string[]): Promise<void> {
-        return new Promise((resolve) => {
-            let clusterNameOnly = Kusto.Language.KustoFacts.GetHostName(clusterName);
-            let cluster: sym.ClusterSymbol = this._kustoJsSchemaV2.GetCluster$1(clusterNameOnly);
-            if (cluster) {
-                // add databases that are not already in the cluster.
-                databaseNames
-                .filter((databaseName: string) => !cluster.GetDatabase(databaseName))
+        let clusterNameOnly = Kusto.Language.KustoFacts.GetHostName(clusterName);
+        let cluster: sym.ClusterSymbol = this._kustoJsSchemaV2.GetCluster$1(clusterNameOnly);
+        if (cluster) {
+            // add databases that are not already in the cluster.
+            databaseNames
+            .filter((databaseName: string) => !cluster.GetDatabase(databaseName))
+            .map((databaseName: string) => {
+                const symbol = new sym.DatabaseSymbol.$ctor1(databaseName, undefined, false);
+                cluster = cluster.AddDatabase(symbol);
+            });
+        }
+        if (!cluster) {
+            const databaseSymbols = databaseNames
                 .map((databaseName: string) => {
                     const symbol = new sym.DatabaseSymbol.$ctor1(databaseName, undefined, false);
-                    cluster = cluster.AddDatabase(symbol);
+                    return symbol;
                 });
-            }
-            if (!cluster) {
-                const databaseSymbols = databaseNames
-                    .map((databaseName: string) => {
-                        const symbol = new sym.DatabaseSymbol.$ctor1(databaseName, undefined, false);
-                        return symbol;
-                    });
-                const databaseSymbolsList = KustoLanguageService.toBridgeList(databaseSymbols);
-                cluster = new sym.ClusterSymbol.$ctor1(clusterNameOnly, databaseSymbolsList, false);
-            }
-            
-            this._kustoJsSchemaV2 = this._kustoJsSchemaV2.AddOrReplaceCluster(cluster);
-            this._script = k2.CodeScript.From$1(document.getText(), this._kustoJsSchemaV2);
-            resolve();
-        });
+            const databaseSymbolsList = KustoLanguageService.toBridgeList(databaseSymbols);
+            cluster = new sym.ClusterSymbol.$ctor1(clusterNameOnly, databaseSymbolsList, false);
+        }
+        
+        this._kustoJsSchemaV2 = this._kustoJsSchemaV2.AddOrReplaceCluster(cluster);
+        this._script = k2.CodeScript.From$1(document.getText(), this._kustoJsSchemaV2);
+        return Promise.resolve();
     }
 
     addDatabaseToSchema(document: TextDocument, clusterName: string, databaseSchema: s.Database): Promise<void> {
