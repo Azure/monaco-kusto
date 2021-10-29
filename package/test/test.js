@@ -488,6 +488,30 @@ fetch('./test/mode.txt')
                         monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                     });
                 };
+                window.getDatabaseReferences = () => {
+                    monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
+                        const model = editor.getModel();
+                        workerAccessor(model.uri).then((worker) => {
+                            worker
+                                .getDatabaseReferences(model.uri.toString(), model.getOffsetAt(editor.getPosition()))
+                                .then((renderInfo) => {
+                                    currentCommand.innerHTML = JSON.stringify(renderInfo);
+                                });
+                        });
+                    });
+                };
+                window.getClusterReferences = () => {
+                    monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
+                        const model = editor.getModel();
+                        workerAccessor(model.uri).then((worker) => {
+                            worker
+                                .getClusterReferences(model.uri.toString(), model.getOffsetAt(editor.getPosition()))
+                                .then((renderInfo) => {
+                                    currentCommand.innerHTML = JSON.stringify(renderInfo);
+                                });
+                        });
+                    });
+                }
                 window.setHelp();
             }
         );

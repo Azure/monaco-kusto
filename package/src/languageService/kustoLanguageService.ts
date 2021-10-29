@@ -202,7 +202,9 @@ export interface ClusterReference {
  */
 class KustoLanguageService implements LanguageService {
     private _kustoJsSchema: k.KustoIntelliSenseQuerySchema | CmSchema | undefined;
-    private _kustoJsSchemaV2: GlobalState;
+    private __kustoJsSchemaV2: GlobalState;
+    private _clustersSetInGlobalState: Set<string>;
+    private _nonEmptyDatabaseSetInGlobalState: Set<string>;
     private _languageSettings: LanguageSettings;
     private _schema: s.Schema;
     private _schemaCache: {
@@ -252,14 +254,48 @@ class KustoLanguageService implements LanguageService {
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
         this._schemaCache = {};
         this._kustoJsSchema = KustoLanguageService.convertToKustoJsSchema(schema);
-        this._kustoJsSchemaV2 = this.convertToKustoJsSchemaV2(schema);
+        this.__kustoJsSchemaV2 = this.convertToKustoJsSchemaV2(schema);
         this._schema = schema;
+        this._clustersSetInGlobalState = new Set(); 
+        this._nonEmptyDatabaseSetInGlobalState = new Set(); // used to remove clusters that are already in the global state 
 
         this.configure(languageSettings);
         this._newlineAppendPipePolicy = new Kusto.Data.IntelliSense.ApplyPolicy();
         this._newlineAppendPipePolicy.Text = '\n| ';
     }
 
+    private createDatabaseUniqueName(clusterName: string, databaseName: string): string {
+        return `${clusterName}_${databaseName}`
+    }
+
+    /**
+     * A setter for _kustoJsSchemaV2. After a schema (global state) is set, create 2 sets of cluster and database names.
+     */
+    private set _kustoJsSchemaV2(globalState: GlobalState) {
+        this.__kustoJsSchemaV2 = globalState;
+
+        // create 2 Sets with cluster names and database names based on the updated Global State. 
+        for (let i=0; i < globalState.Clusters.Count; i++) {
+            const clusterSymbol = this._kustoJsSchemaV2.Clusters.getItem(i);
+            this._clustersSetInGlobalState.add(clusterSymbol.Name);
+
+            for (let i2=0; i2 < clusterSymbol.Databases.Count; i2++) {
+                const databaseSymbol = clusterSymbol.Databases.getItem(i2);
+
+                if (databaseSymbol.Tables.Count > 0) { // only include database with tables
+                    this._nonEmptyDatabaseSetInGlobalState.add(this.createDatabaseUniqueName(clusterSymbol.Name, databaseSymbol.Name));
+                }
+            }
+        }
+    }
+
+    /**
+     * A getter for __kustoJsSchemaV2
+     */
+    private get _kustoJsSchemaV2(): GlobalState {
+        return this.__kustoJsSchemaV2;
+    }
+    
     configure(languageSettings: LanguageSettings) {
         this._languageSettings = languageSettings;
 
@@ -286,7 +322,7 @@ class KustoLanguageService implements LanguageService {
      * important: Only use during development to test Global State. 
      * Prints clusters, databases and tables that are currently in the GlobalState. 
      */
-    debugGlobalState(globals: GlobalState) {
+    private debugGlobalState(globals: GlobalState) {
         // iterate over clusters
         console.log(`globals.Clusters.Count: ${globals.Clusters.Count}`);
         for (let i=0; i < globals.Clusters.Count; i++) {
@@ -566,13 +602,7 @@ class KustoLanguageService implements LanguageService {
             return Promise.resolve([]);
         }
         let newClustersReferences: ClusterReference[] = [];
-        let newClustersReferencesSet = new Set(); // used to remove duplicates
-        let clustersInGlobalStateSet = new Set(); // used to remove clusters that are already in the global state 
-
-        // create a set of cluster names from Global State
-        for (let i=0; i < this._kustoJsSchemaV2.Clusters.Count; i++) {
-            clustersInGlobalStateSet.add(this._kustoJsSchemaV2.Clusters.getItem(i).Name.toLowerCase());
-        }
+        let newClustersReferencesSet = new Set(); // used to remove duplicates        
 
         // Keep only unique clusters that aren't already exist in the Global State
         for (let i=0; i < clusterReferences.Count; i++) {
@@ -586,7 +616,7 @@ class KustoLanguageService implements LanguageService {
             newClustersReferencesSet.add(clusterHostName);
 
             // ignore references that are already in the GlobalState.            
-            if (!clustersInGlobalStateSet.has(clusterHostName.toLowerCase())) {
+            if (!this._clustersSetInGlobalState.has(clusterHostName.toLowerCase())) {
                 newClustersReferences.push({ clusterName:  clusterHostName });
             }
         }
@@ -608,31 +638,15 @@ class KustoLanguageService implements LanguageService {
             const databaseReference: k2.DatabaseReference = databasesReferences.getItem(i1);
 
             // ignore duplicates
-            const databaseReferenceUniqueId = `${databaseReference.Cluster}_${databaseReference.Database}`;
+            const databaseReferenceUniqueId = this.createDatabaseUniqueName(databaseReference.Cluster, databaseReference.Database);
             if (newDatabasesReferencesSet.has(databaseReferenceUniqueId)) {
                 continue;
             }
             newDatabasesReferencesSet.add(databaseReferenceUniqueId);
 
             // ignore references that are already in the GlobalState.
-            let found = false;
-            for (let i2=0; i2 < this._kustoJsSchemaV2.Clusters.Count; i2++) {
-                const clusterFromGlobalState = this._kustoJsSchemaV2.Clusters.getItem(i2);
-                const clusterNameFromGlobalState = clusterFromGlobalState.Name;
-                const referencedClusterName = databaseReference.Cluster;
-                
-                if (referencedClusterName.toLowerCase() === clusterNameFromGlobalState.toLowerCase()) {
-                    for (let i3=0; i3 < clusterFromGlobalState.Databases.Count; i3++) {
-                        const databaseFromGlobalState = clusterFromGlobalState.Databases.getItem(i3);
-                        const referencedDatabaseName = databaseReference.Database;
-                        if (referencedDatabaseName.toLowerCase() === databaseFromGlobalState.Name.toLowerCase() && databaseFromGlobalState.Tables.Count > 0) {
-                            found=true;
-                        }
-                    }
-                }
-            }
-
-            if (!found) {
+            let foundInGlobalState = this._nonEmptyDatabaseSetInGlobalState.has(databaseReferenceUniqueId);            
+            if (!foundInGlobalState) {
                 newDatabasesReferences.push({
                     databaseName: databaseReference.Database,
                     clusterName:  databaseReference.Cluster
