@@ -273,6 +273,8 @@ class KustoLanguageService implements LanguageService {
      */
     private set _kustoJsSchemaV2(globalState: GlobalState) {
         this.__kustoJsSchemaV2 = globalState;
+        this._clustersSetInGlobalState.clear();
+        this._nonEmptyDatabaseSetInGlobalState.clear();
 
         // create 2 Sets with cluster names and database names based on the updated Global State. 
         for (let i=0; i < globalState.Clusters.Count; i++) {
@@ -603,24 +605,24 @@ class KustoLanguageService implements LanguageService {
         }
         let newClustersReferences: ClusterReference[] = [];
         let newClustersReferencesSet = new Set(); // used to remove duplicates        
-
+        
         // Keep only unique clusters that aren't already exist in the Global State
         for (let i=0; i < clusterReferences.Count; i++) {
             const clusterReference: k2.ClusterReference = clusterReferences.getItem(i);
-            const clusterHostName = clusterReference.Cluster;
+            const clusterHostName = Kusto.Language.KustoFacts.GetHostName(clusterReference.Cluster);
 
             // ignore duplicates
             if (newClustersReferencesSet.has(clusterHostName)) {
                 continue;
             }
             newClustersReferencesSet.add(clusterHostName);
-
+            
             // ignore references that are already in the GlobalState.            
-            if (!this._clustersSetInGlobalState.has(clusterHostName.toLowerCase())) {
+            if (!this._clustersSetInGlobalState.has(clusterHostName)) {
                 newClustersReferences.push({ clusterName:  clusterHostName });
             }
         }
-
+        
         return Promise.resolve(newClustersReferences);
     }
 
@@ -636,9 +638,10 @@ class KustoLanguageService implements LanguageService {
         let newDatabasesReferencesSet = new Set();
         for (let i1=0; i1 < databasesReferences.Count; i1++) {
             const databaseReference: k2.DatabaseReference = databasesReferences.getItem(i1);
+            const clusterHostName = Kusto.Language.KustoFacts.GetHostName(databaseReference.Cluster);
 
             // ignore duplicates
-            const databaseReferenceUniqueId = this.createDatabaseUniqueName(databaseReference.Cluster, databaseReference.Database);
+            const databaseReferenceUniqueId = this.createDatabaseUniqueName(clusterHostName, databaseReference.Database);
             if (newDatabasesReferencesSet.has(databaseReferenceUniqueId)) {
                 continue;
             }
@@ -852,19 +855,17 @@ class KustoLanguageService implements LanguageService {
     }
 
     addDatabaseToSchema(document: TextDocument, clusterName: string, databaseSchema: s.Database): Promise<void> {
-        return new Promise((resolve) => {
-            let clusterHostName = Kusto.Language.KustoFacts.GetHostName(clusterName);
-            let cluster: sym.ClusterSymbol = this._kustoJsSchemaV2.GetCluster$1(clusterHostName);
-            if (!cluster) {
-                cluster = new sym.ClusterSymbol.$ctor1(clusterHostName, null, false);
-            }
+        let clusterHostName = Kusto.Language.KustoFacts.GetHostName(clusterName);
+        let cluster: sym.ClusterSymbol = this._kustoJsSchemaV2.GetCluster$1(clusterHostName);
+        if (!cluster) {
+            cluster = new sym.ClusterSymbol.$ctor1(clusterHostName, null, false);
+        }
 
-            const databaseSymbol = KustoLanguageService.convertToDatabaseSymbol(databaseSchema);
-            cluster = cluster.AddOrUpdateDatabase(databaseSymbol);
-            this._kustoJsSchemaV2 = this._kustoJsSchemaV2.AddOrReplaceCluster(cluster);
-            this._script = k2.CodeScript.From$1(document.getText(), this._kustoJsSchemaV2);
-            resolve();
-        });
+        const databaseSymbol = KustoLanguageService.convertToDatabaseSymbol(databaseSchema);
+        cluster = cluster.AddOrUpdateDatabase(databaseSymbol);
+        this._kustoJsSchemaV2 = this._kustoJsSchemaV2.AddOrReplaceCluster(cluster);
+        this._script = k2.CodeScript.From$1(document.getText(), this._kustoJsSchemaV2);
+        return Promise.resolve();
     }
 
     setSchema(schema: s.Schema): Promise<void> {

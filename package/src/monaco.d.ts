@@ -121,29 +121,46 @@ declare module monaco.languages.kusto {
         setParameters(parameters: ScalarParameter[]): void;
         /**
          * Get all the database references from the current command. 
-         * If database's schema is already cached it will not be returned.
+         * If database's schema is already cached in previous calls to setSchema or addDatabaseToSchema it will not be returned.
          * This method should be used to get all the cross-databases in a command, then schema for the database should be fetched and added with addDatabaseToSchema.
          * @example
          * If the current command includes: cluster('help').database('Samples') 
-         * it returns [{ clusterName: 'help', databaseName 'Samples' }]
+         * getDatabaseReferences will return [{ clusterName: 'help', databaseName 'Samples' }]
          */
         getDatabaseReferences(uri: string, cursorOffset: number): Promise<DatabaseReference[]>;
         /**
          * Get all the cluster references from the current command.
          * If cluster's schema is already cached it will not be returned.
          * This method should be used to get all the cross-clusters in a command, then schema for the cluster should be fetched and added with addClusterToSchema.
+         * cluster name is returned exactly as written in the KQL `cluster(<cluster name>)` function.
          * @example
          * If the current command includes: cluster('help')
          * it returns [{ clusterName: 'help' }]
+         * @example
+         * If the current command includes: cluster('https://demo11.westus.kusto.windows.net')
+         * getClusterReferences will return [{ clusterName: 'https://demo11.westus.kusto.windows.net' }]
          */
         getClusterReferences(uri: string, cursorOffset: number): Promise<ClusterReference[]>;
         /**
          * Adds a database's scheme. Useful with getDatabaseReferences to load schema for cross-cluster commands.
+         * @param clusterName the name of the cluster as returned from getDatabaseReferences/getClusterReferences.
+         * @example
+         * - User enters cluster('help').database('Samples')
+         * - hosting app calls getDatabaseReferences which returns [{ clusterName: 'help', databaseName: 'Samples' }]. 
+         * - hosting app fetches the database Schema from https://help.kusto.windows.net
+         * - hosting app calls 'addDatabaseToSchema' with the database's schema.
+         * - now, when user types cluster('help').database('Samples') then the auto complete list will show all the tables.
          */
         addDatabaseToSchema(uri: string, clusterName: string, databaseSchema: Database): Promise<void>;
         /**
-         * Adds a cluster's scheme (database names only). Useful with getClusterReferences to load schema for cross-cluster commands.
-         * To load a full database schema call addDatabaseToSchema.
+         * Adds a cluster's databases to the schema. Useful when used with getClusterReferences in cross-cluster commands.
+         * @param clusterName the name of the cluster as returned in getClusterReferences.
+         * @example
+         * - User enters cluster('help')
+         * - hosting app calls getClusterReferences which returns [{ clusterName: 'help' }]. 
+         * - hosting app fetches the list of databases from https://help.kusto.windows.net
+         * - hosting app calls addClusterToSchema with the list of databases.
+         * - now, when user type `cluster('help').database(` then the auto complete list will show all the databases.
          */
         addClusterToSchema(uri: string, clusterName: string, databasesNames: string[]): Promise<void>;
     }
