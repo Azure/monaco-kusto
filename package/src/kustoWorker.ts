@@ -33,7 +33,7 @@ export class KustoWorker {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`addClusterToSchema: document is ${document}. uri is ${uri}`);
-            return null;
+            return Promise.resolve();
         }
         return this._languageService.addClusterToSchema(document, clusterName, databasesNames);
     }
@@ -42,7 +42,7 @@ export class KustoWorker {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`addDatabaseToSchema: document is ${document}. uri is ${uri}`);
-            return null;
+            return Promise.resolve();
         }
         return this._languageService.addDatabaseToSchema(document, clusterName, databaseSchema);
     }
@@ -268,11 +268,17 @@ export class KustoWorker {
 
     getClusterReferences(uri: string, cursorOffset: number): Promise<kustoService.ClusterReference[]> {
         let document = this._getTextDocument(uri);
+        if (!document) {
+            return Promise.resolve(null);
+        }
         return this._languageService.getClusterReferences(document, cursorOffset);
     }
 
     getDatabaseReferences(uri: string, cursorOffset: number): Promise<kustoService.DatabaseReference[]> {
         let document = this._getTextDocument(uri);
+        if (!document) {
+            return Promise.resolve(null);
+        }
         return this._languageService.getDatabaseReferences(document, cursorOffset);
     }
 
