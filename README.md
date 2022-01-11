@@ -132,6 +132,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 4.1.3
+
+- fix: low color contrast for foreground/background in suggestWidget
+
 ### 4.0.6
 
 - fix: `setSchemaFromShowSchema` now supports for external tables.
