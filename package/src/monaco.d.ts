@@ -23,6 +23,7 @@ declare module monaco.languages.kusto {
         onDidProvideCompletionItems?: monaco.languages.kusto.OnDidProvideCompletionItems;
         enableHover?: boolean;
         formatter?: FormatterOptions;
+        seperateTokenParsingWorker?: boolean;
     }
 
     export interface SyntaxErrorAsMarkDownOptions {
@@ -232,7 +233,7 @@ declare module monaco.languages.kusto {
 
     export var getKustoWorker: () => Promise<WorkerAccessor>;
 
-    export var getKustoWorkerTokenParsing: () => Promise<WorkerAccessor>;
+    export var getKustoWorkerTokenParsing: () => Promise<WorkerAccessor | null>;
 
     export declare type VisualizationType =
         | 'anomalychart'
