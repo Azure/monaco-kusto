@@ -232,6 +232,8 @@ declare module monaco.languages.kusto {
 
     export var getKustoWorker: () => Promise<WorkerAccessor>;
 
+    export var getKustoWorkerTokenParsing: () => Promise<WorkerAccessor>;
+
     export declare type VisualizationType =
         | 'anomalychart'
         | 'areachart'

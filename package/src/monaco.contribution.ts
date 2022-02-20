@@ -77,6 +77,14 @@ function getKustoWorker(): Promise<any> {
     });
 }
 
+function getKustoWorkerTokenParsing(): Promise<any> {
+    return new Promise((resolve, reject) => {
+        withMode((mode) => {
+            mode.getKustoWorkerTokenParsing().then(resolve, reject);
+        });
+    });
+}
+
 function withMode(callback: (module: typeof mode) => void): void {
     require<typeof mode>(['vs/language/kusto/kustoMode'], callback);
 }
@@ -87,6 +95,7 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
         return {
             kustoDefaults,
             getKustoWorker,
+            getKustoWorkerTokenParsing,
         };
     }
 
