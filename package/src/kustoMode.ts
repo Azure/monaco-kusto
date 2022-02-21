@@ -67,15 +67,15 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance)
                         augmentedSetSchema(schema, worker)
                     },
                     setSchemaFromShowSchema: (schema, connection, database, globalParameters?: ScalarParameter[]) => {
-                        if (defaults.languageSettings.seperateTokenParsingWorker) {
-                            getKustoWorkerTokenParsing().then(worker => worker(first, ...more).then(wor => wor.normalizeSchema(schema, connection, database)
-                            .then((schema) => (globalParameters ? { ...schema, globalParameters } : schema))
-                            .then((normalized) => augmentedSetSchema(normalized, wor))))
-                        }
                         worker
                             .normalizeSchema(schema, connection, database)
                             .then((schema) => (globalParameters ? { ...schema, globalParameters } : schema))
-                            .then((normalized) => augmentedSetSchema(normalized, worker));
+                            .then((normalized) => {
+                                augmentedSetSchema(normalized, worker);
+                                if (defaults.languageSettings.seperateTokenParsingWorker) {
+                                    getKustoWorkerTokenParsing().then(parsingWorker => parsingWorker(first, ...more).then(wor => augmentedSetSchema(normalized, wor)))
+                                }
+                            });
                     },
                 } as KustoWorker)
         );
