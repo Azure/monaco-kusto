@@ -62,11 +62,11 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     enableHover: true,
     formatter: {
         indentationSize: 4,
-        pipeOperatorStyle: 'Smart'
+        pipeOperatorStyle: 'Smart',
     },
-    syntaxErrorAsMarkDown: {
-        enableSyntaxErrorAsMarkDown: false
-    }
+    syntaxErrorAsMarkDown: {
+        enableSyntaxErrorAsMarkDown: false,
+    },
 };
 
 function getKustoWorker(): Promise<any> {
@@ -95,17 +95,17 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
     monacoInstance.languages.onLanguage('kusto', () => {
         withMode((mode) => mode.setupMode(kustoDefaults, monacoInstance));
     });
-    
+
     monacoInstance.languages.register({
         id: 'kusto',
         extensions: ['.csl', '.kql'],
     });
-    
+
     // TODO: asked if there's a cleaner way to register an editor contribution. looks like monaco has an internal contribution regstrar but it's no exposed in the API.
     // https://stackoverflow.com/questions/46700245/how-to-add-an-ieditorcontribution-to-monaco-editor
     let commandHighlighter: KustoCommandHighlighter;
     let commandFormatter: KustoCommandFormatter;
-    
+
     monacoInstance.editor.defineTheme('kusto-light', {
         base: 'vs',
         inherit: true,
@@ -127,9 +127,13 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
             { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
             { token: 'invalid', background: 'cd3131' },
         ],
-        colors: {},
+        colors: {
+            // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
+            'editorSuggestWidget.selectedBackground': '#93CFFB',
+            'editorSuggestWidget.background': '#FAF9F8', // grey 10
+        },
     });
-    
+
     monacoInstance.editor.defineTheme('kusto-dark', {
         base: 'vs-dark',
         inherit: true,
@@ -151,28 +155,32 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
             { token: 'annotation', foreground: 'b5cea8' }, // ClientDirectiveToken DarkViolet
             { token: 'invalid', background: 'cd3131' },
         ],
-        colors: {},
+        colors: {
+            // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
+            'editorSuggestWidget.selectedBackground': '#001191', // Fluent High Contrast White Colors - Hyperlinks
+            'editorSuggestWidget.background': '#000000',
+        },
     });
-    
+
     monacoInstance.editor.defineTheme('kusto-dark2', {
         base: 'vs-dark',
         inherit: true,
         rules: [],
         colors: { 'editor.background': '#1B1A19' }, // gray 200
     });
-    
+
     // Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
     // Most other language features are initialized in kustoMode.ts
     monacoInstance.editor.onDidCreateEditor((editor) => {
         // hook up extension methods to editor.
         extend(editor);
-    
+
         commandHighlighter = new KustoCommandHighlighter(editor);
-    
+
         if (isStandaloneCodeEditor(editor)) {
             commandFormatter = new KustoCommandFormatter(editor);
         }
-    
+
         triggerSuggestDialogWhenCompletionItemSelected(editor);
     });
 
@@ -185,7 +193,8 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
                 kustoDefaults.languageSettings.openSuggestionDialogAfterPreviousSuggestionAccepted
             ) {
                 var didAcceptSuggestion =
-                    event.source === 'modelChange' && event.reason === monaco.editor.CursorChangeReason.RecoverFromMarkers;
+                    event.source === 'modelChange' &&
+                    event.reason === monaco.editor.CursorChangeReason.RecoverFromMarkers;
                 if (!didAcceptSuggestion) {
                     return;
                 }
@@ -203,7 +212,6 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
             }
         });
     }
-    
 }
 
 function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is monaco.editor.IStandaloneCodeEditor {
