@@ -132,6 +132,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 4.1.6
+
+- fix: low color contrast for foreground/background in suggestWidget for dark theme
+
 ### 4.1.3
 
 - fix: low color contrast for foreground/background in suggestWidget
