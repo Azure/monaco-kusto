@@ -50,7 +50,7 @@ class ParseProperties {
         private uri: string,
         private rulesProvider?: k.IntelliSenseRulesProviderBase,
         private parseMode?: k.ParseMode
-    ) {}
+    ) { }
 
     isParseNeeded(document: TextDocument, rulesProvider?: k.IntelliSenseRulesProviderBase, parseMode?: k.ParseMode) {
         if (
@@ -179,11 +179,11 @@ export type CmSchema = {
 
 export interface DatabaseReference {
     databaseName: string;
-    clusterName: string; 
+    clusterName: string;
 };
 
 export interface ClusterReference {
-    clusterName: string; 
+    clusterName: string;
 }
 
 /**
@@ -256,7 +256,7 @@ class KustoLanguageService implements LanguageService {
         this._kustoJsSchema = KustoLanguageService.convertToKustoJsSchema(schema);
         this.__kustoJsSchemaV2 = this.convertToKustoJsSchemaV2(schema);
         this._schema = schema;
-        this._clustersSetInGlobalState = new Set(); 
+        this._clustersSetInGlobalState = new Set();
         this._nonEmptyDatabaseSetInGlobalState = new Set(); // used to remove clusters that are already in the global state 
 
         this.configure(languageSettings);
@@ -277,11 +277,11 @@ class KustoLanguageService implements LanguageService {
         this._nonEmptyDatabaseSetInGlobalState.clear();
 
         // create 2 Sets with cluster names and database names based on the updated Global State. 
-        for (let i=0; i < globalState.Clusters.Count; i++) {
+        for (let i = 0; i < globalState.Clusters.Count; i++) {
             const clusterSymbol = this._kustoJsSchemaV2.Clusters.getItem(i);
             this._clustersSetInGlobalState.add(clusterSymbol.Name);
 
-            for (let i2=0; i2 < clusterSymbol.Databases.Count; i2++) {
+            for (let i2 = 0; i2 < clusterSymbol.Databases.Count; i2++) {
                 const databaseSymbol = clusterSymbol.Databases.getItem(i2);
 
                 if (databaseSymbol.Tables.Count > 0) { // only include database with tables
@@ -297,7 +297,7 @@ class KustoLanguageService implements LanguageService {
     private get _kustoJsSchemaV2(): GlobalState {
         return this.__kustoJsSchemaV2;
     }
-    
+
     configure(languageSettings: LanguageSettings) {
         this._languageSettings = languageSettings;
 
@@ -327,19 +327,19 @@ class KustoLanguageService implements LanguageService {
     private debugGlobalState(globals: GlobalState) {
         // iterate over clusters
         console.log(`globals.Clusters.Count: ${globals.Clusters.Count}`);
-        for (let i=0; i < globals.Clusters.Count; i++) {
+        for (let i = 0; i < globals.Clusters.Count; i++) {
             const cluster = globals.Clusters.getItem(i);
-            console.log(`cluster: ${cluster.Name}`);            
+            console.log(`cluster: ${cluster.Name}`);
 
             // iterate over databases
             console.log(`cluster.Databases.Count: ${cluster.Databases.Count}`);
-            for (let i2=0; i2 < cluster.Databases.Count; i2++) {
+            for (let i2 = 0; i2 < cluster.Databases.Count; i2++) {
                 const database = cluster.Databases.getItem(i2);
                 console.log(`cluster.database: [${cluster.Name}].[${database.Name}]`);
-                
+
                 // iterate over tables
                 console.log(`cluster.Databases.Tables.Count: ${database.Tables.Count}`);
-                for (let i3=0; i3 < database.Tables.Count; i3++) {
+                for (let i3 = 0; i3 < database.Tables.Count; i3++) {
                     const table = database.Tables.getItem(i3);
                     console.log(`cluster.database.table: [${cluster.Name}].[${database.Name}].[${table.Name}]`);
                 }
@@ -396,13 +396,13 @@ class KustoLanguageService implements LanguageService {
                 const { textToInsert, format } =
                     kItem.AfterText && kItem.AfterText.length > 0
                         ? {
-                              textToInsert: kItem.EditText + '$0' + kItem.AfterText,
-                              format: ls.InsertTextFormat.Snippet,
-                          }
+                            textToInsert: kItem.EditText + '$0' + kItem.AfterText,
+                            format: ls.InsertTextFormat.Snippet,
+                        }
                         : {
-                              textToInsert: kItem.EditText,
-                              format: ls.InsertTextFormat.PlainText,
-                          };
+                            textToInsert: kItem.EditText,
+                            format: ls.InsertTextFormat.PlainText,
+                        };
 
                 const lsItem = ls.CompletionItem.create(kItem.DisplayText);
 
@@ -605,9 +605,9 @@ class KustoLanguageService implements LanguageService {
         }
         let newClustersReferences: ClusterReference[] = [];
         let newClustersReferencesSet = new Set(); // used to remove duplicates        
-        
+
         // Keep only unique clusters that aren't already exist in the Global State
-        for (let i=0; i < clusterReferences.Count; i++) {
+        for (let i = 0; i < clusterReferences.Count; i++) {
             const clusterReference: k2.ClusterReference = clusterReferences.getItem(i);
             const clusterHostName = Kusto.Language.KustoFacts.GetHostName(clusterReference.Cluster);
 
@@ -616,13 +616,13 @@ class KustoLanguageService implements LanguageService {
                 continue;
             }
             newClustersReferencesSet.add(clusterHostName);
-            
+
             // ignore references that are already in the GlobalState.            
             if (!this._clustersSetInGlobalState.has(clusterHostName)) {
-                newClustersReferences.push({ clusterName:  clusterHostName });
+                newClustersReferences.push({ clusterName: clusterHostName });
             }
         }
-        
+
         return Promise.resolve(newClustersReferences);
     }
 
@@ -636,7 +636,7 @@ class KustoLanguageService implements LanguageService {
         }
         let newDatabasesReferences: DatabaseReference[] = [];
         let newDatabasesReferencesSet = new Set();
-        for (let i1=0; i1 < databasesReferences.Count; i1++) {
+        for (let i1 = 0; i1 < databasesReferences.Count; i1++) {
             const databaseReference: k2.DatabaseReference = databasesReferences.getItem(i1);
             const clusterHostName = Kusto.Language.KustoFacts.GetHostName(databaseReference.Cluster);
 
@@ -648,11 +648,11 @@ class KustoLanguageService implements LanguageService {
             newDatabasesReferencesSet.add(databaseReferenceUniqueId);
 
             // ignore references that are already in the GlobalState.
-            let foundInGlobalState = this._nonEmptyDatabaseSetInGlobalState.has(databaseReferenceUniqueId);            
+            let foundInGlobalState = this._nonEmptyDatabaseSetInGlobalState.has(databaseReferenceUniqueId);
             if (!foundInGlobalState) {
                 newDatabasesReferences.push({
                     databaseName: databaseReference.Database,
-                    clusterName:  databaseReference.Cluster
+                    clusterName: databaseReference.Cluster
                 });
             }
         }
@@ -660,12 +660,12 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(newDatabasesReferences);
     }
 
-    doValidation(document: TextDocument, changeIntervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]> {
+    doValidation(document: TextDocument, changeIntervals: { start: number; end: number }[], includeWarnings?: boolean, includeSuggestions?: boolean): Promise<ls.Diagnostic[]> {
         // didn't implement validation for v1.
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
-        
+
         const script = this.parseDocumentV2(document);
         let blocks = this.toArray<k2.CodeBlock>(script.Blocks);
         if (changeIntervals.length > 0) {
@@ -674,12 +674,21 @@ class KustoLanguageService implements LanguageService {
 
         const diagnostics = blocks
             .map((block) => {
-                const diagnostics = this.toArray<Kusto.Language.Diagnostic>(block.Service.GetDiagnostics());
-                if (diagnostics) {
-                    return diagnostics;
+                let diagnostics = this.toArray<Kusto.Language.Diagnostic>(block.Service.GetDiagnostics(false));
+                const enableWarnings = includeWarnings ?? this._languageSettings.enableQueryWarnings;
+                const enableSuggestions = includeSuggestions ?? this._languageSettings.enableQuerySuggestions;
+                if (enableWarnings || enableSuggestions) {
+                    // Concat Warnings and suggestions to the diagnostics
+                    const analyzerDiagnostics = block.Service.GetAnalyzerDiagnostics(null, true);
+                    const filterredDiagnostics = this.toArray<Kusto.Language.Diagnostic>(analyzerDiagnostics).filter(d => {
+                        const allowSeverity = (enableWarnings && d.Severity === 'Warning') || (enableSuggestions && d.Severity === 'Suggestion');
+                        const allowCode = !this._languageSettings.disabledDiagnoticCodes?.includes(d.Code);
+                        return allowSeverity && allowCode;
+                    });
+                    diagnostics = diagnostics.concat(filterredDiagnostics);
                 }
 
-                return [];
+                return diagnostics;
             })
             .reduce((prev, curr) => prev.concat(curr), []);
 
@@ -695,7 +704,18 @@ class KustoLanguageService implements LanguageService {
                 const start = document.positionAt(diag.Start);
                 const end = document.positionAt(diag.Start + diag.Length);
                 const range = ls.Range.create(start, end);
-                return ls.Diagnostic.create(range, diag.Message, ls.DiagnosticSeverity.Error);
+                let severity: ls.DiagnosticSeverity;
+                switch (diag.Severity) {
+                    case 'Suggestion':
+                        severity = ls.DiagnosticSeverity.Information;
+                        break;
+                    case 'Warning':
+                        severity = ls.DiagnosticSeverity.Warning;
+                        break;
+                    default:
+                        severity = ls.DiagnosticSeverity.Error;
+                }
+                return ls.Diagnostic.create(range, diag.Message, severity, diag.Code);
             });
     }
 
@@ -726,14 +746,14 @@ class KustoLanguageService implements LanguageService {
                     // a command is affected if it intersects at least on of changed ranges.
                     command // command can be null. we're filtering all nulls in the array.
                         ? changeIntervals.some(
-                              ({ start: changeStart, end: changeEnd }) =>
-                                  // both intervals intersect if either the start or the end of interval A is inside interval B.
-                                  // If we deleted something at the end of a command, the interval will not intersect the current command.
-                                  // so we also want consider affected commands commands the end where the interval begins.
-                                  // hence the + 1.
-                                  (command.AbsoluteStart >= changeStart && command.AbsoluteStart <= changeEnd) ||
-                                  (changeStart >= command.AbsoluteStart && changeStart <= command.AbsoluteEnd + 1)
-                          )
+                            ({ start: changeStart, end: changeEnd }) =>
+                                // both intervals intersect if either the start or the end of interval A is inside interval B.
+                                // If we deleted something at the end of a command, the interval will not intersect the current command.
+                                // so we also want consider affected commands commands the end where the interval begins.
+                                // hence the + 1.
+                                (command.AbsoluteStart >= changeStart && command.AbsoluteStart <= changeEnd) ||
+                                (changeStart >= command.AbsoluteStart && changeStart <= command.AbsoluteEnd + 1)
+                        )
                         : false
                 );
 
@@ -818,11 +838,11 @@ class KustoLanguageService implements LanguageService {
             // a command is affected if it intersects at least on of changed ranges.
             block // command can be null. we're filtering all nulls in the array.
                 ? changeIntervals.some(
-                      ({ start: changeStart, end: changeEnd }) =>
-                          // both intervals intersect if either the start or the end of interval A is inside interval B.
-                          (block.Start >= changeStart && block.Start <= changeEnd) ||
-                          (changeStart >= block.Start && changeStart <= block.End + 1)
-                  )
+                    ({ start: changeStart, end: changeEnd }) =>
+                        // both intervals intersect if either the start or the end of interval A is inside interval B.
+                        (block.Start >= changeStart && block.Start <= changeEnd) ||
+                        (changeStart >= block.Start && changeStart <= block.End + 1)
+                )
                 : false
         );
     }
@@ -833,11 +853,11 @@ class KustoLanguageService implements LanguageService {
         if (cluster) {
             // add databases that are not already in the cluster.
             databaseNames
-            .filter((databaseName: string) => !cluster.GetDatabase(databaseName))
-            .map((databaseName: string) => {
-                const symbol = new sym.DatabaseSymbol.$ctor1(databaseName, undefined, false);
-                cluster = cluster.AddDatabase(symbol);
-            });
+                .filter((databaseName: string) => !cluster.GetDatabase(databaseName))
+                .map((databaseName: string) => {
+                    const symbol = new sym.DatabaseSymbol.$ctor1(databaseName, undefined, false);
+                    cluster = cluster.AddDatabase(symbol);
+                });
         }
         if (!cluster) {
             const databaseSymbols = databaseNames
@@ -848,7 +868,7 @@ class KustoLanguageService implements LanguageService {
             const databaseSymbolsList = KustoLanguageService.toBridgeList(databaseSymbols);
             cluster = new sym.ClusterSymbol.$ctor1(clusterNameOnly, databaseSymbolsList, false);
         }
-        
+
         this._kustoJsSchemaV2 = this._kustoJsSchemaV2.AddOrReplaceCluster(cluster);
         this._script = k2.CodeScript.From$1(document.getText(), this._kustoJsSchemaV2);
         return Promise.resolve();
@@ -935,21 +955,21 @@ class KustoLanguageService implements LanguageService {
                 minorVersion: MinorVersion,
                 majorVersion: MajorVersion,
                 tables: [].concat(
-                    ...([ [Tables, 'Table'], [MaterializedViews,'MaterializedView'], [ExternalTables, 'ExternalTable']] as [s.showSchema.Tables, s.TableEntityType][])
-                    .filter(([tableContainer]) => tableContainer)
-                    .map(([tableContainer, tableEntity]) => Object
-                        .values(tableContainer)
-                        .map(({ Name, OrderedColumns, DocString }: s.showSchema.Table) => ({
-                            name: Name,
-                            docstring: DocString,
-                            entityType: tableEntity,
-                            columns: OrderedColumns.map(({ Name, Type, DocString, CslType }: s.showSchema.Column) => ({
+                    ...([[Tables, 'Table'], [MaterializedViews, 'MaterializedView'], [ExternalTables, 'ExternalTable']] as [s.showSchema.Tables, s.TableEntityType][])
+                        .filter(([tableContainer]) => tableContainer)
+                        .map(([tableContainer, tableEntity]) => Object
+                            .values(tableContainer)
+                            .map(({ Name, OrderedColumns, DocString }: s.showSchema.Table) => ({
                                 name: Name,
-                                type: CslType,
                                 docstring: DocString,
-                            })),
-                        }))
-                    )
+                                entityType: tableEntity,
+                                columns: OrderedColumns.map(({ Name, Type, DocString, CslType }: s.showSchema.Column) => ({
+                                    name: Name,
+                                    type: CslType,
+                                    docstring: DocString,
+                                })),
+                            }))
+                        )
                 ),
                 functions: Object.keys(Functions)
                     .map((key) => Functions[key])
@@ -964,10 +984,10 @@ class KustoLanguageService implements LanguageService {
                             cslDefaultValue: inputParam.CslDefaultValue,
                             columns: inputParam.Columns
                                 ? inputParam.Columns.map((col) => ({
-                                      name: col.Name,
-                                      type: col.Type,
-                                      cslType: col.CslType,
-                                  }))
+                                    name: col.Name,
+                                    type: col.Type,
+                                    cslType: col.CslType,
+                                }))
                                 : (inputParam.Columns as undefined | null | []),
                         })),
                     })),
@@ -995,7 +1015,7 @@ class KustoLanguageService implements LanguageService {
             : this.getCommandInContextV1(document, cursorOffset);
     }
 
-    getCommandAndLocationInContext(document: TextDocument, cursorOffset: number): Promise<{text: string, location: ls.Location}> {
+    getCommandAndLocationInContext(document: TextDocument, cursorOffset: number): Promise<{ text: string, location: ls.Location }> {
         // We are going to remove v1 intellisense. no use to keep parity.
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve(null);
@@ -1486,12 +1506,11 @@ class KustoLanguageService implements LanguageService {
             return Promise.resolve(undefined);
         }
 
-        // Errors are already shown in getDiagnostics. we don't want them in doHover.
-        items = items.filter((item) => item.Kind !== k2.QuickInfoKind.Error);
+        // Errors, Warnings and Suggestions are already shown in getDiagnostics. we don't want them in doHover.
+        items = items.filter((item) => item.Kind !== k2.QuickInfoKind.Error && item.Kind !== k2.QuickInfoKind.Suggestion && item.Kind !== k2.QuickInfoKind.Warning);
         const itemsText = items.map((item) => item.Text.replace('\n\n', '\n* * *\n'));
         // separate items by horizontal line.
         const text = itemsText.join('\n* * *\n');
-
         // Instead of just an empty line between the first line (the signature) and the second line (the description)
         // add an horizontal line (* * * in markdown) between them.
         return Promise.resolve({ contents: text });
@@ -1570,7 +1589,7 @@ class KustoLanguageService implements LanguageService {
     }
     //#endregion
 
-    private static convertToEntityDataType(kustoType: string) {}
+    private static convertToEntityDataType(kustoType: string) { }
     /**
      * We do not want to expose Bridge.Net generated schema, so we expose a cleaner javascript schema.
      * Here it gets converted to the bridge.Net schema
@@ -2082,23 +2101,23 @@ class KustoLanguageService implements LanguageService {
             this._rulesProvider =
                 this._languageSettings && this._languageSettings.includeControlCommands
                     ? new k.CslIntelliSenseRulesProvider.$ctor1(
-                          engineSchema.Cluster,
-                          engineSchema,
-                          queryParameters,
-                          availableClusters,
-                          null,
-                          true,
-                          true
-                      )
+                        engineSchema.Cluster,
+                        engineSchema,
+                        queryParameters,
+                        availableClusters,
+                        null,
+                        true,
+                        true
+                    )
                     : new k.CslQueryIntelliSenseRulesProvider.$ctor1(
-                          engineSchema.Cluster,
-                          engineSchema,
-                          queryParameters,
-                          availableClusters,
-                          null,
-                          null,
-                          null
-                      );
+                        engineSchema.Cluster,
+                        engineSchema,
+                        queryParameters,
+                        availableClusters,
+                        null,
+                        null,
+                        null
+                    );
             return;
         }
 

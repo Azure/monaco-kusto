@@ -10,6 +10,9 @@ export interface LanguageSettings {
     enableHover?: boolean;
     formatter?: FormatterOptions;
     syntaxErrorAsMarkDown?: SyntaxErrorAsMarkDownOptions;
+    enableQueryWarnings?: boolean;
+    enableQuerySuggestions?: boolean;
+    disabledDiagnoticCodes?: string[];
 }
 
 export interface FormatterOptions {

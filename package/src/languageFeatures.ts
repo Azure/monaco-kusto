@@ -177,7 +177,7 @@ export class DiagnosticsAdapter {
                         const oldMarkers = monaco.editor.getModelMarkers({
                             owner:languageId, 
                             resource: resource
-                        }).filter(marker => marker.severity == monaco.MarkerSeverity.Error);
+                        });
                         
                         if (oldMarkers && oldMarkers.length > 0) {
                             // In case there were previous markers, remove their decorations (for example, when enabling syntaxErrorAsMarkDown after it was disabled)
