@@ -53,7 +53,7 @@ fetch('./test/mode.txt')
             ],
             function () {
                 var editor = monaco.editor.create(document.getElementById('container'), {
-                    value: ['StormEvents | project StartTime , State | where toupper(State) == "Texas" | count'].join(
+                    value: ['StormEvents | project StartTime , State | where State contains "Texas" | count'].join(
                         '\n'
                     ),
                     language: 'kusto',

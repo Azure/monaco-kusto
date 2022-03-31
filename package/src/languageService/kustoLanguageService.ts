@@ -674,13 +674,14 @@ class KustoLanguageService implements LanguageService {
 
         const diagnostics = blocks
             .map((block) => {
+                // GetDiagnostics returns the errors in the block
                 let diagnostics = this.toArray<Kusto.Language.Diagnostic>(block.Service.GetDiagnostics(false));
                 const enableWarnings = includeWarnings ?? this._languageSettings.enableQueryWarnings;
                 const enableSuggestions = includeSuggestions ?? this._languageSettings.enableQuerySuggestions;
                 if (enableWarnings || enableSuggestions) {
                     // Concat Warnings and suggestions to the diagnostics
-                    const analyzerDiagnostics = block.Service.GetAnalyzerDiagnostics(null, true);
-                    const filterredDiagnostics = this.toArray<Kusto.Language.Diagnostic>(analyzerDiagnostics).filter(d => {
+                    const warningAndSuggestionDiagnostics = block.Service.GetAnalyzerDiagnostics(null, true);
+                    const filterredDiagnostics = this.toArray<Kusto.Language.Diagnostic>(warningAndSuggestionDiagnostics).filter(d => {
                         const allowSeverity = (enableWarnings && d.Severity === 'Warning') || (enableSuggestions && d.Severity === 'Suggestion');
                         const allowCode = !this._languageSettings.disabledDiagnoticCodes?.includes(d.Code);
                         return allowSeverity && allowCode;
