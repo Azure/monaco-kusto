@@ -160,8 +160,8 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
         ],
         colors: {
             // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-            'editorSuggestWidget.selectedBackground': '#001191', // Fluent High Contrast White Colors - Hyperlinks
-            'editorSuggestWidget.background': '#000000',
+            'editor.background': '#1B1A19', // gray 200
+            'editorSuggestWidget.selectedBackground': '#004E8C',
         },
     });
 
@@ -170,10 +170,9 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
         inherit: true,
         rules: [],
         colors: {
-            'editor.background': '#1B1A19', // gray 200
             // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-            'editorSuggestWidget.selectedBackground': '#001191', // Fluent High Contrast White Colors - Hyperlinks
-            'editorSuggestWidget.background': '#000000',
+            'editor.background': '#1B1A19', // gray 200
+            'editorSuggestWidget.selectedBackground': '#004E8C',
         },
     });
 
