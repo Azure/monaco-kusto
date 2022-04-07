@@ -36,6 +36,18 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
         return this._languageSettings;
     }
 
+    get allAnalyzerDiagnostics() {
+        const analyzers: Kusto.Language.Editor.KustoAnalyzer[] = (Bridge as any).toArray(Kusto.Language.Editor.KustoAnalyzers.All);
+        const allDiagnostics: monaco.languages.kusto.KustoAnalyzerDiagnostic[] = [];
+        analyzers.forEach((analyzer) => {
+            const diagnostics: monaco.languages.kusto.KustoAnalyzerDiagnostic[] = (Bridge as any).toArray(analyzer.Diagnostics);
+            diagnostics.forEach((d) => {
+                allDiagnostics.push(d);
+            })
+        });
+        return allDiagnostics;
+    }
+
     setLanguageSettings(options: monaco.languages.kusto.LanguageSettings): void {
         this._languageSettings = options || Object.create(null);
         this._onDidChange.fire(this);
