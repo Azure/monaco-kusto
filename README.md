@@ -132,6 +132,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 4.1.8
+
+- fix: trigger suggestion when previous suggestion selected.
+
 ### 4.1.6
 
 - fix: low color contrast for foreground/background in suggestWidget for dark theme
