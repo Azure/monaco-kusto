@@ -662,7 +662,7 @@ class KustoLanguageService implements LanguageService {
 
     getPossibleAnalyzerDiagnostics() {
         const analyzers: k2.KustoAnalyzer[] = (Bridge as any).toArray(k2.KustoAnalyzers.All);
-        const allDiagnostics = [];
+        const allDiagnostics: Kusto.Language.Diagnostic[] = [];
         analyzers.forEach((analyzer) => {
             const diagnostics: Kusto.Language.Diagnostic[] = (Bridge as any).toArray(analyzer.Diagnostics);
             diagnostics.forEach((d) => {
