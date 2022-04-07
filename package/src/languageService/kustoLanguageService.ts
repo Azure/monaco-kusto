@@ -660,12 +660,23 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(newDatabasesReferences);
     }
 
+    getPossibleAnalyzerDiagnostics() {
+        const analyzers: k2.KustoAnalyzer[] = (Bridge as any).toArray(k2.KustoAnalyzers.All);
+        const allDiagnostics = [];
+        analyzers.forEach((analyzer) => {
+            const diagnostics: Kusto.Language.Diagnostic[] = (Bridge as any).toArray(analyzer.Diagnostics);
+            diagnostics.forEach((d) => {
+                allDiagnostics.push(d);
+            })
+        });
+        return allDiagnostics;
+    }
+
     doValidation(document: TextDocument, changeIntervals: { start: number; end: number }[], includeWarnings?: boolean, includeSuggestions?: boolean): Promise<ls.Diagnostic[]> {
         // didn't implement validation for v1.
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
-
         const script = this.parseDocumentV2(document);
         let blocks = this.toArray<k2.CodeBlock>(script.Blocks);
         if (changeIntervals.length > 0) {
