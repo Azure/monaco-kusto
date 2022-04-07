@@ -28,7 +28,13 @@ declare module monaco.languages.kusto {
         disabledDiagnoticCodes?: string[];
     }
 
-    export interface KustoAnalyzerDiagnostic extends Kusto.Language.Diagnostic { }
+    export interface KustoAnalyzerDiagnostic { 
+        Code: string | null;
+        Category: string | null;
+        Severity: string | null;
+        Description: string | null;
+        Message: string | null;
+    }
 
     export interface SyntaxErrorAsMarkDownOptions {
         header?: string;
