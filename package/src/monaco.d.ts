@@ -46,6 +46,7 @@ declare module monaco.languages.kusto {
     export interface LanguageServiceDefaults {
         readonly onDidChange: IEvent<LanguageServiceDefaults>;
         readonly languageSettings: LanguageSettings;
+        readonly allAnalyzerDiagnostics: KustoAnalyzerDiagnostic[];
         /**
          * Configure language service settings.
          */
