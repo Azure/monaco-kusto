@@ -153,8 +153,6 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
         ],
         colors: {
             // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-            // 'editor.background': '#1B1A19', // gray 200
-            // 'editorSuggestWidget.selectedBackground': '#004E8C',
         },
     });
 
