@@ -166,7 +166,7 @@ export interface LanguageService {
     getReferencedGlobalParams(document: TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
     getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
     getDatabaseReferences(document: TextDocument, cursorOffset: number): Promise<DatabaseReference[]>;
-    getClusterReferences(document: TextDocument, cursorOffset: number): Promise<ClusterReference[]>
+    getClusterReferences(document: TextDocument, cursorOffset: number): Promise<ClusterReference[]>;
     addDatabaseToSchema(document: TextDocument, clusterName: string, databaseSchema: Database): Promise<void>;
     addClusterToSchema(document: TextDocument, clusterName: string, databaseNames: string[]): Promise<void>;
 }
@@ -179,11 +179,11 @@ export type CmSchema = {
 
 export interface DatabaseReference {
     databaseName: string;
-    clusterName: string; 
-};
+    clusterName: string;
+}
 
 export interface ClusterReference {
-    clusterName: string; 
+    clusterName: string;
 }
 
 /**
@@ -256,8 +256,8 @@ class KustoLanguageService implements LanguageService {
         this._kustoJsSchema = KustoLanguageService.convertToKustoJsSchema(schema);
         this.__kustoJsSchemaV2 = this.convertToKustoJsSchemaV2(schema);
         this._schema = schema;
-        this._clustersSetInGlobalState = new Set(); 
-        this._nonEmptyDatabaseSetInGlobalState = new Set(); // used to remove clusters that are already in the global state 
+        this._clustersSetInGlobalState = new Set();
+        this._nonEmptyDatabaseSetInGlobalState = new Set(); // used to remove clusters that are already in the global state
 
         this.configure(languageSettings);
         this._newlineAppendPipePolicy = new Kusto.Data.IntelliSense.ApplyPolicy();
@@ -265,7 +265,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     private createDatabaseUniqueName(clusterName: string, databaseName: string): string {
-        return `${clusterName}_${databaseName}`
+        return `${clusterName}_${databaseName}`;
     }
 
     /**
@@ -276,16 +276,19 @@ class KustoLanguageService implements LanguageService {
         this._clustersSetInGlobalState.clear();
         this._nonEmptyDatabaseSetInGlobalState.clear();
 
-        // create 2 Sets with cluster names and database names based on the updated Global State. 
-        for (let i=0; i < globalState.Clusters.Count; i++) {
+        // create 2 Sets with cluster names and database names based on the updated Global State.
+        for (let i = 0; i < globalState.Clusters.Count; i++) {
             const clusterSymbol = this._kustoJsSchemaV2.Clusters.getItem(i);
             this._clustersSetInGlobalState.add(clusterSymbol.Name);
 
-            for (let i2=0; i2 < clusterSymbol.Databases.Count; i2++) {
+            for (let i2 = 0; i2 < clusterSymbol.Databases.Count; i2++) {
                 const databaseSymbol = clusterSymbol.Databases.getItem(i2);
 
-                if (databaseSymbol.Tables.Count > 0) { // only include database with tables
-                    this._nonEmptyDatabaseSetInGlobalState.add(this.createDatabaseUniqueName(clusterSymbol.Name, databaseSymbol.Name));
+                if (databaseSymbol.Tables.Count > 0) {
+                    // only include database with tables
+                    this._nonEmptyDatabaseSetInGlobalState.add(
+                        this.createDatabaseUniqueName(clusterSymbol.Name, databaseSymbol.Name)
+                    );
                 }
             }
         }
@@ -297,7 +300,7 @@ class KustoLanguageService implements LanguageService {
     private get _kustoJsSchemaV2(): GlobalState {
         return this.__kustoJsSchemaV2;
     }
-    
+
     configure(languageSettings: LanguageSettings) {
         this._languageSettings = languageSettings;
 
@@ -321,25 +324,25 @@ class KustoLanguageService implements LanguageService {
     };
 
     /**
-     * important: Only use during development to test Global State. 
-     * Prints clusters, databases and tables that are currently in the GlobalState. 
+     * important: Only use during development to test Global State.
+     * Prints clusters, databases and tables that are currently in the GlobalState.
      */
     private debugGlobalState(globals: GlobalState) {
         // iterate over clusters
         console.log(`globals.Clusters.Count: ${globals.Clusters.Count}`);
-        for (let i=0; i < globals.Clusters.Count; i++) {
+        for (let i = 0; i < globals.Clusters.Count; i++) {
             const cluster = globals.Clusters.getItem(i);
-            console.log(`cluster: ${cluster.Name}`);            
+            console.log(`cluster: ${cluster.Name}`);
 
             // iterate over databases
             console.log(`cluster.Databases.Count: ${cluster.Databases.Count}`);
-            for (let i2=0; i2 < cluster.Databases.Count; i2++) {
+            for (let i2 = 0; i2 < cluster.Databases.Count; i2++) {
                 const database = cluster.Databases.getItem(i2);
                 console.log(`cluster.database: [${cluster.Name}].[${database.Name}]`);
-                
+
                 // iterate over tables
                 console.log(`cluster.Databases.Tables.Count: ${database.Tables.Count}`);
-                for (let i3=0; i3 < database.Tables.Count; i3++) {
+                for (let i3 = 0; i3 < database.Tables.Count; i3++) {
                     const table = database.Tables.getItem(i3);
                     console.log(`cluster.database.table: [${cluster.Name}].[${database.Name}].[${table.Name}]`);
                 }
@@ -410,6 +413,7 @@ class KustoLanguageService implements LanguageService {
                 const endPosition = document.positionAt(completionItems.EditStart + completionItems.EditLength);
                 lsItem.textEdit = ls.TextEdit.replace(ls.Range.create(startPosition, endPosition), textToInsert);
                 lsItem.sortText = this.getSortText(i + 1);
+                // lsItem.filterText = lsItem.sortText;
                 lsItem.kind = this.kustoKindToLsKindV2(kItem.Kind);
                 lsItem.insertTextFormat = format;
                 lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;
@@ -604,10 +608,10 @@ class KustoLanguageService implements LanguageService {
             return Promise.resolve([]);
         }
         let newClustersReferences: ClusterReference[] = [];
-        let newClustersReferencesSet = new Set(); // used to remove duplicates        
-        
+        let newClustersReferencesSet = new Set(); // used to remove duplicates
+
         // Keep only unique clusters that aren't already exist in the Global State
-        for (let i=0; i < clusterReferences.Count; i++) {
+        for (let i = 0; i < clusterReferences.Count; i++) {
             const clusterReference: k2.ClusterReference = clusterReferences.getItem(i);
             const clusterHostName = Kusto.Language.KustoFacts.GetHostName(clusterReference.Cluster);
 
@@ -616,13 +620,13 @@ class KustoLanguageService implements LanguageService {
                 continue;
             }
             newClustersReferencesSet.add(clusterHostName);
-            
-            // ignore references that are already in the GlobalState.            
+
+            // ignore references that are already in the GlobalState.
             if (!this._clustersSetInGlobalState.has(clusterHostName)) {
-                newClustersReferences.push({ clusterName:  clusterHostName });
+                newClustersReferences.push({ clusterName: clusterHostName });
             }
         }
-        
+
         return Promise.resolve(newClustersReferences);
     }
 
@@ -636,23 +640,26 @@ class KustoLanguageService implements LanguageService {
         }
         let newDatabasesReferences: DatabaseReference[] = [];
         let newDatabasesReferencesSet = new Set();
-        for (let i1=0; i1 < databasesReferences.Count; i1++) {
+        for (let i1 = 0; i1 < databasesReferences.Count; i1++) {
             const databaseReference: k2.DatabaseReference = databasesReferences.getItem(i1);
             const clusterHostName = Kusto.Language.KustoFacts.GetHostName(databaseReference.Cluster);
 
             // ignore duplicates
-            const databaseReferenceUniqueId = this.createDatabaseUniqueName(clusterHostName, databaseReference.Database);
+            const databaseReferenceUniqueId = this.createDatabaseUniqueName(
+                clusterHostName,
+                databaseReference.Database
+            );
             if (newDatabasesReferencesSet.has(databaseReferenceUniqueId)) {
                 continue;
             }
             newDatabasesReferencesSet.add(databaseReferenceUniqueId);
 
             // ignore references that are already in the GlobalState.
-            let foundInGlobalState = this._nonEmptyDatabaseSetInGlobalState.has(databaseReferenceUniqueId);            
+            let foundInGlobalState = this._nonEmptyDatabaseSetInGlobalState.has(databaseReferenceUniqueId);
             if (!foundInGlobalState) {
                 newDatabasesReferences.push({
                     databaseName: databaseReference.Database,
-                    clusterName:  databaseReference.Cluster
+                    clusterName: databaseReference.Cluster,
                 });
             }
         }
@@ -665,7 +672,7 @@ class KustoLanguageService implements LanguageService {
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
         }
-        
+
         const script = this.parseDocumentV2(document);
         let blocks = this.toArray<k2.CodeBlock>(script.Blocks);
         if (changeIntervals.length > 0) {
@@ -833,22 +840,21 @@ class KustoLanguageService implements LanguageService {
         if (cluster) {
             // add databases that are not already in the cluster.
             databaseNames
-            .filter((databaseName: string) => !cluster.GetDatabase(databaseName))
-            .map((databaseName: string) => {
-                const symbol = new sym.DatabaseSymbol.$ctor1(databaseName, undefined, false);
-                cluster = cluster.AddDatabase(symbol);
-            });
-        }
-        if (!cluster) {
-            const databaseSymbols = databaseNames
+                .filter((databaseName: string) => !cluster.GetDatabase(databaseName))
                 .map((databaseName: string) => {
                     const symbol = new sym.DatabaseSymbol.$ctor1(databaseName, undefined, false);
-                    return symbol;
+                    cluster = cluster.AddDatabase(symbol);
                 });
+        }
+        if (!cluster) {
+            const databaseSymbols = databaseNames.map((databaseName: string) => {
+                const symbol = new sym.DatabaseSymbol.$ctor1(databaseName, undefined, false);
+                return symbol;
+            });
             const databaseSymbolsList = KustoLanguageService.toBridgeList(databaseSymbols);
             cluster = new sym.ClusterSymbol.$ctor1(clusterNameOnly, databaseSymbolsList, false);
         }
-        
+
         this._kustoJsSchemaV2 = this._kustoJsSchemaV2.AddOrReplaceCluster(cluster);
         this._script = k2.CodeScript.From$1(document.getText(), this._kustoJsSchemaV2);
         return Promise.resolve();
@@ -930,48 +936,67 @@ class KustoLanguageService implements LanguageService {
     ): Promise<s.EngineSchema> {
         const databases: s.EngineSchema['cluster']['databases'] = Object.keys(schema.Databases)
             .map((key) => schema.Databases[key])
-            .map(({ Name, Tables, ExternalTables, MaterializedViews, Functions, MinorVersion, MajorVersion }: s.showSchema.Database) => ({
-                name: Name,
-                minorVersion: MinorVersion,
-                majorVersion: MajorVersion,
-                tables: [].concat(
-                    ...([ [Tables, 'Table'], [MaterializedViews,'MaterializedView'], [ExternalTables, 'ExternalTable']] as [s.showSchema.Tables, s.TableEntityType][])
-                    .filter(([tableContainer]) => tableContainer)
-                    .map(([tableContainer, tableEntity]) => Object
-                        .values(tableContainer)
-                        .map(({ Name, OrderedColumns, DocString }: s.showSchema.Table) => ({
+            .map(
+                ({
+                    Name,
+                    Tables,
+                    ExternalTables,
+                    MaterializedViews,
+                    Functions,
+                    MinorVersion,
+                    MajorVersion,
+                }: s.showSchema.Database) => ({
+                    name: Name,
+                    minorVersion: MinorVersion,
+                    majorVersion: MajorVersion,
+                    tables: [].concat(
+                        ...(
+                            [
+                                [Tables, 'Table'],
+                                [MaterializedViews, 'MaterializedView'],
+                                [ExternalTables, 'ExternalTable'],
+                            ] as [s.showSchema.Tables, s.TableEntityType][]
+                        )
+                            .filter(([tableContainer]) => tableContainer)
+                            .map(([tableContainer, tableEntity]) =>
+                                Object.values(tableContainer).map(
+                                    ({ Name, OrderedColumns, DocString }: s.showSchema.Table) => ({
+                                        name: Name,
+                                        docstring: DocString,
+                                        entityType: tableEntity,
+                                        columns: OrderedColumns.map(
+                                            ({ Name, Type, DocString, CslType }: s.showSchema.Column) => ({
+                                                name: Name,
+                                                type: CslType,
+                                                docstring: DocString,
+                                            })
+                                        ),
+                                    })
+                                )
+                            )
+                    ),
+                    functions: Object.keys(Functions)
+                        .map((key) => Functions[key])
+                        .map(({ Name, Body, DocString, InputParameters }) => ({
                             name: Name,
+                            body: Body,
                             docstring: DocString,
-                            entityType: tableEntity,
-                            columns: OrderedColumns.map(({ Name, Type, DocString, CslType }: s.showSchema.Column) => ({
-                                name: Name,
-                                type: CslType,
-                                docstring: DocString,
+                            inputParameters: InputParameters.map((inputParam) => ({
+                                name: inputParam.Name,
+                                type: inputParam.Type,
+                                cslType: inputParam.CslType,
+                                cslDefaultValue: inputParam.CslDefaultValue,
+                                columns: inputParam.Columns
+                                    ? inputParam.Columns.map((col) => ({
+                                          name: col.Name,
+                                          type: col.Type,
+                                          cslType: col.CslType,
+                                      }))
+                                    : (inputParam.Columns as undefined | null | []),
                             })),
-                        }))
-                    )
-                ),
-                functions: Object.keys(Functions)
-                    .map((key) => Functions[key])
-                    .map(({ Name, Body, DocString, InputParameters }) => ({
-                        name: Name,
-                        body: Body,
-                        docstring: DocString,
-                        inputParameters: InputParameters.map((inputParam) => ({
-                            name: inputParam.Name,
-                            type: inputParam.Type,
-                            cslType: inputParam.CslType,
-                            cslDefaultValue: inputParam.CslDefaultValue,
-                            columns: inputParam.Columns
-                                ? inputParam.Columns.map((col) => ({
-                                      name: col.Name,
-                                      type: col.Type,
-                                      cslType: col.CslType,
-                                  }))
-                                : (inputParam.Columns as undefined | null | []),
                         })),
-                    })),
-            }));
+                })
+            );
 
         const result: s.EngineSchema = {
             clusterType: 'Engine',
@@ -995,7 +1020,10 @@ class KustoLanguageService implements LanguageService {
             : this.getCommandInContextV1(document, cursorOffset);
     }
 
-    getCommandAndLocationInContext(document: TextDocument, cursorOffset: number): Promise<{text: string, location: ls.Location}> {
+    getCommandAndLocationInContext(
+        document: TextDocument,
+        cursorOffset: number
+    ): Promise<{ text: string; location: ls.Location }> {
         // We are going to remove v1 intellisense. no use to keep parity.
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve(null);

@@ -35,13 +35,13 @@ export class DiagnosticsAdapter {
         onSchemaChange: monaco.IEvent<Schema>
     ) {
         const onModelAdd = (model: monaco.editor.IModel): void => {
-            let modeId = model.getModeId();
-            if (modeId !== this._languageId) {
+            let languageId = model.getLanguageId();
+            if (languageId !== this._languageId) {
                 return;
             }
 
             const debouncedValidation = _.debounce(
-                (intervals?: { start: number; end: number }[]) => this._doValidate(model, modeId, intervals),
+                (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
                 500
             );
 
@@ -51,11 +51,11 @@ export class DiagnosticsAdapter {
             });
 
             this._configurationListener[model.uri.toString()] = this.defaults.onDidChange(() => {
-                self.setTimeout(() => this._doValidate(model, modeId, []), 0);
+                self.setTimeout(() => this._doValidate(model, languageId, []), 0);
             });
 
             this._schemaListener[model.uri.toString()] = onSchemaChange(() => {
-                self.setTimeout(() => this._doValidate(model, modeId, []), 0);
+                self.setTimeout(() => this._doValidate(model, languageId, []), 0);
             });
         };
 
@@ -130,55 +130,58 @@ export class DiagnosticsAdapter {
                 }
                 const markers = diagnostics.map((d) => toDiagnostics(resource, d));
                 let model = this._monacoInstance.editor.getModel(resource);
-                let oldDecorations = model.getAllDecorations()
-                                            .filter(decoration => decoration.options.className == "squiggly-error")
-                                            .map(decoration => decoration.id);
+                let oldDecorations = model
+                    .getAllDecorations()
+                    .filter((decoration) => decoration.options.className == 'squiggly-error')
+                    .map((decoration) => decoration.id);
 
-                if (model && model.getModeId() === languageId) {
-                   const syntaxErrorAsMarkDown = this.defaults.languageSettings.syntaxErrorAsMarkDown;
-                   
+                if (model && model.getLanguageId() === languageId) {
+                    const syntaxErrorAsMarkDown = this.defaults.languageSettings.syntaxErrorAsMarkDown;
+
                     if (!syntaxErrorAsMarkDown || !syntaxErrorAsMarkDown.enableSyntaxErrorAsMarkDown) {
-                        // Remove previous syntax error decorations and set the new markers (for example, when disabling syntaxErrorAsMarkDown after it was enabled)                
+                        // Remove previous syntax error decorations and set the new markers (for example, when disabling syntaxErrorAsMarkDown after it was enabled)
                         model.deltaDecorations(oldDecorations, []);
                         this._monacoInstance.editor.setModelMarkers(model, languageId, markers);
                     } else {
                         // Add custom popup for syntax error: icon, header and message as markdown
-                        const header = syntaxErrorAsMarkDown.header ? `**${syntaxErrorAsMarkDown.header}** \n\n` : "";
-                        const icon = syntaxErrorAsMarkDown.icon ? `![](${syntaxErrorAsMarkDown.icon})` : "";
+                        const header = syntaxErrorAsMarkDown.header ? `**${syntaxErrorAsMarkDown.header}** \n\n` : '';
+                        const icon = syntaxErrorAsMarkDown.icon ? `![](${syntaxErrorAsMarkDown.icon})` : '';
                         const popupErrorHoverHeaderMessage = `${icon} ${header}`;
-                        
+
                         const newDecorations = markers.map((marker: monaco.editor.IMarkerData) => {
                             return {
-                                range: { 
-                                    startLineNumber: marker.startLineNumber, 
-                                    startColumn: marker.startColumn, 
-                                    endLineNumber: marker.endLineNumber, 
-                                    endColumn: marker.endColumn
+                                range: {
+                                    startLineNumber: marker.startLineNumber,
+                                    startColumn: marker.startColumn,
+                                    endLineNumber: marker.endLineNumber,
+                                    endColumn: marker.endColumn,
                                 },
                                 options: {
                                     hoverMessage: {
-                                        value: popupErrorHoverHeaderMessage + marker.message
+                                        value: popupErrorHoverHeaderMessage + marker.message,
                                     },
-                                    className: "squiggly-error", // monaco syntax error style (red underline)
+                                    className: 'squiggly-error', // monaco syntax error style (red underline)
                                     zIndex: 100, // This message will be the upper most mesage in the popup
                                     overviewRuler: {
                                         // The color indication on the right ruler
-                                        color: "rgb(255, 18, 18, 0.7)",
-                                        position: monaco.editor.OverviewRulerLane.Right
+                                        color: 'rgb(255, 18, 18, 0.7)',
+                                        position: monaco.editor.OverviewRulerLane.Right,
                                     },
                                     minimap: {
-                                        color: "rgb(255, 18, 18, 0.7)",
-                                        position: monaco.editor.MinimapPosition.Inline
-                                    }
-                                }
+                                        color: 'rgb(255, 18, 18, 0.7)',
+                                        position: monaco.editor.MinimapPosition.Inline,
+                                    },
+                                },
                             };
                         });
-                        
-                        const oldMarkers = monaco.editor.getModelMarkers({
-                            owner:languageId, 
-                            resource: resource
-                        }).filter(marker => marker.severity == monaco.MarkerSeverity.Error);
-                        
+
+                        const oldMarkers = monaco.editor
+                            .getModelMarkers({
+                                owner: languageId,
+                                resource: resource,
+                            })
+                            .filter((marker) => marker.severity == monaco.MarkerSeverity.Error);
+
                         if (oldMarkers && oldMarkers.length > 0) {
                             // In case there were previous markers, remove their decorations (for example, when enabling syntaxErrorAsMarkDown after it was disabled)
                             oldDecorations = [];
@@ -340,13 +343,13 @@ export class ColorizationAdapter {
         injectCss();
 
         const onModelAdd = (model: monaco.editor.IModel): void => {
-            let modeId = model.getModeId();
-            if (modeId !== this._languageId) {
+            let languageId = model.getLanguageId();
+            if (languageId !== this._languageId) {
                 return;
             }
 
             const debouncedColorization = _.debounce(
-                (intervals?: { start: number; end: number }[]) => this._doColorization(model, modeId, intervals),
+                (intervals?: { start: number; end: number }[]) => this._doColorization(model, languageId, intervals),
                 500
             );
 
@@ -360,11 +363,11 @@ export class ColorizationAdapter {
             });
 
             this._configurationListener[model.uri.toString()] = defaults.onDidChange(() => {
-                self.setTimeout(() => this._doColorization(model, modeId, []), 0);
+                self.setTimeout(() => this._doColorization(model, languageId, []), 0);
             });
 
             this._schemaListener[model.uri.toString()] = onSchemaChange(() => {
-                self.setTimeout(() => this._doColorization(model, modeId, []), 0);
+                self.setTimeout(() => this._doColorization(model, languageId, []), 0);
             });
         };
 
@@ -494,7 +497,7 @@ export class ColorizationAdapter {
                     []
                 );
 
-                if (model && model.getModeId() === languageId) {
+                if (model && model.getLanguageId() === languageId) {
                     this.decorations = model.deltaDecorations(oldDecorations, newDecorations);
                 }
             })
@@ -666,8 +669,8 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
         const wordInfo = model.getWordUntilPosition(position);
         const wordRange = new Range(position.lineNumber, wordInfo.startColumn, position.lineNumber, wordInfo.endColumn);
         const resource = model.uri;
-        const onDidProvideCompletionItems: monaco.languages.kusto.OnDidProvideCompletionItems = this.languageSettings
-            .onDidProvideCompletionItems;
+        const onDidProvideCompletionItems: monaco.languages.kusto.OnDidProvideCompletionItems =
+            this.languageSettings.onDidProvideCompletionItems;
 
         return this._worker(resource)
             .then((worker) => {

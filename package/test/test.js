@@ -229,46 +229,47 @@ fetch('./test/mode.txt')
                                             CslType: 'long',
                                         },
                                     ],
-                                }
+                                },
                             },
-                            "ExternalTables": {
-                                "TaxiRides": {
-                                    "Name": "TaxiRides",
-                                    "Folder": "ExternalTables",
-                                    "DocString": "NYC taxi rides. Data source: https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page",
-                                    "OrderedColumns": [
+                            ExternalTables: {
+                                TaxiRides: {
+                                    Name: 'TaxiRides',
+                                    Folder: 'ExternalTables',
+                                    DocString:
+                                        'NYC taxi rides. Data source: https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page',
+                                    OrderedColumns: [
                                         {
-                                            "Name": "trip_id",
-                                            "Type": "System.Int64",
-                                            "CslType": "long"
+                                            Name: 'trip_id',
+                                            Type: 'System.Int64',
+                                            CslType: 'long',
                                         },
                                         {
-                                            "Name": "vendor_id",
-                                            "Type": "System.String",
-                                            "CslType": "string"
+                                            Name: 'vendor_id',
+                                            Type: 'System.String',
+                                            CslType: 'string',
                                         },
                                         {
-                                            "Name": "pickup_datetime",
-                                            "Type": "System.DateTime",
-                                            "CslType": "datetime"
+                                            Name: 'pickup_datetime',
+                                            Type: 'System.DateTime',
+                                            CslType: 'datetime',
                                         },
                                         {
-                                            "Name": "dropoff_datetime",
-                                            "Type": "System.DateTime",
-                                            "CslType": "datetime"
+                                            Name: 'dropoff_datetime',
+                                            Type: 'System.DateTime',
+                                            CslType: 'datetime',
                                         },
                                         {
-                                            "Name": "store_and_fwd_flag",
-                                            "Type": "System.String",
-                                            "CslType": "string"
+                                            Name: 'store_and_fwd_flag',
+                                            Type: 'System.String',
+                                            CslType: 'string',
                                         },
                                         {
-                                            "Name": "rate_code_id",
-                                            "Type": "System.Int32",
-                                            "CslType": "int"
+                                            Name: 'rate_code_id',
+                                            Type: 'System.Int32',
+                                            CslType: 'int',
                                         },
-                                    ]
-                                }
+                                    ],
+                                },
                             },
                             Functions: {
                                 MyFunction1: {
@@ -288,7 +289,7 @@ fetch('./test/mode.txt')
                                             Type: 'System.Int64',
                                             CslType: 'long',
                                             DocString: 'Demo for a parameter',
-                                            CslDefaultValue: "6"
+                                            CslDefaultValue: '6',
                                         },
                                     ],
                                     Body: '{     StormEvents     | limit myLimit }  ',
@@ -376,8 +377,7 @@ fetch('./test/mode.txt')
                                             CslType: 'datetime',
                                         },
                                     ],
-                                    Body:
-                                        '{     KustoLogs     | where Timestamp > startTime | where EventText has cid }  ',
+                                    Body: '{     KustoLogs     | where Timestamp > startTime | where EventText has cid }  ',
                                     Folder: 'Demo',
                                     DocString: 'Find  CID in after a cetain time',
                                     FunctionKind: 'Unknown',
@@ -386,7 +386,7 @@ fetch('./test/mode.txt')
                             },
                         },
                     },
-                }; 
+                };
                 window.setHelp = () =>
                     monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
                         const model = editor.getModel();
@@ -432,14 +432,14 @@ fetch('./test/mode.txt')
                     const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
                     monacoSettings.syntaxErrorAsMarkDown = {
                         enableSyntaxErrorAsMarkDown: true,
-                        header: "Error"
+                        header: 'Error',
                     };
                     monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                 };
                 window.disableSyntaxErrorAsMarkDown = () => {
                     const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
                     monacoSettings.syntaxErrorAsMarkDown = {
-                        enableSyntaxErrorAsMarkDown: false
+                        enableSyntaxErrorAsMarkDown: false,
                     };
                     monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                 };
@@ -511,7 +511,7 @@ fetch('./test/mode.txt')
                                 });
                         });
                     });
-                }
+                };
                 window.setHelp();
             }
         );

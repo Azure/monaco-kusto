@@ -127,11 +127,7 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
             { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
             { token: 'invalid', background: 'cd3131' },
         ],
-        colors: {
-            // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-            'editorSuggestWidget.selectedBackground': '#93CFFB',
-            'editorSuggestWidget.background': '#FAF9F8', // grey 10
-        },
+        colors: {},
     });
 
     monacoInstance.editor.defineTheme('kusto-dark', {
@@ -157,8 +153,6 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
         ],
         colors: {
             // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-            'editor.background': '#1B1A19', // gray 200
-            'editorSuggestWidget.selectedBackground': '#004E8C',
         },
     });
 
