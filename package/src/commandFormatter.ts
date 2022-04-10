@@ -4,8 +4,8 @@ export default class KustoCommandFormatter {
     constructor(private editor: monaco.editor.IStandaloneCodeEditor) {
         // selection also represents no selection - for example the event gets triggered when moving cursor from point
         // a to point b. in the case start position will equal end position.
-        editor.onDidChangeCursorSelection(changeEvent => {
-            if (this.editor.getModel().getModeId() !== 'kusto') {
+        editor.onDidChangeCursorSelection((changeEvent) => {
+            if (this.editor.getModel().getLanguageId() !== 'kusto') {
                 return;
             }
             // Theoretically you would expect this code to run only once in onDidCreateEditor.
@@ -18,11 +18,16 @@ export default class KustoCommandFormatter {
                 editor.addAction({
                     id: 'editor.action.kusto.formatCurrentCommand',
                     label: 'Format Command Under Cursor',
-                    keybindings: [monaco.KeyMod.chord(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_K, monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_F)],
+                    keybindings: [
+                        monaco.KeyMod.chord(
+                            monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK,
+                            monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF
+                        ),
+                    ],
                     run: (ed: monaco.editor.IStandaloneCodeEditor) => {
                         editor.trigger('KustoCommandFormatter', 'editor.action.formatSelection', null);
                     },
-                    contextMenuGroupId: '1_modification'
+                    contextMenuGroupId: '1_modification',
                 });
                 this.actionAdded = true;
             }

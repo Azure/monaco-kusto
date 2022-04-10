@@ -138,11 +138,7 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
             { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
             { token: 'invalid', background: 'cd3131' },
         ],
-        colors: {
-            // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-            'editorSuggestWidget.selectedBackground': '#93CFFB',
-            'editorSuggestWidget.background': '#FAF9F8', // grey 10
-        },
+        colors: {},
     });
 
     monacoInstance.editor.defineTheme('kusto-dark', {
@@ -168,8 +164,6 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
         ],
         colors: {
             // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-            'editor.background': '#1B1A19', // gray 200
-            'editorSuggestWidget.selectedBackground': '#004E8C',
         },
     });
 
@@ -208,22 +202,18 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
                 kustoDefaults.languageSettings.openSuggestionDialogAfterPreviousSuggestionAccepted
             ) {
                 var didAcceptSuggestion =
-                    event.source === 'modelChange' &&
-                    event.reason === monaco.editor.CursorChangeReason.RecoverFromMarkers;
+                    event.source === 'snippet' && event.reason === monaco.editor.CursorChangeReason.NotSet;
                 if (!didAcceptSuggestion) {
                     return;
                 }
                 event.selection;
-                const completionText = editor.getModel().getValueInRange(event.selection);
-                if (completionText[completionText.length - 1] === ' ') {
-                    // OK so now we in a situation where we know a suggestion was selected and we want to trigger another one.
-                    // the only problem is that the suggestion widget itself listens to this same event in order to know it needs to close.
-                    // The only problem is that we're ahead in line, so we're triggering a suggest operation that will be shut down once
-                    // the next callback is called. This is why we're waiting here - to let all the callbacks run synchronously and be
-                    // the 'last' subscriber to run. Granted this is hacky, but until monaco provides a specific event for suggestions,
-                    // this is the best we have.
-                    setTimeout(() => editor.trigger('monaco-kusto', 'editor.action.triggerSuggest', {}), 10);
-                }
+                // OK so now we in a situation where we know a suggestion was selected and we want to trigger another one.
+                // the only problem is that the suggestion widget itself listens to this same event in order to know it needs to close.
+                // The only problem is that we're ahead in line, so we're triggering a suggest operation that will be shut down once
+                // the next callback is called. This is why we're waiting here - to let all the callbacks run synchronously and be
+                // the 'last' subscriber to run. Granted this is hacky, but until monaco provides a specific event for suggestions,
+                // this is the best we have.
+                setTimeout(() => editor.trigger('monaco-kusto', 'editor.action.triggerSuggest', {}), 10);
             }
         });
     }
