@@ -53,7 +53,7 @@ fetch('./test/mode.txt')
             ],
             function () {
                 var editor = monaco.editor.create(document.getElementById('container'), {
-                    value: ['StormEvents | project StartTime , State | where toupper(State) == "Texas" | count'].join(
+                    value: ['StormEvents | project StartTime , State | where State contains "Texas" | count'].join(
                         '\n'
                     ),
                     language: 'kusto',
@@ -461,6 +461,26 @@ fetch('./test/mode.txt')
                         monacoSettings.useIntellisenseV2 = true;
                         monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                     });
+                window.enableQueryWarnings = () => {
+                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    monacoSettings.enableQueryWarnings = true;
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                };
+                window.disableQueryWarnings = () => {
+                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    monacoSettings.enableQueryWarnings = false;
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                };
+                window.enableQuerySuggestions = () => {
+                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    monacoSettings.enableQuerySuggestions = true;
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                };
+                window.disableQuerySuggestions = () => {
+                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    monacoSettings.enableQuerySuggestions = false;
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                };
                 window.setDarkTheme = () => monaco.editor.setTheme('kusto-dark');
                 window.setLightTheme = () => monaco.editor.setTheme('kusto-light');
                 window.setDisableClusterCompletion = () =>

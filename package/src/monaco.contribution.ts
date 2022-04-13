@@ -67,6 +67,9 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     syntaxErrorAsMarkDown: {
         enableSyntaxErrorAsMarkDown: false,
     },
+    enableQueryWarnings: false,
+    enableQuerySuggestions: false,
+    disabledDiagnoticCodes: [],
 };
 
 function getKustoWorker(): Promise<any> {
