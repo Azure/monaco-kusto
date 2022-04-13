@@ -50,7 +50,7 @@ class ParseProperties {
         private uri: string,
         private rulesProvider?: k.IntelliSenseRulesProviderBase,
         private parseMode?: k.ParseMode
-    ) { }
+    ) {}
 
     isParseNeeded(document: TextDocument, rulesProvider?: k.IntelliSenseRulesProviderBase, parseMode?: k.ParseMode) {
         if (
@@ -399,14 +399,15 @@ class KustoLanguageService implements LanguageService {
                 const { textToInsert, format } =
                     kItem.AfterText && kItem.AfterText.length > 0
                         ? {
-                            textToInsert: kItem.EditText + '$0' + kItem.AfterText,
-                            format: ls.InsertTextFormat.Snippet,
-                        }
+                              // Need to escape dollar sign since it is used as a placeholder in snippet.
+                              // Usually dollar sign is not a valid character in a function name, but grafana uses macros that start with dollars.
+                              textToInsert: `${kItem.EditText.replace('$', '\\$')}$0${kItem.AfterText}`,
+                              format: ls.InsertTextFormat.Snippet,
+                          }
                         : {
-                            textToInsert: kItem.EditText,
-                            format: ls.InsertTextFormat.PlainText,
-                        };
-
+                              textToInsert: kItem.EditText,
+                              format: ls.InsertTextFormat.PlainText,
+                          };
                 const lsItem = ls.CompletionItem.create(kItem.DisplayText);
 
                 const startPosition = document.positionAt(completionItems.EditStart);
@@ -667,7 +668,12 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(newDatabasesReferences);
     }
 
-    doValidation(document: TextDocument, changeIntervals: { start: number; end: number }[], includeWarnings?: boolean, includeSuggestions?: boolean): Promise<ls.Diagnostic[]> {
+    doValidation(
+        document: TextDocument,
+        changeIntervals: { start: number; end: number }[],
+        includeWarnings?: boolean,
+        includeSuggestions?: boolean
+    ): Promise<ls.Diagnostic[]> {
         // didn't implement validation for v1.
         if (!document || !this.isIntellisenseV2()) {
             return Promise.resolve([]);
@@ -687,8 +693,12 @@ class KustoLanguageService implements LanguageService {
                 if (enableWarnings || enableSuggestions) {
                     // Concat Warnings and suggestions to the diagnostics
                     const warningAndSuggestionDiagnostics = block.Service.GetAnalyzerDiagnostics(null, true);
-                    const filterredDiagnostics = this.toArray<Kusto.Language.Diagnostic>(warningAndSuggestionDiagnostics).filter(d => {
-                        const allowSeverity = (enableWarnings && d.Severity === 'Warning') || (enableSuggestions && d.Severity === 'Suggestion');
+                    const filterredDiagnostics = this.toArray<Kusto.Language.Diagnostic>(
+                        warningAndSuggestionDiagnostics
+                    ).filter((d) => {
+                        const allowSeverity =
+                            (enableWarnings && d.Severity === 'Warning') ||
+                            (enableSuggestions && d.Severity === 'Suggestion');
                         const allowCode = !this._languageSettings.disabledDiagnoticCodes?.includes(d.Code);
                         return allowSeverity && allowCode;
                     });
@@ -753,14 +763,14 @@ class KustoLanguageService implements LanguageService {
                     // a command is affected if it intersects at least on of changed ranges.
                     command // command can be null. we're filtering all nulls in the array.
                         ? changeIntervals.some(
-                            ({ start: changeStart, end: changeEnd }) =>
-                                // both intervals intersect if either the start or the end of interval A is inside interval B.
-                                // If we deleted something at the end of a command, the interval will not intersect the current command.
-                                // so we also want consider affected commands commands the end where the interval begins.
-                                // hence the + 1.
-                                (command.AbsoluteStart >= changeStart && command.AbsoluteStart <= changeEnd) ||
-                                (changeStart >= command.AbsoluteStart && changeStart <= command.AbsoluteEnd + 1)
-                        )
+                              ({ start: changeStart, end: changeEnd }) =>
+                                  // both intervals intersect if either the start or the end of interval A is inside interval B.
+                                  // If we deleted something at the end of a command, the interval will not intersect the current command.
+                                  // so we also want consider affected commands commands the end where the interval begins.
+                                  // hence the + 1.
+                                  (command.AbsoluteStart >= changeStart && command.AbsoluteStart <= changeEnd) ||
+                                  (changeStart >= command.AbsoluteStart && changeStart <= command.AbsoluteEnd + 1)
+                          )
                         : false
                 );
 
@@ -845,11 +855,11 @@ class KustoLanguageService implements LanguageService {
             // a command is affected if it intersects at least on of changed ranges.
             block // command can be null. we're filtering all nulls in the array.
                 ? changeIntervals.some(
-                    ({ start: changeStart, end: changeEnd }) =>
-                        // both intervals intersect if either the start or the end of interval A is inside interval B.
-                        (block.Start >= changeStart && block.Start <= changeEnd) ||
-                        (changeStart >= block.Start && changeStart <= block.End + 1)
-                )
+                      ({ start: changeStart, end: changeEnd }) =>
+                          // both intervals intersect if either the start or the end of interval A is inside interval B.
+                          (block.Start >= changeStart && block.Start <= changeEnd) ||
+                          (changeStart >= block.Start && changeStart <= block.End + 1)
+                  )
                 : false
         );
     }
@@ -1535,7 +1545,12 @@ class KustoLanguageService implements LanguageService {
         }
 
         // Errors, Warnings and Suggestions are already shown in getDiagnostics. we don't want them in doHover.
-        items = items.filter((item) => item.Kind !== k2.QuickInfoKind.Error && item.Kind !== k2.QuickInfoKind.Suggestion && item.Kind !== k2.QuickInfoKind.Warning);
+        items = items.filter(
+            (item) =>
+                item.Kind !== k2.QuickInfoKind.Error &&
+                item.Kind !== k2.QuickInfoKind.Suggestion &&
+                item.Kind !== k2.QuickInfoKind.Warning
+        );
         const itemsText = items.map((item) => item.Text.replace('\n\n', '\n* * *\n'));
         // separate items by horizontal line.
         const text = itemsText.join('\n* * *\n');
@@ -1617,7 +1632,7 @@ class KustoLanguageService implements LanguageService {
     }
     //#endregion
 
-    private static convertToEntityDataType(kustoType: string) { }
+    private static convertToEntityDataType(kustoType: string) {}
     /**
      * We do not want to expose Bridge.Net generated schema, so we expose a cleaner javascript schema.
      * Here it gets converted to the bridge.Net schema
@@ -2129,23 +2144,23 @@ class KustoLanguageService implements LanguageService {
             this._rulesProvider =
                 this._languageSettings && this._languageSettings.includeControlCommands
                     ? new k.CslIntelliSenseRulesProvider.$ctor1(
-                        engineSchema.Cluster,
-                        engineSchema,
-                        queryParameters,
-                        availableClusters,
-                        null,
-                        true,
-                        true
-                    )
+                          engineSchema.Cluster,
+                          engineSchema,
+                          queryParameters,
+                          availableClusters,
+                          null,
+                          true,
+                          true
+                      )
                     : new k.CslQueryIntelliSenseRulesProvider.$ctor1(
-                        engineSchema.Cluster,
-                        engineSchema,
-                        queryParameters,
-                        availableClusters,
-                        null,
-                        null,
-                        null
-                    );
+                          engineSchema.Cluster,
+                          engineSchema,
+                          queryParameters,
+                          availableClusters,
+                          null,
+                          null,
+                          null
+                      );
             return;
         }
 

@@ -298,6 +298,18 @@ fetch('./test/mode.txt')
                                     FunctionKind: 'Unknown',
                                     OutputColumns: [],
                                 },
+                                '\$__timeFilter': {
+                                    Name: '$__timeFilter',
+                                    Body: '{ true }',
+                                    InputParameters: [
+                                        {
+                                            Name: 'timeColumn',
+                                            Type: 'System.String',
+                                            DefaultValue: 'TimeGenerated',
+                                            CslDefaultValue: 'TimeGenerated',
+                                        },
+                                    ],
+                                },
                             },
                         },
                     },
