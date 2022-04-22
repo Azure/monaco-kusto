@@ -130,7 +130,7 @@ export interface LanguageService {
     doDocumentFormat(document: TextDocument): Promise<ls.TextEdit[]>;
     doCurrentCommandFormat(document: TextDocument, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
     doFolding(document: TextDocument): Promise<FoldingRange[]>;
-    doValidation(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ls.Diagnostic[]>;
+    doValidation(document: TextDocument, intervals: { start: number; end: number }[], includeWarnings?: boolean, includeSuggestions?: boolean): Promise<ls.Diagnostic[]>;
     doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
     doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
