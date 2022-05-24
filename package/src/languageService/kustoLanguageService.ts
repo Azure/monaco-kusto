@@ -687,7 +687,7 @@ class KustoLanguageService implements LanguageService {
         const diagnostics = blocks
             .map((block) => {
                 // GetDiagnostics returns the errors in the block
-                let diagnostics = this.toArray<Kusto.Language.Diagnostic>(block.Service.GetDiagnostics(false));
+                let diagnostics = this.toArray<Kusto.Language.Diagnostic>(block.Service.GetDiagnostics());
                 const enableWarnings = includeWarnings ?? this._languageSettings.enableQueryWarnings;
                 const enableSuggestions = includeSuggestions ?? this._languageSettings.enableQuerySuggestions;
                 if (enableWarnings || enableSuggestions) {
