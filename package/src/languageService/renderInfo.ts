@@ -31,7 +31,7 @@ export interface RenderOptions {
     xaxis?: null | Scale;
     yaxis?: null | Scale;
     legend?: null | LegendVisibility;
-    ySplit?: null | YSplit;
+    ysplit?: null | YSplit;
     accumulate?: null | boolean;
     kind?: null | Kind;
     anomalycolumns?: null | string[];

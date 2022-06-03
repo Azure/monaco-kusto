@@ -74,7 +74,7 @@ fetch('./test/mode.txt')
                                 .then((command) => {
                                     const { text, range } = command;
                                     const currentCommand = document.getElementById('currentCommand');
-                                    currentCommand.innerHTML = range.toString() + text;
+                                    currentCommand.innerHTML = JSON.stringify(range) + text;
                                 });
                         });
                     });
@@ -298,7 +298,7 @@ fetch('./test/mode.txt')
                                     FunctionKind: 'Unknown',
                                     OutputColumns: [],
                                 },
-                                '\$__timeFilter': {
+                                '$__timeFilter': {
                                     Name: '$__timeFilter',
                                     Body: '{ true }',
                                     InputParameters: [
