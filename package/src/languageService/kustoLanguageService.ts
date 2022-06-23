@@ -1833,12 +1833,12 @@ class KustoLanguageService implements LanguageService {
 
         const createTableSymbol: (tbl: s.Table) => sym.TableSymbol | sym.MaterializedViewSymbol = (tbl) => {
             const columnSymbols = tbl.columns.map((col) => KustoLanguageService.createColumnSymbol(col));
-            let symbol = new sym.TableSymbol.$ctor3(tbl.name, columnSymbols);
+            let symbol = new sym.TableSymbol.$ctor4(tbl.name, columnSymbols);
             symbol.Description = tbl.docstring;
 
             switch (tbl.entityType) {
                 case 'MaterializedViewTable':
-                    symbol = new sym.MaterializedViewSymbol(tbl.name, symbol.Columns, null, tbl.docstring);
+                    symbol = new sym.MaterializedViewSymbol.$ctor2(tbl.name, symbol.Columns, null, tbl.docstring);
                     symbol = symbol.WithIsMaterializedView(true);
                     break;
                 case 'ExternalTable':
