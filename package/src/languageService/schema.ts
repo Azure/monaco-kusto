@@ -11,6 +11,12 @@ export interface Table {
     columns: Column[];
     docstring?: string;
 }
+
+export interface MaterializedViewTable extends Table {
+    entityType: 'MaterializedViewTable',
+    mvQuery?: string;
+}
+
 export interface ScalarParameter {
     name: string;
     type?: string;

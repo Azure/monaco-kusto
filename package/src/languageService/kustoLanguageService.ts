@@ -1838,7 +1838,8 @@ class KustoLanguageService implements LanguageService {
 
             switch (tbl.entityType) {
                 case 'MaterializedViewTable':
-                    symbol = new sym.MaterializedViewSymbol.$ctor2(tbl.name, symbol.Columns, null, tbl.docstring);
+                    const mvQuery = (tbl as s.MaterializedViewTable).mvQuery ?? null;
+                    symbol = new sym.MaterializedViewSymbol.$ctor2(tbl.name, symbol.Columns, mvQuery, tbl.docstring)
                     symbol = symbol.WithIsMaterializedView(true);
                     break;
                 case 'ExternalTable':
