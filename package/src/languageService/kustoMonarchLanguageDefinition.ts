@@ -48,6 +48,7 @@ export const KustoLanguageDefinition: any = {
             [/((\d+(\.\d*)?)|(\.\d+))([eE][\-+]?\d+)?/, 'number']
         ],
         strings: [
+            [/'([^'\\]|\\.)*$/, 'string.invalid'],
             [/H'/, { token: 'string.quote', bracket: '@open', next: '@string' }],
             [/h'/, { token: 'string.quote', bracket: '@open', next: '@string' }],
             [/'/, { token: 'string.quote', bracket: '@open', next: '@string' }]
@@ -58,6 +59,7 @@ export const KustoLanguageDefinition: any = {
             [/'/, { token: 'string.quote', bracket: '@close', next: '@pop' }]
         ],
         dqstrings: [
+            [/"([^"\\]|\\.)*$/, 'string.invalid'],
             [/H"/, { token: 'string.quote', bracket: '@open', next: '@dqstring' }],
             [/h"/, { token: 'string.quote', bracket: '@open', next: '@dqstring' }],
             [/"/, { token: 'string.quote', bracket: '@open', next: '@dqstring' }]
