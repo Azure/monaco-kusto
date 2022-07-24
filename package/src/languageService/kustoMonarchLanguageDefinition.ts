@@ -55,7 +55,6 @@ export const KustoLanguageDefinition: any = {
         ],
         string: [
             [/[^']+/, 'string'],
-            [/''/, 'string'],
             [/'/, { token: 'string.quote', bracket: '@close', next: '@pop' }]
         ],
         dqstrings: [
@@ -66,7 +65,6 @@ export const KustoLanguageDefinition: any = {
         ],
         dqstring: [
             [/[^"]+/, 'string'],
-            [/""/, 'string'],
             [/"/, { token: 'string.quote', bracket: '@close', next: '@pop' }]
         ],
 
