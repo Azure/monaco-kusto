@@ -58,7 +58,7 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     openSuggestionDialogAfterPreviousSuggestionAccepted: true,
     useIntellisenseV2: true,
     useSemanticColorization: true,
-    useTokenColorization: true,
+    useTokenColorization: false,
     enableHover: true,
     formatter: {
         indentationSize: 4,

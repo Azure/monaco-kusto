@@ -277,7 +277,7 @@ const classificationToColorLight: { [K in kinds]: string } = {
     Identifier: '000000',
     Keyword: '0000FF',
     Literal: 'B22222',
-    ScalarOperator: '000000',
+    ScalarOperator: '0000FF',
     MaterializedView: 'C71585',
     MathOperator: '000000',
     Command: '0000FF',
