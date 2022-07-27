@@ -305,7 +305,7 @@ const classificationToColorDark: { [K in kinds]: string } = {
     Identifier: 'd4d4d4',
     Keyword: '569cd6',
     Literal: 'ce9178',
-    ScalarOperator: 'd4d4d4',
+    ScalarOperator: '569cd6',
     MaterializedView: 'c586c0',
     MathOperator: 'd4d4d4',
     Command: 'd4d4d4',
