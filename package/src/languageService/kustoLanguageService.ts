@@ -254,6 +254,7 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.Unknown]: k.OptionKind.None,
         [k2.CompletionKind.Variable]: k.OptionKind.Parameter,
         [k2.CompletionKind.Option]: k.OptionKind.Option,
+        [k2.CompletionKind.Graph]: k.OptionKind.Graph,
     };
 
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
@@ -697,7 +698,7 @@ class KustoLanguageService implements LanguageService {
                 const enableSuggestions = includeSuggestions ?? this._languageSettings.enableQuerySuggestions;
                 if (enableWarnings || enableSuggestions) {
                     // Concat Warnings and suggestions to the diagnostics
-                    const warningAndSuggestionDiagnostics = block.Service.GetAnalyzerDiagnostics(null, true);
+                    const warningAndSuggestionDiagnostics = block.Service.GetAnalyzerDiagnostics(true);
                     const filterredDiagnostics = this.toArray<Kusto.Language.Diagnostic>(
                         warningAndSuggestionDiagnostics
                     ).filter((d) => {
@@ -1757,7 +1758,8 @@ class KustoLanguageService implements LanguageService {
         return new sym.ColumnSymbol(
             col.name,
             sym.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(col.type)),
-            col.docstring
+            col.docstring,
+            null
         );
     }
 
@@ -2243,6 +2245,7 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.Unknown]: ls.CompletionItemKind.Interface,
         [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
         [k2.CompletionKind.Option]: ls.CompletionItemKind.Text,
+        [k2.CompletionKind.Graph]: ls.CompletionItemKind.Class,
     };
 
     private kustoKindToLsKind(kustoKind: k.OptionKind): ls.CompletionItemKind {
