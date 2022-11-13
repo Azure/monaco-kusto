@@ -415,12 +415,12 @@ class KustoLanguageService implements LanguageService {
                               format: ls.InsertTextFormat.PlainText,
                           };
                 const lsItem = ls.CompletionItem.create(kItem.DisplayText);
-
                 const startPosition = document.positionAt(completionItems.EditStart);
                 const endPosition = document.positionAt(completionItems.EditStart + completionItems.EditLength);
                 lsItem.textEdit = ls.TextEdit.replace(ls.Range.create(startPosition, endPosition), textToInsert);
                 lsItem.sortText = this.getSortText(i + 1);
-                // lsItem.filterText = lsItem.sortText;
+                // filterText is the label as lower case to prevent case sensitive completions
+                lsItem.filterText = lsItem.label?.toLowerCase();
                 lsItem.kind = this.kustoKindToLsKindV2(kItem.Kind);
                 lsItem.insertTextFormat = format;
                 lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;
