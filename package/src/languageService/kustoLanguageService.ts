@@ -229,23 +229,23 @@ class KustoLanguageService implements LanguageService {
     private _newlineAppendPipePolicy: Kusto.Data.IntelliSense.ApplyPolicy;
     private _toOptionKind: { [completionKind in k2.CompletionKind]: k.OptionKind } = {
         [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
-        [k2.CompletionKind.BuiltInFunction]: k.OptionKind.FunctionServerSide,
+        [k2.CompletionKind.BuiltInFunction]: k.OptionKind.FunctionScalar,
         [k2.CompletionKind.Cluster]: k.OptionKind.Database,
         [k2.CompletionKind.Column]: k.OptionKind.Column,
-        [k2.CompletionKind.CommandPrefix]: k.OptionKind.None,
+        [k2.CompletionKind.CommandPrefix]: k.OptionKind.Command,
         [k2.CompletionKind.Database]: k.OptionKind.Database,
         [k2.CompletionKind.DatabaseFunction]: k.OptionKind.FunctionServerSide,
-        [k2.CompletionKind.Example]: k.OptionKind.None,
+        [k2.CompletionKind.Example]: k.OptionKind.Literal,
         [k2.CompletionKind.Identifier]: k.OptionKind.None,
-        [k2.CompletionKind.Keyword]: k.OptionKind.None,
+        [k2.CompletionKind.Keyword]: k.OptionKind.Option,
         [k2.CompletionKind.LocalFunction]: k.OptionKind.FunctionLocal,
         [k2.CompletionKind.MaterialiedView]: k.OptionKind.MaterializedView,
         [k2.CompletionKind.Parameter]: k.OptionKind.Parameter,
         [k2.CompletionKind.Punctuation]: k.OptionKind.None,
         [k2.CompletionKind.QueryPrefix]: k.OptionKind.Operator,
-        [k2.CompletionKind.RenderChart]: k.OptionKind.Operator,
+        [k2.CompletionKind.RenderChart]: k.OptionKind.OptionRender,
         [k2.CompletionKind.ScalarInfix]: k.OptionKind.None,
-        [k2.CompletionKind.ScalarPrefix]: k.OptionKind.None,
+        [k2.CompletionKind.ScalarPrefix]: k.OptionKind.Literal,
         [k2.CompletionKind.ScalarType]: k.OptionKind.DataType,
         [k2.CompletionKind.Syntax]: k.OptionKind.None,
         [k2.CompletionKind.Table]: k.OptionKind.Table,
@@ -427,6 +427,13 @@ class KustoLanguageService implements LanguageService {
                 lsItem.documentation = helpTopic
                     ? { value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown }
                     : undefined;
+                    if (lsItem.label.includes("format_byt")) {
+                        console.log('HERE', kItem)
+                        console.log('v1CompletionOption', v1CompletionOption)
+                        console.log('helpTopic', helpTopic)
+                        console.log('completiong', k.CslDocumentation.Instance.GetTopic(v1CompletionOption))
+
+                    }
                 return lsItem;
             });
 
