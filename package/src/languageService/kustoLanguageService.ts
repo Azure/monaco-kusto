@@ -427,13 +427,6 @@ class KustoLanguageService implements LanguageService {
                 lsItem.documentation = helpTopic
                     ? { value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown }
                     : undefined;
-                    if (lsItem.label.includes("format_byt")) {
-                        console.log('HERE', kItem)
-                        console.log('v1CompletionOption', v1CompletionOption)
-                        console.log('helpTopic', helpTopic)
-                        console.log('completiong', k.CslDocumentation.Instance.GetTopic(v1CompletionOption))
-
-                    }
                 return lsItem;
             });
 
