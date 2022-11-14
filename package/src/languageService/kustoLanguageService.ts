@@ -227,6 +227,10 @@ class KustoLanguageService implements LanguageService {
         | k.DataManagerIntelliSenseRulesProvider
         | k.ClusterManagerIntelliSenseRulesProvider;
     private _newlineAppendPipePolicy: Kusto.Data.IntelliSense.ApplyPolicy;
+    /**
+     * Taken from:
+     * https://msazure.visualstudio.com/One/_git/Azure-Kusto-Service?path=/Src/Tools/Kusto.Explorer.Control/QueryEditors/KustoScriptEditor/KustoScriptEditorControl2.xaml.cs&version=GBdev&line=2075&lineEnd=2075&lineStartColumn=9&lineEndColumn=77&lineStyle=plain&_a=contents
+    */
     private _toOptionKind: { [completionKind in k2.CompletionKind]: k.OptionKind } = {
         [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
         [k2.CompletionKind.BuiltInFunction]: k.OptionKind.FunctionScalar,
