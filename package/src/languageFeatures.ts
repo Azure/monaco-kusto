@@ -809,17 +809,16 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.W
     if (!edit || !edit.changes) {
         return void 0;
     }
-    let resourceEdits: monaco.languages.IWorkspaceTextEdit[] = [];
+    let resourceEdits: monaco.languages.WorkspaceTextEdit[] = [];
     for (let uri in edit.changes) {
         const _uri = Uri.parse(uri);
         for (let e of edit.changes[uri]) {
             resourceEdits.push({
                 resource: _uri,
-                textEdit: {
+                edit: {
                     range: toRange(e.range),
                     text: e.newText,
                 },
-                versionId: undefined,
             });
         }
     }
