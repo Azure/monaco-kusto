@@ -41,7 +41,7 @@
         "lodash": "^4.17.4",
         "merge-stream": "1.0.0",
         "minimatch": "^3.0.4",
-        "monaco-editor-core": "0.34.1",
+        "monaco-editor-core": "0.33.0",
         "monaco-languages": "2.11.1",
         "monaco-plugin-helpers": "^1.0.3",
         "object-assign": "4.1.0",
@@ -58,7 +58,7 @@
         "@kusto/language-service-next": "0.0.59"
     },
     "peerDependencies": {
-        "monaco-editor": "0.34.1"
+        "monaco-editor": "0.33.0"
     },
     "jest": {
         "rootDir": "src",
