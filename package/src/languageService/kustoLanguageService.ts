@@ -891,7 +891,7 @@ class KustoLanguageService implements LanguageService {
                 const symbol = new sym.DatabaseSymbol.$ctor1(databaseName, undefined, false);
                 return symbol;
             });
-            const databaseSymbolsList = KustoLanguageService.toBridgeList(databaseSymbols);
+            const databaseSymbolsList = new (List<sym.DatabaseSymbol>(sym.DatabaseSymbol).$ctor1)(databaseSymbols);
             cluster = new sym.ClusterSymbol.$ctor1(clusterNameOnly, databaseSymbolsList, false);
         }
 
