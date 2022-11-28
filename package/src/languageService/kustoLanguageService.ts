@@ -360,6 +360,9 @@ class KustoLanguageService implements LanguageService {
         }
     }
 
+    /**
+     * Prepending the doc of the actual topic at the top
+     */
     private formatHelpTopic(helpTopic: k.CslTopicDocumentation) {
         return `**${helpTopic.Name} [(view online)](${helpTopic.Url})**\n\n${helpTopic.LongDescription}`;
     }
