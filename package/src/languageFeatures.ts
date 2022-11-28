@@ -14,6 +14,7 @@ import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
 import { Schema } from './languageService/schema';
 import { FoldingRange } from 'vscode-languageserver-types';
 import { ClassifiedRange } from './languageService/kustoLanguageService';
+import { UriComponents } from 'monaco-editor';
 
 export interface WorkerAccessor {
     (first: Uri, ...more: Uri[]): Promise<KustoWorker>;
@@ -652,6 +653,22 @@ function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
     };
 }
 
+const DOCS_BASE_URL = "https://learn.microsoft.com/azure/data-explorer/kusto/query";
+
+function formatDocLink(docString?: string): monaco.languages.CompletionItem['documentation'] {
+    const target: {[href: string]: monaco.UriComponents} = {}
+    const urisProxy = new Proxy(target, {
+        get(_target, prop, _receiver) {
+            // The link comes with a postfix of ".md" that we want to remove
+            const linkWithoutPostfix = prop.toString().replace(".md", "");
+            // Sometimes we get the link as a full URL. For example in the main doc link of the item
+            const fullURL = linkWithoutPostfix.startsWith("https") ? linkWithoutPostfix : `${DOCS_BASE_URL}/${linkWithoutPostfix}`;
+            return monaco.Uri.parse(fullURL);
+        },
+    });
+    return {value: docString, isTrusted: true, uris: urisProxy};
+}
+
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
     constructor(private _worker: WorkerAccessor, private languageSettings: monaco.languages.kusto.LanguageSettings) {}
 
@@ -686,7 +703,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                         insertText: entry.insertText,
                         sortText: entry.sortText,
                         filterText: entry.filterText,
-                        documentation: entry.documentation,
+                        documentation: formatDocLink(entry.documentation?.value),
                         detail: entry.detail,
                         range: wordRange,
                         kind: toCompletionItemKind(entry.kind),

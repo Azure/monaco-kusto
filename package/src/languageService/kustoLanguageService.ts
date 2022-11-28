@@ -360,6 +360,10 @@ class KustoLanguageService implements LanguageService {
         }
     }
 
+    private formatHelpTopic(helpTopic: k.CslTopicDocumentation) {
+        return `**${helpTopic.Name} [(view online)](${helpTopic.Url})**\n\n${helpTopic.LongDescription}`;
+    }
+
     doCompleteV2(document: TextDocument, position: ls.Position): Promise<ls.CompletionList> {
         if (!document) {
             return Promise.resolve(ls.CompletionList.create([]));
@@ -429,7 +433,7 @@ class KustoLanguageService implements LanguageService {
                 lsItem.insertTextFormat = format;
                 lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;
                 lsItem.documentation = helpTopic
-                    ? { value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown }
+                    ? { value: this.formatHelpTopic(helpTopic), kind: ls.MarkupKind.Markdown }
                     : undefined;
                 return lsItem;
             });
