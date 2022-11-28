@@ -14,7 +14,6 @@ import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
 import { Schema } from './languageService/schema';
 import { FoldingRange } from 'vscode-languageserver-types';
 import { ClassifiedRange } from './languageService/kustoLanguageService';
-import { UriComponents } from 'monaco-editor';
 
 export interface WorkerAccessor {
     (first: Uri, ...more: Uri[]): Promise<KustoWorker>;
