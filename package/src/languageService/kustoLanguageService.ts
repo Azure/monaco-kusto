@@ -360,6 +360,13 @@ class KustoLanguageService implements LanguageService {
         }
     }
 
+    /**
+     * Prepending the doc of the actual topic at the top
+     */
+    private formatHelpTopic(helpTopic: k.CslTopicDocumentation) {
+        return `**${helpTopic.Name} [(view online)](${helpTopic.Url})**\n\n${helpTopic.LongDescription}`;
+    }
+
     doCompleteV2(document: TextDocument, position: ls.Position): Promise<ls.CompletionList> {
         if (!document) {
             return Promise.resolve(ls.CompletionList.create([]));
@@ -385,8 +392,8 @@ class KustoLanguageService implements LanguageService {
                 disabledItems[item] = k2.CompletionKind.Unknown;
             });
         }
-
-        let items: ls.CompletionItem[] = this.toArray<k2.CompletionItem>(completionItems.Items)
+        const itemsAsArray = this.toArray<k2.CompletionItem>(completionItems.Items);
+        let items: ls.CompletionItem[] = itemsAsArray
             .filter(
                 (item) =>
                     !(
@@ -420,16 +427,19 @@ class KustoLanguageService implements LanguageService {
                           };
                 const lsItem = ls.CompletionItem.create(kItem.DisplayText);
 
+                // Adding to columns a prefix to their sortText so they will appear first in the list
+                const sortTextPrefix = lsItem.kind === ls.CompletionItemKind.Field ? 0 : itemsAsArray.length; 
                 const startPosition = document.positionAt(completionItems.EditStart);
                 const endPosition = document.positionAt(completionItems.EditStart + completionItems.EditLength);
                 lsItem.textEdit = ls.TextEdit.replace(ls.Range.create(startPosition, endPosition), textToInsert);
-                lsItem.sortText = this.getSortText(i + 1);
-                // lsItem.filterText = lsItem.sortText;
+                lsItem.sortText = this.getSortText(sortTextPrefix + i + 1);
+                // Changing the first letter to be lower case, to ignore case-sensitive matching
+                lsItem.filterText = lsItem.label.charAt(0).toLowerCase() + lsItem.label.slice(1);
                 lsItem.kind = this.kustoKindToLsKindV2(kItem.Kind);
                 lsItem.insertTextFormat = format;
                 lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;
                 lsItem.documentation = helpTopic
-                    ? { value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown }
+                    ? { value: this.formatHelpTopic(helpTopic), kind: ls.MarkupKind.Markdown }
                     : undefined;
                 return lsItem;
             });
