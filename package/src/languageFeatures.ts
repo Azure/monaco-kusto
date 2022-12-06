@@ -21,11 +21,15 @@ export interface WorkerAccessor {
 
 // --- diagnostics ---
 
+
+
 export class DiagnosticsAdapter {
     private _disposables: IDisposable[] = [];
     private _contentListener: { [uri: string]: IDisposable } = Object.create(null);
     private _configurationListener: { [uri: string]: IDisposable } = Object.create(null);
     private _schemaListener: { [uri: string]: IDisposable } = Object.create(null);
+    private _cursorListener: { [editorId: string]: IDisposable } = Object.create(null);
+    private _debouncedValidations: { [uri: string]: (((intervals?: { start: number; end: number;}[]) => void) & _.Cancelable) } = Object.create(null);
 
     constructor(
         private _monacoInstance: typeof monaco,
@@ -34,30 +38,51 @@ export class DiagnosticsAdapter {
         private defaults: LanguageServiceDefaultsImpl,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
+
         const onModelAdd = (model: monaco.editor.IModel): void => {
             let languageId = model.getLanguageId();
+            const modelUri = model.uri.toString();
             if (languageId !== this._languageId) {
                 return;
             }
 
-            const debouncedValidation = _.debounce(
-                (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
-                500
-            );
+            const debouncedValidation = this.getOrCreateDebouncedValidation(model, languageId);
 
-            this._contentListener[model.uri.toString()] = model.onDidChangeContent((e) => {
+            this._contentListener[modelUri] = model.onDidChangeContent((e) => {
                 const intervalsToValidate = changeEventToIntervals(e);
                 debouncedValidation(intervalsToValidate);
             });
 
-            this._configurationListener[model.uri.toString()] = this.defaults.onDidChange(() => {
+            this._configurationListener[modelUri] = this.defaults.onDidChange(() => {
                 self.setTimeout(() => this._doValidate(model, languageId, []), 0);
             });
 
-            this._schemaListener[model.uri.toString()] = onSchemaChange(() => {
+            this._schemaListener[modelUri] = onSchemaChange(() => {
                 self.setTimeout(() => this._doValidate(model, languageId, []), 0);
             });
         };
+
+        const onEditorAdd = (editor: monaco.editor.ICodeEditor) => {
+            const editorId = editor.getId();
+
+            if (!this._cursorListener[editorId]) {
+                editor.onDidDispose(() => {
+                    this._cursorListener[editorId]?.dispose();
+                    delete this._cursorListener[editorId];
+                })
+                this._cursorListener[editorId] = editor.onDidChangeCursorSelection((e) => {
+                    const model = editor.getModel();
+                    const languageId = model.getLanguageId();
+                    if (languageId !== this._languageId) {
+                        return;
+                    }
+                    const cursorOffset = model.getOffsetAt(e.selection.getPosition());
+                    const debouncedValidation = this.getOrCreateDebouncedValidation(model, languageId);
+                    debouncedValidation([{start: cursorOffset, end: cursorOffset}]);
+                })
+            }
+        }
+
 
         const onModelRemoved = (model: monaco.editor.IModel): void => {
             this._monacoInstance.editor.setModelMarkers(model, this._languageId, []);
@@ -81,7 +106,15 @@ export class DiagnosticsAdapter {
                 schemaListener.dispose();
                 delete this._schemaListener[uriStr];
             }
+
+            let debouncedValidation = this._debouncedValidations[uriStr];
+            if (debouncedValidation) {
+                debouncedValidation.cancel();
+                delete this._debouncedValidations[uriStr];
+            }
         };
+
+        this._disposables.push(this._monacoInstance.editor.onDidCreateEditor(onEditorAdd));
 
         this._disposables.push(this._monacoInstance.editor.onDidCreateModel(onModelAdd));
         this._disposables.push(this._monacoInstance.editor.onWillDisposeModel(onModelRemoved));
@@ -97,10 +130,28 @@ export class DiagnosticsAdapter {
                 for (let key in this._contentListener) {
                     this._contentListener[key].dispose();
                 }
+                for (let key in this._cursorListener) {
+                    this._cursorListener[key].dispose();
+                }
+                for (let key in this._debouncedValidations) {
+                    this._debouncedValidations[key].cancel();
+                }
             },
         });
 
         this._monacoInstance.editor.getModels().forEach(onModelAdd);
+        this._monacoInstance.editor.getEditors().forEach(onEditorAdd)
+    }
+
+    private getOrCreateDebouncedValidation(model: monaco.editor.ITextModel, languageId: string) {
+        const modelUri = model.uri.toString();
+        if (!this._debouncedValidations[modelUri]) {
+            this._debouncedValidations[modelUri] = _.debounce(
+                (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
+                500
+            )
+        }
+        return this._debouncedValidations[modelUri];
     }
 
     public dispose(): void {
@@ -539,8 +590,8 @@ function getCssForClassification(): string {
     const cssInnerHtml = classificationColorTriplets
         .map(
             (pair) =>
-                `.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`
-        )
+            `.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`
+            )
         .join('\n');
     return cssInnerHtml;
 }
