@@ -35,12 +35,13 @@ export class DiagnosticsAdapter {
         private defaults: LanguageServiceDefaultsImpl,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
-        const debouncedValidation = _.debounce(
-            (model, languageId, intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
-            500
-        );
 
         const onModelAdd = (model: monaco.editor.IModel): void => {
+            const debouncedValidation = _.debounce(
+                (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
+                500
+            );
+
             let languageId = model.getLanguageId();
             if (languageId !== this._languageId) {
                 return;
@@ -48,7 +49,7 @@ export class DiagnosticsAdapter {
 
             this._contentListener[model.uri.toString()] = model.onDidChangeContent((e) => {
                 const intervalsToValidate = changeEventToIntervals(e);
-                debouncedValidation(model, languageId, intervalsToValidate);
+                debouncedValidation(intervalsToValidate);
             });
 
             this._configurationListener[model.uri.toString()] = this.defaults.onDidChange(() => {
@@ -61,6 +62,11 @@ export class DiagnosticsAdapter {
         };
 
         const onEditorAdd = (editor: monaco.editor.ICodeEditor) => {
+            const debouncedValidation = _.debounce(
+                (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
+                500
+            );
+
             const editorId = editor.getId();
             if (!this._cursorListener[editorId]) {
                 editor.onDidDispose(() => {
@@ -74,7 +80,7 @@ export class DiagnosticsAdapter {
                         return;
                     }
                     const cursorOffset = model.getOffsetAt(e.selection.getPosition());
-                    debouncedValidation(model, languageId, [{start: cursorOffset, end: cursorOffset}]);
+                    debouncedValidation([{start: cursorOffset, end: cursorOffset}]);
                 })
             }
         }
