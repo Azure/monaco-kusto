@@ -45,14 +45,12 @@ export class DiagnosticsAdapter {
             if (languageId !== this._languageId) {
                 return;
             }
-            
-            if (!this._debouncedValidations[modelUri]) {
-                this._debouncedValidations[modelUri] = this.getDebouncedValidation(model, languageId);
-            }
+
+            const debouncedValidation = this.getOrCreateDebouncedValidation(model, languageId);
 
             this._contentListener[modelUri] = model.onDidChangeContent((e) => {
                 const intervalsToValidate = changeEventToIntervals(e);
-                this._debouncedValidations[modelUri](intervalsToValidate);
+                debouncedValidation(intervalsToValidate);
             });
 
             this._configurationListener[modelUri] = this.defaults.onDidChange(() => {
@@ -74,17 +72,13 @@ export class DiagnosticsAdapter {
                 })
                 this._cursorListener[editorId] = editor.onDidChangeCursorSelection((e) => {
                     const model = editor.getModel();
-                    const modelUri = model.uri.toString();
                     const languageId = model.getLanguageId();
                     if (languageId !== this._languageId) {
                         return;
                     }
                     const cursorOffset = model.getOffsetAt(e.selection.getPosition());
-                    if (!this._debouncedValidations[modelUri]) {
-                        this._debouncedValidations[modelUri] = this.getDebouncedValidation(model, languageId)
-                    }
-                    this._debouncedValidations[modelUri]([{start: cursorOffset, end: cursorOffset}]);
-
+                    const debouncedValidation = this.getOrCreateDebouncedValidation(model, languageId);
+                    debouncedValidation([{start: cursorOffset, end: cursorOffset}]);
                 })
             }
         }
@@ -140,11 +134,15 @@ export class DiagnosticsAdapter {
         this._monacoInstance.editor.getEditors().forEach(onEditorAdd)
     }
 
-    private getDebouncedValidation(model: monaco.editor.ITextModel, languageId: string) {
-        return _.debounce(
-            (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
-            500
-        );
+    private getOrCreateDebouncedValidation(model: monaco.editor.ITextModel, languageId: string) {
+        const modelUri = model.uri.toString();
+        if (!this._debouncedValidations[modelUri]) {
+            this._debouncedValidations[modelUri] = _.debounce(
+                (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
+                500
+            )
+        }
+        return this._debouncedValidations[modelUri];
     }
 
     public dispose(): void {
