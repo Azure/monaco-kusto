@@ -29,7 +29,7 @@ export class DiagnosticsAdapter {
     private _configurationListener: { [uri: string]: IDisposable } = Object.create(null);
     private _schemaListener: { [uri: string]: IDisposable } = Object.create(null);
     private _cursorListener: { [editorId: string]: IDisposable } = Object.create(null);
-    private _debouncedValidations: { [uri: string]: ((intervals?: { start: number; end: number;}[]) => void) } = Object.create(null);
+    private _debouncedValidations: { [uri: string]: (((intervals?: { start: number; end: number;}[]) => void) & _.Cancelable) } = Object.create(null);
 
     constructor(
         private _monacoInstance: typeof monaco,
@@ -106,6 +106,12 @@ export class DiagnosticsAdapter {
                 schemaListener.dispose();
                 delete this._schemaListener[uriStr];
             }
+
+            let debouncedValidation = this._debouncedValidations[uriStr];
+            if (debouncedValidation) {
+                debouncedValidation.cancel();
+                delete this._debouncedValidations[uriStr];
+            }
         };
 
         this._disposables.push(this._monacoInstance.editor.onDidCreateEditor(onEditorAdd));
@@ -126,6 +132,9 @@ export class DiagnosticsAdapter {
                 }
                 for (let key in this._cursorListener) {
                     this._cursorListener[key].dispose();
+                }
+                for (let key in this._debouncedValidations) {
+                    this._debouncedValidations[key].cancel();
                 }
             },
         });
