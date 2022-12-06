@@ -26,6 +26,7 @@ export class DiagnosticsAdapter {
     private _contentListener: { [uri: string]: IDisposable } = Object.create(null);
     private _configurationListener: { [uri: string]: IDisposable } = Object.create(null);
     private _schemaListener: { [uri: string]: IDisposable } = Object.create(null);
+    private _cursorListener: { [uri: string]: IDisposable } = Object.create(null);
 
     constructor(
         private _monacoInstance: typeof monaco,
@@ -34,20 +35,20 @@ export class DiagnosticsAdapter {
         private defaults: LanguageServiceDefaultsImpl,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
+        const debouncedValidation = _.debounce(
+            (model, languageId, intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
+            500
+        );
+
         const onModelAdd = (model: monaco.editor.IModel): void => {
             let languageId = model.getLanguageId();
             if (languageId !== this._languageId) {
                 return;
             }
 
-            const debouncedValidation = _.debounce(
-                (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
-                500
-            );
-
             this._contentListener[model.uri.toString()] = model.onDidChangeContent((e) => {
                 const intervalsToValidate = changeEventToIntervals(e);
-                debouncedValidation(intervalsToValidate);
+                debouncedValidation(model, languageId, intervalsToValidate);
             });
 
             this._configurationListener[model.uri.toString()] = this.defaults.onDidChange(() => {
@@ -58,6 +59,26 @@ export class DiagnosticsAdapter {
                 self.setTimeout(() => this._doValidate(model, languageId, []), 0);
             });
         };
+
+        const onEditorAdd = (editor: monaco.editor.ICodeEditor) => {
+            const editorId = editor.getId();
+            if (!this._cursorListener[editorId]) {
+                editor.onDidDispose(() => {
+                    this._cursorListener[editorId]?.dispose();
+                    delete this._cursorListener[editorId];
+                })
+                this._cursorListener[editorId] = editor.onDidChangeCursorSelection((e) => {
+                    const model = editor.getModel();
+                    const languageId = model.getLanguageId();
+                    if (languageId !== this._languageId) {
+                        return;
+                    }
+                    const cursorOffset = model.getOffsetAt(e.selection.getPosition());
+                    debouncedValidation(model, languageId, [{start: cursorOffset, end: cursorOffset}]);
+                })
+            }
+        }
+
 
         const onModelRemoved = (model: monaco.editor.IModel): void => {
             this._monacoInstance.editor.setModelMarkers(model, this._languageId, []);
@@ -83,6 +104,8 @@ export class DiagnosticsAdapter {
             }
         };
 
+        this._disposables.push(this._monacoInstance.editor.onDidCreateEditor(onEditorAdd));
+
         this._disposables.push(this._monacoInstance.editor.onDidCreateModel(onModelAdd));
         this._disposables.push(this._monacoInstance.editor.onWillDisposeModel(onModelRemoved));
         this._disposables.push(
@@ -97,10 +120,14 @@ export class DiagnosticsAdapter {
                 for (let key in this._contentListener) {
                     this._contentListener[key].dispose();
                 }
+                for (let key in this._cursorListener) {
+                    this._cursorListener[key].dispose();
+                }
             },
         });
 
         this._monacoInstance.editor.getModels().forEach(onModelAdd);
+        this._monacoInstance.editor.getEditors().forEach(onEditorAdd)
     }
 
     public dispose(): void {
@@ -539,8 +566,8 @@ function getCssForClassification(): string {
     const cssInnerHtml = classificationColorTriplets
         .map(
             (pair) =>
-                `.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`
-        )
+            `.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`
+            )
         .join('\n');
     return cssInnerHtml;
 }
