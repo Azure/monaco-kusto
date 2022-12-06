@@ -26,7 +26,7 @@ export class DiagnosticsAdapter {
     private _contentListener: { [uri: string]: IDisposable } = Object.create(null);
     private _configurationListener: { [uri: string]: IDisposable } = Object.create(null);
     private _schemaListener: { [uri: string]: IDisposable } = Object.create(null);
-    private _cursorListener: { [uri: string]: IDisposable } = Object.create(null);
+    private _cursorListener: { [editorId: string]: IDisposable } = Object.create(null);
 
     constructor(
         private _monacoInstance: typeof monaco,
