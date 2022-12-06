@@ -21,12 +21,15 @@ export interface WorkerAccessor {
 
 // --- diagnostics ---
 
+
+
 export class DiagnosticsAdapter {
     private _disposables: IDisposable[] = [];
     private _contentListener: { [uri: string]: IDisposable } = Object.create(null);
     private _configurationListener: { [uri: string]: IDisposable } = Object.create(null);
     private _schemaListener: { [uri: string]: IDisposable } = Object.create(null);
     private _cursorListener: { [editorId: string]: IDisposable } = Object.create(null);
+    private _debouncedValidations: { [uri: string]: ((intervals?: { start: number; end: number;}[]) => void) } = Object.create(null);
 
     constructor(
         private _monacoInstance: typeof monaco,
@@ -38,35 +41,32 @@ export class DiagnosticsAdapter {
 
         const onModelAdd = (model: monaco.editor.IModel): void => {
             let languageId = model.getLanguageId();
+            const modelUri = model.uri.toString();
             if (languageId !== this._languageId) {
                 return;
             }
+            
+            if (!this._debouncedValidations[modelUri]) {
+                this._debouncedValidations[modelUri] = this.getDebouncedValidation(model, languageId);
+            }
 
-            const debouncedValidation = _.debounce(
-                (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
-                500
-            );
-
-            this._contentListener[model.uri.toString()] = model.onDidChangeContent((e) => {
+            this._contentListener[modelUri] = model.onDidChangeContent((e) => {
                 const intervalsToValidate = changeEventToIntervals(e);
-                debouncedValidation(intervalsToValidate);
+                this._debouncedValidations[modelUri](intervalsToValidate);
             });
 
-            this._configurationListener[model.uri.toString()] = this.defaults.onDidChange(() => {
+            this._configurationListener[modelUri] = this.defaults.onDidChange(() => {
                 self.setTimeout(() => this._doValidate(model, languageId, []), 0);
             });
 
-            this._schemaListener[model.uri.toString()] = onSchemaChange(() => {
+            this._schemaListener[modelUri] = onSchemaChange(() => {
                 self.setTimeout(() => this._doValidate(model, languageId, []), 0);
             });
         };
 
         const onEditorAdd = (editor: monaco.editor.ICodeEditor) => {
             const editorId = editor.getId();
-            const debouncedValidation = _.debounce(
-                (model, languageId, intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
-                500
-            );
+
             if (!this._cursorListener[editorId]) {
                 editor.onDidDispose(() => {
                     this._cursorListener[editorId]?.dispose();
@@ -74,12 +74,17 @@ export class DiagnosticsAdapter {
                 })
                 this._cursorListener[editorId] = editor.onDidChangeCursorSelection((e) => {
                     const model = editor.getModel();
+                    const modelUri = model.uri.toString();
                     const languageId = model.getLanguageId();
                     if (languageId !== this._languageId) {
                         return;
                     }
                     const cursorOffset = model.getOffsetAt(e.selection.getPosition());
-                    debouncedValidation(model, languageId, [{start: cursorOffset, end: cursorOffset}]);
+                    if (!this._debouncedValidations[modelUri]) {
+                        this._debouncedValidations[modelUri] = this.getDebouncedValidation(model, languageId)
+                    }
+                    this._debouncedValidations[modelUri]([{start: cursorOffset, end: cursorOffset}]);
+
                 })
             }
         }
@@ -133,6 +138,13 @@ export class DiagnosticsAdapter {
 
         this._monacoInstance.editor.getModels().forEach(onModelAdd);
         this._monacoInstance.editor.getEditors().forEach(onEditorAdd)
+    }
+
+    private getDebouncedValidation(model: monaco.editor.ITextModel, languageId: string) {
+        return _.debounce(
+            (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
+            500
+        );
     }
 
     public dispose(): void {
