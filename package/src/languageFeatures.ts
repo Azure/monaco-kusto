@@ -706,6 +706,10 @@ function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
 const DOCS_BASE_URL = "https://learn.microsoft.com/azure/data-explorer/kusto/query";
 
 function formatDocLink(docString?: string): monaco.languages.CompletionItem['documentation'] {
+    // If the docString is empty, we want to return undefined to prevent an empty documentation popup.
+    if (!docString) {
+        return undefined;
+    }
     const target: {[href: string]: monaco.UriComponents} = {}
     const urisProxy = new Proxy(target, {
         get(_target, prop, _receiver) {
