@@ -6,6 +6,7 @@ import * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
+import { runAccessibilityFixers } from './accessibilityUtils';
 
 declare var require: <T>(moduleId: [string], callback: (module: T) => void) => void;
 
@@ -184,6 +185,8 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
 
         triggerSuggestDialogWhenCompletionItemSelected(editor);
     });
+
+    runAccessibilityFixers();
 
     function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {
         editor.onDidChangeCursorSelection((event: monaco.editor.ICursorSelectionChangedEvent) => {
