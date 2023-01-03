@@ -6,7 +6,7 @@ export function runAccessibilityFixers() {
 }
 
 /**
- * Fixing command pallete completion list not showing with small height.
+ * Fixing command palette completion list not showing with small height.
  * Fix is from here: https://github.com/microsoft/monaco-editor/issues/70
  */
 function fixCommandPalleteHeight() {
