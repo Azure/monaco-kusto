@@ -1,4 +1,4 @@
-import { monaco } from '@monaco-editor/react';
+import { loader } from '@monaco-editor/react';
 
 /**
  * A promise to be returned by the init function.
@@ -23,7 +23,7 @@ const loadMonacoKusto = () => {
 /**
  * Configuring monaco's UMD loader to load all the rest of monaco (and monaco-kusto) from the following location (that's why we're copying everything to public folder).
  */
-monaco.config({
+loader.config({
     paths: {
         vs: `${process.env.PUBLIC_URL}/monaco-editor/min/vs`,
     },
@@ -42,7 +42,7 @@ const onMonacoKustoLoaded = () => {
  * @returns a promise that will be resolved once all dependencies are loaded.
  */
 export const init = () => {
-    monaco.init().then(() => {
+    loader.init().then(() => {
         document.addEventListener('kusto_init', onMonacoKustoLoaded);
         loadMonacoKusto();
     });
