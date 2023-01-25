@@ -1842,7 +1842,7 @@ class KustoLanguageService implements LanguageService {
             );
 
             // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
-            return new sym.FunctionSymbol.$ctor15(
+            return new sym.FunctionSymbol.$ctor14(
                 fn.name,
                 fn.body,
                 KustoLanguageService.toBridgeList(parameters),
