@@ -1015,10 +1015,11 @@ class KustoLanguageService implements LanguageService {
                                         docstring: DocString,
                                         entityType: tableEntity,
                                         columns: OrderedColumns.map(
-                                            ({ Name, Type, DocString, CslType }: s.showSchema.Column) => ({
+                                            ({ Name, Type, DocString, CslType, Examples }: s.showSchema.Column) => ({
                                                 name: Name,
                                                 type: CslType,
                                                 docstring: DocString,
+                                                examples: Examples,
                                             })
                                         ),
                                     })
@@ -1773,7 +1774,9 @@ class KustoLanguageService implements LanguageService {
             col.name,
             sym.ScalarTypes.GetSymbol(getCslTypeNameFromClrType(col.type)),
             col.docstring,
-            null
+            null,
+            null,
+            col.examples ? KustoLanguageService.toBridgeList(col.examples) : null
         );
     }
 
@@ -1839,7 +1842,7 @@ class KustoLanguageService implements LanguageService {
             );
 
             // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
-            return new sym.FunctionSymbol.$ctor16(
+            return new sym.FunctionSymbol.$ctor15(
                 fn.name,
                 fn.body,
                 KustoLanguageService.toBridgeList(parameters),

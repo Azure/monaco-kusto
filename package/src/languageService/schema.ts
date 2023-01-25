@@ -4,6 +4,7 @@ export interface Column {
     name: string;
     type: string;
     docstring?: string;
+    examples?: string[];
 }
 export interface Table {
     name: string;
@@ -23,6 +24,7 @@ export interface ScalarParameter {
     cslType?: string;
     docstring?: string;
     cslDefaultValue?: string;
+    examples?: string[];
 }
 
 // an input parameter either be a scalar in which case it has a name, type and cslType, or it can be columnar, in which case
@@ -151,6 +153,7 @@ export namespace showSchema {
         Type: string;
         CslType: string;
         DocString?: string;
+        Examples?: string[];
     }
 
     export interface Table {
