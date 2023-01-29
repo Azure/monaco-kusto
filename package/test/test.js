@@ -196,6 +196,7 @@ fetch('./test/mode.txt')
                                             Name: 'State',
                                             Type: 'System.String',
                                             CslType: 'string',
+                                            Examples: ['Custom State 1', 'Custom State 2']
                                         },
                                     ],
                                 },
