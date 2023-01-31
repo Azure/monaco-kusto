@@ -73,7 +73,8 @@ declare module monaco.languages.kusto {
             schema: any,
             clusterConnectionString: string,
             databaseInContextName: string,
-            globalParameters: ScalarParameter[]
+            globalScalarParameters: ScalarParameter[],
+            globalTabularParameters: TabularParameter[]
         ): Promise<void>;
         normalizeSchema(
             schema: any,
@@ -121,7 +122,7 @@ declare module monaco.languages.kusto {
         doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]>;
         doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
         doValidation(uri: string, intervals: { start: number; end: number }[], includeWarnings?: boolean, includeSuggestions?: boolean): Promise<ls.Diagnostic[]>;
-        setParameters(parameters: ScalarParameter[]): void;
+        setParameters(scalarParameters: ScalarParameter[], tabularParameters: TabularParameter): void;
         /**
          * Get all the database references from the current command. 
          * If database's schema is already cached in previous calls to setSchema or addDatabaseToSchema it will not be returned.
@@ -191,6 +192,10 @@ declare module monaco.languages.kusto {
         type?: string;
         cslType?: string;
         cslDefaultValue?: string;
+    }
+
+    export interface TabularParameter extends ScalarParameter {
+        columns: Column[]
     }
 
     // an input parameter either be a scalar in which case it has a name, type and cslType, or it can be columnar, in which case

@@ -27,6 +27,12 @@ export interface ScalarParameter {
     examples?: string[];
 }
 
+export interface TabularParameter {
+    name: string;
+    columns: Column[];
+    docstring?: string;
+}
+
 // an input parameter either be a scalar in which case it has a name, type and cslType, or it can be columnar, in which case
 // it will have a name, and a list of scalar types which are the column types.
 export type InputParameter = ScalarParameter & { columns?: ScalarParameter[] };
@@ -54,7 +60,8 @@ export interface EngineSchema {
         databases: Database[];
     };
     database: Database | undefined; // a reference to the database that's in current context.
-    globalParameters?: ScalarParameter[];
+    globalScalarParameters?: ScalarParameter[];
+    globalTabularParameters?: TabularParameter[];
 }
 
 export type TableEntityType = 'Table' | 'ExternalTable' | 'MaterializedViewTable';
@@ -173,6 +180,12 @@ export namespace showSchema {
         CslType?: string;
         DocString?: string;
         CslDefaultValue?: string;
+    }
+
+    export interface TabularParameter {
+        Name: string;
+        Columns: Column[];
+        DocString?: string;
     }
 
     export type InputParameter = ScalarParameter & { Columns?: ScalarParameter[] };

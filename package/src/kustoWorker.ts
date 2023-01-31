@@ -2,7 +2,7 @@ import IWorkerContext = monaco.worker.IWorkerContext;
 
 import * as kustoService from './languageService/kustoLanguageService';
 import { LanguageSettings } from './languageService/settings';
-import { Schema, showSchema, ScalarParameter, Database } from './languageService/schema';
+import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import { ColorizationRange } from './languageService/kustoLanguageService';
 import { RenderInfo } from './languageService/renderInfo';
@@ -262,8 +262,8 @@ export class KustoWorker {
         return hover;
     }
 
-    setParameters(parameters: ScalarParameter[]) {
-        return this._languageService.setParameters(parameters);
+    setParameters(scalarParameters: ScalarParameter[], tabularParameters: TabularParameter[]) {
+        return this._languageService.setParameters(scalarParameters, tabularParameters);
     }
 
     getClusterReferences(uri: string, cursorOffset: number): Promise<kustoService.ClusterReference[]> {

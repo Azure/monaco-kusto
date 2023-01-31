@@ -413,7 +413,10 @@ fetch('./test/mode.txt')
                         workerAccessor(model.uri).then((worker) => {
                             worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples', [
                                 { name: 'region', type: 'System.String', cslType: 'string' },
-                            ]);
+                            ],
+                        [
+                            {name: 'tableParameter', type: 'type', docstring: '**Table**', columns: [{name: 'col1', cslType: 'int', type: 'int'}, {name: 'col2', cslType: 'double', type: 'double'}]}
+                        ]);
                         });
                     });
                 window.setKuskus = () =>

@@ -7,7 +7,7 @@ import * as languageFeatures from './languageFeatures';
 import Uri = monaco.Uri;
 import IDisposable = monaco.IDisposable;
 import { WorkerAccessor } from './languageFeatures';
-import { EngineSchema, Schema, InputParameter, ScalarParameter } from './languageService/schema';
+import { EngineSchema, Schema, InputParameter, ScalarParameter, TabularParameter } from './languageService/schema';
 
 let kustoWorker: WorkerAccessor;
 let resolveWorker: (value: languageFeatures.WorkerAccessor | PromiseLike<languageFeatures.WorkerAccessor>) => void;
@@ -31,7 +31,7 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance)
     disposables.push(client);
 
     const workerAccessor = (first: Uri, ...more: Uri[]): Promise<KustoWorker> => {
-        const augmentedSetSchema = (schema: Schema, worker: KustoWorker, globalParameters?: ScalarParameter[]) => {
+        const augmentedSetSchema = (schema: Schema, worker: KustoWorker, globalScalarParameters?: ScalarParameter[], globalTabularParameters?: TabularParameter[]) => {
             const workerPromise = worker.setSchema(schema);
 
             workerPromise.then(() => {
@@ -44,10 +44,10 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance)
                 ({
                     ...worker,
                     setSchema: (schema) => augmentedSetSchema(schema, worker),
-                    setSchemaFromShowSchema: (schema, connection, database, globalParameters?: ScalarParameter[]) => {
+                    setSchemaFromShowSchema: (schema, connection, database, globalScalarParameters?: ScalarParameter[], globalTabularParameters?: TabularParameter[]) => {
                         worker
                             .normalizeSchema(schema, connection, database)
-                            .then((schema) => (globalParameters ? { ...schema, globalParameters } : schema))
+                            .then((schema) => (globalScalarParameters ? { ...schema, globalScalarParameters, globalTabularParameters } : schema))
                             .then((normalized) => augmentedSetSchema(normalized, worker));
                     },
                 } as KustoWorker)
