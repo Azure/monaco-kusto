@@ -1950,21 +1950,13 @@ class KustoLanguageService implements LanguageService {
         if (databaseInContext) {
             globalState = globalState.WithDatabase(databaseInContext);
         }
-        const scalarParameters = (schema.globalScalarParameters??[]).map(...
-        // Inject global parameters to global scope.
-        if (schema.globalScalarParameters) {
-            scalarParameters = schema.globalScalarParameters.map((param) =>
-                KustoLanguageService.createParameterSymbol(param)
-            );
-        }
 
-        let tabularParameters = [];
-        // Inject global parameters to global scope.
-        if (schema.globalTabularParameters) {
-            tabularParameters = schema.globalTabularParameters.map((param) =>
-                KustoLanguageService.createTabularParameterSymbol(param)
-            );
-        }
+        // Inject global scalar parameters to global scope.
+        const scalarParameters = (schema.globalScalarParameters ?? []).map(param => KustoLanguageService.createParameterSymbol(param));
+
+        // Inject global tabular parameters to global scope.
+        let tabularParameters = (schema.globalTabularParameters ?? []).map(param => KustoLanguageService.createTabularParameterSymbol(param));
+        
         if (tabularParameters.length || scalarParameters.length) {
             globalState = globalState.WithParameters(KustoLanguageService.toBridgeList([...scalarParameters, ...tabularParameters]));
         }
