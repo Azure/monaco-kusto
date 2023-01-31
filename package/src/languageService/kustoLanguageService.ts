@@ -1950,7 +1950,7 @@ class KustoLanguageService implements LanguageService {
         if (databaseInContext) {
             globalState = globalState.WithDatabase(databaseInContext);
         }
-        let scalarParameters = [];
+        const scalarParameters = (schema.globalScalarParameters??[]).map(...
         // Inject global parameters to global scope.
         if (schema.globalScalarParameters) {
             scalarParameters = schema.globalScalarParameters.map((param) =>
