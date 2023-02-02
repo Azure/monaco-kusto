@@ -196,7 +196,7 @@ fetch('./test/mode.txt')
                                             Name: 'State',
                                             Type: 'System.String',
                                             CslType: 'string',
-                                            Examples: ['Custom State 1', 'Custom State 2']
+                                            Examples: ['Custom State 1', 'Custom State 2'],
                                         },
                                     ],
                                 },
@@ -299,7 +299,7 @@ fetch('./test/mode.txt')
                                     FunctionKind: 'Unknown',
                                     OutputColumns: [],
                                 },
-                                '$__timeFilter': {
+                                $__timeFilter: {
                                     Name: '$__timeFilter',
                                     Body: '{ true }',
                                     InputParameters: [
@@ -411,12 +411,23 @@ fetch('./test/mode.txt')
                     monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
                         const model = editor.getModel();
                         workerAccessor(model.uri).then((worker) => {
-                            worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples', [
-                                { name: 'region', type: 'System.String', cslType: 'string' },
-                            ],
-                        [
-                            {name: 'tableParameter', type: 'type', docstring: '**Table**', columns: [{name: 'col1', cslType: 'int', type: 'int'}, {name: 'col2', cslType: 'double', type: 'double'}]}
-                        ]);
+                            worker.setSchemaFromShowSchema(
+                                schema,
+                                'https://help.kusto.windows.net',
+                                'Samples',
+                                [{ name: 'region', type: 'System.String', cslType: 'string' }],
+                                [
+                                    {
+                                        name: 'tableParameter',
+                                        type: 'type',
+                                        docstring: '**Table**',
+                                        columns: [
+                                            { name: 'col1', cslType: 'int', type: 'int' },
+                                            { name: 'col2', cslType: 'double', type: 'double' },
+                                        ],
+                                    },
+                                ]
+                            );
                         });
                     });
                 window.setKuskus = () =>

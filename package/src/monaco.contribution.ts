@@ -1,3 +1,5 @@
+/// <reference types="monaco-editor-core/monaco" />
+
 import Emitter = monaco.Emitter;
 import IEvent = monaco.IEvent;
 import IDisposable = monaco.IDisposable;

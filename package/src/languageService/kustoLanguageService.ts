@@ -1,6 +1,6 @@
-/// <reference path="../../node_modules/@kusto/language-service/Kusto.JavaScript.Client.d.ts" />
-/// <reference path="../../node_modules/@kusto/language-service-next/Kusto.Language.Bridge.d.ts" />
-/// <reference path="../typings/refs.d.ts" />
+/// <reference types="@kusto/language-service/Kusto.JavaScript.Client" />
+/// <reference types="@kusto/language-service-next/Kusto.Language.Bridge" />
+/// <reference types="../typings/refs" />
 import * as s from './schema';
 
 // polyfill string endsWith
@@ -429,7 +429,7 @@ class KustoLanguageService implements LanguageService {
                 const lsItem = ls.CompletionItem.create(kItem.DisplayText);
 
                 // Adding to columns a prefix to their sortText so they will appear first in the list
-                const sortTextPrefix = lsItem.kind === ls.CompletionItemKind.Field ? 0 : itemsAsArray.length; 
+                const sortTextPrefix = lsItem.kind === ls.CompletionItemKind.Field ? 0 : itemsAsArray.length;
                 const startPosition = document.positionAt(completionItems.EditStart);
                 const endPosition = document.positionAt(completionItems.EditStart + completionItems.EditLength);
                 lsItem.textEdit = ls.TextEdit.replace(ls.Range.create(startPosition, endPosition), textToInsert);
@@ -1956,7 +1956,7 @@ class KustoLanguageService implements LanguageService {
 
         // Inject global tabular parameters to global scope.
         let tabularParameters = (schema.globalTabularParameters ?? []).map(param => KustoLanguageService.createTabularParameterSymbol(param));
-        
+
         if (tabularParameters.length || scalarParameters.length) {
             globalState = globalState.WithParameters(KustoLanguageService.toBridgeList([...scalarParameters, ...tabularParameters]));
         }

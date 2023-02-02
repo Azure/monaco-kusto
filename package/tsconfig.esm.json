@@ -1,0 +1,12 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "compilerOptions": {
+        "module": "esnext",
+        "moduleResolution": "node",
+        "outDir": "./out/esm",
+        "target": "es5",
+        "alwaysStrict": true,
+        "declaration": true,
+        "skipLibCheck": true
+    }
+}

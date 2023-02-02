@@ -1,4 +1,4 @@
-/// <reference path="../node_modules/monaco-editor-core/monaco.d.ts" />
+/// <reference types="monaco-editor-core/monaco" />
 
 /**
  * Extending ICode editor to contain additional kusto-speicifc methods.
