@@ -9,7 +9,8 @@
         "/yarn.lock": true
     },
     "typescript.tsdk": "node_modules\\typescript\\lib",
-    "cSpell.words": ["kusto"],
-    "timeline.excludeSources": [],
+    "cSpell.words": [
+        "kusto"
+    ],
     "editor.formatOnSave": true
 }
