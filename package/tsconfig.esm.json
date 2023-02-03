@@ -4,9 +4,14 @@
         "module": "esnext",
         "moduleResolution": "node",
         "outDir": "./out/esm",
-        "target": "es5",
+        "target": "ES2020",
         "alwaysStrict": true,
         "declaration": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "types": [
+            "monaco-editor-core/monaco",
+            "@kusto/language-service/Kusto.JavaScript.Client",
+            "@kusto/language-service-next/Kusto.Language.Bridge"
+        ]
     }
 }

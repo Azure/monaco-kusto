@@ -6,9 +6,14 @@
         "module": "amd",
         "moduleResolution": "node",
         "outDir": "./out/amd",
-        "target": "es5",
+        "target": "ES2020",
         "alwaysStrict": true,
         "declaration": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "types": [
+            "monaco-editor-core/monaco",
+            "@kusto/language-service/Kusto.JavaScript.Client",
+            "@kusto/language-service-next/Kusto.Language.Bridge"
+        ]
     }
 }

@@ -25,7 +25,7 @@ declare module monaco.languages.kusto {
         formatter?: FormatterOptions;
         enableQueryWarnings?: boolean;
         enableQuerySuggestions?: boolean;
-        disabledDiagnoticCodes?: string[];
+        disabledDiagnosticCodes?: string[];
     }
 
     export interface SyntaxErrorAsMarkDownOptions {
@@ -38,7 +38,7 @@ declare module monaco.languages.kusto {
         indentationSize?: number;
         pipeOperatorStyle?: FormatterPlacementStyle;
     }
-    
+
     export type FormatterPlacementStyle = 'None' | 'NewLine' | 'Smart';
 
     export interface LanguageServiceDefaults {
@@ -124,11 +124,11 @@ declare module monaco.languages.kusto {
         doValidation(uri: string, intervals: { start: number; end: number }[], includeWarnings?: boolean, includeSuggestions?: boolean): Promise<ls.Diagnostic[]>;
         setParameters(scalarParameters: ScalarParameter[], tabularParameters: TabularParameter): void;
         /**
-         * Get all the database references from the current command. 
+         * Get all the database references from the current command.
          * If database's schema is already cached in previous calls to setSchema or addDatabaseToSchema it will not be returned.
          * This method should be used to get all the cross-databases in a command, then schema for the database should be fetched and added with addDatabaseToSchema.
          * @example
-         * If the current command includes: cluster('help').database('Samples') 
+         * If the current command includes: cluster('help').database('Samples')
          * getDatabaseReferences will return [{ clusterName: 'help', databaseName 'Samples' }]
          */
         getDatabaseReferences(uri: string, cursorOffset: number): Promise<DatabaseReference[]>;
@@ -150,7 +150,7 @@ declare module monaco.languages.kusto {
          * @param clusterName the name of the cluster as returned from getDatabaseReferences/getClusterReferences.
          * @example
          * - User enters cluster('help').database('Samples')
-         * - hosting app calls getDatabaseReferences which returns [{ clusterName: 'help', databaseName: 'Samples' }]. 
+         * - hosting app calls getDatabaseReferences which returns [{ clusterName: 'help', databaseName: 'Samples' }].
          * - hosting app fetches the database Schema from https://help.kusto.windows.net
          * - hosting app calls 'addDatabaseToSchema' with the database's schema.
          * - now, when user types cluster('help').database('Samples') then the auto complete list will show all the tables.
@@ -161,7 +161,7 @@ declare module monaco.languages.kusto {
          * @param clusterName the name of the cluster as returned in getClusterReferences.
          * @example
          * - User enters cluster('help')
-         * - hosting app calls getClusterReferences which returns [{ clusterName: 'help' }]. 
+         * - hosting app calls getClusterReferences which returns [{ clusterName: 'help' }].
          * - hosting app fetches the list of databases from https://help.kusto.windows.net
          * - hosting app calls addClusterToSchema with the list of databases.
          * - now, when user type `cluster('help').database(` then the auto complete list will show all the databases.
@@ -288,11 +288,11 @@ declare module monaco.languages.kusto {
 
     export interface DatabaseReference {
         databaseName: string;
-        clusterName: string; 
+        clusterName: string;
     };
 
     export interface ClusterReference {
-        clusterName: string; 
+        clusterName: string;
     }
 
     export type RenderOptionKeys = keyof RenderOptions;

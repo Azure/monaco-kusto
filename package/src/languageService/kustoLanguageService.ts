@@ -1,6 +1,3 @@
-/// <reference types="@kusto/language-service/Kusto.JavaScript.Client" />
-/// <reference types="@kusto/language-service-next/Kusto.Language.Bridge" />
-/// <reference types="../typings/refs" />
 import * as s from './schema';
 
 // polyfill string endsWith
