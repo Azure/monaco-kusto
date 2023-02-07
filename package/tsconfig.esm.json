@@ -4,7 +4,7 @@
         "module": "esnext",
         "moduleResolution": "node",
         "outDir": "./out/esm",
-        "target": "es2017",
+        "target": "es5",
         "lib": ["es2020", "dom", "WebWorker.ImportScripts"],
         "alwaysStrict": true,
         "declaration": true,
