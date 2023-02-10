@@ -139,7 +139,7 @@ export interface LanguageService {
     doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
     doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
-    setParameters(scalarParameters: s.ScalarParameter[], tabularParameters: s.TabularParameter[]): Promise<void>;
+    setParameters(scalarParameters: readonly s.ScalarParameter[], tabularParameters: readonly s.TabularParameter[]): Promise<void>;
     setSchema(schema: s.Schema): Promise<void>;
     setSchemaFromShowSchema(
         schema: s.showSchema.Result,
@@ -936,7 +936,7 @@ class KustoLanguageService implements LanguageService {
             this._parsePropertiesV2 = undefined;
         }
 
-        // since V2 doesn't support control commands, we're initializing V1 intellisense for both cases and we'll going to use V1 intellisense for contorl commands.
+        // since V2 doesn't support control commands, we're initializing V1 intellisense for both cases and we'll going to use V1 intellisense for control commands.
         return new Promise((resolve, reject) => {
             const kustoJsSchema = schema ? KustoLanguageService.convertToKustoJsSchema(schema) : undefined;
             this._kustoJsSchema = kustoJsSchema;
