@@ -21,12 +21,11 @@ See the [following path](samples/react) for a sample create-react-app project:
 
 ### Instructions:
 
-1. npm i monaco-editor
-1. npm i @kusto/monaco-kusto
+1. yarn install
 
 #### AMD module system:
 
-2. add the following to your `index.html` (or other entry point)
+1. add the following to your `index.html` (or other entry point)
 
    ```xml
    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/bridge.min.js"></script>
@@ -40,12 +39,12 @@ See the [following path](samples/react) for a sample create-react-app project:
    Until we do, consumer of this package will have to add the aformentioned lines globally in order for the package to work.
    In the future we might load these programmatically ourselves (in fact - we already do this for the web monaco language service web worker).
 
-3. In order to load monaco and monaco-kusto in your application you will need to host monaco and monaco-kusto as static files on your web server, and use monaco's loader.js to load them.
+2. In order to load monaco and monaco-kusto in your application you will need to host monaco and monaco-kusto as static files on your web server, and use monaco's loader.js to load them.
    for an example on how to do this, you can take a look at our sample code [here](samples/react/src/monaco-kusto.js)
 
 #### ESM (webpack example)
 
-2. define the following aliases in `resolve.alias`:
+1. define the following aliases in `resolve.alias`:
 
 ```
 'vs/language/kusto/kustoMode': 'kustoMode',
@@ -56,7 +55,7 @@ See the [following path](samples/react) for a sample create-react-app project:
 'monaco.contribution': '@kusto/monaco-kusto/release/esm/monaco.contribution'
 ```
 
-3. define following loaders in `module.rules`:
+2. define following loaders in `module.rules`:
 
 ```
 { test: /bridge\.js/, parser: { system: false } },
@@ -72,7 +71,7 @@ Also, add the following dependency (shim) as loaders:
 { test: /kustoMonarchLanguageDefinition/, loader: 'imports-loader?Kusto' },
 ```
 
-4. Add the following custom loader to replace the importScripts usage in KustoLanguageService and use it:
+3. Add the following custom loader to replace the importScripts usage in KustoLanguageService and use it:
 
 ```
 module.exports = function loader(source) {
@@ -82,24 +81,24 @@ module.exports = function loader(source) {
 }
 ```
 
-5. Define the following function in your window:
+4. Define the following function in your window:
 
 ```
 window.MonacoEnvironment = { globalAPI: true, getWorkerUrl: function() { return "<path_and_full_name_of_kusto_worker_chunk>"} };
 ```
 
-6. Add "@kusto/monaco-kusto/release/esm/kusto.worker.js" as entry point to your webpack configuration.
+5. Add "@kusto/monaco-kusto/release/esm/kusto.worker.js" as entry point to your webpack configuration.
 
-7. You'll need to merge the runtime chunk of this entry point with this entry point output chunk to one chunk,
+6. You'll need to merge the runtime chunk of this entry point with this entry point output chunk to one chunk,
    and have this one call in getWorkerUrl in step 5.
 
-8. Create a monao.editor object from an HTML element:
+7. Create a monaco.editor object from an HTML element:
 
 ```
 this.editor = monaco.editor.create(editorElement, editorConfig)
 ```
 
-9. call monaco.contribution api:
+8. call monaco.contribution api:
 
 ```
 import('monaco.contribution').then(async (contribution: any) => {

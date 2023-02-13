@@ -25,7 +25,7 @@ declare module monaco.languages.kusto {
         formatter?: FormatterOptions;
         enableQueryWarnings?: boolean;
         enableQuerySuggestions?: boolean;
-        disabledDiagnoticCodes?: string[];
+        disabledDiagnosticCodes?: string[];
     }
 
     export interface SyntaxErrorAsMarkDownOptions {

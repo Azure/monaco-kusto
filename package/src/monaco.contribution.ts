@@ -69,7 +69,7 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     },
     enableQueryWarnings: false,
     enableQuerySuggestions: false,
-    disabledDiagnoticCodes: [],
+    disabledDiagnosticCodes: [],
 };
 
 function getKustoWorker(): Promise<any> {
@@ -104,7 +104,7 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
         extensions: ['.csl', '.kql'],
     });
 
-    // TODO: asked if there's a cleaner way to register an editor contribution. looks like monaco has an internal contribution regstrar but it's no exposed in the API.
+    // TODO: asked if there's a cleaner way to register an editor contribution. looks like monaco has an internal contribution registrar but it's no exposed in the API.
     // https://stackoverflow.com/questions/46700245/how-to-add-an-ieditorcontribution-to-monaco-editor
     let commandHighlighter: KustoCommandHighlighter;
     let commandFormatter: KustoCommandFormatter;
@@ -187,7 +187,7 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
 
     function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {
         editor.onDidChangeCursorSelection((event: monaco.editor.ICursorSelectionChangedEvent) => {
-            // checking the condition inside the event makes sure we will stay up to date whne kusto configuration changes at runtime.
+            // checking the condition inside the event makes sure we will stay up to date when kusto configuration changes at runtime.
             if (
                 kustoDefaults &&
                 kustoDefaults.languageSettings &&
