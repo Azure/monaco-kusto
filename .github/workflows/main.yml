@@ -16,29 +16,29 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: npm install
-      run: | 
-        npm install
+    - name: yarn install
+      run: |
+        yarn install --immutable
 
     - name: Creates release folder
       run: mkdir -p release
 
-    - name: compile 
-      run: npm run compile 
-    
-    - name: run release script 
+    - name: compile
+      run: yarn compile
+
+    - name: run release script
       run: node ./scripts/release.js
-    
+
     - name: run bundle script
       run: node ./scripts/bundle.js
-    
+
     - name: copy runtime dependencies to out folder
-      run: npm run copy_runtime_deps_to_out
-    
+      run: yarn copy_runtime_deps_to_out
+
     - name: copy types to out folder
-      run: npm run copy_types_to_release
-    
-    - name: NPM publish 
+      run: yarn copy_types_to_release
+
+    - name: NPM publish
       uses: JS-DevTools/npm-publish@v1
       with:
           token: ${{ secrets.NPMPUBLISHTOKEN }}

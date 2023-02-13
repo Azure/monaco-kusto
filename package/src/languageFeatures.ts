@@ -21,7 +21,10 @@ export interface WorkerAccessor {
 
 // --- diagnostics ---
 
-
+interface Cancelable {
+    cancel(): void;
+    flush(): void;
+}
 
 export class DiagnosticsAdapter {
     private _disposables: IDisposable[] = [];
@@ -29,7 +32,9 @@ export class DiagnosticsAdapter {
     private _configurationListener: { [uri: string]: IDisposable } = Object.create(null);
     private _schemaListener: { [uri: string]: IDisposable } = Object.create(null);
     private _cursorListener: { [editorId: string]: IDisposable } = Object.create(null);
-    private _debouncedValidations: { [uri: string]: (((intervals?: { start: number; end: number;}[]) => void) & _.Cancelable) } = Object.create(null);
+    private _debouncedValidations: {
+        [uri: string]: ((intervals?: { start: number; end: number }[]) => void) & Cancelable;
+    } = Object.create(null);
 
     constructor(
         private _monacoInstance: typeof monaco,
@@ -38,7 +43,6 @@ export class DiagnosticsAdapter {
         private defaults: LanguageServiceDefaultsImpl,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
-
         const onModelAdd = (model: monaco.editor.IModel): void => {
             let languageId = model.getLanguageId();
             const modelUri = model.uri.toString();
@@ -69,7 +73,7 @@ export class DiagnosticsAdapter {
                 editor.onDidDispose(() => {
                     this._cursorListener[editorId]?.dispose();
                     delete this._cursorListener[editorId];
-                })
+                });
                 this._cursorListener[editorId] = editor.onDidChangeCursorSelection((e) => {
                     const model = editor.getModel();
                     const languageId = model.getLanguageId();
@@ -78,11 +82,10 @@ export class DiagnosticsAdapter {
                     }
                     const cursorOffset = model.getOffsetAt(e.selection.getPosition());
                     const debouncedValidation = this.getOrCreateDebouncedValidation(model, languageId);
-                    debouncedValidation([{start: cursorOffset, end: cursorOffset}]);
-                })
+                    debouncedValidation([{ start: cursorOffset, end: cursorOffset }]);
+                });
             }
-        }
-
+        };
 
         const onModelRemoved = (model: monaco.editor.IModel): void => {
             this._monacoInstance.editor.setModelMarkers(model, this._languageId, []);
@@ -140,7 +143,7 @@ export class DiagnosticsAdapter {
         });
 
         this._monacoInstance.editor.getModels().forEach(onModelAdd);
-        this._monacoInstance.editor.getEditors().forEach(onEditorAdd)
+        this._monacoInstance.editor.getEditors().forEach(onEditorAdd);
     }
 
     private getOrCreateDebouncedValidation(model: monaco.editor.ITextModel, languageId: string) {
@@ -149,7 +152,7 @@ export class DiagnosticsAdapter {
             this._debouncedValidations[modelUri] = _.debounce(
                 (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
                 500
-            )
+            );
         }
         return this._debouncedValidations[modelUri];
     }
@@ -224,13 +227,12 @@ export class DiagnosticsAdapter {
                                     },
                                 },
                             };
-                        });                 
+                        });
 
-                        const oldMarkers = monaco.editor
-                            .getModelMarkers({
-                                owner: languageId,
-                                resource: resource,
-                            })
+                        const oldMarkers = monaco.editor.getModelMarkers({
+                            owner: languageId,
+                            resource: resource,
+                        });
 
                         if (oldMarkers && oldMarkers.length > 0) {
                             // In case there were previous markers, remove their decorations (for example, when enabling syntaxErrorAsMarkDown after it was disabled)
@@ -590,8 +592,8 @@ function getCssForClassification(): string {
     const cssInnerHtml = classificationColorTriplets
         .map(
             (pair) =>
-            `.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`
-            )
+                `.vs .${pair.classification} {color: #${pair.colorLight};} .vs-dark .${pair.classification} {color: #${pair.colorDark};}`
+        )
         .join('\n');
     return cssInnerHtml;
 }
@@ -703,24 +705,26 @@ function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
     };
 }
 
-const DOCS_BASE_URL = "https://learn.microsoft.com/azure/data-explorer/kusto/query";
+const DOCS_BASE_URL = 'https://learn.microsoft.com/azure/data-explorer/kusto/query';
 
 function formatDocLink(docString?: string): monaco.languages.CompletionItem['documentation'] {
     // If the docString is empty, we want to return undefined to prevent an empty documentation popup.
     if (!docString) {
         return undefined;
     }
-    const target: {[href: string]: monaco.UriComponents} = {}
+    const target: { [href: string]: monaco.UriComponents } = {};
     const urisProxy = new Proxy(target, {
         get(_target, prop, _receiver) {
             // The link comes with a postfix of ".md" that we want to remove
-            const linkWithoutPostfix = prop.toString().replace(".md", "");
+            const linkWithoutPostfix = prop.toString().replace('.md', '');
             // Sometimes we get the link as a full URL. For example in the main doc link of the item
-            const fullURL = linkWithoutPostfix.startsWith("https") ? linkWithoutPostfix : `${DOCS_BASE_URL}/${linkWithoutPostfix}`;
+            const fullURL = linkWithoutPostfix.startsWith('https')
+                ? linkWithoutPostfix
+                : `${DOCS_BASE_URL}/${linkWithoutPostfix}`;
             return monaco.Uri.parse(fullURL);
         },
     });
-    return {value: docString, isTrusted: true, uris: urisProxy};
+    return { value: docString, isTrusted: true, uris: urisProxy };
 }
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {

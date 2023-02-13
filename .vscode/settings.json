@@ -4,10 +4,13 @@
     "search.exclude": {
         "**/node_modules": true,
         "**/release": true,
-        "**/out": true
+        "**/out": true,
+        "/.yarn": true,
+        "/yarn.lock": true
     },
     "typescript.tsdk": "node_modules\\typescript\\lib",
-    "cSpell.words": ["kusto"],
-    "timeline.excludeSources": [],
+    "cSpell.words": [
+        "kusto"
+    ],
     "editor.formatOnSave": true
 }

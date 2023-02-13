@@ -1,0 +1,14 @@
+{
+  "name": "monaco-kusto",
+  "version": "0.0.0",
+  "private": true,
+  "repository": "https://github.com/Azure/monaco-kusto.git",
+  "license": "MIT",
+  "workspaces": {
+    "packages": [
+      "package",
+      "samples/*"
+    ]
+  },
+  "packageManager": "yarn@3.4.1"
+}
