@@ -262,7 +262,7 @@ export class KustoWorker {
         return hover;
     }
 
-    setParameters(scalarParameters: ScalarParameter[], tabularParameters: TabularParameter[]) {
+    setParameters(scalarParameters: readonly ScalarParameter[], tabularParameters: readonly TabularParameter[]) {
         return this._languageService.setParameters(scalarParameters, tabularParameters);
     }
 

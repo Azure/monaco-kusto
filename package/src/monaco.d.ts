@@ -99,7 +99,7 @@ declare module monaco.languages.kusto {
 
         /**
          * Get all the ambient parameters defined in global scope.
-         * Ambient parameters are parameters that are not defined in the syntax such as in a query paramter declaration.
+         * Ambient parameters are parameters that are not defined in the syntax such as in a query parameter declaration.
          * These are parameters that are injected from outside, usually by a UX application that would like to offer
          * the user intellisense for a symbol, without forcing them to write a query declaration statement.
          * Usually  the same application injects the query declaration statement and the parameter values when
@@ -121,8 +121,16 @@ declare module monaco.languages.kusto {
         doDocumentFormat(uri: string): Promise<ls.TextEdit[]>;
         doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]>;
         doCurrentCommandFormat(uri: string, caretPosition: ls.Position): Promise<ls.TextEdit[]>;
-        doValidation(uri: string, intervals: { start: number; end: number }[], includeWarnings?: boolean, includeSuggestions?: boolean): Promise<ls.Diagnostic[]>;
-        setParameters(scalarParameters: ScalarParameter[], tabularParameters: TabularParameter): void;
+        doValidation(
+            uri: string,
+            intervals: { start: number; end: number }[],
+            includeWarnings?: boolean,
+            includeSuggestions?: boolean
+        ): Promise<ls.Diagnostic[]>;
+        setParameters(
+            scalarParameters: readonly ScalarParameter[],
+            tabularParameters: readonly TabularParameter[]
+        ): void;
         /**
          * Get all the database references from the current command.
          * If database's schema is already cached in previous calls to setSchema or addDatabaseToSchema it will not be returned.
@@ -166,7 +174,7 @@ declare module monaco.languages.kusto {
          * - hosting app calls addClusterToSchema with the list of databases.
          * - now, when user type `cluster('help').database(` then the auto complete list will show all the databases.
          */
-        addClusterToSchema(uri: string, clusterName: string, databasesNames: string[]): Promise<void>;
+        addClusterToSchema(uri: string, clusterName: string, databasesNames: readonly string[]): Promise<void>;
     }
 
     /**
@@ -194,8 +202,10 @@ declare module monaco.languages.kusto {
         cslDefaultValue?: string;
     }
 
-    export interface TabularParameter extends ScalarParameter {
-        columns: Column[]
+    export interface TabularParameter {
+        name: string;
+        columns: Column[];
+        docstring?: string;
     }
 
     // an input parameter either be a scalar in which case it has a name, type and cslType, or it can be columnar, in which case
@@ -289,7 +299,7 @@ declare module monaco.languages.kusto {
     export interface DatabaseReference {
         databaseName: string;
         clusterName: string;
-    };
+    }
 
     export interface ClusterReference {
         clusterName: string;
