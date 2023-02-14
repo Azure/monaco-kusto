@@ -190,9 +190,19 @@ export class KustoWorker {
         return completions;
     }
 
-    doValidation(uri: string, intervals: { start: number; end: number }[], includeWarnings?: boolean, includeSuggestions?: boolean): Promise<ls.Diagnostic[]> {
+    doValidation(
+        uri: string,
+        intervals: { start: number; end: number }[],
+        includeWarnings?: boolean,
+        includeSuggestions?: boolean
+    ): Promise<ls.Diagnostic[]> {
         const document = this._getTextDocument(uri);
-        const diagnostics = this._languageService.doValidation(document, intervals, includeWarnings, includeSuggestions);
+        const diagnostics = this._languageService.doValidation(
+            document,
+            intervals,
+            includeWarnings,
+            includeSuggestions
+        );
         return diagnostics;
     }
 

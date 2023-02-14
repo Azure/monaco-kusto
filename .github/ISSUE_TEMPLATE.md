@@ -1,30 +1,30 @@
 <!-- Do you have a question? Please ask it on https://stackoverflow.com/questions/tagged/azure-data-explorer -->
 
- ### Description
+### Description
 
- [Description of the issue]
+[Description of the issue]
 
- ### Steps to Reproduce
+### Steps to Reproduce
 
- [Steps or usage snippet reproducing the issue]
+[Steps or usage snippet reproducing the issue]
 
- 1. [First Step]
- 2. [Second Step]
- 3. [and so on...]
+1.  [First Step]
+2.  [Second Step]
+3.  [and so on...]
 
- ```
- <snippet>
- ```
+```
+<snippet>
+```
 
- **Expected behavior:** [What you expect to happen]
+**Expected behavior:** [What you expect to happen]
 
- **Actual behavior:** [What actually happens]
+**Actual behavior:** [What actually happens]
 
- **Reproduces how often:** [What percentage of the time does it reproduce?]
+**Reproduces how often:** [What percentage of the time does it reproduce?]
 
- ### System configuration
+### System configuration
 
- monaco-kusto version: 0.x.y
- monaco-editor version: 0.X.Y
- Browser:
- OS:
+monaco-kusto version: 0.x.y
+monaco-editor version: 0.X.Y
+Browser:
+OS:

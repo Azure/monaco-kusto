@@ -1,37 +1,45 @@
 name: pr-builds
 defaults:
   run:
-    working-directory: package
 on:
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
-    - name: yarn install
-      run: |
-        yarn install --immutable
+      - name: yarn install
+        run: |
+          yarn install --immutable
 
-    - name: Creates release folder
-      run: mkdir -p release
+      - name: Check formatting
+        run: yarn format:check
 
-    - name: compile
-      run: yarn compile
+      - name: Creates release folder
+        working-directory: package
+        run: mkdir -p release
 
-    - name: run release script
-      run: node ./scripts/release.js
+      - name: compile
+        working-directory: package
+        run: yarn compile
 
-    - name: run bundle script
-      run: node ./scripts/bundle.js
+      - name: run release script
+        working-directory: package
+        run: node ./scripts/release.js
 
-    - name: copy runtime dependencies to out folder
-      run: yarn copy_runtime_deps_to_out
+      - name: run bundle script
+        working-directory: package
+        run: node ./scripts/bundle.js
 
-    - name: copy types to out folder
-      run: yarn copy_types_to_release
+      - name: copy runtime dependencies to out folder
+        working-directory: package
+        run: yarn copy_runtime_deps_to_out
+
+      - name: copy types to out folder
+        working-directory: package
+        run: yarn copy_types_to_release
