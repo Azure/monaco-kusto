@@ -114,6 +114,8 @@ declare module monaco.languages.kusto {
          */
         getReferencedGlobalParams(uri: string, cursorOffset: number): Promise<{ name: string; type: string }[]>;
 
+
+        getReferencedTables(document: TextDocument, cursorOffset: number): Promise<{ name: string }[]>;
         /**
          * Get visualization options in render command if present (null otherwise).
          */

@@ -104,6 +104,22 @@ fetch('./test/mode.txt')
                     });
                 };
 
+                window.getReferencedTables = () => {
+                    monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
+                        const model = editor.getModel();
+                        workerAccessor(model.uri).then((worker) => {
+                            worker
+                                .getReferencedTables(
+                                    model.uri.toString(),
+                                    model.getOffsetAt(editor.getPosition())
+                                )
+                                .then((referencedParams) => {
+                                    currentCommand.innerHTML = JSON.stringify(referencedParams);
+                                });
+                        });
+                    });
+                }
+
                 window.getReferencedGlobalParams = () => {
                     monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
                         const model = editor.getModel();
