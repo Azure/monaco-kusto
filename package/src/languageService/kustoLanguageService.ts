@@ -1475,14 +1475,13 @@ class KustoLanguageService implements LanguageService {
         ).filter((expression) => expression.ReferencedSymbol !== null)
             .map((x) => x.ReferencedSymbol) as sym.TableSymbol[];
 
-        // The Intersection between them is the ambient parameters that are used in the query.
-        // Note: Ideally we would use Set here (or at least array.Include), but were' compiling down to es2015.
+        // The Intersection between them is the tables that are used in the query.
         const intersection = referencedSymbols.filter(
             (referencedSymbol) =>
-            tables.filter((table) => table === referencedSymbol).length > 0
+                tables.filter((table) => table === referencedSymbol).length > 0
         );
 
-        const result = intersection.map((param) => ({ name: param.Name }));
+        const result = intersection.map((table) => ({ name: table.Name }));
         return Promise.resolve(result);
     }
 
