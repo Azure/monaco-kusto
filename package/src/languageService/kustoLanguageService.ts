@@ -47,7 +47,7 @@ class ParseProperties {
         private uri: string,
         private rulesProvider?: k.IntelliSenseRulesProviderBase,
         private parseMode?: k.ParseMode
-    ) {}
+    ) { }
 
     isParseNeeded(document: TextDocument, rulesProvider?: k.IntelliSenseRulesProviderBase, parseMode?: k.ParseMode) {
         if (
@@ -121,6 +121,11 @@ export interface ColorizationRange {
     absoluteEnd: number;
 }
 
+export interface ResultAction {
+    title: string;
+    changes: { start: number, deleteLength: number, insertText: string | null }[];
+}
+
 export interface LanguageService {
     doComplete(document: TextDocument, position: ls.Position): Promise<ls.CompletionList>;
     doRangeFormat(document: TextDocument, range: ls.Range): Promise<ls.TextEdit[]>;
@@ -133,6 +138,7 @@ export interface LanguageService {
         includeWarnings?: boolean,
         includeSuggestions?: boolean
     ): Promise<ls.Diagnostic[]>;
+    getResultActions(document: TextDocument, start: number, end: number): Promise<ResultAction[]>;
     doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
     doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
@@ -414,15 +420,15 @@ class KustoLanguageService implements LanguageService {
                 const { textToInsert, format } =
                     kItem.AfterText && kItem.AfterText.length > 0
                         ? {
-                              // Need to escape dollar sign since it is used as a placeholder in snippet.
-                              // Usually dollar sign is not a valid character in a function name, but grafana uses macros that start with dollars.
-                              textToInsert: `${kItem.EditText.replace('$', '\\$')}$0${kItem.AfterText}`,
-                              format: ls.InsertTextFormat.Snippet,
-                          }
+                            // Need to escape dollar sign since it is used as a placeholder in snippet.
+                            // Usually dollar sign is not a valid character in a function name, but grafana uses macros that start with dollars.
+                            textToInsert: `${kItem.EditText.replace('$', '\\$')}$0${kItem.AfterText}`,
+                            format: ls.InsertTextFormat.Snippet,
+                        }
                         : {
-                              textToInsert: kItem.EditText,
-                              format: ls.InsertTextFormat.PlainText,
-                          };
+                            textToInsert: kItem.EditText,
+                            format: ls.InsertTextFormat.PlainText,
+                        };
                 const lsItem = ls.CompletionItem.create(kItem.DisplayText);
 
                 // Adding to columns a prefix to their sortText so they will appear first in the list
@@ -732,6 +738,56 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(lsDiagnostics);
     }
 
+    private getApplyCodeActions(document: TextDocument, start: number, end: number): k2.ApplyAction[] {
+        const script = this.parseDocumentV2(document);
+        let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
+        const codeActionInfo = block.Service.GetCodeActions(start, start, end - start + 1, null, true, null, new Kusto.Language.Utils.CancellationToken())
+        const codeActions = this.toArray(codeActionInfo.Actions);
+        // Some code actions are of type "MenuAction". We want to flat them out, to show them seperately.
+        let flatCodeActions: k2.ApplyAction[] = [];
+        for (let i = 0; i < codeActions.length; i++) {
+            if (codeActions[i] instanceof Kusto.Language.Editor.ApplyAction) {
+                flatCodeActions.push(codeActions[i] as Kusto.Language.Editor.ApplyAction)
+            } else if (codeActions[i] instanceof Kusto.Language.Editor.MenuAction) {
+                const menuAction = codeActions[i] as Kusto.Language.Editor.MenuAction;
+                flatCodeActions.push(...this.flattenMenuAction(menuAction))
+            }
+        }
+
+        return flatCodeActions;
+    }
+
+    getResultActions(document: TextDocument, start: number, end: number): Promise<ResultAction[]> {
+        const script = this.parseDocumentV2(document);
+        let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
+        const applyCodeActions = this.getApplyCodeActions(document, start, end);
+        const resultActionsMap: ResultAction[] = []
+        for (let i = 0; i < applyCodeActions.length; i++) {
+            const applyCodeAction = applyCodeActions[i];
+            resultActionsMap.push({ title: applyCodeAction.Title, changes: [] });
+            const codeActionResults = this.toArray(block.Service.ApplyCodeAction(applyCodeAction, start).Actions);
+            const changeTextAction = codeActionResults.find((c) => c instanceof Kusto.Language.Editor.ChangeTextAction);
+            if (changeTextAction) {
+                const changes = this.toArray((changeTextAction as Kusto.Language.Editor.ChangeTextAction).Changes);
+                resultActionsMap[i].changes = changes.map(change => ({ start: change.Start + block.Start, deleteLength: change.DeleteLength, insertText: change.InsertText }));
+            }
+        }
+        return Promise.resolve(resultActionsMap);
+    }
+
+    private flattenMenuAction(menuAction: k2.MenuAction): k2.ApplyAction[] {
+        const applyActions: k2.ApplyAction[] = [];
+        const codeActions = this.toArray(menuAction.Actions);
+        for (let i = 0; i < codeActions.length; i++) {
+            if (codeActions[i] instanceof k2.ApplyAction) {
+                applyActions.push(codeActions[i] as k2.ApplyAction);
+            } else if (codeActions[i] instanceof k2.MenuAction) {
+                applyActions.push(...this.flattenMenuAction(codeActions[i] as k2.MenuAction))
+            }
+        }
+        return applyActions;
+    }
+
     private toLsDiagnostics(diagnostics: Kusto.Language.Diagnostic[], document: TextDocument) {
         return diagnostics
             .filter((diag) => diag.HasLocation)
@@ -781,14 +837,14 @@ class KustoLanguageService implements LanguageService {
                     // a command is affected if it intersects at least on of changed ranges.
                     command // command can be null. we're filtering all nulls in the array.
                         ? changeIntervals.some(
-                              ({ start: changeStart, end: changeEnd }) =>
-                                  // both intervals intersect if either the start or the end of interval A is inside interval B.
-                                  // If we deleted something at the end of a command, the interval will not intersect the current command.
-                                  // so we also want consider affected commands commands the end where the interval begins.
-                                  // hence the + 1.
-                                  (command.AbsoluteStart >= changeStart && command.AbsoluteStart <= changeEnd) ||
-                                  (changeStart >= command.AbsoluteStart && changeStart <= command.AbsoluteEnd + 1)
-                          )
+                            ({ start: changeStart, end: changeEnd }) =>
+                                // both intervals intersect if either the start or the end of interval A is inside interval B.
+                                // If we deleted something at the end of a command, the interval will not intersect the current command.
+                                // so we also want consider affected commands commands the end where the interval begins.
+                                // hence the + 1.
+                                (command.AbsoluteStart >= changeStart && command.AbsoluteStart <= changeEnd) ||
+                                (changeStart >= command.AbsoluteStart && changeStart <= command.AbsoluteEnd + 1)
+                        )
                         : false
                 );
 
@@ -873,11 +929,11 @@ class KustoLanguageService implements LanguageService {
             // a command is affected if it intersects at least on of changed ranges.
             block // command can be null. we're filtering all nulls in the array.
                 ? changeIntervals.some(
-                      ({ start: changeStart, end: changeEnd }) =>
-                          // both intervals intersect if either the start or the end of interval A is inside interval B.
-                          (block.Start >= changeStart && block.Start <= changeEnd) ||
-                          (changeStart >= block.Start && changeStart <= block.End + 1)
-                  )
+                    ({ start: changeStart, end: changeEnd }) =>
+                        // both intervals intersect if either the start or the end of interval A is inside interval B.
+                        (block.Start >= changeStart && block.Start <= changeEnd) ||
+                        (changeStart >= block.Start && changeStart <= block.End + 1)
+                )
                 : false
         );
     }
@@ -1038,10 +1094,10 @@ class KustoLanguageService implements LanguageService {
                                 cslDefaultValue: inputParam.CslDefaultValue,
                                 columns: inputParam.Columns
                                     ? inputParam.Columns.map((col) => ({
-                                          name: col.Name,
-                                          type: col.Type,
-                                          cslType: col.CslType,
-                                      }))
+                                        name: col.Name,
+                                        type: col.Type,
+                                        cslType: col.CslType,
+                                    }))
                                     : (inputParam.Columns as undefined | null | []),
                             })),
                         })),
@@ -1652,7 +1708,7 @@ class KustoLanguageService implements LanguageService {
     }
     //#endregion
 
-    private static convertToEntityDataType(kustoType: string) {}
+    private static convertToEntityDataType(kustoType: string) { }
     /**
      * We do not want to expose Bridge.Net generated schema, so we expose a cleaner javascript schema.
      * Here it gets converted to the bridge.Net schema
@@ -2177,23 +2233,23 @@ class KustoLanguageService implements LanguageService {
             this._rulesProvider =
                 this._languageSettings && this._languageSettings.includeControlCommands
                     ? new k.CslIntelliSenseRulesProvider.$ctor1(
-                          engineSchema.Cluster,
-                          engineSchema,
-                          queryParameters,
-                          availableClusters,
-                          null,
-                          true,
-                          true
-                      )
+                        engineSchema.Cluster,
+                        engineSchema,
+                        queryParameters,
+                        availableClusters,
+                        null,
+                        true,
+                        true
+                    )
                     : new k.CslQueryIntelliSenseRulesProvider.$ctor1(
-                          engineSchema.Cluster,
-                          engineSchema,
-                          queryParameters,
-                          availableClusters,
-                          null,
-                          null,
-                          null
-                      );
+                        engineSchema.Cluster,
+                        engineSchema,
+                        queryParameters,
+                        availableClusters,
+                        null,
+                        null,
+                        null
+                    );
             return;
         }
 

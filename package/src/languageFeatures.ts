@@ -117,6 +117,53 @@ export class DiagnosticsAdapter {
             }
         };
 
+        this._disposables.push(
+            monaco.languages.registerCodeActionProvider(this._languageId, {
+                provideCodeActions: async (model, range, _context, _token) => {
+                    const worker = await this._worker(model.uri);
+                    const resource = model.uri;
+                    const startOffset = model.getOffsetAt(range.getStartPosition());
+                    const endOffset = model.getOffsetAt(range.getEndPosition());
+                    const codeActions = await worker.getResultActions(resource.toString(), startOffset, endOffset);
+                    let actions = [];
+                    for (let i = 0; i < codeActions.length; i++) {
+                        if (codeActions[i].title.includes('Extract Function')) {
+                            // Ignore extract function actions for now since they are buggy currently
+                            continue;
+                        }
+                        // Quick fixes always start with "Change to" in their title
+                        const actionKind = codeActions[i].title.includes('Change to') ? 'quickfix' : 'custom';
+                        const changes = codeActions[i].changes;
+                        const edits = changes.map((change) => {
+                            const startPosition = model.getPositionAt(change.start);
+                            const endPosition = model.getPositionAt(change.start + change.deleteLength);
+                            return {
+                                resource: model.uri,
+                                textEdit: {
+                                    range: { startLineNumber: startPosition.lineNumber, startColumn: startPosition.column, endLineNumber: endPosition.lineNumber, endColumn: endPosition.column },
+                                    text: change.insertText ?? ''
+                                }
+                            };
+                        });
+                        actions.push({
+                            title: codeActions[0].title,
+                            diagnostics: [],
+                            kind: actionKind,
+                            edit: {
+                                edits: [
+                                    ...edits
+                                ]
+                            },
+                            isPreferred: true
+                        });
+                    }
+                    return {
+                        actions,
+                        dispose: () => { }
+                    };
+                }
+            }));
+
         this._disposables.push(this._monacoInstance.editor.onDidCreateEditor(onEditorAdd));
 
         this._disposables.push(this._monacoInstance.editor.onDidCreateModel(onModelAdd));
@@ -728,7 +775,7 @@ function formatDocLink(docString?: string): monaco.languages.CompletionItem['doc
 }
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
-    constructor(private _worker: WorkerAccessor, private languageSettings: monaco.languages.kusto.LanguageSettings) {}
+    constructor(private _worker: WorkerAccessor, private languageSettings: monaco.languages.kusto.LanguageSettings) { }
 
     public get triggerCharacters(): string[] {
         return [' '];
@@ -830,7 +877,7 @@ function toLocation(location: ls.Location): monaco.languages.Location {
 }
 
 export class DefinitionAdapter {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     public provideDefinition(
         model: monaco.editor.IReadOnlyModel,
@@ -855,7 +902,7 @@ export class DefinitionAdapter {
 // --- references ------
 
 export class ReferenceAdapter implements monaco.languages.ReferenceProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideReferences(
         model: monaco.editor.IReadOnlyModel,
@@ -904,7 +951,7 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.W
 }
 
 export class RenameAdapter implements monaco.languages.RenameProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideRenameEdits(
         model: monaco.editor.IReadOnlyModel,
@@ -973,7 +1020,7 @@ function toSymbolKind(kind: ls.SymbolKind): monaco.languages.SymbolKind {
 // --- formatting -----
 
 export class DocumentFormatAdapter implements monaco.languages.DocumentFormattingEditProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideDocumentFormattingEdits(
         model: monaco.editor.IReadOnlyModel,
@@ -988,7 +1035,7 @@ export class DocumentFormatAdapter implements monaco.languages.DocumentFormattin
 }
 
 export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEditProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideDocumentRangeFormattingEdits(
         model: monaco.editor.IReadOnlyModel,
@@ -1007,7 +1054,7 @@ export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEd
 
 // --- Folding ---
 export class FoldingAdapter implements monaco.languages.FoldingRangeProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideFoldingRanges(
         model: monaco.editor.ITextModel,
@@ -1036,7 +1083,7 @@ function toFoldingRange(range: FoldingRange): monaco.languages.FoldingRange {
 // --- hover ------
 
 export class HoverAdapter implements monaco.languages.HoverProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideHover(
         model: monaco.editor.IReadOnlyModel,
