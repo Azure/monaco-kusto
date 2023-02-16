@@ -31,7 +31,12 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance)
     disposables.push(client);
 
     const workerAccessor = (first: Uri, ...more: Uri[]): Promise<KustoWorker> => {
-        const augmentedSetSchema = (schema: Schema, worker: KustoWorker, globalScalarParameters?: ScalarParameter[], globalTabularParameters?: TabularParameter[]) => {
+        const augmentedSetSchema = (
+            schema: Schema,
+            worker: KustoWorker,
+            globalScalarParameters?: ScalarParameter[],
+            globalTabularParameters?: TabularParameter[]
+        ) => {
             const workerPromise = worker.setSchema(schema);
 
             workerPromise.then(() => {
@@ -44,10 +49,20 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance)
                 ({
                     ...worker,
                     setSchema: (schema) => augmentedSetSchema(schema, worker),
-                    setSchemaFromShowSchema: (schema, connection, database, globalScalarParameters?: ScalarParameter[], globalTabularParameters?: TabularParameter[]) => {
+                    setSchemaFromShowSchema: (
+                        schema,
+                        connection,
+                        database,
+                        globalScalarParameters?: ScalarParameter[],
+                        globalTabularParameters?: TabularParameter[]
+                    ) => {
                         worker
                             .normalizeSchema(schema, connection, database)
-                            .then((schema) => (globalScalarParameters ? { ...schema, globalScalarParameters, globalTabularParameters } : schema))
+                            .then((schema) =>
+                                globalScalarParameters
+                                    ? { ...schema, globalScalarParameters, globalTabularParameters }
+                                    : schema
+                            )
                             .then((normalized) => augmentedSetSchema(normalized, worker));
                     },
                 } as KustoWorker)
@@ -76,14 +91,31 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance)
         }
 
         if (e.languageSettings.useTokenColorization && monarchTokensProvider == undefined) {
-            monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
+            monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
+                language,
+                KustoLanguageDefinition
+            );
         }
     });
 
-    disposables.push(new languageFeatures.DiagnosticsAdapter(monacoInstance, language, workerAccessor, defaults, onSchemaChange.event));
+    disposables.push(
+        new languageFeatures.DiagnosticsAdapter(
+            monacoInstance,
+            language,
+            workerAccessor,
+            defaults,
+            onSchemaChange.event
+        )
+    );
 
     disposables.push(
-        new languageFeatures.ColorizationAdapter(monacoInstance, language, workerAccessor, defaults, onSchemaChange.event)
+        new languageFeatures.ColorizationAdapter(
+            monacoInstance,
+            language,
+            workerAccessor,
+            defaults,
+            onSchemaChange.event
+        )
     );
 
     disposables.push(
@@ -94,11 +126,17 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance)
     );
 
     disposables.push(
-        monacoInstance.languages.registerFoldingRangeProvider(language, new languageFeatures.FoldingAdapter(workerAccessor))
+        monacoInstance.languages.registerFoldingRangeProvider(
+            language,
+            new languageFeatures.FoldingAdapter(workerAccessor)
+        )
     );
 
     disposables.push(
-        monacoInstance.languages.registerDefinitionProvider(language, new languageFeatures.DefinitionAdapter(workerAccessor))
+        monacoInstance.languages.registerDefinitionProvider(
+            language,
+            new languageFeatures.DefinitionAdapter(workerAccessor)
+        )
     );
 
     disposables.push(
@@ -106,7 +144,10 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance)
     );
 
     disposables.push(
-        monacoInstance.languages.registerReferenceProvider(language, new languageFeatures.ReferenceAdapter(workerAccessor))
+        monacoInstance.languages.registerReferenceProvider(
+            language,
+            new languageFeatures.ReferenceAdapter(workerAccessor)
+        )
     );
 
     if (defaults.languageSettings.enableHover) {

@@ -4,7 +4,7 @@ defaults:
     working-directory: package
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   compile-and-publish:
@@ -13,33 +13,33 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
-    - name: yarn install
-      run: |
-        yarn install --immutable
+      - name: yarn install
+        run: |
+          yarn install --immutable
 
-    - name: Creates release folder
-      run: mkdir -p release
+      - name: Creates release folder
+        run: mkdir -p release
 
-    - name: compile
-      run: yarn compile
+      - name: compile
+        run: yarn compile
 
-    - name: run release script
-      run: node ./scripts/release.js
+      - name: run release script
+        run: node ./scripts/release.js
 
-    - name: run bundle script
-      run: node ./scripts/bundle.js
+      - name: run bundle script
+        run: node ./scripts/bundle.js
 
-    - name: copy runtime dependencies to out folder
-      run: yarn copy_runtime_deps_to_out
+      - name: copy runtime dependencies to out folder
+        run: yarn copy_runtime_deps_to_out
 
-    - name: copy types to out folder
-      run: yarn copy_types_to_release
+      - name: copy types to out folder
+        run: yarn copy_types_to_release
 
-    - name: NPM publish
-      uses: JS-DevTools/npm-publish@v1
-      with:
+      - name: NPM publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
           token: ${{ secrets.NPMPUBLISHTOKEN }}
           package: ./package/package.json

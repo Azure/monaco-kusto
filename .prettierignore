@@ -1,0 +1,17 @@
+/packages/*/public
+
+# Build artifacts
+/package/out
+/package/release
+/samples/*/build
+/samples/*/dist
+
+/kustoweb/public
+/kustoweb/build
+/kustoweb/dist
+
+
+# Yarn saves copies of releases in this folder
+/.yarn/releases
+
+

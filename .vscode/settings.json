@@ -9,8 +9,6 @@
         "/yarn.lock": true
     },
     "typescript.tsdk": "node_modules\\typescript\\lib",
-    "cSpell.words": [
-        "kusto"
-    ],
+    "cSpell.words": ["kusto"],
     "editor.formatOnSave": true
 }

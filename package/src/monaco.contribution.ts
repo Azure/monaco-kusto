@@ -197,7 +197,10 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
                     event.source === 'snippet' && event.reason === monaco.editor.CursorChangeReason.NotSet;
                 // If the word at the current position is not null - meaning we did not add a space after completion.
                 // In this case we don't want to activate the eager mode, since it will display the current selected word..
-                if (!didAcceptSuggestion || editor.getModel().getWordAtPosition(event.selection.getPosition()) !== null) {
+                if (
+                    !didAcceptSuggestion ||
+                    editor.getModel().getWordAtPosition(event.selection.getPosition()) !== null
+                ) {
                     return;
                 }
                 event.selection;
