@@ -1935,24 +1935,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service-next@npm:0.0.59":
-  version: 0.0.59
-  resolution: "@kusto/language-service-next@npm:0.0.59"
-  checksum: 90f377a4c59e632a2fd904c202be3c823f41359b62b05a7bc66fd4a9e86d7bed34970822b720232dacd45f6ce3373abff53fb843b5228878c5f84f5b5ba68fba
-  languageName: node
-  linkType: hard
-
 "@kusto/language-service-next@npm:0.0.62":
   version: 0.0.62
   resolution: "@kusto/language-service-next@npm:0.0.62"
   checksum: f4167112a2f25555e500b0e15339d9d9d3bf22b29ff67d8cc21ba8a277cbeaedcf5784f69bceb5b6b7e1dcbbedbc298370bc6b7176fc585aed1ba15fa6d8fcbb
-  languageName: node
-  linkType: hard
-
-"@kusto/language-service@npm:0.0.38":
-  version: 0.0.38
-  resolution: "@kusto/language-service@npm:0.0.38"
-  checksum: 9ad45b144409162298f1e61b87209e40315f3fe30b5766175b831ce9ab6b5cd4f046323956fa35ce971993aa67f84b175c5af1de9614dd57a12f4fd61bfa401c
   languageName: node
   linkType: hard
 
@@ -1963,19 +1949,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/monaco-kusto@npm:5.3.4":
-  version: 5.3.4
-  resolution: "@kusto/monaco-kusto@npm:5.3.4"
-  dependencies:
-    "@kusto/language-service": 0.0.38
-    "@kusto/language-service-next": 0.0.59
-  peerDependencies:
-    monaco-editor: 0.34.1
-  checksum: 5e0b12924d05d20b262a3f2d22a38a67ae15cd728baf55945334fc6ba5172aa8dc96028f77700b5e18b2bafced37c7dc2bec0e77a1a38a171eec844c0d533072
-  languageName: node
-  linkType: hard
-
-"@kusto/monaco-kusto@workspace:package":
+"@kusto/monaco-kusto@workspace:*, @kusto/monaco-kusto@workspace:package":
   version: 0.0.0-use.local
   resolution: "@kusto/monaco-kusto@workspace:package"
   dependencies:
@@ -13364,7 +13338,7 @@ proxy-middleware@latest:
   version: 0.0.0-use.local
   resolution: "react-monaco-kusto@workspace:samples/react"
   dependencies:
-    "@kusto/monaco-kusto": 5.3.4
+    "@kusto/monaco-kusto": "workspace:*"
     "@monaco-editor/react": 4.4.6
     "@testing-library/jest-dom": ^4.2.4
     "@testing-library/react": ^9.3.2
