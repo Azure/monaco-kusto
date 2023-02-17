@@ -127,13 +127,13 @@ export class DiagnosticsAdapter {
                     const codeActions = await worker.getResultActions(resource.toString(), startOffset, endOffset);
                     let actions = [];
                     for (let i = 0; i < codeActions.length; i++) {
-                        if (codeActions[i].title.includes('Extract Function')) {
+                        const codeAction = codeActions[i];
+                        if (codeAction.title.includes('Extract Function')) {
                             // Ignore extract function actions for now since they are buggy currently
                             continue;
                         }
-                        // Quick fixes always start with "Change to" in their title
-                        const actionKind = codeActions[i].title.includes('Change to') ? 'quickfix' : 'custom';
-                        const changes = codeActions[i].changes;
+                        const actionKind = this.defaults.languageSettings.quickFixCodeActions?.find((actionTitle) => codeAction.title.includes(actionTitle)) ? 'quickfix' : 'custom';
+                        const changes = codeAction.changes;
                         const edits = changes.map((change) => {
                             const startPosition = model.getPositionAt(change.start);
                             const endPosition = model.getPositionAt(change.start + change.deleteLength);
@@ -146,7 +146,7 @@ export class DiagnosticsAdapter {
                             };
                         });
                         actions.push({
-                            title: codeActions[0].title,
+                            title: codeAction.title,
                             diagnostics: [],
                             kind: actionKind,
                             edit: {
