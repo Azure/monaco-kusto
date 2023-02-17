@@ -121,6 +121,31 @@ export interface ColorizationRange {
     absoluteEnd: number;
 }
 
+const symbolKindToName = {
+    [sym.SymbolKind.Cluster]: 'Cluster',
+    [sym.SymbolKind.Column]: 'Column',
+    [sym.SymbolKind.Command]: 'Command',
+    [sym.SymbolKind.Database]: 'Database',
+    [sym.SymbolKind.EntityGroup]: 'EntityGroup',
+    [sym.SymbolKind.EntityGroupElement]: 'EntityGroupElement',
+    [sym.SymbolKind.Error]: 'Error',
+    [sym.SymbolKind.Function]: 'Function',
+    [sym.SymbolKind.Graph]: 'Graph',
+    [sym.SymbolKind.Group]: 'Group',
+    [sym.SymbolKind.MaterializedView]: 'MaterializedView',
+    [sym.SymbolKind.None]: 'None',
+    [sym.SymbolKind.Operator]: 'Operator',
+    [sym.SymbolKind.Option]: 'Option',
+    [sym.SymbolKind.Parameter]: 'Parameter',
+    [sym.SymbolKind.Pattern]: 'Pattern',
+    [sym.SymbolKind.QueryOperatorParameter]: 'QueryOperatorParameter',
+    [sym.SymbolKind.Scalar]: 'Scalar',
+    [sym.SymbolKind.Table]: 'Table',
+    [sym.SymbolKind.Tuple]: 'Tuple',
+    [sym.SymbolKind.Variable]: 'Variable',
+    [sym.SymbolKind.Void]: 'Void',
+}
+
 export interface LanguageService {
     doComplete(document: TextDocument, position: ls.Position): Promise<ls.CompletionList>;
     doRangeFormat(document: TextDocument, range: ls.Range): Promise<ls.TextEdit[]>;
@@ -166,7 +191,7 @@ export interface LanguageService {
     findReferences(document: TextDocument, position: ls.Position): Promise<ls.Location[]>;
     getQueryParams(document: TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]>;
     getGlobalParams(document: TextDocument): Promise<{ name: string; type: string }[]>;
-    getReferencedTables(document: TextDocument, cursorOffset: number): Promise<{ name: string }[]>;
+    getReferencedSymbols(document: TextDocument, offset?: number): Promise<{ name: string, kind: string, display: string }[]>;
     getReferencedGlobalParams(document: TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
     getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
     getDatabaseReferences(document: TextDocument, cursorOffset: number): Promise<DatabaseReference[]>;
@@ -1452,54 +1477,30 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(renderInfo);
     }
 
-    getReferencedTables(document: TextDocument, cursorOffset: number): Promise<{ name: string }[]> {
-        if (!document || !this.isIntellisenseV2()) {
-            return Promise.resolve([]);
+    getReferencedSymbols(document: TextDocument, offset?: number): Promise<{ name: string, kind: string, display: string }[]> {
+        const parsedAndAnalyzed = this.parseAndAnalyze(document, offset);
+
+        if (!parsedAndAnalyzed) {
+            Promise.resolve([]);
         }
 
-        const script = this.parseDocumentV2(document);
-        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
-
-        if (!currentBlock) {
-            return Promise.resolve([]);
-        }
-
-        const text = currentBlock.Text;
-
-        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
-
-        const tables = this.toArray<sym.TableSymbol>(this._kustoJsSchemaV2.Database.Tables);
         // We take all referenced symbols in the query
         const referencedSymbols = this.toArray<Kusto.Language.Syntax.SyntaxNode>(
             parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.Expression)
         ).filter((expression) => expression.ReferencedSymbol !== null)
-            .map((x) => x.ReferencedSymbol) as sym.TableSymbol[];
+            .map((x) => x.ReferencedSymbol);
 
-        // The Intersection between them is the tables that are used in the query.
-        const intersection = referencedSymbols.filter(
-            (referencedSymbol) =>
-                tables.filter((table) => table === referencedSymbol).length > 0
-        );
+        const result = referencedSymbols.map(sym => ({ name: sym.Name, kind: symbolKindToName[sym.Kind] ?? `${sym.Kind}`, display: sym.Display }));
 
-        const result = intersection.map((table) => ({ name: table.Name }));
         return Promise.resolve(result);
     }
 
     getReferencedGlobalParams(document: TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]> {
-        if (!document || !this.isIntellisenseV2()) {
-            return Promise.resolve([]);
+        const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
+
+        if (!parsedAndAnalyzed) {
+            Promise.resolve([]);
         }
-
-        const script = this.parseDocumentV2(document);
-        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
-
-        if (!currentBlock) {
-            return Promise.resolve([]);
-        }
-
-        const text = currentBlock.Text;
-
-        const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
 
         // We take the ambient parameters
         const ambientParameters = this.toArray<sym.ParameterSymbol>(this._kustoJsSchemaV2.Parameters);
@@ -2355,19 +2356,22 @@ class KustoLanguageService implements LanguageService {
         return conversion || k2.ClassificationKind.PlainText;
     }
 
-    private parseAndAnalyze(document: TextDocument, cursorOffset: number): Kusto.Language.KustoCode | undefined {
+    private parseAndAnalyze(document: TextDocument, cursorOffset?: number): Kusto.Language.KustoCode | undefined {
         if (!document || !this.isIntellisenseV2()) {
             return undefined;
         }
 
         const script = this.parseDocumentV2(document);
-        let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
+        let text = script.Text;
+        if (cursorOffset !== undefined) {
+            let currentBlock = this.getCurrentCommandV2(script, cursorOffset);
 
-        if (!currentBlock) {
-            return undefined;
+            if (!currentBlock) {
+                return undefined;
+            }
+
+            text = currentBlock.Text;
         }
-
-        const text = currentBlock.Text;
 
         const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
 

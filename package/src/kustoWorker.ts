@@ -104,14 +104,14 @@ export class KustoWorker {
         return globalParams;
     }
 
-    getReferencedTables(uri: string, cursorOffset: number): Promise<{ name: string }[]> {
+    getReferencedSymbols(uri: string, cursorOffset: number) {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getReferencedGlobalParams: document is ${document}. uri is ${uri}`);
             return null;
         }
 
-        const referencedParams = this._languageService.getReferencedTables(document, cursorOffset);
+        const referencedParams = this._languageService.getReferencedSymbols(document, cursorOffset);
         if (referencedParams === undefined) {
             return null;
         }

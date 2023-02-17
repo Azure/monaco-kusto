@@ -104,12 +104,12 @@ fetch('./test/mode.txt')
                     });
                 };
 
-                window.getReferencedTables = () => {
+                window.getReferencedSymbols = () => {
                     monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
                         const model = editor.getModel();
                         workerAccessor(model.uri).then((worker) => {
                             worker
-                                .getReferencedTables(
+                                .getReferencedSymbols(
                                     model.uri.toString(),
                                     model.getOffsetAt(editor.getPosition())
                                 )
