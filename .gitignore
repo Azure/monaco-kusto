@@ -7,3 +7,6 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# macos folder metadata
+**/.DS_Store
