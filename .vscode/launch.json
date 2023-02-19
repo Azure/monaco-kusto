@@ -10,7 +10,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}\\scripts\\release.js",
+            "program": "${workspaceFolder}\\scripts\\release.js"
         },
         {
             "name": "bundle",
@@ -18,7 +18,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}\\scripts\\bundle.js",
-        },
+            "program": "${workspaceFolder}\\scripts\\bundle.js"
+        }
     ]
 }

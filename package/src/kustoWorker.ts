@@ -205,10 +205,25 @@ export class KustoWorker {
         return completions;
     }
 
-    doValidation(uri: string, intervals: { start: number; end: number }[], includeWarnings?: boolean, includeSuggestions?: boolean): Promise<ls.Diagnostic[]> {
+    doValidation(
+        uri: string,
+        intervals: { start: number; end: number }[],
+        includeWarnings?: boolean,
+        includeSuggestions?: boolean
+    ): Promise<ls.Diagnostic[]> {
         const document = this._getTextDocument(uri);
-        const diagnostics = this._languageService.doValidation(document, intervals, includeWarnings, includeSuggestions);
+        const diagnostics = this._languageService.doValidation(
+            document,
+            intervals,
+            includeWarnings,
+            includeSuggestions
+        );
         return diagnostics;
+    }
+
+    getResultActions(uri: string, start: number, end: number) {
+        const document = this._getTextDocument(uri);
+        return this._languageService.getResultActions(document, start, end);
     }
 
     doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]> {

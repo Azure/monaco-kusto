@@ -13,6 +13,7 @@ export interface LanguageSettings {
     enableQueryWarnings?: boolean;
     enableQuerySuggestions?: boolean;
     disabledDiagnoticCodes?: string[];
+    quickFixCodeActions?: QuickFixCodeActionOptions[]
 }
 
 export interface FormatterOptions {
@@ -25,5 +26,7 @@ export interface SyntaxErrorAsMarkDownOptions {
     icon?: string;
     enableSyntaxErrorAsMarkDown?: boolean;
 }
+
+export type QuickFixCodeActionOptions = 'Extract Expression' | 'Extract Function' | 'Change to';
 
 export type FormatterPlacementStyle = 'None' | 'NewLine' | 'Smart';

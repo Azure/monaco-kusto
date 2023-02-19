@@ -146,6 +146,11 @@ const symbolKindToName = {
     [sym.SymbolKind.Void]: 'Void',
 }
 
+export interface ResultAction {
+    title: string;
+    changes: { start: number, deleteLength: number, insertText: string | null }[];
+}
+
 export interface LanguageService {
     doComplete(document: TextDocument, position: ls.Position): Promise<ls.CompletionList>;
     doRangeFormat(document: TextDocument, range: ls.Range): Promise<ls.TextEdit[]>;
@@ -158,10 +163,14 @@ export interface LanguageService {
         includeWarnings?: boolean,
         includeSuggestions?: boolean
     ): Promise<ls.Diagnostic[]>;
+    getResultActions(document: TextDocument, start: number, end: number): Promise<ResultAction[]>;
     doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
     doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
-    setParameters(scalarParameters: readonly s.ScalarParameter[], tabularParameters: readonly s.TabularParameter[]): Promise<void>;
+    setParameters(
+        scalarParameters: readonly s.ScalarParameter[],
+        tabularParameters: readonly s.TabularParameter[]
+    ): Promise<void>;
     setSchema(schema: s.Schema): Promise<void>;
     setSchemaFromShowSchema(
         schema: s.showSchema.Result,
@@ -254,7 +263,7 @@ class KustoLanguageService implements LanguageService {
     /**
      * Taken from:
      * https://msazure.visualstudio.com/One/_git/Azure-Kusto-Service?path=/Src/Tools/Kusto.Explorer.Control/QueryEditors/KustoScriptEditor/KustoScriptEditorControl2.xaml.cs&version=GBdev&line=2075&lineEnd=2075&lineStartColumn=9&lineEndColumn=77&lineStyle=plain&_a=contents
-    */
+     */
     private _toOptionKind: { [completionKind in k2.CompletionKind]: k.OptionKind } = {
         [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
         [k2.CompletionKind.BuiltInFunction]: k.OptionKind.FunctionScalar,
@@ -758,6 +767,51 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(lsDiagnostics);
     }
 
+    private getApplyCodeActions(document: TextDocument, start: number, end: number): k2.ApplyAction[] {
+        const script = this.parseDocumentV2(document);
+        let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
+        const codeActionInfo = block.Service.GetCodeActions(start, start, end - start + 1, null, true, null, new Kusto.Language.Utils.CancellationToken())
+        const codeActions = this.toArray(codeActionInfo.Actions);
+        // Some code actions are of type "MenuAction". We want to flat them out, to show them seperately.
+        let flatCodeActions: k2.ApplyAction[] = [];
+        for (let i = 0; i < codeActions.length; i++) {
+            flatCodeActions.push(...this.flattenCodeActions(codeActions[i]))
+        }
+        return flatCodeActions;
+    }
+
+    getResultActions(document: TextDocument, start: number, end: number): Promise<ResultAction[]> {
+        const script = this.parseDocumentV2(document);
+        let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
+        const applyCodeActions = this.getApplyCodeActions(document, start, end);
+        const resultActionsMap: ResultAction[] = applyCodeActions.map((applyCodeAction) => {
+            let changes = [];
+            const codeActionResults = this.toArray(block.Service.ApplyCodeAction(applyCodeAction, start).Actions);
+            const changeTextAction = codeActionResults.find((c) => c instanceof Kusto.Language.Editor.ChangeTextAction);
+            if (changeTextAction) {
+                changes = this.toArray((changeTextAction as Kusto.Language.Editor.ChangeTextAction).Changes)
+                    .map(change => ({ start: change.Start + block.Start, deleteLength: change.DeleteLength, insertText: change.InsertText }));
+            }
+            return { title: applyCodeAction.Title, changes }
+        })
+            .filter(resultAction => resultAction.changes.length)
+
+        return Promise.resolve(resultActionsMap);
+    }
+
+    private flattenCodeActions(codeAction: k2.CodeAction): k2.ApplyAction[] {
+        const applyActions: k2.ApplyAction[] = [];
+        if (codeAction instanceof k2.ApplyAction) {
+            applyActions.push(codeAction);
+        } else if (codeAction instanceof k2.MenuAction) {
+            const nestedCodeActions = this.toArray(codeAction.Actions);
+            for (let i = 0; i < nestedCodeActions.length; i++) {
+                applyActions.push(...this.flattenCodeActions(nestedCodeActions[i]))
+            }
+        }
+        return applyActions;
+    }
+
     private toLsDiagnostics(diagnostics: Kusto.Language.Diagnostic[], document: TextDocument) {
         return diagnostics
             .filter((diag) => diag.HasLocation)
@@ -950,9 +1004,9 @@ class KustoLanguageService implements LanguageService {
 
     setSchema(schema: s.Schema): Promise<void> {
         this._schema = schema;
-        if (this._languageSettings.useIntellisenseV2) {
-            let kustoJsSchemaV2: GlobalState =
-                schema && schema.clusterType === 'Engine' ? this.convertToKustoJsSchemaV2(schema) : null;
+        // We support intellisenseV2 only if the clusterType is "Engine", even if the setting is enabled
+        if (this._languageSettings.useIntellisenseV2 && schema && schema.clusterType === 'Engine') {
+            let kustoJsSchemaV2: GlobalState = this.convertToKustoJsSchemaV2(schema);
 
             this._kustoJsSchemaV2 = kustoJsSchemaV2;
             this._script = undefined;
@@ -975,8 +1029,12 @@ class KustoLanguageService implements LanguageService {
         this._schema.globalScalarParameters = scalarParameters;
         this._schema.globalTabularParameters = tabularParameters;
         const scalarSymbols = scalarParameters.map((param) => KustoLanguageService.createParameterSymbol(param));
-        const tabularSymbols = tabularParameters.map((param) => KustoLanguageService.createTabularParameterSymbol(param));
-        this._kustoJsSchemaV2 = this._kustoJsSchemaV2.WithParameters(KustoLanguageService.toBridgeList([...scalarSymbols, ...tabularSymbols]));
+        const tabularSymbols = tabularParameters.map((param) =>
+            KustoLanguageService.createTabularParameterSymbol(param)
+        );
+        this._kustoJsSchemaV2 = this._kustoJsSchemaV2.WithParameters(
+            KustoLanguageService.toBridgeList([...scalarSymbols, ...tabularSymbols])
+        );
         return Promise.resolve(undefined);
     }
 
@@ -1898,7 +1956,7 @@ class KustoLanguageService implements LanguageService {
             switch (tbl.entityType) {
                 case 'MaterializedViewTable':
                     const mvQuery = (tbl as s.MaterializedViewTable).mvQuery ?? null;
-                    symbol = new sym.MaterializedViewSymbol.$ctor2(tbl.name, symbol.Columns, mvQuery, tbl.docstring)
+                    symbol = new sym.MaterializedViewSymbol.$ctor2(tbl.name, symbol.Columns, mvQuery, tbl.docstring);
                     symbol = symbol.WithIsMaterializedView(true);
                     break;
                 case 'ExternalTable':
@@ -1984,13 +2042,19 @@ class KustoLanguageService implements LanguageService {
         }
 
         // Inject global scalar parameters to global scope.
-        const scalarParameters = (schema.globalScalarParameters ?? []).map(param => KustoLanguageService.createParameterSymbol(param));
+        const scalarParameters = (schema.globalScalarParameters ?? []).map((param) =>
+            KustoLanguageService.createParameterSymbol(param)
+        );
 
         // Inject global tabular parameters to global scope.
-        let tabularParameters = (schema.globalTabularParameters ?? []).map(param => KustoLanguageService.createTabularParameterSymbol(param));
+        let tabularParameters = (schema.globalTabularParameters ?? []).map((param) =>
+            KustoLanguageService.createTabularParameterSymbol(param)
+        );
 
         if (tabularParameters.length || scalarParameters.length) {
-            globalState = globalState.WithParameters(KustoLanguageService.toBridgeList([...scalarParameters, ...tabularParameters]));
+            globalState = globalState.WithParameters(
+                KustoLanguageService.toBridgeList([...scalarParameters, ...tabularParameters])
+            );
         }
 
         return globalState;

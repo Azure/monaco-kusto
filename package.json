@@ -1,14 +1,21 @@
 {
-  "name": "monaco-kusto",
-  "version": "0.0.0",
-  "private": true,
-  "repository": "https://github.com/Azure/monaco-kusto.git",
-  "license": "MIT",
-  "workspaces": {
-    "packages": [
-      "package",
-      "samples/*"
-    ]
-  },
-  "packageManager": "yarn@3.4.1"
+    "name": "monaco-kusto",
+    "version": "0.0.0",
+    "private": true,
+    "repository": "https://github.com/Azure/monaco-kusto.git",
+    "license": "MIT",
+    "scripts": {
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "workspaces": {
+        "packages": [
+            "package",
+            "samples/*"
+        ]
+    },
+    "packageManager": "yarn@3.4.1",
+    "devDependencies": {
+        "prettier": "^2.8.4"
+    }
 }

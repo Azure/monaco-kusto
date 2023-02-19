@@ -1,17 +1,24 @@
 <html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <link
+            rel="stylesheet"
+            data-name="vs/editor/editor.main"
+            href="../node_modules/monaco-editor-core/dev/vs/editor/editor.main.css"
+        />
+        <!--Override default .vs .Function style rule, otherwise intellisense is blue.-->
+        <style>
+            .vs .Function {
+                color: inherit !important;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Monaco Editor Kusto test page</h2>
 
-<head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <link rel="stylesheet" data-name="vs/editor/editor.main"
-        href="../node_modules/monaco-editor-core/dev/vs/editor/editor.main.css" />
-    <!--Override default .vs .Function style rule, otherwise intellisense is blue.-->
-    <style>
-        .vs .Function {
-            color: inherit !important
-        }
-    </style>
-</head>
+        <script></script>
+        <div id="container" style="width: 800px; height: 600px; border: 1px solid grey"></div>
 
 <body>
     <h2>Monaco Editor Kusto test page</h2>
