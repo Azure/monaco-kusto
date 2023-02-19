@@ -47,7 +47,7 @@ class ParseProperties {
         private uri: string,
         private rulesProvider?: k.IntelliSenseRulesProviderBase,
         private parseMode?: k.ParseMode
-    ) { }
+    ) {}
 
     isParseNeeded(document: TextDocument, rulesProvider?: k.IntelliSenseRulesProviderBase, parseMode?: k.ParseMode) {
         if (
@@ -144,11 +144,11 @@ const symbolKindToName = {
     [sym.SymbolKind.Tuple]: 'Tuple',
     [sym.SymbolKind.Variable]: 'Variable',
     [sym.SymbolKind.Void]: 'Void',
-}
+};
 
 export interface ResultAction {
     title: string;
-    changes: { start: number, deleteLength: number, insertText: string | null }[];
+    changes: { start: number; deleteLength: number; insertText: string | null }[];
 }
 
 export interface LanguageService {
@@ -200,7 +200,10 @@ export interface LanguageService {
     findReferences(document: TextDocument, position: ls.Position): Promise<ls.Location[]>;
     getQueryParams(document: TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]>;
     getGlobalParams(document: TextDocument): Promise<{ name: string; type: string }[]>;
-    getReferencedSymbols(document: TextDocument, offset?: number): Promise<{ name: string, kind: string, display: string }[]>;
+    getReferencedSymbols(
+        document: TextDocument,
+        offset?: number
+    ): Promise<{ name: string; kind: string; display: string }[]>;
     getReferencedGlobalParams(document: TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
     getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
     getDatabaseReferences(document: TextDocument, cursorOffset: number): Promise<DatabaseReference[]>;
@@ -449,15 +452,15 @@ class KustoLanguageService implements LanguageService {
                 const { textToInsert, format } =
                     kItem.AfterText && kItem.AfterText.length > 0
                         ? {
-                            // Need to escape dollar sign since it is used as a placeholder in snippet.
-                            // Usually dollar sign is not a valid character in a function name, but grafana uses macros that start with dollars.
-                            textToInsert: `${kItem.EditText.replace('$', '\\$')}$0${kItem.AfterText}`,
-                            format: ls.InsertTextFormat.Snippet,
-                        }
+                              // Need to escape dollar sign since it is used as a placeholder in snippet.
+                              // Usually dollar sign is not a valid character in a function name, but grafana uses macros that start with dollars.
+                              textToInsert: `${kItem.EditText.replace('$', '\\$')}$0${kItem.AfterText}`,
+                              format: ls.InsertTextFormat.Snippet,
+                          }
                         : {
-                            textToInsert: kItem.EditText,
-                            format: ls.InsertTextFormat.PlainText,
-                        };
+                              textToInsert: kItem.EditText,
+                              format: ls.InsertTextFormat.PlainText,
+                          };
                 const lsItem = ls.CompletionItem.create(kItem.DisplayText);
 
                 // Adding to columns a prefix to their sortText so they will appear first in the list
@@ -770,12 +773,20 @@ class KustoLanguageService implements LanguageService {
     private getApplyCodeActions(document: TextDocument, start: number, end: number): k2.ApplyAction[] {
         const script = this.parseDocumentV2(document);
         let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
-        const codeActionInfo = block.Service.GetCodeActions(start, start, end - start + 1, null, true, null, new Kusto.Language.Utils.CancellationToken())
+        const codeActionInfo = block.Service.GetCodeActions(
+            start,
+            start,
+            end - start + 1,
+            null,
+            true,
+            null,
+            new Kusto.Language.Utils.CancellationToken()
+        );
         const codeActions = this.toArray(codeActionInfo.Actions);
         // Some code actions are of type "MenuAction". We want to flat them out, to show them seperately.
         let flatCodeActions: k2.ApplyAction[] = [];
         for (let i = 0; i < codeActions.length; i++) {
-            flatCodeActions.push(...this.flattenCodeActions(codeActions[i]))
+            flatCodeActions.push(...this.flattenCodeActions(codeActions[i]));
         }
         return flatCodeActions;
     }
@@ -784,17 +795,25 @@ class KustoLanguageService implements LanguageService {
         const script = this.parseDocumentV2(document);
         let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
         const applyCodeActions = this.getApplyCodeActions(document, start, end);
-        const resultActionsMap: ResultAction[] = applyCodeActions.map((applyCodeAction) => {
-            let changes = [];
-            const codeActionResults = this.toArray(block.Service.ApplyCodeAction(applyCodeAction, start).Actions);
-            const changeTextAction = codeActionResults.find((c) => c instanceof Kusto.Language.Editor.ChangeTextAction);
-            if (changeTextAction) {
-                changes = this.toArray((changeTextAction as Kusto.Language.Editor.ChangeTextAction).Changes)
-                    .map(change => ({ start: change.Start + block.Start, deleteLength: change.DeleteLength, insertText: change.InsertText }));
-            }
-            return { title: applyCodeAction.Title, changes }
-        })
-            .filter(resultAction => resultAction.changes.length)
+        const resultActionsMap: ResultAction[] = applyCodeActions
+            .map((applyCodeAction) => {
+                let changes = [];
+                const codeActionResults = this.toArray(block.Service.ApplyCodeAction(applyCodeAction, start).Actions);
+                const changeTextAction = codeActionResults.find(
+                    (c) => c instanceof Kusto.Language.Editor.ChangeTextAction
+                );
+                if (changeTextAction) {
+                    changes = this.toArray((changeTextAction as Kusto.Language.Editor.ChangeTextAction).Changes).map(
+                        (change) => ({
+                            start: change.Start + block.Start,
+                            deleteLength: change.DeleteLength,
+                            insertText: change.InsertText,
+                        })
+                    );
+                }
+                return { title: applyCodeAction.Title, changes };
+            })
+            .filter((resultAction) => resultAction.changes.length);
 
         return Promise.resolve(resultActionsMap);
     }
@@ -806,7 +825,7 @@ class KustoLanguageService implements LanguageService {
         } else if (codeAction instanceof k2.MenuAction) {
             const nestedCodeActions = this.toArray(codeAction.Actions);
             for (let i = 0; i < nestedCodeActions.length; i++) {
-                applyActions.push(...this.flattenCodeActions(nestedCodeActions[i]))
+                applyActions.push(...this.flattenCodeActions(nestedCodeActions[i]));
             }
         }
         return applyActions;
@@ -861,14 +880,14 @@ class KustoLanguageService implements LanguageService {
                     // a command is affected if it intersects at least on of changed ranges.
                     command // command can be null. we're filtering all nulls in the array.
                         ? changeIntervals.some(
-                            ({ start: changeStart, end: changeEnd }) =>
-                                // both intervals intersect if either the start or the end of interval A is inside interval B.
-                                // If we deleted something at the end of a command, the interval will not intersect the current command.
-                                // so we also want consider affected commands commands the end where the interval begins.
-                                // hence the + 1.
-                                (command.AbsoluteStart >= changeStart && command.AbsoluteStart <= changeEnd) ||
-                                (changeStart >= command.AbsoluteStart && changeStart <= command.AbsoluteEnd + 1)
-                        )
+                              ({ start: changeStart, end: changeEnd }) =>
+                                  // both intervals intersect if either the start or the end of interval A is inside interval B.
+                                  // If we deleted something at the end of a command, the interval will not intersect the current command.
+                                  // so we also want consider affected commands commands the end where the interval begins.
+                                  // hence the + 1.
+                                  (command.AbsoluteStart >= changeStart && command.AbsoluteStart <= changeEnd) ||
+                                  (changeStart >= command.AbsoluteStart && changeStart <= command.AbsoluteEnd + 1)
+                          )
                         : false
                 );
 
@@ -953,11 +972,11 @@ class KustoLanguageService implements LanguageService {
             // a command is affected if it intersects at least on of changed ranges.
             block // command can be null. we're filtering all nulls in the array.
                 ? changeIntervals.some(
-                    ({ start: changeStart, end: changeEnd }) =>
-                        // both intervals intersect if either the start or the end of interval A is inside interval B.
-                        (block.Start >= changeStart && block.Start <= changeEnd) ||
-                        (changeStart >= block.Start && changeStart <= block.End + 1)
-                )
+                      ({ start: changeStart, end: changeEnd }) =>
+                          // both intervals intersect if either the start or the end of interval A is inside interval B.
+                          (block.Start >= changeStart && block.Start <= changeEnd) ||
+                          (changeStart >= block.Start && changeStart <= block.End + 1)
+                  )
                 : false
         );
     }
@@ -1122,10 +1141,10 @@ class KustoLanguageService implements LanguageService {
                                 cslDefaultValue: inputParam.CslDefaultValue,
                                 columns: inputParam.Columns
                                     ? inputParam.Columns.map((col) => ({
-                                        name: col.Name,
-                                        type: col.Type,
-                                        cslType: col.CslType,
-                                    }))
+                                          name: col.Name,
+                                          type: col.Type,
+                                          cslType: col.CslType,
+                                      }))
                                     : (inputParam.Columns as undefined | null | []),
                             })),
                         })),
@@ -1535,7 +1554,10 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(renderInfo);
     }
 
-    getReferencedSymbols(document: TextDocument, offset?: number): Promise<{ name: string, kind: string, display: string }[]> {
+    getReferencedSymbols(
+        document: TextDocument,
+        offset?: number
+    ): Promise<{ name: string; kind: string; display: string }[]> {
         const parsedAndAnalyzed = this.parseAndAnalyze(document, offset);
 
         if (!parsedAndAnalyzed) {
@@ -1545,10 +1567,15 @@ class KustoLanguageService implements LanguageService {
         // We take all referenced symbols in the query
         const referencedSymbols = this.toArray<Kusto.Language.Syntax.SyntaxNode>(
             parsedAndAnalyzed.Syntax.GetDescendants(Kusto.Language.Syntax.Expression)
-        ).filter((expression) => expression.ReferencedSymbol !== null)
+        )
+            .filter((expression) => expression.ReferencedSymbol !== null)
             .map((x) => x.ReferencedSymbol);
 
-        const result = referencedSymbols.map(sym => ({ name: sym.Name, kind: symbolKindToName[sym.Kind] ?? `${sym.Kind}`, display: sym.Display }));
+        const result = referencedSymbols.map((sym) => ({
+            name: sym.Name,
+            kind: symbolKindToName[sym.Kind] ?? `${sym.Kind}`,
+            display: sym.Display,
+        }));
 
         return Promise.resolve(result);
     }
@@ -1745,7 +1772,7 @@ class KustoLanguageService implements LanguageService {
     }
     //#endregion
 
-    private static convertToEntityDataType(kustoType: string) { }
+    private static convertToEntityDataType(kustoType: string) {}
     /**
      * We do not want to expose Bridge.Net generated schema, so we expose a cleaner javascript schema.
      * Here it gets converted to the bridge.Net schema
@@ -2276,23 +2303,23 @@ class KustoLanguageService implements LanguageService {
             this._rulesProvider =
                 this._languageSettings && this._languageSettings.includeControlCommands
                     ? new k.CslIntelliSenseRulesProvider.$ctor1(
-                        engineSchema.Cluster,
-                        engineSchema,
-                        queryParameters,
-                        availableClusters,
-                        null,
-                        true,
-                        true
-                    )
+                          engineSchema.Cluster,
+                          engineSchema,
+                          queryParameters,
+                          availableClusters,
+                          null,
+                          true,
+                          true
+                      )
                     : new k.CslQueryIntelliSenseRulesProvider.$ctor1(
-                        engineSchema.Cluster,
-                        engineSchema,
-                        queryParameters,
-                        availableClusters,
-                        null,
-                        null,
-                        null
-                    );
+                          engineSchema.Cluster,
+                          engineSchema,
+                          queryParameters,
+                          availableClusters,
+                          null,
+                          null,
+                          null
+                      );
             return;
         }
 

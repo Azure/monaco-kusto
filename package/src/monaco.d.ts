@@ -117,8 +117,10 @@ declare module monaco.languages.kusto {
          */
         getReferencedGlobalParams(uri: string, cursorOffset: number): Promise<{ name: string; type: string }[]>;
 
-
-        getReferencedSymbols(document: TextDocument, cursorOffset: number): Promise<{ name: string, kind: string, display: string }[]>;
+        getReferencedSymbols(
+            document: TextDocument,
+            cursorOffset?: number
+        ): Promise<{ name: string; kind: string; display: string }[]>;
         /**
          * Get visualization options in render command if present (null otherwise).
          */

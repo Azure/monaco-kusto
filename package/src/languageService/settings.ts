@@ -13,7 +13,7 @@ export interface LanguageSettings {
     enableQueryWarnings?: boolean;
     enableQuerySuggestions?: boolean;
     disabledDiagnoticCodes?: string[];
-    quickFixCodeActions?: QuickFixCodeActionOptions[]
+    quickFixCodeActions?: QuickFixCodeActionOptions[];
 }
 
 export interface FormatterOptions {
