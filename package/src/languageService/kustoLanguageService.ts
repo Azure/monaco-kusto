@@ -142,7 +142,10 @@ export interface LanguageService {
     doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
     doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
-    setParameters(scalarParameters: readonly s.ScalarParameter[], tabularParameters: readonly s.TabularParameter[]): Promise<void>;
+    setParameters(
+        scalarParameters: readonly s.ScalarParameter[],
+        tabularParameters: readonly s.TabularParameter[]
+    ): Promise<void>;
     setSchema(schema: s.Schema): Promise<void>;
     setSchemaFromShowSchema(
         schema: s.showSchema.Result,
@@ -234,7 +237,7 @@ class KustoLanguageService implements LanguageService {
     /**
      * Taken from:
      * https://msazure.visualstudio.com/One/_git/Azure-Kusto-Service?path=/Src/Tools/Kusto.Explorer.Control/QueryEditors/KustoScriptEditor/KustoScriptEditorControl2.xaml.cs&version=GBdev&line=2075&lineEnd=2075&lineStartColumn=9&lineEndColumn=77&lineStyle=plain&_a=contents
-    */
+     */
     private _toOptionKind: { [completionKind in k2.CompletionKind]: k.OptionKind } = {
         [k2.CompletionKind.AggregateFunction]: k.OptionKind.FunctionAggregation,
         [k2.CompletionKind.BuiltInFunction]: k.OptionKind.FunctionScalar,
@@ -975,9 +978,9 @@ class KustoLanguageService implements LanguageService {
 
     setSchema(schema: s.Schema): Promise<void> {
         this._schema = schema;
-        if (this._languageSettings.useIntellisenseV2) {
-            let kustoJsSchemaV2: GlobalState =
-                schema && schema.clusterType === 'Engine' ? this.convertToKustoJsSchemaV2(schema) : null;
+        // We support intellisenseV2 only if the clusterType is "Engine", even if the setting is enabled
+        if (this._languageSettings.useIntellisenseV2 && schema && schema.clusterType === 'Engine') {
+            let kustoJsSchemaV2: GlobalState = this.convertToKustoJsSchemaV2(schema);
 
             this._kustoJsSchemaV2 = kustoJsSchemaV2;
             this._script = undefined;
@@ -1000,8 +1003,12 @@ class KustoLanguageService implements LanguageService {
         this._schema.globalScalarParameters = scalarParameters;
         this._schema.globalTabularParameters = tabularParameters;
         const scalarSymbols = scalarParameters.map((param) => KustoLanguageService.createParameterSymbol(param));
-        const tabularSymbols = tabularParameters.map((param) => KustoLanguageService.createTabularParameterSymbol(param));
-        this._kustoJsSchemaV2 = this._kustoJsSchemaV2.WithParameters(KustoLanguageService.toBridgeList([...scalarSymbols, ...tabularSymbols]));
+        const tabularSymbols = tabularParameters.map((param) =>
+            KustoLanguageService.createTabularParameterSymbol(param)
+        );
+        this._kustoJsSchemaV2 = this._kustoJsSchemaV2.WithParameters(
+            KustoLanguageService.toBridgeList([...scalarSymbols, ...tabularSymbols])
+        );
         return Promise.resolve(undefined);
     }
 
@@ -1914,7 +1921,7 @@ class KustoLanguageService implements LanguageService {
             switch (tbl.entityType) {
                 case 'MaterializedViewTable':
                     const mvQuery = (tbl as s.MaterializedViewTable).mvQuery ?? null;
-                    symbol = new sym.MaterializedViewSymbol.$ctor2(tbl.name, symbol.Columns, mvQuery, tbl.docstring)
+                    symbol = new sym.MaterializedViewSymbol.$ctor2(tbl.name, symbol.Columns, mvQuery, tbl.docstring);
                     symbol = symbol.WithIsMaterializedView(true);
                     break;
                 case 'ExternalTable':
@@ -2000,13 +2007,19 @@ class KustoLanguageService implements LanguageService {
         }
 
         // Inject global scalar parameters to global scope.
-        const scalarParameters = (schema.globalScalarParameters ?? []).map(param => KustoLanguageService.createParameterSymbol(param));
+        const scalarParameters = (schema.globalScalarParameters ?? []).map((param) =>
+            KustoLanguageService.createParameterSymbol(param)
+        );
 
         // Inject global tabular parameters to global scope.
-        let tabularParameters = (schema.globalTabularParameters ?? []).map(param => KustoLanguageService.createTabularParameterSymbol(param));
+        let tabularParameters = (schema.globalTabularParameters ?? []).map((param) =>
+            KustoLanguageService.createTabularParameterSymbol(param)
+        );
 
         if (tabularParameters.length || scalarParameters.length) {
-            globalState = globalState.WithParameters(KustoLanguageService.toBridgeList([...scalarParameters, ...tabularParameters]));
+            globalState = globalState.WithParameters(
+                KustoLanguageService.toBridgeList([...scalarParameters, ...tabularParameters])
+            );
         }
 
         return globalState;

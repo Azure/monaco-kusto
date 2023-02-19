@@ -14,7 +14,7 @@ export interface Table {
 }
 
 export interface MaterializedViewTable extends Table {
-    entityType: 'MaterializedViewTable',
+    entityType: 'MaterializedViewTable';
     mvQuery?: string;
 }
 
@@ -105,7 +105,7 @@ const dotnetTypeToKustoType = {
     'Newtonsoft.Json.Linq.JObject': 'dynamic',
     'Newtonsoft.Json.Linq.JToken': 'dynamic',
     'System.Object': 'dynamic',
-    'System.Data.SqlTypes.SqlDecimal': 'decimal'
+    'System.Data.SqlTypes.SqlDecimal': 'decimal',
 };
 export const getCslTypeNameFromClrType = (clrType: string): string => dotnetTypeToKustoType[clrType] || clrType;
 
@@ -125,24 +125,24 @@ const kustoTypeToEntityDataType = {
     datetime: 'DateTime',
     string: 'String',
     dynamic: 'Dynamic',
-    timespan: 'TimeSpan'
+    timespan: 'TimeSpan',
 };
 export const getEntityDataTypeFromCslType = (cslType: string): string => kustoTypeToEntityDataType[cslType] || cslType;
 
 export const getCallName = (fn: Function): string =>
-    `${fn.name}(${fn.inputParameters.map(p => `{${p.name}}`).join(',')})`;
+    `${fn.name}(${fn.inputParameters.map((p) => `{${p.name}}`).join(',')})`;
 
 export const getExpression = (fn: Function): string =>
     `let ${fn.name} = ${getInputParametersAsCslString(fn.inputParameters)} ${fn.body}`;
 
 export const getInputParametersAsCslString = (inputParameters: InputParameter[]): any =>
-    `(${inputParameters.map(inputParameter => getInputParameterAsCslString(inputParameter)).join(',')})`;
+    `(${inputParameters.map((inputParameter) => getInputParameterAsCslString(inputParameter)).join(',')})`;
 
 const getInputParameterAsCslString = (inputParameter: InputParameter): string => {
     // If this is a tabular parameter
     if (inputParameter.columns && inputParameter.columns.length > 0) {
         const attributesAsString = inputParameter.columns
-            .map(col => `${col.name}:${col.cslType || getCslTypeNameFromClrType(col.type)}`)
+            .map((col) => `${col.name}:${col.cslType || getCslTypeNameFromClrType(col.type)}`)
             .join(',');
         return `${inputParameter.name}:${attributesAsString === '' ? '*' : attributesAsString}`;
     } else {
@@ -165,7 +165,7 @@ export namespace showSchema {
 
     export interface Table {
         Name: string;
-        EntityType: TableEntityType,
+        EntityType: TableEntityType;
         OrderedColumns: Column[];
         DocString?: string;
     }
