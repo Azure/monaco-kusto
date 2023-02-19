@@ -746,14 +746,8 @@ class KustoLanguageService implements LanguageService {
         // Some code actions are of type "MenuAction". We want to flat them out, to show them seperately.
         let flatCodeActions: k2.ApplyAction[] = [];
         for (let i = 0; i < codeActions.length; i++) {
-            if (codeActions[i] instanceof Kusto.Language.Editor.ApplyAction) {
-                flatCodeActions.push(codeActions[i] as Kusto.Language.Editor.ApplyAction)
-            } else if (codeActions[i] instanceof Kusto.Language.Editor.MenuAction) {
-                const menuAction = codeActions[i] as Kusto.Language.Editor.MenuAction;
-                flatCodeActions.push(...this.flattenMenuAction(menuAction))
-            }
+            flatCodeActions.push(...this.flattenCodeActions(codeActions[i]))
         }
-
         return flatCodeActions;
     }
 
@@ -767,23 +761,23 @@ class KustoLanguageService implements LanguageService {
             const changeTextAction = codeActionResults.find((c) => c instanceof Kusto.Language.Editor.ChangeTextAction);
             if (changeTextAction) {
                 changes = this.toArray((changeTextAction as Kusto.Language.Editor.ChangeTextAction).Changes)
-                .map(change => ({ start: change.Start + block.Start, deleteLength: change.DeleteLength, insertText: change.InsertText }));
+                    .map(change => ({ start: change.Start + block.Start, deleteLength: change.DeleteLength, insertText: change.InsertText }));
             }
-            return {title: applyCodeAction.Title, changes}
+            return { title: applyCodeAction.Title, changes }
         })
-        .filter(resultAction => resultAction.changes.length)
+            .filter(resultAction => resultAction.changes.length)
 
         return Promise.resolve(resultActionsMap);
     }
 
-    private flattenMenuAction(menuAction: k2.MenuAction): k2.ApplyAction[] {
+    private flattenCodeActions(codeAction: k2.CodeAction): k2.ApplyAction[] {
         const applyActions: k2.ApplyAction[] = [];
-        const codeActions = this.toArray(menuAction.Actions);
-        for (let i = 0; i < codeActions.length; i++) {
-            if (codeActions[i] instanceof k2.ApplyAction) {
-                applyActions.push(codeActions[i] as k2.ApplyAction);
-            } else if (codeActions[i] instanceof k2.MenuAction) {
-                applyActions.push(...this.flattenMenuAction(codeActions[i] as k2.MenuAction))
+        if (codeAction instanceof k2.ApplyAction) {
+            applyActions.push(codeAction);
+        } else if (codeAction instanceof k2.MenuAction) {
+            const nestedCodeActions = this.toArray(codeAction.Actions);
+            for (let i = 0; i < nestedCodeActions.length; i++) {
+                applyActions.push(...this.flattenCodeActions(nestedCodeActions[i]))
             }
         }
         return applyActions;

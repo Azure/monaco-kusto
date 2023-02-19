@@ -119,44 +119,12 @@ export class DiagnosticsAdapter {
 
         this._disposables.push(
             monaco.languages.registerCodeActionProvider(this._languageId, {
-                provideCodeActions: async (model, range, _context, _token) => {
-                    const worker = await this._worker(model.uri);
-                    const resource = model.uri;
+                provideCodeActions: async (model, range, context, _token) => {
                     const startOffset = model.getOffsetAt(range.getStartPosition());
                     const endOffset = model.getOffsetAt(range.getEndPosition());
-                    const codeActions = await worker.getResultActions(resource.toString(), startOffset, endOffset);
-                    let actions = [];
-                    for (let i = 0; i < codeActions.length; i++) {
-                        const codeAction = codeActions[i];
-                        if (codeAction.title.includes('Extract Function')) {
-                            // Ignore extract function actions for now since they are buggy currently
-                            continue;
-                        }
-                        const actionKind = this.defaults.languageSettings.quickFixCodeActions?.find((actionTitle) => codeAction.title.includes(actionTitle)) ? 'quickfix' : 'custom';
-                        const changes = codeAction.changes;
-                        const edits = changes.map((change) => {
-                            const startPosition = model.getPositionAt(change.start);
-                            const endPosition = model.getPositionAt(change.start + change.deleteLength);
-                            return {
-                                resource: model.uri,
-                                textEdit: {
-                                    range: { startLineNumber: startPosition.lineNumber, startColumn: startPosition.column, endLineNumber: endPosition.lineNumber, endColumn: endPosition.column },
-                                    text: change.insertText ?? ''
-                                }
-                            };
-                        });
-                        actions.push({
-                            title: codeAction.title,
-                            diagnostics: [],
-                            kind: actionKind,
-                            edit: {
-                                edits: [
-                                    ...edits
-                                ]
-                            },
-                            isPreferred: true
-                        });
-                    }
+                    // We want to show the quick fix option only if we have markers in our selected range
+                    const showQuickFix = context.markers.length > 0;
+                    const actions = await this.getMonacoCodeActions(model, startOffset, endOffset, showQuickFix)
                     return {
                         actions,
                         dispose: () => { }
@@ -191,6 +159,48 @@ export class DiagnosticsAdapter {
 
         this._monacoInstance.editor.getModels().forEach(onModelAdd);
         this._monacoInstance.editor.getEditors().forEach(onEditorAdd);
+    }
+
+    private async getMonacoCodeActions(model: monaco.editor.ITextModel, startOffset: number, endOffset: number, enableQuickFix: boolean): Promise<monaco.languages.CodeAction[]> {
+        const actions = [];
+        const worker = await this._worker(model.uri);
+        const resource = model.uri;
+        const codeActions = await worker.getResultActions(resource.toString(), startOffset, endOffset);
+        for (let i = 0; i < codeActions.length; i++) {
+            const codeAction = codeActions[i];
+            if (codeAction.title.includes('Extract Function')) {
+                // Ignore extract function actions for now since they are buggy currently
+                continue;
+            }
+            const codeActionKind = this.defaults.languageSettings.quickFixCodeActions?.find((actionTitle) => codeAction.title.includes(actionTitle)) ? 'quickfix' : 'custom';
+            if (codeActionKind === 'quickfix' && !enableQuickFix) {
+                return;
+            }
+            const changes = codeAction.changes;
+            const edits = changes.map((change) => {
+                const startPosition = model.getPositionAt(change.start);
+                const endPosition = model.getPositionAt(change.start + change.deleteLength);
+                return {
+                    resource: model.uri,
+                    textEdit: {
+                        range: { startLineNumber: startPosition.lineNumber, startColumn: startPosition.column, endLineNumber: endPosition.lineNumber, endColumn: endPosition.column },
+                        text: change.insertText ?? ''
+                    }
+                };
+            });
+            actions.push({
+                title: codeAction.title,
+                diagnostics: [],
+                kind: codeActionKind,
+                edit: {
+                    edits: [
+                        ...edits
+                    ]
+                },
+                isPreferred: true
+            });
+        }
+        return actions;
     }
 
     private getOrCreateDebouncedValidation(model: monaco.editor.ITextModel, languageId: string) {
