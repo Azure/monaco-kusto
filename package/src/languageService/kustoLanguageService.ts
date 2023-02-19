@@ -121,6 +121,11 @@ export interface ColorizationRange {
     absoluteEnd: number;
 }
 
+export interface ResultAction {
+    title: string;
+    changes: { start: number, deleteLength: number, insertText: string | null }[];
+}
+
 export interface LanguageService {
     doComplete(document: TextDocument, position: ls.Position): Promise<ls.CompletionList>;
     doRangeFormat(document: TextDocument, range: ls.Range): Promise<ls.TextEdit[]>;
@@ -133,6 +138,7 @@ export interface LanguageService {
         includeWarnings?: boolean,
         includeSuggestions?: boolean
     ): Promise<ls.Diagnostic[]>;
+    getResultActions(document: TextDocument, start: number, end: number): Promise<ResultAction[]>;
     doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
     doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
@@ -733,6 +739,51 @@ class KustoLanguageService implements LanguageService {
         const lsDiagnostics = this.toLsDiagnostics(diagnostics, document);
 
         return Promise.resolve(lsDiagnostics);
+    }
+
+    private getApplyCodeActions(document: TextDocument, start: number, end: number): k2.ApplyAction[] {
+        const script = this.parseDocumentV2(document);
+        let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
+        const codeActionInfo = block.Service.GetCodeActions(start, start, end - start + 1, null, true, null, new Kusto.Language.Utils.CancellationToken())
+        const codeActions = this.toArray(codeActionInfo.Actions);
+        // Some code actions are of type "MenuAction". We want to flat them out, to show them seperately.
+        let flatCodeActions: k2.ApplyAction[] = [];
+        for (let i = 0; i < codeActions.length; i++) {
+            flatCodeActions.push(...this.flattenCodeActions(codeActions[i]))
+        }
+        return flatCodeActions;
+    }
+
+    getResultActions(document: TextDocument, start: number, end: number): Promise<ResultAction[]> {
+        const script = this.parseDocumentV2(document);
+        let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
+        const applyCodeActions = this.getApplyCodeActions(document, start, end);
+        const resultActionsMap: ResultAction[] = applyCodeActions.map((applyCodeAction) => {
+            let changes = [];
+            const codeActionResults = this.toArray(block.Service.ApplyCodeAction(applyCodeAction, start).Actions);
+            const changeTextAction = codeActionResults.find((c) => c instanceof Kusto.Language.Editor.ChangeTextAction);
+            if (changeTextAction) {
+                changes = this.toArray((changeTextAction as Kusto.Language.Editor.ChangeTextAction).Changes)
+                    .map(change => ({ start: change.Start + block.Start, deleteLength: change.DeleteLength, insertText: change.InsertText }));
+            }
+            return { title: applyCodeAction.Title, changes }
+        })
+            .filter(resultAction => resultAction.changes.length)
+
+        return Promise.resolve(resultActionsMap);
+    }
+
+    private flattenCodeActions(codeAction: k2.CodeAction): k2.ApplyAction[] {
+        const applyActions: k2.ApplyAction[] = [];
+        if (codeAction instanceof k2.ApplyAction) {
+            applyActions.push(codeAction);
+        } else if (codeAction instanceof k2.MenuAction) {
+            const nestedCodeActions = this.toArray(codeAction.Actions);
+            for (let i = 0; i < nestedCodeActions.length; i++) {
+                applyActions.push(...this.flattenCodeActions(nestedCodeActions[i]))
+            }
+        }
+        return applyActions;
     }
 
     private toLsDiagnostics(diagnostics: Kusto.Language.Diagnostic[], document: TextDocument) {

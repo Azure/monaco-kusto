@@ -206,6 +206,11 @@ export class KustoWorker {
         return diagnostics;
     }
 
+    getResultActions(uri: string, start: number, end: number) {
+        const document = this._getTextDocument(uri);
+        return this._languageService.getResultActions(document, start, end);
+    }
+
     doRangeFormat(uri: string, range: ls.Range): Promise<ls.TextEdit[]> {
         const document = this._getTextDocument(uri);
         const formatted = this._languageService.doRangeFormat(document, range);

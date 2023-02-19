@@ -1942,10 +1942,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service-next@npm:0.0.62":
-  version: 0.0.62
-  resolution: "@kusto/language-service-next@npm:0.0.62"
-  checksum: f4167112a2f25555e500b0e15339d9d9d3bf22b29ff67d8cc21ba8a277cbeaedcf5784f69bceb5b6b7e1dcbbedbc298370bc6b7176fc585aed1ba15fa6d8fcbb
+"@kusto/language-service-next@npm:0.0.63":
+  version: 0.0.63
+  resolution: "@kusto/language-service-next@npm:0.0.63"
+  checksum: f8d94fdc6f1604767ca0f4e57909f7c2358a4f91584a43a71a7080da7d4d791763b5cce4c67328e2617be9b2ed21dd9609f60c8b5434bbe88a2bac92e0c2ceae
   languageName: node
   linkType: hard
 
@@ -1956,10 +1956,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service@npm:0.0.39":
-  version: 0.0.39
-  resolution: "@kusto/language-service@npm:0.0.39"
-  checksum: 3b0276eb20b8fbaa450d7f92a761559badeaf18d5825ecf716af2b5c389d1bbcc64c9734ab3a65fc54409b0632b7598291663bed92ac32b660980928d2028991
+"@kusto/language-service@npm:0.0.40":
+  version: 0.0.40
+  resolution: "@kusto/language-service@npm:0.0.40"
+  checksum: 1aedb154e7ec0a39096e0fdcc90b124f3bba5e9e998739c94a79fff66db4a290ffa59c2c5235a51e8a095d8184d902e7202f5fee2f8807b597c410ce9895efca
   languageName: node
   linkType: hard
 
@@ -1979,8 +1979,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@kusto/monaco-kusto@workspace:package"
   dependencies:
-    "@kusto/language-service": 0.0.39
-    "@kusto/language-service-next": 0.0.62
+    "@kusto/language-service": 0.0.40
+    "@kusto/language-service-next": 0.0.63
     "@types/jest": ^21.1.8
     "@types/lodash": ^4.14.109
     "@types/xregexp": ^3.0.29
