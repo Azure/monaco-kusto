@@ -115,8 +115,12 @@ declare module monaco.languages.kusto {
          * statement.
          * It is also different from getGlobalParams that will return all global parameters whether used or not.
          */
-        getReferencedGlobalParams(uri: string, cursorOffset: number): Promise<{ name: string; type: string }[]>;
+        getReferencedGlobalParams(uri: string, cursorOffset?: number): Promise<{ name: string; type: string }[]>;
 
+        getReferencedSymbols(
+            document: TextDocument,
+            cursorOffset?: number
+        ): Promise<{ name: string; kind: string; display: string }[]>;
         /**
          * Get visualization options in render command if present (null otherwise).
          */

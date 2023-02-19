@@ -104,14 +104,29 @@ export class KustoWorker {
         return globalParams;
     }
 
-    getReferencedGlobalParams(uri: string, cursorOffest: number): Promise<{ name: string; type: string }[]> {
+    getReferencedSymbols(uri: string, cursorOffset?: number) {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getReferencedGlobalParams: document is ${document}. uri is ${uri}`);
             return null;
         }
 
-        const referencedParams = this._languageService.getReferencedGlobalParams(document, cursorOffest);
+        const referencedParams = this._languageService.getReferencedSymbols(document, cursorOffset);
+        if (referencedParams === undefined) {
+            return null;
+        }
+
+        return referencedParams;
+    }
+
+    getReferencedGlobalParams(uri: string, cursorOffset?: number): Promise<{ name: string; type: string }[]> {
+        const document = this._getTextDocument(uri);
+        if (!document) {
+            console.error(`getReferencedGlobalParams: document is ${document}. uri is ${uri}`);
+            return null;
+        }
+
+        const referencedParams = this._languageService.getReferencedGlobalParams(document, cursorOffset);
         if (referencedParams === undefined) {
             return null;
         }
