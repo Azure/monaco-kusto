@@ -761,17 +761,18 @@ class KustoLanguageService implements LanguageService {
         const script = this.parseDocumentV2(document);
         let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
         const applyCodeActions = this.getApplyCodeActions(document, start, end);
-        const resultActionsMap: ResultAction[] = []
-        for (let i = 0; i < applyCodeActions.length; i++) {
-            const applyCodeAction = applyCodeActions[i];
-            resultActionsMap.push({ title: applyCodeAction.Title, changes: [] });
+        const resultActionsMap: ResultAction[] = applyCodeActions.map((applyCodeAction) => {
+            let changes = [];
             const codeActionResults = this.toArray(block.Service.ApplyCodeAction(applyCodeAction, start).Actions);
             const changeTextAction = codeActionResults.find((c) => c instanceof Kusto.Language.Editor.ChangeTextAction);
             if (changeTextAction) {
-                const changes = this.toArray((changeTextAction as Kusto.Language.Editor.ChangeTextAction).Changes);
-                resultActionsMap[i].changes = changes.map(change => ({ start: change.Start + block.Start, deleteLength: change.DeleteLength, insertText: change.InsertText }));
+                changes = this.toArray((changeTextAction as Kusto.Language.Editor.ChangeTextAction).Changes)
+                .map(change => ({ start: change.Start + block.Start, deleteLength: change.DeleteLength, insertText: change.InsertText }));
             }
-        }
+            return {title: applyCodeAction.Title, changes}
+        })
+        .filter(resultAction => resultAction.changes.length)
+
         return Promise.resolve(resultActionsMap);
     }
 
