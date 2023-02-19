@@ -204,7 +204,7 @@ export interface LanguageService {
         document: TextDocument,
         offset?: number
     ): Promise<{ name: string; kind: string; display: string }[]>;
-    getReferencedGlobalParams(document: TextDocument, offset: number): Promise<{ name: string; type: string }[]>;
+    getReferencedGlobalParams(document: TextDocument, offset?: number): Promise<{ name: string; type: string }[]>;
     getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
     getDatabaseReferences(document: TextDocument, cursorOffset: number): Promise<DatabaseReference[]>;
     getClusterReferences(document: TextDocument, cursorOffset: number): Promise<ClusterReference[]>;
@@ -1580,7 +1580,7 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(result);
     }
 
-    getReferencedGlobalParams(document: TextDocument, cursorOffset: number): Promise<{ name: string; type: string }[]> {
+    getReferencedGlobalParams(document: TextDocument, cursorOffset?: number): Promise<{ name: string; type: string }[]> {
         const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
 
         if (!parsedAndAnalyzed) {

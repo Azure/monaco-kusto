@@ -119,7 +119,7 @@ export class KustoWorker {
         return referencedParams;
     }
 
-    getReferencedGlobalParams(uri: string, cursorOffset: number): Promise<{ name: string; type: string }[]> {
+    getReferencedGlobalParams(uri: string, cursorOffset?: number): Promise<{ name: string; type: string }[]> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getReferencedGlobalParams: document is ${document}. uri is ${uri}`);
