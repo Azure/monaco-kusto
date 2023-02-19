@@ -927,6 +927,7 @@ class KustoLanguageService implements LanguageService {
 
     setSchema(schema: s.Schema): Promise<void> {
         this._schema = schema;
+        // We support intellisenseV2 only if the clusterType is "Engine", even if the setting is enabled
         if (this._languageSettings.useIntellisenseV2 && schema && schema.clusterType === 'Engine') {
             let kustoJsSchemaV2: GlobalState = this.convertToKustoJsSchemaV2(schema);
 
