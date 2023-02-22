@@ -1993,7 +1993,7 @@ __metadata:
     lodash: ^4.17.4
     merge-stream: 1.0.0
     minimatch: ^3.0.4
-    monaco-editor-core: 0.34.1
+    monaco-editor-core: 0.35.0
     monaco-languages: 2.11.1
     monaco-plugin-helpers: ^1.0.3
     object-assign: 4.1.0
@@ -2005,7 +2005,7 @@ __metadata:
     vscode-languageserver-types: 3.16.0
     xregexp: ^3.2.0
   peerDependencies:
-    monaco-editor: 0.34.1
+    monaco-editor: 0.35.0
   languageName: unknown
   linkType: soft
 
@@ -10906,10 +10906,10 @@ cors@latest:
   languageName: node
   linkType: hard
 
-"monaco-editor-core@npm:0.34.1":
-  version: 0.34.1
-  resolution: "monaco-editor-core@npm:0.34.1"
-  checksum: 88e22aebdbf42e0d08ecf4f98e8b00a77a07f57036ab0321f8bf99f9af0a8104ae439afff02f8c5f9266deb1fd0a29451f9562bd87a5f552cc3fdd84669b74a1
+"monaco-editor-core@npm:0.35.0":
+  version: 0.35.0
+  resolution: "monaco-editor-core@npm:0.35.0"
+  checksum: 513a3be777f2daed1457bd2c94872a13a399e99e63c8212aa3f3bcc03cec907ace65a4f033b0b3403c87e255710fb49ce2a9c3c2a70635ca26a0789de88e2b9d
   languageName: node
   linkType: hard
 
