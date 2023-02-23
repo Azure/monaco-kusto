@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "5.6.0",
+    "version": "5.6.1",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -17,12 +17,9 @@
         "url": "https://github.com/Azure/monaco-kusto"
     },
     "scripts": {
-        "copy_runtime_deps_to_out": "mcopy ./node_modules/@kusto/language-service/Kusto.JavaScript.Client.min.js ./out/vs/language/kusto/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./out/vs/language/kusto/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./out/vs/language/kusto/bridge.min.js && node ./node_modules/copy-dir-cli/bin/copy ./node_modules/monaco-editor-core/dev/vs ./out/vs",
-        "compile": "tsc -p ./tsconfig.json && tsc -p ./tsconfig.esm.json",
+        "build": "node ./scripts/build.js",
         "watch": "echo dev > test/mode.txt && tsc -p ./tsconfig.watch.json && npm run copy_runtime_deps_to_out && concurrently \"live-server ./ \" \"tsc -w -p ./tsconfig.watch.json \"",
         "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
-        "copy_types_to_release": "mcopy ./src/monaco.d.ts ./release/esm/monaco.d.ts && mcopy ./out/amd/monaco.contribution.d.ts ./release/esm/monaco.contribution.d.ts && mcopy ./src/monaco.d.ts ./release/min/monaco.d.ts && mcopy ./out/amd/monaco.contribution.d.ts ./release/min/monaco.contribution.d.ts && mcopy ./node_modules/@kusto/language-service/Kusto.JavaScript.Client.min.js  ./release/min/kusto.javascript.client.min.js && mcopy ./node_modules/@kusto/language-service-next/Kusto.Language.Bridge.min.js ./release/min/Kusto.Language.Bridge.min.js && mcopy ./node_modules/@kusto/language-service/bridge.min.js ./release/min/bridge.min.js && mcopy ./node_modules/@kusto/language-service/newtonsoft.json.min.js ./release/min/newtonsoft.json.min.js",
-        "prepublishOnly": "mkdirp release  && npm run compile && node ./scripts/release.js && node ./scripts/bundle.js && npm run copy_runtime_deps_to_out && npm run copy_types_to_release",
         "test": "jest",
         "clean": "mrmdir ./out && mrmdir ./release"
     },

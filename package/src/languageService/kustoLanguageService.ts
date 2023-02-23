@@ -1580,7 +1580,10 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(result);
     }
 
-    getReferencedGlobalParams(document: TextDocument, cursorOffset?: number): Promise<{ name: string; type: string }[]> {
+    getReferencedGlobalParams(
+        document: TextDocument,
+        cursorOffset?: number
+    ): Promise<{ name: string; type: string }[]> {
         const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
 
         if (!parsedAndAnalyzed) {

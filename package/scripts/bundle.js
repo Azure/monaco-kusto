@@ -20,7 +20,9 @@ const BUNDLED_FILE_HEADER = [
     '',
 ].join('\n');
 
-bundleOne('monaco.contribution', ['vs/language/kusto/kustoMode']), bundleOne('kustoMode'), bundleOne('kustoWorker');
+bundleOne('monaco.contribution', ['vs/language/kusto/kustoMode']);
+bundleOne('kustoMode');
+bundleOne('kustoWorker');
 
 function bundleOne(moduleId, exclude) {
     requirejs.optimize(
@@ -51,13 +53,13 @@ function bundleOne(moduleId, exclude) {
                 },
             ],
         },
-        function (buildResponse) {
+        async function (buildResponse) {
             const devFilePath = path.join(REPO_ROOT, 'release/dev/' + moduleId + '.js');
             const minFilePath = path.join(REPO_ROOT, 'release/min/' + moduleId + '.js');
             const fileContents = fs.readFileSync(devFilePath).toString();
             console.log();
             console.log(`Minifying ${devFilePath}...`);
-            const result = Terser.minify(fileContents, {
+            const result = await Terser.minify(fileContents, {
                 output: {
                     comments: 'some',
                 },

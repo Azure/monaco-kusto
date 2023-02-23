@@ -61,8 +61,8 @@ fetch('./test/mode.txt')
                     theme: 'kusto-light',
                     folding: true,
                     suggest: {
-                        selectionMode: 'whenQuickSuggestion'
-                    }
+                        selectionMode: 'whenQuickSuggestion',
+                    },
                 });
 
                 window.getCurrentCommand = () => {

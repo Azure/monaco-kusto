@@ -1,6 +1,4 @@
 name: pr-builds
-defaults:
-  run:
 on:
   pull_request:
     branches: [master]
@@ -12,6 +10,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: yarn
 
       - name: yarn install
         run: |
@@ -20,26 +22,6 @@ jobs:
       - name: Check formatting
         run: yarn format:check
 
-      - name: Creates release folder
+      - name: build
         working-directory: package
-        run: mkdir -p release
-
-      - name: compile
-        working-directory: package
-        run: yarn compile
-
-      - name: run release script
-        working-directory: package
-        run: node ./scripts/release.js
-
-      - name: run bundle script
-        working-directory: package
-        run: node ./scripts/bundle.js
-
-      - name: copy runtime dependencies to out folder
-        working-directory: package
-        run: yarn copy_runtime_deps_to_out
-
-      - name: copy types to out folder
-        working-directory: package
-        run: yarn copy_types_to_release
+        run: yarn build
