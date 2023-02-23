@@ -31,4 +31,4 @@ jobs:
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPMPUBLISHTOKEN }}
-          package: ./package/package.json
+          package: ./package.json
