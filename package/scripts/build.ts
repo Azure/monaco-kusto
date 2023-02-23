@@ -88,7 +88,5 @@ createReleaseFolder();
 compile();
 cp.execSync('node ./scripts/release.js', { cwd: packageFolder, stdio: 'inherit' });
 cp.execSync('node ./scripts/bundle.js', { cwd: packageFolder, stdio: 'inherit' });
-// cp.execSync('yarn copy_runtime_deps_to_out', { cwd: packageFolder, stdio: 'inherit' })
-// cp.execSync('yarn copy_types_to_release', { cwd: packageFolder, stdio: 'inherit' })
 copyRunTimeDepsToOut();
 copyTypesToRelease();
