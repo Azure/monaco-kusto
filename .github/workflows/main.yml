@@ -27,8 +27,7 @@ jobs:
         run: yarn build
 
       - name: NPM publish
-        working-directory: package
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPMPUBLISHTOKEN }}
-          package: ./package.json
+          package: ./package/package.json
