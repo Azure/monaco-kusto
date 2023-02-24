@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "5.6.3",
+    "version": "5.6.4",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -17,7 +17,7 @@
         "url": "https://github.com/Azure/monaco-kusto"
     },
     "scripts": {
-        "build": "node ./scripts/build.js",
+        "build": "ts-node ./scripts/build.ts",
         "watch": "echo dev > test/mode.txt && tsc -p ./tsconfig.watch.json && npm run copy_runtime_deps_to_out && concurrently \"live-server ./ \" \"tsc -w -p ./tsconfig.watch.json \"",
         "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
         "test": "jest",
@@ -25,12 +25,16 @@
     },
     "main": "./release/min/monaco.contribution.js",
     "types": "./release/min/monaco.contribution.d.ts",
+    "files": [
+        "release"
+    ],
     "devDependencies": {
+        "@tsconfig/node16": "^1.0.3",
         "@types/jest": "^21.1.8",
         "@types/lodash": "^4.14.109",
+        "@types/node": "16",
         "@types/xregexp": "^3.0.29",
         "concurrently": "^5.1.0",
-        "copy-dir-cli": "0.0.3",
         "event-stream": "3.3.4",
         "http-server": "^0.12.3",
         "jest": "^26.1.0",
@@ -45,6 +49,7 @@
         "requirejs": "^2.3.6",
         "terser": "^5.16.2",
         "ts-jest": "^26.1.1",
+        "ts-node": "^10.9.1",
         "typescript": "^4.0.0",
         "vscode-languageserver-textdocument": "1.0.4",
         "vscode-languageserver-types": "3.16.0",
