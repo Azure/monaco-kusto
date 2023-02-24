@@ -50,18 +50,12 @@ function copyRunTimeDepsToOut() {
 }
 
 function copyTypesToRelease() {
-    fs.cpSync(
-        path.join(packageFolder, '/src/monaco.d.ts'),
-        path.join(packageFolder, './release/esm/monaco.d.ts')
-    );
+    fs.cpSync(path.join(packageFolder, '/src/monaco.d.ts'), path.join(packageFolder, './release/esm/monaco.d.ts'));
     fs.cpSync(
         path.join(packageFolder, './out/amd/monaco.contribution.d.ts'),
         path.join(packageFolder, './release/esm/monaco.contribution.d.ts')
     );
-    fs.cpSync(
-        path.join(packageFolder, '/src/monaco.d.ts'),
-        path.join(packageFolder, './release/min/monaco.d.ts')
-    );
+    fs.cpSync(path.join(packageFolder, '/src/monaco.d.ts'), path.join(packageFolder, './release/min/monaco.d.ts'));
     fs.cpSync(
         path.join(packageFolder, './out/amd/monaco.contribution.d.ts'),
         path.join(packageFolder, './release/min/monaco.contribution.d.ts')
