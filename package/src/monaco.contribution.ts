@@ -1,13 +1,9 @@
-import Emitter = monaco.Emitter;
-import IEvent = monaco.IEvent;
-import IDisposable = monaco.IDisposable;
+import { Emitter, IEvent } from 'monaco-editor-core';
 
 import * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
-
-declare var require: <T>(moduleId: [string], callback: (module: T) => void) => void;
 
 // --- Kusto configuration and defaults ---------
 
@@ -52,7 +48,7 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
     }
 }
 
-const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
+export const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     includeControlCommands: true,
     newlineAfterPipe: true,
     openSuggestionDialogAfterPreviousSuggestionAccepted: true,
@@ -73,19 +69,19 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     quickFixCodeActions: ['Change to'],
 };
 
-function getKustoWorker(): Promise<any> {
-    return new Promise((resolve, reject) => {
-        withMode((mode) => {
-            mode.getKustoWorker().then(resolve, reject);
-        });
-    });
-}
+// function getKustoWorker(): Promise<any> {
+//     return new Promise((resolve, reject) => {
+//         withMode((mode) => {
+//             mode.getKustoWorker().then(resolve, reject);
+//         });
+//     });
+// }
 
-function withMode(callback: (module: typeof mode) => void): void {
-    require<typeof mode>(['vs/language/kusto/kustoMode'], callback);
-}
+// function withMode(callback: (module: typeof mode) => void): void {
+//     require<typeof mode>(['vs/language/kusto/kustoMode'], callback);
+// }
 
-export function setupMonacoKusto(monacoInstance: typeof monaco) {
+export function setupMonacoKusto(monacoInstance: typeof monaco, getKustoWorker: () => Promise<any>) {
     const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
     function createAPI(): typeof monaco.languages.kusto {
         return {
@@ -96,9 +92,11 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
 
     monacoInstance.languages.kusto = createAPI();
 
-    monacoInstance.languages.onLanguage('kusto', () => {
-        withMode((mode) => mode.setupMode(kustoDefaults, monacoInstance));
-    });
+    mode.setupMode(kustoDefaults, monacoInstance)
+
+    // monacoInstance.languages.onLanguage('kusto', () => {
+    //     withMode((mode) => mode.setupMode(kustoDefaults, monacoInstance));
+    // });
 
     monacoInstance.languages.register({
         id: 'kusto',
@@ -221,7 +219,7 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
     return (editor as monaco.editor.IStandaloneCodeEditor).addAction !== undefined;
 }
 
-// --- Registration to monaco editor ---
-if (monaco.editor) {
-    setupMonacoKusto(monaco);
-}
+// // --- Registration to monaco editor ---
+// if (monaco.editor) {
+//     setupMonacoKusto(monaco);
+// }

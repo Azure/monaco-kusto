@@ -1,19 +1,22 @@
-import { LanguageServiceDefaultsImpl } from './monaco.contribution';
-import { KustoWorker } from './kustoWorker';
+import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
+import type { KustoWorker } from './kustoWorker';
 
 import * as ls from 'vscode-languageserver-types';
-import * as _ from 'lodash';
+import debounce from 'lodash-es/debounce';
 
-import Uri = monaco.Uri;
-import Position = monaco.Position;
-import Range = monaco.Range;
-import Thenable = monaco.Thenable;
-import CancellationToken = monaco.CancellationToken;
-import IDisposable = monaco.IDisposable;
+// import Uri = monaco.Uri;
+// import Position = monaco.Position;
+// import Range = monaco.Range;
+// import Thenable = monaco.Thenable;
+// import CancellationToken = monaco.CancellationToken;
+// import IDisposable = monaco.IDisposable;
 import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
-import { Schema } from './languageService/schema';
-import { FoldingRange } from 'vscode-languageserver-types';
-import { ClassifiedRange } from './languageService/kustoLanguageService';
+
+import { Uri, Position, Range, Thenable, CancellationToken, IDisposable } from 'monaco-editor-core';
+
+import type { Schema } from './languageService/schema';
+import type { FoldingRange } from 'vscode-languageserver-types';
+import type { ClassifiedRange } from './languageService/kustoLanguageService';
 
 export interface WorkerAccessor {
     (first: Uri, ...more: Uri[]): Promise<KustoWorker>;
@@ -219,7 +222,7 @@ export class DiagnosticsAdapter {
     private getOrCreateDebouncedValidation(model: monaco.editor.ITextModel, languageId: string) {
         const modelUri = model.uri.toString();
         if (!this._debouncedValidations[modelUri]) {
-            this._debouncedValidations[modelUri] = _.debounce(
+            this._debouncedValidations[modelUri] = debounce(
                 (intervals?: { start: number; end: number }[]) => this._doValidate(model, languageId, intervals),
                 500
             );
@@ -470,7 +473,7 @@ export class ColorizationAdapter {
                 return;
             }
 
-            const debouncedColorization = _.debounce(
+            const debouncedColorization = debounce(
                 (intervals?: { start: number; end: number }[]) => this._doColorization(model, languageId, intervals),
                 500
             );
@@ -479,7 +482,7 @@ export class ColorizationAdapter {
             this._contentListener[model.uri.toString()] = model.onDidChangeContent((e) => {
                 // Changes are represented as a range in doc before change, plus the text that it was replaced with.
                 // We are interested in the range _after_ the change (since that's what we need to colorize).
-                // folowing logic calculates that.
+                // following logic calculates that.
                 const intervalsToColorize = changeEventToIntervals(e);
                 debouncedColorization(intervalsToColorize);
             });
