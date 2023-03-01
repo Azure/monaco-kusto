@@ -1,6 +1,6 @@
 /// <reference types='node' />
 
-// import * as cp from 'node:child_process';
+import * as cp from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -10,6 +10,19 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import commonJs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 
+const sha1 = String(cp.execSync('git rev-parse HEAD')).split('\n')[0];
+const semver = require('../package.json').version;
+const headerVersion = semver + '(' + sha1 + ')';
+
+const banner = [
+    '/*!-----------------------------------------------------------------------------',
+    ' * Copyright (c) Microsoft Corporation. All rights reserved.',
+    ' * monaco-kusto version: ' + headerVersion,
+    ' * Released under the MIT license',
+    ' * https://https://github.com/Azure/monaco-kusto/blob/master/README.md',
+    ' *-----------------------------------------------------------------------------*/',
+    '',
+].join('\n');
 
 const packageFolder = path.join(__dirname, '..');
 
@@ -37,13 +50,14 @@ async function compileAMD(type: 'dev' | 'min') {
             babel({
                 extensions,
                 babelHelpers: 'bundled',
-                presets: ['@babel/preset-typescript', ['@babel/preset-env', { targets: { ie: 11 } }]],
+                presets: [['@babel/preset-env', { targets: { ie: 11 } }], '@babel/preset-typescript', ],
             }),
             type === 'min' && terser(),
         ],
     });
     try {
         await bundle.write({
+            banner,
             format: 'amd',
             dir: path.join(packageFolder, 'release', type),
             globals: {
@@ -79,11 +93,9 @@ async function compileESM() {
     });
     try {
         await bundle.write({
+            banner,
             format: 'es',
             dir: path.join(packageFolder, 'release/esm'),
-            globals: {
-                'monaco-editor-core': 'monaco',
-            },
         });
     } finally {
         await bundle.close();
@@ -147,8 +159,7 @@ function copyTypesToRelease() {
 // compile();
 
 async function main() {
-    await compileESM()
-    // await Promise.all([compileESM(), compileAMD('dev'), compileAMD('min')]);
+    await Promise.all([compileESM(), compileAMD('dev'), compileAMD('min')]);
 }
 
 main();
