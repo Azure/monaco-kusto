@@ -422,7 +422,7 @@ const classificationToColorLight: { [K in kinds]: string } = {
 
 const classificationToColorDark: { [K in kinds]: string } = {
     Column: '4ec9b0',
-    Comment: '608B4E',
+    Comment: '6A9B34',
     Database: 'c586c0',
     Function: 'dcdcaa',
     Identifier: 'd4d4d4',
