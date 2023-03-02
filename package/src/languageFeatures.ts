@@ -127,7 +127,7 @@ export class DiagnosticsAdapter {
                     const actions = await this.getMonacoCodeActions(model, startOffset, endOffset, showQuickFix);
                     return {
                         actions,
-                        dispose: () => {},
+                        dispose: () => { },
                     };
                 },
             })
@@ -421,7 +421,7 @@ const classificationToColorLight: { [K in kinds]: string } = {
 
 const classificationToColorDark: { [K in kinds]: string } = {
     Column: '4ec9b0',
-    Comment: '608B4E',
+    Comment: '6A9B34',
     Database: 'c586c0',
     Function: 'dcdcaa',
     Identifier: 'd4d4d4',
@@ -797,7 +797,7 @@ function formatDocLink(docString?: string): monaco.languages.CompletionItem['doc
 }
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
-    constructor(private _worker: WorkerAccessor, private languageSettings: monaco.languages.kusto.LanguageSettings) {}
+    constructor(private _worker: WorkerAccessor, private languageSettings: monaco.languages.kusto.LanguageSettings) { }
 
     public get triggerCharacters(): string[] {
         return [' '];
@@ -899,7 +899,7 @@ function toLocation(location: ls.Location): monaco.languages.Location {
 }
 
 export class DefinitionAdapter {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     public provideDefinition(
         model: monaco.editor.IReadOnlyModel,
@@ -924,7 +924,7 @@ export class DefinitionAdapter {
 // --- references ------
 
 export class ReferenceAdapter implements monaco.languages.ReferenceProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideReferences(
         model: monaco.editor.IReadOnlyModel,
@@ -973,7 +973,7 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.W
 }
 
 export class RenameAdapter implements monaco.languages.RenameProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideRenameEdits(
         model: monaco.editor.IReadOnlyModel,
@@ -1042,7 +1042,7 @@ function toSymbolKind(kind: ls.SymbolKind): monaco.languages.SymbolKind {
 // --- formatting -----
 
 export class DocumentFormatAdapter implements monaco.languages.DocumentFormattingEditProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideDocumentFormattingEdits(
         model: monaco.editor.IReadOnlyModel,
@@ -1057,7 +1057,7 @@ export class DocumentFormatAdapter implements monaco.languages.DocumentFormattin
 }
 
 export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEditProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideDocumentRangeFormattingEdits(
         model: monaco.editor.IReadOnlyModel,
@@ -1076,7 +1076,7 @@ export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEd
 
 // --- Folding ---
 export class FoldingAdapter implements monaco.languages.FoldingRangeProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideFoldingRanges(
         model: monaco.editor.ITextModel,
@@ -1105,7 +1105,7 @@ function toFoldingRange(range: FoldingRange): monaco.languages.FoldingRange {
 // --- hover ------
 
 export class HoverAdapter implements monaco.languages.HoverProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: WorkerAccessor) { }
 
     provideHover(
         model: monaco.editor.IReadOnlyModel,
