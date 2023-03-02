@@ -27,6 +27,7 @@ declare module monaco.languages.kusto {
         enableQuerySuggestions?: boolean;
         disabledDiagnosticCodes?: string[];
         quickFixCodeActions?: QuickFixCodeActionOptions[];
+        enableQuickFixes?: boolean;
     }
 
     export interface SyntaxErrorAsMarkDownOptions {

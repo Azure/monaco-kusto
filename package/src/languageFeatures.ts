@@ -116,22 +116,23 @@ export class DiagnosticsAdapter {
                 delete this._debouncedValidations[uriStr];
             }
         };
-
-        this._disposables.push(
-            monaco.languages.registerCodeActionProvider(this._languageId, {
-                provideCodeActions: async (model, range, context, _token) => {
-                    const startOffset = model.getOffsetAt(range.getStartPosition());
-                    const endOffset = model.getOffsetAt(range.getEndPosition());
-                    // We want to show the quick fix option only if we have markers in our selected range
-                    const showQuickFix = context.markers.length > 0;
-                    const actions = await this.getMonacoCodeActions(model, startOffset, endOffset, showQuickFix);
-                    return {
-                        actions,
-                        dispose: () => {},
-                    };
-                },
-            })
-        );
+        if (this.defaults.languageSettings.enableQuickFixes) {
+            this._disposables.push(
+                monaco.languages.registerCodeActionProvider(this._languageId, {
+                    provideCodeActions: async (model, range, context, _token) => {
+                        const startOffset = model.getOffsetAt(range.getStartPosition());
+                        const endOffset = model.getOffsetAt(range.getEndPosition());
+                        // We want to show the quick fix option only if we have markers in our selected range
+                        const showQuickFix = context.markers.length > 0;
+                        const actions = await this.getMonacoCodeActions(model, startOffset, endOffset, showQuickFix);
+                        return {
+                            actions,
+                            dispose: () => {},
+                        };
+                    },
+                })
+            );
+        }
 
         this._disposables.push(this._monacoInstance.editor.onDidCreateEditor(onEditorAdd));
 
