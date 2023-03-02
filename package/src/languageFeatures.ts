@@ -4,15 +4,9 @@ import type { KustoWorker } from './kustoWorker';
 import * as ls from 'vscode-languageserver-types';
 import debounce from 'lodash-es/debounce';
 
-// import Uri = monaco.Uri;
-// import Position = monaco.Position;
-// import Range = monaco.Range;
-// import Thenable = monaco.Thenable;
-// import CancellationToken = monaco.CancellationToken;
-// import IDisposable = monaco.IDisposable;
 import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
 
-import { Uri, Position, Range, Thenable, CancellationToken, IDisposable } from 'monaco-editor-core';
+import type { Uri, Position, Range, Thenable, CancellationToken, IDisposable } from 'monaco-editor-core';
 
 import type { Schema } from './languageService/schema';
 import type { FoldingRange } from 'vscode-languageserver-types';
@@ -691,7 +685,7 @@ function toDecoration(
 ): monaco.editor.IModelDeltaDecoration {
     const start = model.getPositionAt(classification.start);
     const end = model.getPositionAt(classification.start + classification.length);
-    const range = new Range(start.lineNumber, start.column, end.lineNumber, end.column);
+    const range = new monaco.Range(start.lineNumber, start.column, end.lineNumber, end.column);
     const inlineClassName = (ClassificationKind as any).$names[classification.kind];
     return {
         range,
@@ -721,7 +715,7 @@ function toRange(range: ls.Range): Range {
     if (!range) {
         return void 0;
     }
-    return new Range(range.start.line + 1, range.start.character + 1, range.end.line + 1, range.end.character + 1);
+    return new monaco.Range(range.start.line + 1, range.start.character + 1, range.end.line + 1, range.end.character + 1);
 }
 
 function toCompletionItemKind(kind: number): monaco.languages.CompletionItemKind {
@@ -814,7 +808,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
         token: CancellationToken
     ): Thenable<monaco.languages.CompletionList> {
         const wordInfo = model.getWordUntilPosition(position);
-        const wordRange = new Range(position.lineNumber, wordInfo.startColumn, position.lineNumber, wordInfo.endColumn);
+        const wordRange = new monaco.Range(position.lineNumber, wordInfo.startColumn, position.lineNumber, wordInfo.endColumn);
         const resource = model.uri;
         const onDidProvideCompletionItems: monaco.languages.kusto.OnDidProvideCompletionItems =
             this.languageSettings.onDidProvideCompletionItems;
@@ -897,7 +891,7 @@ function toMarkedStringArray(
 
 function toLocation(location: ls.Location): monaco.languages.Location {
     return {
-        uri: Uri.parse(location.uri),
+        uri: monaco.Uri.parse(location.uri),
         range: toRange(location.range),
     };
 }
@@ -959,7 +953,7 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.W
     }
     let resourceEdits: monaco.languages.IWorkspaceTextEdit[] = [];
     for (let uri in edit.changes) {
-        const _uri = Uri.parse(uri);
+        const _uri = monaco.Uri.parse(uri);
         for (let e of edit.changes[uri]) {
             resourceEdits.push({
                 resource: _uri,

@@ -1,3 +1,5 @@
+import { Emitter } from 'monaco-editor-core';
+
 import { WorkerManager } from './workerManager';
 import type { KustoWorker } from './kustoWorker';
 import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
@@ -23,7 +25,7 @@ let workerPromise: Promise<WorkerAccessor> = new Promise((resolve, reject) => {
  * @param defaults
  */
 export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance): WorkerAccessor {
-    let onSchemaChange = new monaco.Emitter<Schema>();
+    let onSchemaChange = new Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
     let disposables: IDisposable[] = [];
     let monarchTokensProvider: IDisposable;

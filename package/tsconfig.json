@@ -1,21 +1,18 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
-    "include": ["./src/**/*", "src/monaco.d.ts"],
+    "include": ["./src/monaco.contribution.ts", "./src/kustoMode.ts"],
     "compilerOptions": {
         "rootDir": "./src",
-        "module": "amd",
+        "module": "esnext",
         "moduleResolution": "node",
-        "outDir": "./out/amd",
-        "target": "es5",
+        "outDir": "./release/esm",
+        "target": "esnext",
         "lib": ["es2020", "dom", "WebWorker.ImportScripts"],
         "alwaysStrict": true,
         "declaration": true,
+        "emitDeclarationOnly": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "types": [
-            "monaco-editor-core/monaco",
-            "@kusto/language-service/Kusto.JavaScript.Client",
-            "@kusto/language-service-next/Kusto.Language.Bridge"
-        ]
+        "types": ["./monaco"]
     }
 }

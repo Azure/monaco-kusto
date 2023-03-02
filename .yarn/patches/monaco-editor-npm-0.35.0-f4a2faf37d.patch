@@ -1,0 +1,44 @@
+diff --git a/esm/vs/base/common/marked/marked.js b/esm/vs/base/common/marked/marked.js
+index a8ad563009ca0504a681c38bffe6d220950f6995..525520f0a213ae64deea8e68c4fc55524590d7bb 100644
+--- a/esm/vs/base/common/marked/marked.js
++++ b/esm/vs/base/common/marked/marked.js
+@@ -3058,22 +3058,23 @@ let __marked_exports = {};
+   var parser = Parser.parse;
+   var lexer = Lexer.lex;
+ 
+-  exports.Lexer = Lexer;
+-  exports.Parser = Parser;
+-  exports.Renderer = Renderer;
+-  exports.Slugger = Slugger;
+-  exports.TextRenderer = TextRenderer;
+-  exports.Tokenizer = Tokenizer;
+-  exports.getDefaults = getDefaults;
+-  exports.lexer = lexer;
+-  exports.marked = marked;
+-  exports.options = options;
+-  exports.parse = parse;
+-  exports.parseInline = parseInline;
+-  exports.parser = parser;
+-  exports.setOptions = setOptions;
+-  exports.use = use;
+-  exports.walkTokens = walkTokens;
++  Object.defineProperty(exports, 'Lexer', Lexer);
++  Object.defineProperty(exports, 'Lexer', Lexer);
++  Object.defineProperty(exports, 'Parser', Parser);
++  Object.defineProperty(exports, 'Renderer', Renderer);
++  Object.defineProperty(exports, 'Slugger', Slugger);
++  Object.defineProperty(exports, 'TextRenderer', TextRenderer);
++  Object.defineProperty(exports, 'Tokenizer', Tokenizer);
++  Object.defineProperty(exports, 'getDefaults', getDefaults);
++  Object.defineProperty(exports, 'lexer', lexer);
++  Object.defineProperty(exports, 'marked', marked);
++  Object.defineProperty(exports, 'options', options);
++  Object.defineProperty(exports, 'parse', parse);
++  Object.defineProperty(exports, 'parseInline', parseInline);
++  Object.defineProperty(exports, 'parser', parser);
++  Object.defineProperty(exports, 'setOptions', setOptions);
++  Object.defineProperty(exports, 'use', use);
++  Object.defineProperty(exports, 'walkTokens', walkTokens);
+ 
+   Object.defineProperty(exports, '__esModule', { value: true });
+ 

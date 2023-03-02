@@ -1,3 +1,12 @@
+/// <reference types="monaco-editor-core/monaco"/>
+/// <reference types="@kusto/language-service/Kusto.JavaScript.Client" />
+/// <reference types="@kusto/language-service-next/Kusto.Language.Bridge" />
+/// <reference types="vscode-languageserver-types" />
+
+// declare import type * as ls from 'vscode-languageserver-types';
+
+// import { Position } from 'monaco-editor-core';
+
 // This file gets bundled as is with monaco-kusto.
 // Everything that needs to be exposed to consumers should be typed here.
 // This means that all declarations here are duplicated from the actual definitions around the code.
@@ -64,13 +73,6 @@ declare module monaco.languages.kusto {
     export var kustoDefaults: LanguageServiceDefaults;
 
     export interface KustoWorker {
-        /**
-         * Sets an array of ambient parameters to be known by the language service.
-         * Language service assumes that these parameters will be provided externally when query gets executed and does
-         * not error-out when they are being referenced in the query.
-         * @param parameters the array of parameters
-         */
-        setParameter(parameters: ScalarParameter[]);
         setSchema(schema: Schema): Promise<void>;
         setSchemaFromShowSchema(
             schema: any,
@@ -134,6 +136,12 @@ declare module monaco.languages.kusto {
             includeWarnings?: boolean,
             includeSuggestions?: boolean
         ): Promise<ls.Diagnostic[]>;
+        /**
+         * Sets an array of ambient parameters to be known by the language service.
+         * Language service assumes that these parameters will be provided externally when query gets executed and does
+         * not error-out when they are being referenced in the query.
+         * @param parameters the array of parameters
+         */
         setParameters(
             scalarParameters: readonly ScalarParameter[],
             tabularParameters: readonly TabularParameter[]
@@ -257,7 +265,7 @@ declare module monaco.languages.kusto {
 
     export var getKustoWorker: () => Promise<WorkerAccessor>;
 
-    export declare type VisualizationType =
+    export type VisualizationType =
         | 'anomalychart'
         | 'areachart'
         | 'barchart'
@@ -274,10 +282,10 @@ declare module monaco.languages.kusto {
         | 'timepivot'
         | 'card';
 
-    export declare type Scale = 'linear' | 'log';
-    export declare type LegendVisibility = 'visible' | 'hidden';
-    export declare type YSplit = 'none' | 'axes' | 'panels';
-    export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100' | 'map';
+    export type Scale = 'linear' | 'log';
+    export type LegendVisibility = 'visible' | 'hidden';
+    export type YSplit = 'none' | 'axes' | 'panels';
+    export type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100' | 'map';
 
     export interface RenderOptions {
         visualization?: null | VisualizationType;

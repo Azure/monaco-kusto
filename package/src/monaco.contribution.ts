@@ -1,14 +1,22 @@
-import { Emitter, IEvent } from 'monaco-editor-core';
+Object.defineProperty(globalThis, 'System', )
+
+import '@kusto/language-service/bridge';
+import '@kusto/language-service/newtonsoft.json';
+import '@kusto/language-service/Kusto.JavaScript.Client.min';
+
+import 'monaco-editor-core/monaco';
 
 import * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
+import type { KustoWorker } from './kustoWorker';
+import { WorkerAccessor } from './languageFeatures';
 
 // --- Kusto configuration and defaults ---------
 
 export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.LanguageServiceDefaults {
-    private _onDidChange = new Emitter<monaco.languages.kusto.LanguageServiceDefaults>();
+    private _onDidChange = new monaco.Emitter<monaco.languages.kusto.LanguageServiceDefaults>();
     private _languageSettings: monaco.languages.kusto.LanguageSettings;
     // in milliseconds. For example - this is 2 minutes 2 * 60 * 1000
     private _workerMaxIdleTime: number;
@@ -24,7 +32,7 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
         this._workerMaxIdleTime = 0;
     }
 
-    get onDidChange(): IEvent<monaco.languages.kusto.LanguageServiceDefaults> {
+    get onDidChange(): monaco.IEvent<monaco.languages.kusto.LanguageServiceDefaults> {
         return this._onDidChange.event;
     }
 
@@ -69,19 +77,24 @@ export const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = 
     quickFixCodeActions: ['Change to'],
 };
 
-// function getKustoWorker(): Promise<any> {
-//     return new Promise((resolve, reject) => {
-//         withMode((mode) => {
-//             mode.getKustoWorker().then(resolve, reject);
-//         });
-//     });
-// }
+declare var AMD: any;
+declare var require: any;
 
-// function withMode(callback: (module: typeof mode) => void): void {
-//     require<typeof mode>(['vs/language/kusto/kustoMode'], callback);
-// }
+function getMode(): Promise<typeof mode> {
+    if (AMD) {
+        return new Promise((resolve, reject) => {
+            require(['vs/language/kusto/kustoMode'], resolve, reject);
+        });
+    } else {
+        return import('./kustoMode');
+    }
+}
 
-export function setupMonacoKusto(monacoInstance: typeof monaco, getKustoWorker: () => Promise<any>) {
+function getKustoWorker(): Promise<WorkerAccessor> {
+    return getMode().then((mode) => mode.getKustoWorker());
+}
+
+export function setupMonacoKusto(monacoInstance: typeof monaco) {
     const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
     function createAPI(): typeof monaco.languages.kusto {
         return {
@@ -92,11 +105,9 @@ export function setupMonacoKusto(monacoInstance: typeof monaco, getKustoWorker: 
 
     monacoInstance.languages.kusto = createAPI();
 
-    mode.setupMode(kustoDefaults, monacoInstance)
-
-    // monacoInstance.languages.onLanguage('kusto', () => {
-    //     withMode((mode) => mode.setupMode(kustoDefaults, monacoInstance));
-    // });
+    monacoInstance.languages.onLanguage('kusto', () => {
+        getMode().then((mode) => mode.setupMode(kustoDefaults, monacoInstance));
+    });
 
     monacoInstance.languages.register({
         id: 'kusto',
@@ -219,7 +230,7 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
     return (editor as monaco.editor.IStandaloneCodeEditor).addAction !== undefined;
 }
 
-// // --- Registration to monaco editor ---
-// if (monaco.editor) {
-//     setupMonacoKusto(monaco);
-// }
+// --- Registration to monaco editor ---
+if (monaco.editor) {
+    setupMonacoKusto(monaco);
+}

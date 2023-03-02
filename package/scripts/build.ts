@@ -1,7 +1,8 @@
 /// <reference types='node' />
 
 import * as cp from 'node:child_process';
-import * as fs from 'node:fs';
+import * as util from 'node:util';
+import { readFileSync } from 'node:fs';
 import * as path from 'node:path';
 
 import * as rollup from 'rollup';
@@ -26,17 +27,22 @@ const banner = [
 
 const packageFolder = path.join(__dirname, '..');
 
-const pkg = JSON.parse(fs.readFileSync(path.resolve(packageFolder, 'package.json')).toString());
+const pkg = JSON.parse(readFileSync(path.resolve(packageFolder, 'package.json')).toString());
 
 const extensions = ['.js', '.ts'];
 
 const input: rollup.InputOption = {
     'monaco.contribution': path.join(packageFolder, 'src/monaco.contribution.ts'),
     kustoWorker: path.join(packageFolder, 'src/kusto.worker.ts'),
+    // no need to keep this separate?
     kustoMode: path.join(packageFolder, 'src/kustoMode.ts'),
+    // intellisense
     'Kusto.Language.Bridge': require.resolve('@kusto/language-service-next/Kusto.Language.Bridge'),
+    // base
     bridge: require.resolve('@kusto/language-service/bridge'),
+    // base
     'newtonsoft.json': require.resolve('@kusto/language-service/newtonsoft.json'),
+    // base
     'kusto.javascript.client': require.resolve('@kusto/language-service/Kusto.JavaScript.Client.min'),
 };
 
@@ -50,7 +56,7 @@ async function compileAMD(type: 'dev' | 'min') {
             babel({
                 extensions,
                 babelHelpers: 'bundled',
-                presets: [['@babel/preset-env', { targets: { ie: 11 } }], '@babel/preset-typescript', ],
+                presets: [['@babel/preset-env', { targets: { ie: 11 } }], '@babel/preset-typescript'],
             }),
             type === 'min' && terser(),
         ],
@@ -102,64 +108,74 @@ async function compileESM() {
     }
 }
 
-function copyRunTimeDepsToOut() {
-    const languageServiceFiles = [
-        [
-            '@kusto/language-service/Kusto.JavaScript.Client.min.js',
-            './out/vs/language/kusto/kusto.javascript.client.min.js',
-        ],
-        [
-            '@kusto/language-service-next/Kusto.Language.Bridge.min.js',
-            './out/vs/language/kusto/Kusto.Language.Bridge.min.js',
-        ],
-        ['@kusto/language-service/bridge.min.js', './out/vs/language/kusto/bridge.min.js'],
-    ];
+// function copyRunTimeDepsToOut() {
+//     const languageServiceFiles = [
+//         [
+//             '@kusto/language-service/Kusto.JavaScript.Client.min.js',
+//             './out/vs/language/kusto/kusto.javascript.client.min.js',
+//         ],
+//         [
+//             '@kusto/language-service-next/Kusto.Language.Bridge.min.js',
+//             './out/vs/language/kusto/Kusto.Language.Bridge.min.js',
+//         ],
+//         ['@kusto/language-service/bridge.min.js', './out/vs/language/kusto/bridge.min.js'],
+//     ];
 
-    for (const [from, to] of languageServiceFiles) {
-        fs.cpSync(require.resolve(from), path.join(packageFolder, to));
-    }
+//     for (const [from, to] of languageServiceFiles) {
+//         fs.cpSync(require.resolve(from), path.join(packageFolder, to));
+//     }
 
-    fs.cpSync(
-        path.dirname(require.resolve('monaco-editor-core/dev/vs/loader.js')),
-        path.join(packageFolder, './out/vs'),
-        { recursive: true }
-    );
-}
+//     fs.cpSync(
+//         path.dirname(require.resolve('monaco-editor-core/dev/vs/loader.js')),
+//         path.join(packageFolder, './out/vs'),
+//         { recursive: true }
+//     );
+// }
 
-function copyTypesToRelease() {
-    fs.cpSync(path.join(packageFolder, '/src/monaco.d.ts'), path.join(packageFolder, './release/esm/monaco.d.ts'));
-    fs.cpSync(
-        path.join(packageFolder, './out/amd/monaco.contribution.d.ts'),
-        path.join(packageFolder, './release/esm/monaco.contribution.d.ts')
-    );
-    fs.cpSync(path.join(packageFolder, '/src/monaco.d.ts'), path.join(packageFolder, './release/min/monaco.d.ts'));
-    fs.cpSync(
-        path.join(packageFolder, './out/amd/monaco.contribution.d.ts'),
-        path.join(packageFolder, './release/min/monaco.contribution.d.ts')
-    );
-    // fs.cpSync(
-    //     require.resolve('@kusto/language-service/Kusto.JavaScript.Client.min.js'),
-    //     path.join(packageFolder, './release/min/kusto.javascript.client.min.js')
-    // );
-    // fs.cpSync(
-    //     require.resolve('@kusto/language-service-next/Kusto.Language.Bridge.min.js'),
-    //     path.join(packageFolder, './release/min/Kusto.Language.Bridge.min.js')
-    // );
-    // fs.cpSync(
-    //     require.resolve('@kusto/language-service/bridge.min.js'),
-    //     path.join(packageFolder, './release/min/bridge.min.js')
-    // );
-    // fs.cpSync(
-    //     require.resolve('@kusto/language-service/newtonsoft.json.min.js'),
-    //     path.join(packageFolder, '/release/min/newtonsoft.json.min.js')
-    // );
-}
+// function copyTypesToRelease() {
+//     fs.cpSync(path.join(packageFolder, '/src/monaco.d.ts'), path.join(packageFolder, './release/esm/monaco.d.ts'));
+//     fs.cpSync(
+//         path.join(packageFolder, './out/amd/monaco.contribution.d.ts'),
+//         path.join(packageFolder, './release/esm/monaco.contribution.d.ts')
+//     );
+//     fs.cpSync(path.join(packageFolder, '/src/monaco.d.ts'), path.join(packageFolder, './release/min/monaco.d.ts'));
+//     fs.cpSync(
+//         path.join(packageFolder, './out/amd/monaco.contribution.d.ts'),
+//         path.join(packageFolder, './release/min/monaco.contribution.d.ts')
+//     );
+//     // fs.cpSync(
+//     //     require.resolve('@kusto/language-service/Kusto.JavaScript.Client.min.js'),
+//     //     path.join(packageFolder, './release/min/kusto.javascript.client.min.js')
+//     // );
+//     // fs.cpSync(
+//     //     require.resolve('@kusto/language-service-next/Kusto.Language.Bridge.min.js'),
+//     //     path.join(packageFolder, './release/min/Kusto.Language.Bridge.min.js')
+//     // );
+//     // fs.cpSync(
+//     //     require.resolve('@kusto/language-service/bridge.min.js'),
+//     //     path.join(packageFolder, './release/min/bridge.min.js')
+//     // );
+//     // fs.cpSync(
+//     //     require.resolve('@kusto/language-service/newtonsoft.json.min.js'),
+//     //     path.join(packageFolder, '/release/min/newtonsoft.json.min.js')
+//     // );
+// }
 
 // createReleaseFolder();
 // compile();
 
 async function main() {
-    await Promise.all([compileESM(), compileAMD('dev'), compileAMD('min')]);
+    await Promise.all([
+        // util
+        //     .promisify(cp.exec)('yarn tsc', { cwd: packageFolder })
+        //     .then((res) => {
+        //         console.log(res.stdout);
+        //         console.error(res.stdout);
+        //     }),
+        compileESM(),
+        compileAMD('dev'),
+        compileAMD('min'),
+    ]);
 }
 
 main();

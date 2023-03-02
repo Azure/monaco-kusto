@@ -1,7 +1,7 @@
 import * as kustoService from './languageService/kustoLanguageService';
 import type { LanguageSettings } from './languageService/settings';
 import type { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageService/schema';
-import  * as ls from 'vscode-languageserver-types';
+import * as ls from 'vscode-languageserver-types';
 import type { ColorizationRange } from './languageService/kustoLanguageService';
 import type { RenderInfo } from './languageService/renderInfo';
 import type { FoldingRange } from 'vscode-languageserver-types';
@@ -153,10 +153,7 @@ export class KustoWorker {
      * @param uri document URI
      * @param cursorOffset offset from start of document to cursor
      */
-    getCommandAndLocationInContext(
-        uri: string,
-        cursorOffset: number
-    ): Promise<{ text: string; range: monaco.IRange } | null> {
+    getCommandAndLocationInContext(uri: string, cursorOffset: number): Promise<{ text: string; range: monaco.Range  } | null> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getCommandAndLocationInContext: document is ${document}. uri is ${uri}`);
