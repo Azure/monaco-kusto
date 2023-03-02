@@ -14,6 +14,7 @@ export interface LanguageSettings {
     enableQuerySuggestions?: boolean;
     disabledDiagnoticCodes?: string[];
     quickFixCodeActions?: QuickFixCodeActionOptions[];
+    enableQuickFixes?: boolean;
 }
 
 export interface FormatterOptions {

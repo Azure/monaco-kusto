@@ -71,6 +71,7 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     enableQuerySuggestions: false,
     disabledDiagnosticCodes: [],
     quickFixCodeActions: ['Change to'],
+    enableQuickFixes: false,
 };
 
 function getKustoWorker(): Promise<any> {
