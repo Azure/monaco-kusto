@@ -24,7 +24,7 @@ import * as ls from 'vscode-languageserver-types';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { FoldingRange } from 'vscode-languageserver-types';
 import { FormatterPlacementStyle, LanguageSettings } from './settings';
-import * as XRegExp from 'xregexp';
+import XRegExp from 'xregexp';
 import k = Kusto.Data.IntelliSense;
 import parsing = Kusto.Language.Parsing;
 import syntax = Kusto.Language.Syntax;

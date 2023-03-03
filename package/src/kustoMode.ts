@@ -1,13 +1,13 @@
 import { WorkerManager } from './workerManager';
-import { KustoWorker } from './kustoWorker';
-import { LanguageServiceDefaultsImpl } from './monaco.contribution';
+import type { KustoWorker } from './kustoWorker';
+import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import { KustoLanguageDefinition } from './languageService/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
 
 import Uri = monaco.Uri;
 import IDisposable = monaco.IDisposable;
 import { WorkerAccessor } from './languageFeatures';
-import { EngineSchema, Schema, InputParameter, ScalarParameter, TabularParameter } from './languageService/schema';
+import type { EngineSchema, Schema, InputParameter, ScalarParameter, TabularParameter } from './languageService/schema';
 
 let kustoWorker: WorkerAccessor;
 let resolveWorker: (value: languageFeatures.WorkerAccessor | PromiseLike<languageFeatures.WorkerAccessor>) => void;

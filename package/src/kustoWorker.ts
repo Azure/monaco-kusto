@@ -4,9 +4,9 @@ import * as kustoService from './languageService/kustoLanguageService';
 import { LanguageSettings } from './languageService/settings';
 import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
-import { ColorizationRange } from './languageService/kustoLanguageService';
-import { RenderInfo } from './languageService/renderInfo';
-import { FoldingRange } from 'vscode-languageserver-types';
+import type { ColorizationRange } from './languageService/kustoLanguageService';
+import type { RenderInfo } from './languageService/renderInfo';
+import type { FoldingRange } from 'vscode-languageserver-types';
 
 export class KustoWorker {
     // --- model sync -----------------------

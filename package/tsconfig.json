@@ -5,13 +5,14 @@
         "rootDir": "./src",
         "module": "amd",
         "moduleResolution": "node",
-        "outDir": "./out/amd",
         "target": "es5",
         "lib": ["es2020", "dom", "WebWorker.ImportScripts"],
-        "alwaysStrict": true,
-        "declaration": true,
+        "noEmit": true,
         "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+        "isolatedModules": true,
         "types": [
+            "./monaco",
             "monaco-editor-core/monaco",
             "@kusto/language-service/Kusto.JavaScript.Client",
             "@kusto/language-service-next/Kusto.Language.Bridge"

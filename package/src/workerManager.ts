@@ -1,5 +1,5 @@
-import { LanguageServiceDefaultsImpl } from './monaco.contribution';
-import { KustoWorker } from './kustoWorker';
+import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
+import type { KustoWorker } from './kustoWorker';
 
 import IDisposable = monaco.IDisposable;
 import Uri = monaco.Uri;
