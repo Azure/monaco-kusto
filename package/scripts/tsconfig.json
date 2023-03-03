@@ -1,4 +1,9 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
-    "extends": "@tsconfig/node16"
+    "extends": "@tsconfig/node16",
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "noEmit": true
+    }
 }

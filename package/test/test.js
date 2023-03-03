@@ -1,4 +1,4 @@
-var shim = {
+const shim = {
     'language-service/kusto.javascript.client.min': {
         deps: ['language-service/bridge.min'],
     },
@@ -10,7 +10,7 @@ var shim = {
     },
 };
 
-var requirejs_dev_config = {
+const requirejs_dev_config = {
     baseUrl: '../',
     paths: {
         'vs/language/kusto': '../out/amd',
@@ -25,7 +25,7 @@ var requirejs_dev_config = {
     shim: shim,
 };
 
-var requirejs_release_config = {
+const requirejs_release_config = {
     baseUrl: '../',
     paths: {
         'vs/language/kusto': `../release/min`,
@@ -52,7 +52,7 @@ fetch('./test/mode.txt')
                 'vs/language/kusto/monaco.contribution',
             ],
             function () {
-                var editor = monaco.editor.create(document.getElementById('container'), {
+                const editor = monaco.editor.create(document.getElementById('container'), {
                     value: ['StormEvents | project StartTime , State | where State contains "Texas" | count'].join(
                         '\n'
                     ),

@@ -3,7 +3,7 @@
 import * as cp from 'node:child_process';
 import * as fs from 'node:fs/promises';
 import * as util from 'node:util';
-import { mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { mkdirSync, rmSync } from 'node:fs';
 import * as path from 'node:path';
 
 import * as rollup from 'rollup';
@@ -12,23 +12,8 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import commonJs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 
-const sha1 = String(cp.execSync('git rev-parse HEAD')).split('\n')[0];
-const semver = require('../package.json').version;
-const headerVersion = semver + '(' + sha1 + ')';
-
-const banner = [
-    '/*!-----------------------------------------------------------------------------',
-    ' * Copyright (c) Microsoft Corporation. All rights reserved.',
-    ' * monaco-kusto version: ' + headerVersion,
-    ' * Released under the MIT license',
-    ' * https://https://github.com/Azure/monaco-kusto/blob/master/README.md',
-    ' *-----------------------------------------------------------------------------*/',
-    '',
-].join('\n');
-
-const packageFolder = path.join(__dirname, '..');
-
-const pkg = JSON.parse(readFileSync(path.resolve(packageFolder, 'package.json')).toString());
+import esmConfig from './rollup.esm.js';
+import { banner, packageFolder } from './lib.js';
 
 function createReleaseFolder() {
     const releaseFolder = path.join(packageFolder, './release');
@@ -100,25 +85,10 @@ async function compileOneAMD(type: string, input: string, external: string[] = [
 }
 
 async function compileESM() {
-    const bundle = await rollup.rollup({
-        external: ['monaco-editor-core', ...Object.keys(pkg.dependencies)],
-        input: {
-            'monaco.contribution': path.join(packageFolder, 'src/monaco.contribution.ts'),
-            'kusto.worker': path.join(packageFolder, 'src/kusto.worker.ts'),
-            kustoMode: path.join(packageFolder, 'src/kustoMode.ts'),
-        },
-        plugins: [
-            nodeResolve({ extensions }),
-            commonJs(),
-            babel({ extensions, babelHelpers: 'bundled', presets: ['@babel/preset-typescript'] }),
-        ],
-    });
+    const { output, ...options } = esmConfig;
+    const bundle = await rollup.rollup(options);
     try {
-        await bundle.write({
-            banner,
-            format: 'es',
-            dir: path.join(packageFolder, 'release/esm'),
-        });
+        await bundle.write(output as rollup.OutputOptions);
     } finally {
         await bundle.close();
     }
@@ -148,7 +118,13 @@ async function compileTypes() {
 
 async function main() {
     createReleaseFolder();
-    await Promise.all([copyRunTimeDepsToOut(), compileESM(), compileAMD('dev'), compileAMD('min'), compileTypes()]);
+    await Promise.all([
+        // copyRunTimeDepsToOut(),
+        compileESM(),
+        // compileAMD('dev'),
+        // compileAMD('min'),
+        // compileTypes()
+    ]);
 }
 
 main();

@@ -1,9 +1,9 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
-    "include": ["./src/**/*"],
+    "include": ["./src/**/*", "scripts/rollup.esm.js"],
     "compilerOptions": {
         "rootDir": "./src",
-        "module": "amd",
+        "module": "esnext",
         "moduleResolution": "node",
         "target": "es5",
         "lib": ["es2020", "dom", "WebWorker.ImportScripts"],
