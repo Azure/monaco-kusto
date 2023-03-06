@@ -834,7 +834,9 @@ class KustoLanguageService implements LanguageService {
                 break;
         }
         if (parentActionTitle) {
-            title = `${title} (${parentActionTitle})`;
+            // We want to lower case the first character since it's going to be in brackets
+            const parentActionTitleLowerCased = parentActionTitle.charAt(0).toUpperCase() + parentActionTitle.slice(1);
+            title = `${title} (${parentActionTitleLowerCased})`;
         }
         return title;
     }
