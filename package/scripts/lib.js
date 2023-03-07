@@ -44,7 +44,6 @@ export async function copyRunTimeDepsToOut(target) {
 
 export const extensions = ['.js', '.ts'];
 
-
 const entryPointsAMD = ['kustoMode', 'kustoWorker', 'monaco.contribution'];
 
 /**
