@@ -75,7 +75,10 @@ async function main() {
         copyRunTimeDepsToOut('release/min'),
         compileESM(),
         compileAMD('dev'),
-        compileAMD('min'),
+        compileAMD('min').then(() =>
+            // monaco.d.ts was here in a previous release. Add a reference file here to avoid breaking changes
+            fs.writeFile(path.join(__dirname, '../release/min/monaco.d.ts'), '/// <reference types="../monaco" />\n')
+        ),
         compileTypes(),
     ]);
 }

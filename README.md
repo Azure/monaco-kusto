@@ -132,6 +132,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 5.7.0
+
+-   Improved quality of AMD build artifacts
+
 ### 4.1.8
 
 -   fix: trigger suggestion when previous suggestion selected.

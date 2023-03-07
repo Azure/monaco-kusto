@@ -15,7 +15,7 @@ async function main() {
             }
         ),
 
-        copyRunTimeDepsToOut('out/vs'),
+        copyRunTimeDepsToOut('out/vs/language/kusto'),
 
         // This is super weird. Why do we do this?
         fs.writeFile(path.join(packageFolder, 'test/mode.txt'), 'dev'),
