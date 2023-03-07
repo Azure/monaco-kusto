@@ -8,8 +8,8 @@ import * as path from 'node:path';
 
 import * as rollup from 'rollup';
 
-import esmConfig, { rollupAMDConfig } from './rollup.dev.js';
-import { copyRunTimeDepsToOut, packageFolder } from './lib.js';
+import esmConfig from './rollup.esm.js';
+import { copyRunTimeDepsToOut, packageFolder, rollupAMDConfig } from './lib.js';
 
 function createReleaseFolder() {
     const releaseFolder = path.join(packageFolder, './release');
