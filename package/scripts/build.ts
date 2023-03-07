@@ -55,8 +55,12 @@ async function compileTypes() {
     await Promise.all([
         exec('yarn tsc -p ./scripts/tsconfig.amd.json').then(() =>
             Promise.all([
-                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/min'), { recursive: true }),
-                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/dev'), { recursive: true }),
+                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/min'), {
+                    recursive: true,
+                }),
+                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/dev'), {
+                    recursive: true,
+                }),
             ])
         ),
         exec('yarn tsc -p ./scripts/tsconfig.esm.json'),
@@ -72,7 +76,7 @@ async function main() {
         compileESM(),
         compileAMD('dev'),
         compileAMD('min'),
-        compileTypes()
+        compileTypes(),
     ]);
 }
 
