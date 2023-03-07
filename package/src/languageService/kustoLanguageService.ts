@@ -21,9 +21,9 @@ if (typeof document == 'undefined') {
 }
 
 import * as ls from 'vscode-languageserver-types';
-import { TextDocument } from 'vscode-languageserver-textdocument';
-import { FoldingRange } from 'vscode-languageserver-types';
-import { FormatterPlacementStyle, LanguageSettings } from './settings';
+import type { TextDocument } from 'vscode-languageserver-textdocument';
+import type { FoldingRange } from 'vscode-languageserver-types';
+import type { FormatterPlacementStyle, LanguageSettings } from './settings';
 import XRegExp from 'xregexp';
 import k = Kusto.Data.IntelliSense;
 import parsing = Kusto.Language.Parsing;
@@ -33,7 +33,7 @@ import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
 import { Database, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
-import { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo, LegendVisibility } from './renderInfo';
+import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo, LegendVisibility } from './renderInfo';
 
 let List = System.Collections.Generic.List$1;
 

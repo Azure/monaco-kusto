@@ -1,7 +1,7 @@
 type IWorkerContext = monaco.worker.IWorkerContext;
 
 import * as kustoService from './languageService/kustoLanguageService';
-import { LanguageSettings } from './languageService/settings';
+import type { LanguageSettings } from './languageService/settings';
 import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageService/schema';
 import * as ls from 'vscode-languageserver-types';
 import type { ColorizationRange } from './languageService/kustoLanguageService';

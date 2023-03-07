@@ -8,7 +8,7 @@ import * as path from 'node:path';
 
 import * as rollup from 'rollup';
 
-import esmConfig, { rollupAMDConfig } from './rollup.esm.js';
+import esmConfig, { rollupAMDConfig } from './rollup.dev.js';
 import { copyRunTimeDepsToOut, packageFolder } from './lib.js';
 
 function createReleaseFolder() {
