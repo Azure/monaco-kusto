@@ -13,14 +13,10 @@ const shim = {
 const requirejs_dev_config = {
     baseUrl: '../',
     paths: {
-        'vs/language/kusto': '../out/amd',
+        'vs/language/kusto': '../release/dev',
         vs: '../out/vs',
         'language-service': './node_modules/@kusto/language-service/',
-        'language-service-next': './node_modules/@kusto/language-service-next/',
-        lodash: './node_modules/lodash/lodash.min',
-        'vscode-languageserver-types': '../node_modules/vscode-languageserver-types/lib/umd/main',
-        // For worker:
-        xregexp: '../../../node_modules/xregexp/xregexp-all',
+        'language-service-next': './node_modules/@kusto/language-service-next/'
     },
     shim: shim,
 };
@@ -39,6 +35,7 @@ const requirejs_release_config = {
 fetch('./test/mode.txt')
     .then((response) => response.text())
     .then((mode) => {
+        console.log({ mode })
         mode = mode.trim();
         requirejs.config(mode == 'dev' ? requirejs_dev_config : requirejs_release_config);
         requirejs(

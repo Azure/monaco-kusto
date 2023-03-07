@@ -1,4 +1,4 @@
-import IWorkerContext = monaco.worker.IWorkerContext;
+type IWorkerContext = monaco.worker.IWorkerContext;
 
 import * as kustoService from './languageService/kustoLanguageService';
 import { LanguageSettings } from './languageService/settings';

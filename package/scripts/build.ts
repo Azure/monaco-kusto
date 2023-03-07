@@ -3,7 +3,7 @@
 import * as cp from 'node:child_process';
 import * as fs from 'node:fs/promises';
 import * as util from 'node:util';
-import { mkdirSync, rmSync } from 'node:fs';
+import { cpSync, mkdirSync, rmSync } from 'node:fs';
 import * as path from 'node:path';
 
 import * as rollup from 'rollup';
@@ -12,8 +12,8 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import commonJs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 
-import esmConfig from './rollup.esm.js';
-import { banner, packageFolder } from './lib.js';
+import esmConfig, { rollupAMDConfig } from './rollup.esm.js';
+import { banner, copyRunTimeDepsToOut, packageFolder } from './lib.js';
 
 function createReleaseFolder() {
     const releaseFolder = path.join(packageFolder, './release');
@@ -27,58 +27,18 @@ function createReleaseFolder() {
     }
 }
 
-async function copyRunTimeDepsToOut() {
-    const languageServiceFiles = [
-        ['@kusto/language-service/Kusto.JavaScript.Client.min.js', './release/min/kusto.javascript.client.min.js'],
-        ['@kusto/language-service-next/Kusto.Language.Bridge.min.js', './release/min/Kusto.Language.Bridge.min.js'],
-        ['@kusto/language-service/bridge.min.js', './release/min/bridge.min.js'],
-        ['@kusto/language-service/newtonsoft.json.min.js', './release/min/newtonsoft.json.min.js'],
-    ];
-
-    for (const [from, to] of languageServiceFiles) {
-        await fs.cp(require.resolve(from), path.join(packageFolder, to));
-    }
-}
-
 const extensions = ['.js', '.ts'];
-
-async function compileAMD(type: 'dev' | 'min') {
-    compileOneAMD(type, 'monaco.contribution.ts', [path.join(packageFolder, 'src/kustoMode.ts')]);
-    compileOneAMD(type, 'kustoWorker.ts');
-    compileOneAMD(type, 'kustoMode.ts');
-}
 
 interface CompileOneAMDOptions extends rollup.RollupOptions {
     type: 'dev' | 'min';
     external?: string[];
 }
 
-async function compileOneAMD(type: string, input: string, external: string[] = []) {
-    const bundle = await rollup.rollup({
-        external: ['monaco-editor-core', ...external],
-        input: path.join(packageFolder, 'src', input),
-        plugins: [
-            nodeResolve({ extensions }),
-            commonJs(),
-            babel({
-                extensions,
-                babelHelpers: 'inline',
-                presets: [['@babel/preset-env', { targets: { ie: 11 } }], '@babel/preset-typescript'],
-            }),
-            type === 'min' && terser(),
-        ],
-    });
+async function compileAMD(type: 'dev' | 'min') {
+    const { output, ...config } = rollupAMDConfig(type);
+    const bundle = await rollup.rollup(config);
     try {
-        await bundle.write({
-            banner,
-            format: 'amd',
-            amd: { autoId: true, basePath: 'vs/language/kusto' },
-            dir: path.join(packageFolder, 'release', type),
-            globals: {
-                'monaco-editor-core': 'monaco',
-            },
-            paths: { [path.join(packageFolder, 'src/kustoMode')]: 'vs/language/kusto/kustoMode' },
-        });
+        await bundle.write(output as rollup.OutputOptions);
     } finally {
         await bundle.close();
     }
@@ -119,9 +79,9 @@ async function compileTypes() {
 async function main() {
     createReleaseFolder();
     await Promise.all([
-        // copyRunTimeDepsToOut(),
-        compileESM(),
-        // compileAMD('dev'),
+        copyRunTimeDepsToOut('release/min'),
+        // compileESM(),
+        compileAMD('dev'),
         // compileAMD('min'),
         // compileTypes()
     ]);

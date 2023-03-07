@@ -18,8 +18,7 @@
     },
     "scripts": {
         "build": "ts-node ./scripts/build.ts",
-        "watch": "echo dev > test/mode.txt && concurrently \"live-server ./ \" \"tsc -w -p ./scripts/tsconfig.watch.json \" && \"yarn watch:js\"",
-        "watch:js": "yarn rollup -c ./scripts/rollup.esm.js -w --bundleConfigAsCjs",
+        "watch": "ts-node ./scripts/watch.ts",
         "typecheck": "tsc",
         "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
         "test": "jest",
