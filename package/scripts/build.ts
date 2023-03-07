@@ -3,17 +3,13 @@
 import * as cp from 'node:child_process';
 import * as fs from 'node:fs/promises';
 import * as util from 'node:util';
-import { cpSync, mkdirSync, rmSync } from 'node:fs';
+import { mkdirSync, rmSync } from 'node:fs';
 import * as path from 'node:path';
 
 import * as rollup from 'rollup';
-import babel from '@rollup/plugin-babel';
-import nodeResolve from '@rollup/plugin-node-resolve';
-import commonJs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
 
 import esmConfig, { rollupAMDConfig } from './rollup.esm.js';
-import { banner, copyRunTimeDepsToOut, packageFolder } from './lib.js';
+import { copyRunTimeDepsToOut, packageFolder } from './lib.js';
 
 function createReleaseFolder() {
     const releaseFolder = path.join(packageFolder, './release');
@@ -80,10 +76,10 @@ async function main() {
     createReleaseFolder();
     await Promise.all([
         copyRunTimeDepsToOut('release/min'),
-        // compileESM(),
+        compileESM(),
         compileAMD('dev'),
-        // compileAMD('min'),
-        // compileTypes()
+        compileAMD('min'),
+        compileTypes()
     ]);
 }
 

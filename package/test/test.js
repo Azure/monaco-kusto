@@ -38,6 +38,8 @@ fetch('./test/mode.txt')
         console.log({ mode })
         mode = mode.trim();
         requirejs.config(mode == 'dev' ? requirejs_dev_config : requirejs_release_config);
+        // TODO: Use monaco-editor-core/dev/vs/loader.js instead of this? It can
+        // be accessed via the `AMDLoader` global
         requirejs(
             [
                 'vs/loader',
