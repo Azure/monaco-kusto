@@ -23,13 +23,6 @@ function createReleaseFolder() {
     }
 }
 
-const extensions = ['.js', '.ts'];
-
-interface CompileOneAMDOptions extends rollup.RollupOptions {
-    type: 'dev' | 'min';
-    external?: string[];
-}
-
 async function compileAMD(type: 'dev' | 'min') {
     const { output, ...config } = rollupAMDConfig(type);
     const bundle = await rollup.rollup(config);
@@ -62,8 +55,8 @@ async function compileTypes() {
     await Promise.all([
         exec('yarn tsc -p ./scripts/tsconfig.amd.json').then(() =>
             Promise.all([
-                fs.cp(path.join(__dirname, '../out/dev'), path.join(__dirname, '../release/min'), { recursive: true }),
-                fs.cp(path.join(__dirname, '../out/dev'), path.join(__dirname, '../release/dev'), { recursive: true }),
+                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/min'), { recursive: true }),
+                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/dev'), { recursive: true }),
             ])
         ),
         exec('yarn tsc -p ./scripts/tsconfig.esm.json'),

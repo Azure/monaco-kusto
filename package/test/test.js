@@ -15,8 +15,8 @@ const requirejs_dev_config = {
     paths: {
         'vs/language/kusto': '../release/dev',
         vs: '../out/vs',
-        'language-service': './node_modules/@kusto/language-service/',
-        'language-service-next': './node_modules/@kusto/language-service-next/'
+        'language-service': '../node_modules/@kusto/language-service/',
+        'language-service-next': '../node_modules/@kusto/language-service-next/',
     },
     shim: shim,
 };
@@ -25,7 +25,7 @@ const requirejs_release_config = {
     baseUrl: '../',
     paths: {
         'vs/language/kusto': `../release/min`,
-        vs: './out/vs',
+        vs: '../out/vs',
         'language-service': `../release/min`,
         'language-service-next': `../release/min`,
     },
@@ -35,9 +35,10 @@ const requirejs_release_config = {
 fetch('./test/mode.txt')
     .then((response) => response.text())
     .then((mode) => {
-        console.log({ mode })
+        const dev = mode == 'dev';
+        console.log(`dev: ${dev}`);
         mode = mode.trim();
-        requirejs.config(mode == 'dev' ? requirejs_dev_config : requirejs_release_config);
+        requirejs.config(dev ? requirejs_dev_config : requirejs_release_config);
         // TODO: Use monaco-editor-core/dev/vs/loader.js instead of this? It can
         // be accessed via the `AMDLoader` global
         requirejs(

@@ -34,7 +34,7 @@ export async function copyRunTimeDepsToOut(target) {
     ];
 
     for (const [from, to] of languageServiceFiles) {
-        await fs.cp(require.resolve(from), path.join(packageFolder, target, to));
+        await fs.cp(require.resolve(from), path.join(packageFolder, target, 'language/kusto', to));
     }
 }
 
