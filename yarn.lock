@@ -2202,8 +2202,6 @@ __metadata:
     minimatch: ^3.0.4
     monaco-editor-core: ~0.35.0
     monaco-languages: 2.11.1
-    monaco-plugin-helpers: ^1.0.3
-    object-assign: 4.1.0
     requirejs: ^2.3.6
     rimraf: ^4.1.2
     rollup: ^3.17.3
@@ -11376,18 +11374,6 @@ cors@latest:
   languageName: node
   linkType: hard
 
-"monaco-plugin-helpers@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "monaco-plugin-helpers@npm:1.0.3"
-  dependencies:
-    typescript: ^2.7.2
-  bin:
-    mcopy: bin/mcopy
-    mrmdir: bin/mrmdir
-  checksum: 4c55d993a632628ab9298bcaef265b05f4a4f4e73c9d1efdd59c11e2e37849663684972cc8fe3b3079fbab1597ee359da7c2459175381562cc3714a1907c50e5
-  languageName: node
-  linkType: hard
-
 "morgan@npm:^1.9.1":
   version: 1.10.0
   resolution: "morgan@npm:1.10.0"
@@ -11791,13 +11777,6 @@ cors@latest:
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
-  languageName: node
-  linkType: hard
-
-"object-assign@npm:4.1.0":
-  version: 4.1.0
-  resolution: "object-assign@npm:4.1.0"
-  checksum: c2cd920bb728582572400904d528ddef0ab4429ddd32df8329cc82432de47d59c39504f2cfcf82411a6768d55cbeb0066eeefdd7cb15074d0b679295b54369c2
   languageName: node
   linkType: hard
 
@@ -16260,16 +16239,6 @@ proxy-middleware@latest:
   languageName: node
   linkType: hard
 
-"typescript@npm:^2.7.2":
-  version: 2.9.2
-  resolution: "typescript@npm:2.9.2"
-  bin:
-    tsc: ./bin/tsc
-    tsserver: ./bin/tsserver
-  checksum: 88be998ac339b6e45f1cd15e22e4a0fedcdb5320d8d1d736e3996a0b9dff03728ebb2580a0658f0c52152b139ea9a405443f42a4ff8a2c4a1a6f4d58e0320132
-  languageName: node
-  linkType: hard
-
 "typescript@npm:^4.0.0":
   version: 4.9.5
   resolution: "typescript@npm:4.9.5"
@@ -16277,16 +16246,6 @@ proxy-middleware@latest:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^2.7.2#~builtin<compat/typescript>":
-  version: 2.9.2
-  resolution: "typescript@patch:typescript@npm%3A2.9.2#~builtin<compat/typescript>::version=2.9.2&hash=3bafbf"
-  bin:
-    tsc: ./bin/tsc
-    tsserver: ./bin/tsserver
-  checksum: 8e4b4eceecd9c4c0d45a74e49d715eb7b12e0d4a12768b70681c9a81a7c2a335f15fe14c78dddda73c90f9ebb5ddac0b2e33c12df606c7d46f7e7829326cc653
   languageName: node
   linkType: hard
 
