@@ -7,6 +7,9 @@ import commonJs from '@rollup/plugin-commonjs';
 import { banner, extensions, packageFolder } from './lib.js';
 
 /**
+ * Bundles, but doesn't do any transpiling or minifying. Expectation is that
+ * consumers will be doing their own minifying and bundling.
+ *
  * @type {import('rollup').RollupOptions}
  */
 const config = {
