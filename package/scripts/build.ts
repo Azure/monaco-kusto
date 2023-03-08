@@ -1,86 +1,86 @@
 /// <reference types='node' />
 
 import * as cp from 'node:child_process';
-import * as fs from 'node:fs';
+import * as fs from 'node:fs/promises';
+import * as util from 'node:util';
+import { mkdirSync, rmSync } from 'node:fs';
 import * as path from 'node:path';
 
-const packageFolder = path.join(__dirname, '..');
+import * as rollup from 'rollup';
+
+import esmConfig from './rollup.esm.js';
+import { copyRunTimeDepsToOut, packageFolder, rollupAMDConfig } from './lib.js';
 
 function createReleaseFolder() {
     const releaseFolder = path.join(packageFolder, './release');
     try {
-        fs.mkdirSync(releaseFolder);
+        mkdirSync(releaseFolder);
     } catch (e) {
         if (e instanceof Error && (e as any).code === 'EEXIST') {
-            fs.rmSync(releaseFolder, { recursive: true });
-            fs.mkdirSync(releaseFolder);
+            rmSync(releaseFolder, { recursive: true });
+            mkdirSync(releaseFolder);
         }
     }
 }
 
-function compile() {
-    cp.execSync('yarn exec tsc -p ./tsconfig.json && tsc -p ./tsconfig.esm.json', {
-        cwd: packageFolder,
-        stdio: 'inherit',
-    });
-}
-
-function copyRunTimeDepsToOut() {
-    const languageServiceFiles = [
-        [
-            '@kusto/language-service/Kusto.JavaScript.Client.min.js',
-            './out/vs/language/kusto/kusto.javascript.client.min.js',
-        ],
-        [
-            '@kusto/language-service-next/Kusto.Language.Bridge.min.js',
-            './out/vs/language/kusto/Kusto.Language.Bridge.min.js',
-        ],
-        ['@kusto/language-service/bridge.min.js', './out/vs/language/kusto/bridge.min.js'],
-    ];
-
-    for (const [from, to] of languageServiceFiles) {
-        fs.cpSync(require.resolve(from), path.join(packageFolder, to));
+async function compileAMD(type: 'dev' | 'min') {
+    const { output, ...config } = rollupAMDConfig(type);
+    const bundle = await rollup.rollup(config);
+    try {
+        await bundle.write(output as rollup.OutputOptions);
+    } finally {
+        await bundle.close();
     }
-
-    fs.cpSync(
-        path.dirname(require.resolve('monaco-editor-core/dev/vs/loader.js')),
-        path.join(packageFolder, './out/vs'),
-        { recursive: true }
-    );
 }
 
-function copyTypesToRelease() {
-    fs.cpSync(path.join(packageFolder, '/src/monaco.d.ts'), path.join(packageFolder, './release/esm/monaco.d.ts'));
-    fs.cpSync(
-        path.join(packageFolder, './out/amd/monaco.contribution.d.ts'),
-        path.join(packageFolder, './release/esm/monaco.contribution.d.ts')
-    );
-    fs.cpSync(path.join(packageFolder, '/src/monaco.d.ts'), path.join(packageFolder, './release/min/monaco.d.ts'));
-    fs.cpSync(
-        path.join(packageFolder, './out/amd/monaco.contribution.d.ts'),
-        path.join(packageFolder, './release/min/monaco.contribution.d.ts')
-    );
-    fs.cpSync(
-        require.resolve('@kusto/language-service/Kusto.JavaScript.Client.min.js'),
-        path.join(packageFolder, './release/min/kusto.javascript.client.min.js')
-    );
-    fs.cpSync(
-        require.resolve('@kusto/language-service-next/Kusto.Language.Bridge.min.js'),
-        path.join(packageFolder, './release/min/Kusto.Language.Bridge.min.js')
-    );
-    fs.cpSync(
-        require.resolve('@kusto/language-service/bridge.min.js'),
-        path.join(packageFolder, './release/min/bridge.min.js')
-    );
-    fs.cpSync(
-        require.resolve('@kusto/language-service/newtonsoft.json.min.js'),
-        path.join(packageFolder, '/release/min/newtonsoft.json.min.js')
-    );
+async function compileESM() {
+    const { output, ...options } = esmConfig;
+    const bundle = await rollup.rollup(options);
+    try {
+        await bundle.write(output as rollup.OutputOptions);
+    } finally {
+        await bundle.close();
+    }
 }
 
-createReleaseFolder();
-compile();
-cp.execSync('node ./scripts/release.js', { cwd: packageFolder, stdio: 'inherit' });
-cp.execSync('node ./scripts/bundle.js', { cwd: packageFolder, stdio: 'inherit' });
-copyRunTimeDepsToOut();
-copyTypesToRelease();
+const exec = (command: string) =>
+    util
+        .promisify(cp.exec)(command, { cwd: packageFolder })
+        .then((res) => {
+            console.log(res.stdout);
+            console.error(res.stdout);
+        });
+
+async function compileTypes() {
+    await Promise.all([
+        exec('yarn tsc -p ./scripts/tsconfig.amd.json').then(() =>
+            Promise.all([
+                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/min'), {
+                    recursive: true,
+                }),
+                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/dev'), {
+                    recursive: true,
+                }),
+            ])
+        ),
+        exec('yarn tsc -p ./scripts/tsconfig.esm.json'),
+        // copy file so it's relative position to the generated delegation files matches that of the source code. We need to do this because that's how tsc adds it's `/// <reference type="" />
+        fs.cp(path.join(__dirname, '../monaco.d.ts'), path.join(__dirname, '../release/monaco.d.ts')),
+    ]);
+}
+
+async function main() {
+    createReleaseFolder();
+    await Promise.all([
+        copyRunTimeDepsToOut('release/min'),
+        compileESM(),
+        compileAMD('dev'),
+        compileAMD('min').then(() =>
+            // monaco.d.ts was here in a previous release. Add a reference file here to avoid breaking changes
+            fs.writeFile(path.join(__dirname, '../release/min/monaco.d.ts'), '/// <reference types="../monaco" />\n')
+        ),
+        compileTypes(),
+    ]);
+}
+
+main();

@@ -1,0 +1,20 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "extends": "../tsconfig.json",
+    "include": ["../src/monaco.contribution.ts", "../src/KustoWorker.ts", "../src/KustoMode.ts"],
+    "compilerOptions": {
+        "rootDir": "../src",
+        "module": "amd",
+        "moduleResolution": "node",
+        "outDir": "../out/types",
+        "emitDeclarationOnly": true,
+        "declaration": true,
+        "noEmit": false,
+        "types": [
+            "../monaco",
+            "monaco-editor-core/monaco",
+            "@kusto/language-service/Kusto.JavaScript.Client",
+            "@kusto/language-service-next/Kusto.Language.Bridge"
+        ]
+    }
+}

@@ -1,13 +1,12 @@
 import Emitter = monaco.Emitter;
 import IEvent = monaco.IEvent;
-import IDisposable = monaco.IDisposable;
 
-import * as mode from './kustoMode';
+import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
 
-declare var require: <T>(moduleId: [string], callback: (module: T) => void) => void;
+// declare var require: <T>(moduleId: [string], callback: (module: T) => void) => void;
 
 // --- Kusto configuration and defaults ---------
 
@@ -83,7 +82,7 @@ function getKustoWorker(): Promise<any> {
 }
 
 function withMode(callback: (module: typeof mode) => void): void {
-    require<typeof mode>(['vs/language/kusto/kustoMode'], callback);
+    import('./kustoMode').then(callback);
 }
 
 export function setupMonacoKusto(monacoInstance: typeof monaco) {

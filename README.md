@@ -121,15 +121,25 @@ There are 2 APIs to set a Kusto schema:
 
 ## Setting up a dev environment
 
-1. Install Node.js (v6.10.3 or later) from [https://nodejs.org/](https://nodejs.org/)
-2. clone repo and `npm install`
-3. run `npm run watch` from root repo and a live-server will automatically open the index.html
+1. Install Node.js 16 from https://nodejs.org/
+2. Install Yarn from https://yarnpkg.com/
+3. Clone repo and run `yarn` in repo root
+4. Run `yarn watch` from /package and a live-server will automatically open the index.html
 
 ## Build for release
 
 `npm run prepublishOnly`
 
 ## Changelog
+
+### 6.0.0
+
+-   Improved quality of AMD build artifacts
+-   BREAKING CHANGE: AMD build artifacts now include a new "main" file that
+    contains shared code
+-   BREAKING CHANGE: ESM build artifacts no longer vender dependencies in a
+    "deps" folder. node_modules imports are left as-is, and are now in
+    package.json#dependencies
 
 ### 4.1.8
 
