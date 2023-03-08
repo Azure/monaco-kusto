@@ -132,9 +132,14 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
-### 5.7.0
+### 6.0.0
 
 -   Improved quality of AMD build artifacts
+-   BREAKING CHANGE: AMD build artifacts now include a new "main" file that
+    contains shared code
+-   BREAKING CHANGE: ESM build artifacts no longer vender dependencies in a
+    "deps" folder. node_modules imports are left as-is, and are now in
+    package.json#dependencies
 
 ### 4.1.8
 
