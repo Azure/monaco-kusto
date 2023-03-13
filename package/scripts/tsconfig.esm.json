@@ -1,18 +1,17 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
-    "include": ["./src/**/*"],
+    "extends": "../tsconfig.json",
+    "include": ["../src/monaco.contribution.ts", "../src/KustoWorker.ts", "../src/KustoMode.ts"],
     "compilerOptions": {
-        "rootDir": "./src",
+        "rootDir": "../src",
         "module": "esnext",
         "moduleResolution": "node",
-        "target": "es5",
-        "lib": ["es2020", "dom", "WebWorker.ImportScripts"],
-        "noEmit": true,
-        "skipLibCheck": true,
-        "allowSyntheticDefaultImports": true,
-        "isolatedModules": true,
+        "outDir": "../release/esm",
+        "emitDeclarationOnly": true,
+        "declaration": true,
+        "noEmit": false,
         "types": [
-            "./monaco",
+            "../monaco",
             "monaco-editor-core/monaco",
             "@kusto/language-service/Kusto.JavaScript.Client",
             "@kusto/language-service-next/Kusto.Language.Bridge"

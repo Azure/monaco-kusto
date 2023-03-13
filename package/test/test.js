@@ -1,4 +1,4 @@
-var shim = {
+const shim = {
     'language-service/kusto.javascript.client.min': {
         deps: ['language-service/bridge.min'],
     },
@@ -10,26 +10,22 @@ var shim = {
     },
 };
 
-var requirejs_dev_config = {
+const requirejs_dev_config = {
     baseUrl: '../',
     paths: {
-        'vs/language/kusto': '../out/amd',
+        'vs/language/kusto': '../release/dev',
         vs: '../out/vs',
-        'language-service': './node_modules/@kusto/language-service/',
-        'language-service-next': './node_modules/@kusto/language-service-next/',
-        lodash: './node_modules/lodash/lodash.min',
-        'vscode-languageserver-types': '../node_modules/vscode-languageserver-types/lib/umd/main',
-        // For worker:
-        xregexp: '../../../node_modules/xregexp/xregexp-all',
+        'language-service': '../node_modules/@kusto/language-service/',
+        'language-service-next': '../node_modules/@kusto/language-service-next/',
     },
     shim: shim,
 };
 
-var requirejs_release_config = {
+const requirejs_release_config = {
     baseUrl: '../',
     paths: {
         'vs/language/kusto': `../release/min`,
-        vs: './out/vs',
+        vs: '../out/vs',
         'language-service': `../release/min`,
         'language-service-next': `../release/min`,
     },
@@ -39,8 +35,12 @@ var requirejs_release_config = {
 fetch('./test/mode.txt')
     .then((response) => response.text())
     .then((mode) => {
+        const dev = mode == 'dev';
+        console.log(`dev: ${dev}`);
         mode = mode.trim();
-        requirejs.config(mode == 'dev' ? requirejs_dev_config : requirejs_release_config);
+        requirejs.config(dev ? requirejs_dev_config : requirejs_release_config);
+        // TODO: Use monaco-editor-core/dev/vs/loader.js instead of this? It can
+        // be accessed via the `AMDLoader` global
         requirejs(
             [
                 'vs/loader',
@@ -52,7 +52,7 @@ fetch('./test/mode.txt')
                 'vs/language/kusto/monaco.contribution',
             ],
             function () {
-                var editor = monaco.editor.create(document.getElementById('container'), {
+                const editor = monaco.editor.create(document.getElementById('container'), {
                     value: ['StormEvents | project StartTime , State | where State contains "Texas" | count'].join(
                         '\n'
                     ),
