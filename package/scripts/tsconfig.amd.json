@@ -6,7 +6,7 @@
         "rootDir": "../src",
         "module": "amd",
         "moduleResolution": "node",
-        "outDir": "../out/types",
+        "outDir": "../release/min",
         "emitDeclarationOnly": true,
         "declaration": true,
         "noEmit": false,

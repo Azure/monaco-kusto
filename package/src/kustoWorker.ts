@@ -1,5 +1,4 @@
 import * as ls from 'vscode-languageserver-types';
-import type { FoldingRange } from 'vscode-languageserver-types';
 
 import * as kustoService from './languageService/kustoLanguageService';
 import type { LanguageSettings } from './languageService/settings';
@@ -231,7 +230,7 @@ export class KustoWorker {
         return formatted;
     }
 
-    doFolding(uri: string): Promise<FoldingRange[]> {
+    doFolding(uri: string): Promise<ls.FoldingRange[]> {
         const document = this._getTextDocument(uri);
         const folding = this._languageService.doFolding(document);
         return folding;

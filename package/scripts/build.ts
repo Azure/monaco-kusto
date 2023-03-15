@@ -9,7 +9,7 @@ import * as path from 'node:path';
 import * as rollup from 'rollup';
 
 import esmConfig from './rollup.esm.js';
-import { packageFolder, rollupAMDConfig, rollupAMDOutput } from './lib.js';
+import { copyRunTimeDepsToOut, packageFolder, rollupAMDConfig, rollupAMDOutput } from './lib.js';
 
 function createReleaseFolder() {
     const releaseFolder = path.join(packageFolder, './release');
@@ -25,7 +25,6 @@ function createReleaseFolder() {
 
 async function compileAMD() {
     const bundle = await rollup.rollup(rollupAMDConfig);
-    console.log('???');
     try {
         await Promise.all([bundle.write(rollupAMDOutput('dev')), bundle.write(rollupAMDOutput('min'))]);
     } finally {
@@ -49,21 +48,19 @@ const exec = (command: string) =>
     util
         .promisify(cp.exec)(command, { cwd: packageFolder })
         .then((res) => {
-            console.log(res.stdout);
-            console.error(res.stdout);
+            process.stdout.write(res.stdout);
+            process.stderr.write(res.stderr);
         });
 
 async function compileTypes() {
     await Promise.all([
         exec('yarn tsc -p ./scripts/tsconfig.amd.json').then(() =>
-            Promise.all([
-                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/min'), {
-                    recursive: true,
-                }),
-                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/dev'), {
-                    recursive: true,
-                }),
-            ])
+            fs.cp(path.join(__dirname, '../release/min'), path.join(__dirname, '../release/dev'), {
+                recursive: true,
+                filter(source) {
+                    return source.endsWith('.d.ts');
+                },
+            })
         ),
         exec('yarn tsc -p ./scripts/tsconfig.esm.json'),
         // copy file so it's relative position to the generated delegation files matches that of the source code. We need to do this because that's how tsc adds it's `/// <reference type="" />
@@ -73,11 +70,7 @@ async function compileTypes() {
 
 async function main() {
     createReleaseFolder();
-    await Promise.all([
-        // compileESM(),
-        compileAMD(),
-        // compileTypes(),
-    ]);
+    await Promise.all([copyRunTimeDepsToOut('release/min'), compileESM(), compileAMD(), compileTypes()]);
 }
 
 main();

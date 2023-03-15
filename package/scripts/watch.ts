@@ -6,20 +6,16 @@ import concurrently from 'concurrently';
 import { packageFolder } from './lib';
 
 async function main() {
-    // await Promise.all([
-    //     fs.cp(
-    //         path.dirname(require.resolve('monaco-editor/dev/vs/loader.js')),
-    //         path.join(packageFolder, './out/vs'),
-    //         {
-    //             recursive: true,
-    //         }
-    //     ),
+    await Promise.all([
+        fs.cp(path.dirname(require.resolve('monaco-editor/dev/vs/loader.js')), path.join(packageFolder, './out/vs'), {
+            recursive: true,
+        }),
 
-    //     // copyRunTimeDepsToOut('out/vs/language/kusto'),
+        // copyRunTimeDepsToOut('out/vs/language/kusto'),
 
-    //     // This is super weird. Why do we do this?
-    //     fs.writeFile(path.join(packageFolder, 'test/mode.txt'), 'dev'),
-    // ]);
+        // This is super weird. Why do we do this?
+        fs.writeFile(path.join(packageFolder, 'test/mode.txt'), 'dev'),
+    ]);
 
     // This is super weird. Why do we do this?
     fs.writeFile(path.join(packageFolder, 'test/mode.txt'), 'dev'),

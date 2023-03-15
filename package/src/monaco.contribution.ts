@@ -1,4 +1,5 @@
-// Import monaco-editor to ensure "monaco" global is available before any other code is run
+// Import monaco-editor to ensure "monaco" global is available before any other
+// code is run
 import 'monaco-editor';
 
 import type * as mode from './kustoMode';

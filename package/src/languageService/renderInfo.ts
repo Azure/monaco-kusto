@@ -1,4 +1,4 @@
-export declare type VisualizationType =
+export type VisualizationType =
     | 'anomalychart'
     | 'areachart'
     | 'barchart'
@@ -15,10 +15,10 @@ export declare type VisualizationType =
     | 'timepivot'
     | 'card';
 
-export declare type Scale = 'linear' | 'log';
-export declare type LegendVisibility = 'visible' | 'hidden';
-export declare type YSplit = 'none' | 'axes' | 'panels';
-export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100' | 'map';
+export type Scale = 'linear' | 'log';
+export type LegendVisibility = 'visible' | 'hidden';
+export type YSplit = 'none' | 'axes' | 'panels';
+export type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100' | 'map';
 
 export interface RenderOptions {
     visualization?: null | VisualizationType;

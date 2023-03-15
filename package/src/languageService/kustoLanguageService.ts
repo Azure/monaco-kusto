@@ -4,11 +4,14 @@ import * as ls from 'vscode-languageserver-types';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 import type { FoldingRange } from 'vscode-languageserver-types';
 
-// Replaced with imports to @kusto/language-service by build script
-import 'language-service';
-
 import * as s from './schema';
 import type { FormatterPlacementStyle, LanguageSettings } from './settings';
+
+// @kusto/language-server imports should be added below by build script
+/// LANGUAGE_SERVER_IMPORT
+
+// Replaced with @kusto/language-server imports at build time
+import 'language-service';
 
 import k = Kusto.Data.IntelliSense;
 import parsing = Kusto.Language.Parsing;
