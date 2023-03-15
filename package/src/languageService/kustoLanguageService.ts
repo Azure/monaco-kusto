@@ -4,7 +4,9 @@ import * as ls from 'vscode-languageserver-types';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 import type { FoldingRange } from 'vscode-languageserver-types';
 
-import './languageServiceESM';
+// Replaced with imports to @kusto/language-service by build script
+import 'language-service';
+
 import * as s from './schema';
 import type { FormatterPlacementStyle, LanguageSettings } from './settings';
 

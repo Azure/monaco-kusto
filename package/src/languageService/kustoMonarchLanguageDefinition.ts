@@ -1,4 +1,5 @@
-import '../languageServiceNext';
+// Replaced with imports to @kusto/language-service by build script
+import 'language-service';
 
 export const KustoLanguageDefinition: any = {
     name: 'kusto',

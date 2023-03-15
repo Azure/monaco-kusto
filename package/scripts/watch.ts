@@ -8,7 +8,7 @@ import { packageFolder } from './lib';
 async function main() {
     // await Promise.all([
     //     fs.cp(
-    //         path.dirname(require.resolve('monaco-editor-core/dev/vs/loader.js')),
+    //         path.dirname(require.resolve('monaco-editor/dev/vs/loader.js')),
     //         path.join(packageFolder, './out/vs'),
     //         {
     //             recursive: true,
@@ -23,14 +23,14 @@ async function main() {
 
     // This is super weird. Why do we do this?
     fs.writeFile(path.join(packageFolder, 'test/mode.txt'), 'dev'),
-    concurrently(
-        [
-            'live-server ./',
-            'tsc -w -p ./scripts/tsconfig.watch.json',
-            'yarn rollup -c ./scripts/rollup.dev.js -w --bundleConfigAsCjs',
-        ],
-        { cwd: packageFolder }
-    );
+        concurrently(
+            [
+                'live-server ./',
+                'tsc -w -p ./scripts/tsconfig.watch.json',
+                'yarn rollup -c ./scripts/rollup.dev.js -w --bundleConfigAsCjs',
+            ],
+            { cwd: packageFolder }
+        );
 }
 
 main();

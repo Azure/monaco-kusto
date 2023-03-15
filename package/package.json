@@ -46,6 +46,7 @@
         "@rollup/plugin-replace": "^5.0.2",
         "@rollup/plugin-terser": "^0.4.0",
         "@rollup/plugin-typescript": "^11.0.0",
+        "@rollup/plugin-virtual": "^3.0.1",
         "@tsconfig/node16": "^1.0.3",
         "@types/jest": "^21.1.8",
         "@types/lodash-es": "^4.17.6",

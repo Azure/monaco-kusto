@@ -30,7 +30,7 @@ loader.config({
 });
 
 /**
- * remove evnent listener and resolve init promise once script is loaded.
+ * remove event listener and resolve init promise once script is loaded.
  */
 const onMonacoKustoLoaded = () => {
     document.removeEventListener('kusto_init', onMonacoKustoLoaded);

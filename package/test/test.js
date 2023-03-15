@@ -14,7 +14,7 @@ const loader_dev_config = {
     baseUrl: '../..',
     paths: {
         'vs/language/kusto': 'release/dev',
-        vs: 'node_modules/monaco-editor-core/dev/vs',
+        vs: 'node_modules/monaco-editor/dev/vs',
     },
     shim: shim,
 };
@@ -23,7 +23,7 @@ const loader_release_config = {
     baseUrl: '../../..',
     paths: {
         'vs/language/kusto': `release/min`,
-        vs: 'node_modules/monaco-editor-core/dev/vs',
+        vs: 'node_modules/monaco-editor/dev/vs',
         'vs/language/kustoWorker': '../../../release/dev/kustoWorker',
         // 'language-service': `../release/min`,
         // 'language-service-next': `../release/min`,
@@ -49,7 +49,7 @@ fetch('./test/mode.txt')
         console.log(`dev: ${dev}`);
         mode = mode.trim();
         requirejs.config(dev ? loader_dev_config : loader_release_config);
-        // TODO: Use monaco-editor-core/dev/vs/loader.js instead of this? It can
+        // TODO: Use monaco-editor/dev/vs/loader.js instead of this? It can
         // be accessed via the `AMDLoader` global
         requirejs(
             ['vs/editor/editor.main', 'vs/editor/editor.main.nls', 'vs/language/kusto/monaco.contribution'],
