@@ -4,12 +4,15 @@ import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import { KustoLanguageDefinition } from './languageService/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
 
-import type { Schema, ScalarParameter, TabularParameter } from './languageService/schema';
+import Uri = monaco.Uri;
+import IDisposable = monaco.IDisposable;
+import { WorkerAccessor } from './languageFeatures';
+import type { EngineSchema, Schema, InputParameter, ScalarParameter, TabularParameter } from './languageService/schema';
 
-let kustoWorker: languageFeatures.WorkerAccessor;
+let kustoWorker: WorkerAccessor;
 let resolveWorker: (value: languageFeatures.WorkerAccessor | PromiseLike<languageFeatures.WorkerAccessor>) => void;
 let rejectWorker: (err: any) => void;
-let workerPromise: Promise<languageFeatures.WorkerAccessor> = new Promise((resolve, reject) => {
+let workerPromise: Promise<WorkerAccessor> = new Promise((resolve, reject) => {
     resolveWorker = resolve;
     rejectWorker = reject;
 });
@@ -18,16 +21,16 @@ let workerPromise: Promise<languageFeatures.WorkerAccessor> = new Promise((resol
  * Called when Kusto language is first needed (a model has the language set)
  * @param defaults
  */
-export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance): languageFeatures.WorkerAccessor {
+export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance: typeof monaco): WorkerAccessor {
     let onSchemaChange = new monaco.Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
-    let disposables: monaco.IDisposable[] = [];
-    let monarchTokensProvider: monaco.IDisposable;
+    let disposables: IDisposable[] = [];
+    let monarchTokensProvider: IDisposable;
 
     const client = new WorkerManager(monacoInstance, defaults);
     disposables.push(client);
 
-    const workerAccessor = (first: monaco.Uri, ...more: monaco.Uri[]): Promise<KustoWorker> => {
+    const workerAccessor = (first: Uri, ...more: Uri[]): Promise<KustoWorker> => {
         const augmentedSetSchema = (
             schema: Schema,
             worker: KustoWorker,
@@ -174,6 +177,6 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance)
     return kustoWorker;
 }
 
-export function getKustoWorker(): Promise<languageFeatures.WorkerAccessor> {
+export function getKustoWorker(): Promise<WorkerAccessor> {
     return workerPromise.then(() => kustoWorker);
 }

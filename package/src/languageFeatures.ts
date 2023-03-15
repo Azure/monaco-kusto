@@ -373,6 +373,8 @@ function fromIRange(range: monaco.IRange): ls.Range {
     range = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
 }
 
+// type kinds = keyof typeof ClassificationKind;
+
 type kinds = keyof typeof Kusto.Language.Editor.ClassificationKind;
 
 /**
@@ -405,6 +407,12 @@ const ClassificationKind: typeof Kusto.Language.Editor.ClassificationKind = {
     SignatureParameter: 23,
     Option: 24,
 };
+
+const ClassificationKindNames: Record<number, keyof typeof ClassificationKind> = {};
+
+for (const [key, value] of Object.entries(ClassificationKind)) {
+    ClassificationKindNames[value] = key;
+}
 
 // commented here is the color definitions are were defined by v1 intellisense terminology:
 // { token: 'comment', foreground: '008000' }, // CommentToken Green
@@ -720,7 +728,9 @@ function toDecoration(
     const start = model.getPositionAt(classification.start);
     const end = model.getPositionAt(classification.start + classification.length);
     const range = new Range(start.lineNumber, start.column, end.lineNumber, end.column);
-    const inlineClassName = ClassificationKind[classification.kind];
+    const inlineClassName = ClassificationKindNames[classification.kind];
+    // const inlineClassName = (ClassificationKind as any).$names[classification.kind];
+    // console.log({ inlineClassName, inlineClassName2: ClassificationKind2[classification.kind] });
     return {
         range,
         options: {

@@ -4,7 +4,6 @@ import { KustoWorker } from './kustoWorker';
 self.onmessage = () => {
     // ignore the first message
     worker.initialize((ctx, createData) => {
-        console.log({ createData });
         return new KustoWorker(ctx, createData);
     });
 };
