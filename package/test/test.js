@@ -1,35 +1,45 @@
 const shim = {
-    'language-service/kusto.javascript.client.min': {
-        deps: ['language-service/bridge.min'],
-    },
-    'language-service-next/Kusto.Language.Bridge.min': {
-        deps: ['language-service/kusto.javascript.client.min'],
-    },
+    // 'language-service/kusto.javascript.client.min': {
+    //     deps: ['language-service/bridge.min'],
+    // },
+    // 'language-service-next/Kusto.Language.Bridge.min': {
+    //     deps: ['language-service/kusto.javascript.client.min'],
+    // },
     'vs/language/kusto/monaco.contribution': {
         deps: ['vs/editor/editor.main'],
     },
 };
 
-const requirejs_dev_config = {
-    baseUrl: '../',
+const loader_dev_config = {
+    baseUrl: '../..',
     paths: {
-        'vs/language/kusto': '../release/dev',
-        vs: '../out/vs',
-        'language-service': '../node_modules/@kusto/language-service/',
-        'language-service-next': '../node_modules/@kusto/language-service-next/',
+        'vs/language/kusto': 'release/dev',
+        vs: 'node_modules/monaco-editor-core/dev/vs',
     },
     shim: shim,
 };
 
-const requirejs_release_config = {
-    baseUrl: '../',
+const loader_release_config = {
+    baseUrl: '../../..',
     paths: {
-        'vs/language/kusto': `../release/min`,
-        vs: '../out/vs',
-        'language-service': `../release/min`,
-        'language-service-next': `../release/min`,
+        'vs/language/kusto': `release/min`,
+        vs: 'node_modules/monaco-editor-core/dev/vs',
+        'vs/language/kustoWorker': '../../../release/dev/kustoWorker',
+        // 'language-service': `../release/min`,
+        // 'language-service-next': `../release/min`,
     },
     shim: shim,
+};
+
+window.MonacoEnvironment = {
+    baseUrl: '.',
+    test: 'test',
+    // getWorker(_moduleId, label) {
+    //     if (label === 'typescript' || label === 'javascript') {
+    //         return new Worker(tsWorkerUrl, { type: 'module' });
+    //     }
+    //     return new Worker(editorWorkerUrl, { type: 'module' });
+    // },
 };
 
 fetch('./test/mode.txt')
@@ -38,19 +48,11 @@ fetch('./test/mode.txt')
         const dev = mode == 'dev';
         console.log(`dev: ${dev}`);
         mode = mode.trim();
-        requirejs.config(dev ? requirejs_dev_config : requirejs_release_config);
+        requirejs.config(dev ? loader_dev_config : loader_release_config);
         // TODO: Use monaco-editor-core/dev/vs/loader.js instead of this? It can
         // be accessed via the `AMDLoader` global
         requirejs(
-            [
-                'vs/loader',
-                'vs/editor/editor.main',
-                'vs/editor/editor.main.nls',
-                'language-service/bridge.min',
-                'language-service/kusto.javascript.client.min',
-                'language-service-next/Kusto.Language.Bridge.min',
-                'vs/language/kusto/monaco.contribution',
-            ],
+            ['vs/editor/editor.main', 'vs/editor/editor.main.nls', 'vs/language/kusto/monaco.contribution'],
             function () {
                 const editor = monaco.editor.create(document.getElementById('container'), {
                     value: ['StormEvents | project StartTime , State | where State contains "Texas" | count'].join(

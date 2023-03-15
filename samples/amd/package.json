@@ -1,0 +1,12 @@
+{
+    "name": "monaco-kusto--AMD-example",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "@kusto/monaco-kusto": "6.0.0",
+        "monaco-editor": "~0.35.0"
+    },
+    "scripts": {
+        "build": "copyMonacoFilesAMD ."
+    }
+}

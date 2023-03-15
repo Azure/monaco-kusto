@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Monaco Kusto AMD Example</title>
+        <style>
+            html,
+            body,
+            #root {
+                height: 100%;
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script src="./vs/loader.js"></script>
+        <script>
+            require.config({
+                paths: {},
+                shim: {
+                    'vs/language/kusto/monaco.contribution': {
+                        deps: ['vs/editor/editor.main'],
+                    },
+                },
+            });
+            require([
+                'vs/editor/editor.main',
+                'vs/editor/editor.main.nls',
+                'vs/language/kusto/monaco.contribution',
+            ], () => {
+                const editor = monaco.editor.create(document.getElementById('root'), {
+                    value: 'StormEvents | take 10',
+                    language: 'kusto',
+                    selectionHighlight: false,
+                    theme: 'kusto-light',
+                    folding: true,
+                    suggest: {
+                        selectionMode: 'whenQuickSuggestion',
+                    },
+                });
+                const schema = {
+                    Plugins: [],
+                    Databases: {
+                        Samples: {
+                            Name: 'Samples',
+                            Tables: {
+                                StormEvents: {
+                                    Name: 'StormEvents',
+                                    DocString:
+                                        'A dummy description to test that docstring shows as expected when hovering over a table',
+                                    OrderedColumns: [
+                                        {
+                                            Name: 'StartTime',
+                                            Type: 'System.DateTime',
+                                            CslType: 'datetime',
+                                            DocString: 'The start time',
+                                        },
+                                        {
+                                            Name: 'EndTime',
+                                            Type: 'System.DateTime',
+                                            CslType: 'datetime',
+                                            DocString: 'The end time',
+                                        },
+                                        {
+                                            Name: 'EpisodeId',
+                                            Type: 'System.Int32',
+                                            CslType: 'int',
+                                        },
+                                        {
+                                            Name: 'EventId',
+                                            Type: 'System.Int32',
+                                            CslType: 'int',
+                                        },
+                                        {
+                                            Name: 'State',
+                                            Type: 'System.String',
+                                            CslType: 'string',
+                                        },
+                                    ],
+                                },
+                            },
+                            Functions: {},
+                        },
+                    },
+                };
+
+                monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
+                    const model = editor.getModel();
+                    workerAccessor(model.uri).then((worker) => {
+                        worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

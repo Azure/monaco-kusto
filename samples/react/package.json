@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@kusto/monaco-kusto": "5.3.4",
+        "@kusto/monaco-kusto": "6.0.0",
         "@monaco-editor/react": "4.4.6",
         "@testing-library/jest-dom": "^4.2.4",
         "@testing-library/react": "^9.3.2",

@@ -1,3 +1,5 @@
+import '../languageServiceNext';
+
 export const KustoLanguageDefinition: any = {
     name: 'kusto',
     mimeTypes: ['text/kusto'],

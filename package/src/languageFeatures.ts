@@ -1,3 +1,4 @@
+import './languageServiceNext';
 import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import type { KustoWorker } from './kustoWorker';
 
@@ -11,6 +12,7 @@ import Thenable = monaco.Thenable;
 import CancellationToken = monaco.CancellationToken;
 import IDisposable = monaco.IDisposable;
 import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
+
 import type { Schema } from './languageService/schema';
 import type { FoldingRange } from 'vscode-languageserver-types';
 import type { ClassifiedRange } from './languageService/kustoLanguageService';
