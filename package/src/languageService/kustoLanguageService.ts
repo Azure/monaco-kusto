@@ -7,9 +7,6 @@ import type { FoldingRange } from 'vscode-languageserver-types';
 import * as s from './schema';
 import type { FormatterPlacementStyle, LanguageSettings } from './settings';
 
-// @kusto/language-server imports should be added below by build script
-/// LANGUAGE_SERVER_IMPORT
-
 // Replaced with @kusto/language-server imports at build time
 import 'language-service';
 

@@ -373,8 +373,6 @@ function fromIRange(range: monaco.IRange): ls.Range {
     range = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
 }
 
-// type kinds = keyof typeof ClassificationKind;
-
 type kinds = keyof typeof Kusto.Language.Editor.ClassificationKind;
 
 /**
@@ -680,8 +678,7 @@ function getEnumKeys<E>(e: any) {
  * Generates a mapping between ClassificationKind and color.
  */
 function getClassificationColorTriplets(): { classification: string; colorLight: string; colorDark: string }[] {
-    const keys = getEnumKeys(ClassificationKind);
-    const result = keys.map((key) => ({
+    const result = Object.keys(ClassificationKind).map((key) => ({
         classification: key,
         colorLight: classificationToColorLight[key],
         colorDark: classificationToColorDark[key],
@@ -729,8 +726,6 @@ function toDecoration(
     const end = model.getPositionAt(classification.start + classification.length);
     const range = new Range(start.lineNumber, start.column, end.lineNumber, end.column);
     const inlineClassName = ClassificationKindNames[classification.kind];
-    // const inlineClassName = (ClassificationKind as any).$names[classification.kind];
-    // console.log({ inlineClassName, inlineClassName2: ClassificationKind2[classification.kind] });
     return {
         range,
         options: {

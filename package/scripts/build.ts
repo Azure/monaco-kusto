@@ -58,7 +58,8 @@ async function compileTypes() {
             fs.cp(path.join(__dirname, '../release/min'), path.join(__dirname, '../release/dev'), {
                 recursive: true,
                 filter(source) {
-                    return source.endsWith('.d.ts');
+                    const ext = path.extname(source);
+                    return ext === '' || ext === '.ts';
                 },
             })
         ),
@@ -70,7 +71,13 @@ async function compileTypes() {
 
 async function main() {
     createReleaseFolder();
-    await Promise.all([copyRunTimeDepsToOut('release/min'), compileESM(), compileAMD(), compileTypes()]);
+    await Promise.all([
+        copyRunTimeDepsToOut('release/min'),
+        copyRunTimeDepsToOut('release/dev'),
+        compileESM(),
+        compileAMD(),
+        compileTypes(),
+    ]);
 }
 
 main();

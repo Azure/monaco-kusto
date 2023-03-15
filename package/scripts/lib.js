@@ -26,13 +26,6 @@ export const banner = [
     '',
 ].join('\n');
 
-// const languageServiceFiles = {
-//     '@kusto/language-service/Kusto.JavaScript.Client.min.js': 'kusto.javascript.client.min.js',
-//     // '@kusto/language-service/bridge.min.js': 'bridge.min.js',
-//     '@kusto/language-service/newtonsoft.json.min.js': 'newtonsoft.json.min.js',
-//     '@kusto/language-service-next/Kusto.Language.Bridge.min.js': 'Kusto.Language.Bridge.min.js',
-// };
-
 const languageServiceFiles = [
     ['@kusto/language-service/Kusto.JavaScript.Client.min', 'kusto.javascript.client.min'],
     ['@kusto/language-service/bridge.min', 'bridge.min'],
@@ -47,13 +40,6 @@ const languageServiceFiles = [
  * @param {string} target
  */
 export async function copyRunTimeDepsToOut(target) {
-    // const languageServiceFiles = [
-    //     ['@kusto/language-service/Kusto.JavaScript.Client.min.js', 'kusto.javascript.client.min.js'],
-    //     // ['@kusto/language-service/bridge.min.js', 'bridge.min.js'],
-    //     ['@kusto/language-service/newtonsoft.json.min.js', 'newtonsoft.json.min.js'],
-    //     ['@kusto/language-service-next/Kusto.Language.Bridge.min.js', 'Kusto.Language.Bridge.min.js'],
-    // ];
-
     for (const [from, to] of languageServiceFiles) {
         await fs.cp(require.resolve(from), path.join(packageFolder, target, to + '.js'));
     }
@@ -86,7 +72,6 @@ if (typeof document == 'undefined') {
  * @type { import('rollup').RollupOptions }
  */
 export const rollupAMDConfig = {
-    // input: Object.fromEntries(entryPointsAMD.map((e) => [e, path.join(packageFolder, 'src', e + '.ts')])),
     input: {
         kustoMode: path.join(__dirname, '../src/kustoMode.ts'),
         kustoWorker: path.join(__dirname, '../src/kustoWorker.ts'),
@@ -103,25 +88,8 @@ export const rollupAMDConfig = {
             preventAssignment: true,
             'Bridge.isNode': false,
         }),
-        alias({
-            entries: {
-                ['monaco-editor']: 'vs/editor/editor.main',
-                // ...amdLanguageServerAlias,
-            },
-            // customResolver(source) {
-            //     console.log({ source });
-            //     return null;
-            // },
-        }),
+        alias({ entries: { ['monaco-editor']: 'vs/editor/editor.main' } }),
         nodeResolve({ extensions }),
-        // alias({
-        //     entries: {
-        //         [path.join(packageFolder, 'src/languageService/languageService.ts')]: path.join(
-        //             packageFolder,
-        //             'src/languageService/languageServiceAMD.ts'
-        //         ),
-        //     },
-        // }),
         commonJs(), // Required to bundle xregexp
         babel({
             extensions,

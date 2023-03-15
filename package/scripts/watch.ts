@@ -3,15 +3,16 @@ import * as fs from 'node:fs/promises';
 
 import concurrently from 'concurrently';
 
-import { packageFolder } from './lib';
+import { copyRunTimeDepsToOut, packageFolder } from './lib';
 
 async function main() {
+    console.log('Copying static dependencies...');
     await Promise.all([
         fs.cp(path.dirname(require.resolve('monaco-editor/dev/vs/loader.js')), path.join(packageFolder, './out/vs'), {
             recursive: true,
         }),
 
-        // copyRunTimeDepsToOut('out/vs/language/kusto'),
+        copyRunTimeDepsToOut('out/vs/language/kusto'),
 
         // This is super weird. Why do we do this?
         fs.writeFile(path.join(packageFolder, 'test/mode.txt'), 'dev'),

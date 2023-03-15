@@ -7,7 +7,7 @@ import * as languageFeatures from './languageFeatures';
 import Uri = monaco.Uri;
 import IDisposable = monaco.IDisposable;
 import { WorkerAccessor } from './languageFeatures';
-import type { EngineSchema, Schema, InputParameter, ScalarParameter, TabularParameter } from './languageService/schema';
+import type { Schema, ScalarParameter, TabularParameter } from './languageService/schema';
 
 let kustoWorker: WorkerAccessor;
 let resolveWorker: (value: languageFeatures.WorkerAccessor | PromiseLike<languageFeatures.WorkerAccessor>) => void;
