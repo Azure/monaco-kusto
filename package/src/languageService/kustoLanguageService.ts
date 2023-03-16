@@ -149,6 +149,7 @@ const symbolKindToName = {
 export interface ResultAction {
     title: string;
     changes: { start: number; deleteLength: number; insertText: string | null }[];
+    kind: string;
 }
 
 export interface LanguageService {
@@ -773,10 +774,11 @@ class KustoLanguageService implements LanguageService {
     private getApplyCodeActions(document: TextDocument, start: number, end: number): k2.ApplyAction[] {
         const script = this.parseDocumentV2(document);
         let block = this.getAffectedBlocks(this.toArray<k2.CodeBlock>(script.Blocks), [{ start, end }])[0];
+
         const codeActionInfo = block.Service.GetCodeActions(
             start,
             start,
-            end - start + 1,
+            0,
             null,
             true,
             null,
@@ -786,7 +788,7 @@ class KustoLanguageService implements LanguageService {
         // Some code actions are of type "MenuAction". We want to flat them out, to show them seperately.
         let flatCodeActions: k2.ApplyAction[] = [];
         for (let i = 0; i < codeActions.length; i++) {
-            flatCodeActions.push(...this.flattenCodeActions(codeActions[i]));
+            flatCodeActions.push(...this.flattenCodeActions(codeActions[i], null));
         }
         return flatCodeActions;
     }
@@ -811,21 +813,43 @@ class KustoLanguageService implements LanguageService {
                         })
                     );
                 }
-                return { title: applyCodeAction.Title, changes };
+                return { title: applyCodeAction.Title, changes, kind: applyCodeAction.Kind };
             })
             .filter((resultAction) => resultAction.changes.length);
 
         return Promise.resolve(resultActionsMap);
     }
 
-    private flattenCodeActions(codeAction: k2.CodeAction): k2.ApplyAction[] {
+    private transformCodeActionTitle(currentActionTitle: string, parentActionTitle: string | null) {
+        let title = currentActionTitle;
+        switch (title) {
+            case 'Apply':
+                title = 'Apply once';
+                break;
+            case 'Fix All':
+                title = 'Apply to all';
+                break;
+            case 'Extract Value':
+                title = 'Extract value';
+                break;
+        }
+        if (parentActionTitle) {
+            // We want to lower case the first character since it's going to be in brackets
+            const parentActionTitleLowerCased = parentActionTitle.charAt(0).toUpperCase() + parentActionTitle.slice(1);
+            title = `${title} (${parentActionTitleLowerCased})`;
+        }
+        return title;
+    }
+
+    private flattenCodeActions(codeAction: k2.CodeAction, parentTitle: string | null): k2.ApplyAction[] {
         const applyActions: k2.ApplyAction[] = [];
         if (codeAction instanceof k2.ApplyAction) {
+            codeAction.Title = this.transformCodeActionTitle(codeAction.Title, parentTitle);
             applyActions.push(codeAction);
         } else if (codeAction instanceof k2.MenuAction) {
             const nestedCodeActions = this.toArray(codeAction.Actions);
             for (let i = 0; i < nestedCodeActions.length; i++) {
-                applyActions.push(...this.flattenCodeActions(nestedCodeActions[i]));
+                applyActions.push(...this.flattenCodeActions(nestedCodeActions[i], codeAction.Title));
             }
         }
         return applyActions;

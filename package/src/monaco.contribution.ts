@@ -69,7 +69,7 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     enableQueryWarnings: false,
     enableQuerySuggestions: false,
     disabledDiagnosticCodes: [],
-    quickFixCodeActions: ['Change to'],
+    quickFixCodeActions: ['Change to', 'FixAll'],
     enableQuickFixes: false,
 };
 

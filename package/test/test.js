@@ -524,6 +524,16 @@ fetch('./test/mode.txt')
                     monacoSettings.enableQuerySuggestions = false;
                     monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                 };
+                window.enableQuickFix = () => {
+                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    monacoSettings.enableQuickFix = true;
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                };
+                window.disableQuickFix = () => {
+                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    monacoSettings.enableQuickFix = false;
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
+                };
                 window.setDarkTheme = () => monaco.editor.setTheme('kusto-dark');
                 window.setLightTheme = () => monaco.editor.setTheme('kusto-light');
                 window.setDisableClusterCompletion = () =>
