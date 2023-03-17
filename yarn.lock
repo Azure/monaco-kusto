@@ -1991,7 +1991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/monaco-kusto@6.0.0, @kusto/monaco-kusto@workspace:package":
+"@kusto/monaco-kusto@6.1.0, @kusto/monaco-kusto@workspace:package":
   version: 0.0.0-use.local
   resolution: "@kusto/monaco-kusto@workspace:package"
   dependencies:
@@ -11160,7 +11160,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "monaco-kusto--AMD-example@workspace:samples/amd"
   dependencies:
-    "@kusto/monaco-kusto": 6.0.0
+    "@kusto/monaco-kusto": 6.1.0
     live-server: ^1.2.2
     monaco-editor: ~0.35.0
   languageName: unknown
