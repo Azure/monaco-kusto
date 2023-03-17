@@ -36,7 +36,7 @@ declare module monaco.languages.kusto {
         enableSyntaxErrorAsMarkDown?: boolean;
     }
 
-    export type QuickFixCodeActionOptions = 'Extract Expression' | 'Extract Function' | 'Change to';
+    export type QuickFixCodeActionOptions = 'Extract Expression' | 'Extract Function' | 'Change to' | 'FixAll';
 
     export interface FormatterOptions {
         indentationSize?: number;

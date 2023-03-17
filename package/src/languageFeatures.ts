@@ -175,12 +175,12 @@ export class DiagnosticsAdapter {
         const codeActions = await worker.getResultActions(resource.toString(), startOffset, endOffset);
         for (let i = 0; i < codeActions.length; i++) {
             const codeAction = codeActions[i];
-            if (codeAction.title.includes('Extract Function')) {
+            if (codeAction.kind.includes('Extract Function')) {
                 // Ignore extract function actions for now since they are buggy currently
                 continue;
             }
-            const codeActionKind = this.defaults.languageSettings.quickFixCodeActions?.find((actionTitle) =>
-                codeAction.title.includes(actionTitle)
+            const codeActionKind = this.defaults.languageSettings.quickFixCodeActions?.find((actionKind) =>
+                codeAction.kind.includes(actionKind)
             )
                 ? 'quickfix'
                 : 'custom';
