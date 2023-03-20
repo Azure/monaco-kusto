@@ -13,7 +13,7 @@
         "isolatedModules": true,
         "types": [
             "./monaco",
-            "monaco-editor-core/monaco",
+            "monaco-editor/monaco",
             "@kusto/language-service/Kusto.JavaScript.Client",
             "@kusto/language-service-next/Kusto.Language.Bridge"
         ]

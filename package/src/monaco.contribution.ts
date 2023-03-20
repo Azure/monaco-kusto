@@ -1,17 +1,16 @@
-import Emitter = monaco.Emitter;
-import IEvent = monaco.IEvent;
+// Import monaco-editor to ensure "monaco" global is available before any other
+// code is run
+import 'monaco-editor';
 
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
 
-// declare var require: <T>(moduleId: [string], callback: (module: T) => void) => void;
-
 // --- Kusto configuration and defaults ---------
 
 export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.LanguageServiceDefaults {
-    private _onDidChange = new Emitter<monaco.languages.kusto.LanguageServiceDefaults>();
+    private _onDidChange = new monaco.Emitter<monaco.languages.kusto.LanguageServiceDefaults>();
     private _languageSettings: monaco.languages.kusto.LanguageSettings;
     // in milliseconds. For example - this is 2 minutes 2 * 60 * 1000
     private _workerMaxIdleTime: number;
@@ -27,7 +26,7 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
         this._workerMaxIdleTime = 0;
     }
 
-    get onDidChange(): IEvent<monaco.languages.kusto.LanguageServiceDefaults> {
+    get onDidChange(): monaco.IEvent<monaco.languages.kusto.LanguageServiceDefaults> {
         return this._onDidChange.event;
     }
 

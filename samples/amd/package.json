@@ -1,0 +1,16 @@
+{
+    "name": "monaco-kusto--AMD-example",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "@kusto/monaco-kusto": "6.1.0",
+        "monaco-editor": "~0.35.0"
+    },
+    "scripts": {
+        "build": "copyMonacoFilesAMD .",
+        "start": "live-server ./"
+    },
+    "devDependencies": {
+        "live-server": "^1.2.2"
+    }
+}

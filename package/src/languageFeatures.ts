@@ -10,7 +10,7 @@ import Range = monaco.Range;
 import Thenable = monaco.Thenable;
 import CancellationToken = monaco.CancellationToken;
 import IDisposable = monaco.IDisposable;
-import ClassificationKind = Kusto.Language.Editor.ClassificationKind;
+
 import type { Schema } from './languageService/schema';
 import type { FoldingRange } from 'vscode-languageserver-types';
 import type { ClassifiedRange } from './languageService/kustoLanguageService';
@@ -373,7 +373,44 @@ function fromIRange(range: monaco.IRange): ls.Range {
     range = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
 }
 
-type kinds = keyof typeof ClassificationKind;
+type kinds = keyof typeof Kusto.Language.Editor.ClassificationKind;
+
+/**
+ * Copy of Kusto.Language.Editor.ClassificationKind we don't have to depend on it in this file
+ */
+const ClassificationKind: typeof Kusto.Language.Editor.ClassificationKind = {
+    PlainText: 0,
+    Comment: 1,
+    Punctuation: 2,
+    Directive: 3,
+    Literal: 4,
+    StringLiteral: 5,
+    Type: 6,
+    Column: 7,
+    Table: 8,
+    Database: 9,
+    Function: 10,
+    Parameter: 11,
+    Variable: 12,
+    Identifier: 13,
+    ClientParameter: 14,
+    QueryParameter: 15,
+    ScalarOperator: 16,
+    MathOperator: 17,
+    QueryOperator: 18,
+    Command: 19,
+    Keyword: 20,
+    MaterializedView: 21,
+    SchemaMember: 22,
+    SignatureParameter: 23,
+    Option: 24,
+};
+
+const ClassificationKindNames: Record<number, keyof typeof ClassificationKind> = {};
+
+for (const [key, value] of Object.entries(ClassificationKind)) {
+    ClassificationKindNames[value] = key;
+}
 
 // commented here is the color definitions are were defined by v1 intellisense terminology:
 // { token: 'comment', foreground: '008000' }, // CommentToken Green
@@ -641,8 +678,7 @@ function getEnumKeys<E>(e: any) {
  * Generates a mapping between ClassificationKind and color.
  */
 function getClassificationColorTriplets(): { classification: string; colorLight: string; colorDark: string }[] {
-    const keys = getEnumKeys(ClassificationKind);
-    const result = keys.map((key) => ({
+    const result = Object.keys(ClassificationKind).map((key) => ({
         classification: key,
         colorLight: classificationToColorLight[key],
         colorDark: classificationToColorDark[key],
@@ -689,7 +725,7 @@ function toDecoration(
     const start = model.getPositionAt(classification.start);
     const end = model.getPositionAt(classification.start + classification.length);
     const range = new Range(start.lineNumber, start.column, end.lineNumber, end.column);
-    const inlineClassName = (ClassificationKind as any).$names[classification.kind];
+    const inlineClassName = ClassificationKindNames[classification.kind];
     return {
         range,
         options: {

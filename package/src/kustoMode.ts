@@ -7,7 +7,7 @@ import * as languageFeatures from './languageFeatures';
 import Uri = monaco.Uri;
 import IDisposable = monaco.IDisposable;
 import { WorkerAccessor } from './languageFeatures';
-import type { EngineSchema, Schema, InputParameter, ScalarParameter, TabularParameter } from './languageService/schema';
+import type { Schema, ScalarParameter, TabularParameter } from './languageService/schema';
 
 let kustoWorker: WorkerAccessor;
 let resolveWorker: (value: languageFeatures.WorkerAccessor | PromiseLike<languageFeatures.WorkerAccessor>) => void;
@@ -21,7 +21,7 @@ let workerPromise: Promise<WorkerAccessor> = new Promise((resolve, reject) => {
  * Called when Kusto language is first needed (a model has the language set)
  * @param defaults
  */
-export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance): WorkerAccessor {
+export function setupMode(defaults: LanguageServiceDefaultsImpl, monacoInstance: typeof monaco): WorkerAccessor {
     let onSchemaChange = new monaco.Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
     let disposables: IDisposable[] = [];

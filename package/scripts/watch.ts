@@ -6,14 +6,11 @@ import concurrently from 'concurrently';
 import { copyRunTimeDepsToOut, packageFolder } from './lib';
 
 async function main() {
+    console.log('Copying static dependencies...');
     await Promise.all([
-        fs.cp(
-            path.dirname(require.resolve('monaco-editor-core/dev/vs/loader.js')),
-            path.join(packageFolder, './out/vs'),
-            {
-                recursive: true,
-            }
-        ),
+        fs.cp(path.dirname(require.resolve('monaco-editor/dev/vs/loader.js')), path.join(packageFolder, './out/vs'), {
+            recursive: true,
+        }),
 
         copyRunTimeDepsToOut('out/vs/language/kusto'),
 
@@ -21,14 +18,16 @@ async function main() {
         fs.writeFile(path.join(packageFolder, 'test/mode.txt'), 'dev'),
     ]);
 
-    concurrently(
-        [
-            'live-server ./',
-            'tsc -w -p ./scripts/tsconfig.watch.json',
-            'yarn rollup -c ./scripts/rollup.esm.js -w --bundleConfigAsCjs',
-        ],
-        { cwd: packageFolder }
-    );
+    // This is super weird. Why do we do this?
+    fs.writeFile(path.join(packageFolder, 'test/mode.txt'), 'dev'),
+        concurrently(
+            [
+                'live-server ./',
+                'tsc -w -p ./scripts/tsconfig.watch.json',
+                'yarn rollup -c ./scripts/rollup.dev.js -w --bundleConfigAsCjs',
+            ],
+            { cwd: packageFolder }
+        );
 }
 
 main();

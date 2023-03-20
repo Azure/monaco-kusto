@@ -9,7 +9,7 @@ import * as path from 'node:path';
 import * as rollup from 'rollup';
 
 import esmConfig from './rollup.esm.js';
-import { copyRunTimeDepsToOut, packageFolder, rollupAMDConfig } from './lib.js';
+import { copyRunTimeDepsToOut, packageFolder, rollupAMDConfig, rollupAMDOutput } from './lib.js';
 
 function createReleaseFolder() {
     const releaseFolder = path.join(packageFolder, './release');
@@ -23,14 +23,15 @@ function createReleaseFolder() {
     }
 }
 
-async function compileAMD(type: 'dev' | 'min') {
-    const { output, ...config } = rollupAMDConfig(type);
-    const bundle = await rollup.rollup(config);
+async function compileAMD() {
+    const bundle = await rollup.rollup(rollupAMDConfig);
     try {
-        await bundle.write(output as rollup.OutputOptions);
+        await Promise.all([bundle.write(rollupAMDOutput('dev')), bundle.write(rollupAMDOutput('min'))]);
     } finally {
         await bundle.close();
     }
+    // monaco.d.ts was here in a previous release. Add a reference file here to avoid breaking changes
+    await fs.writeFile(path.join(__dirname, '../release/min/monaco.d.ts'), '/// <reference types="../monaco" />\n');
 }
 
 async function compileESM() {
@@ -47,21 +48,20 @@ const exec = (command: string) =>
     util
         .promisify(cp.exec)(command, { cwd: packageFolder })
         .then((res) => {
-            console.log(res.stdout);
-            console.error(res.stdout);
+            process.stdout.write(res.stdout);
+            process.stderr.write(res.stderr);
         });
 
 async function compileTypes() {
     await Promise.all([
         exec('yarn tsc -p ./scripts/tsconfig.amd.json').then(() =>
-            Promise.all([
-                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/min'), {
-                    recursive: true,
-                }),
-                fs.cp(path.join(__dirname, '../out/types'), path.join(__dirname, '../release/dev'), {
-                    recursive: true,
-                }),
-            ])
+            fs.cp(path.join(__dirname, '../release/min'), path.join(__dirname, '../release/dev'), {
+                recursive: true,
+                filter(source) {
+                    const ext = path.extname(source);
+                    return ext === '' || ext === '.ts';
+                },
+            })
         ),
         exec('yarn tsc -p ./scripts/tsconfig.esm.json'),
         // copy file so it's relative position to the generated delegation files matches that of the source code. We need to do this because that's how tsc adds it's `/// <reference type="" />
@@ -73,12 +73,9 @@ async function main() {
     createReleaseFolder();
     await Promise.all([
         copyRunTimeDepsToOut('release/min'),
+        copyRunTimeDepsToOut('release/dev'),
         compileESM(),
-        compileAMD('dev'),
-        compileAMD('min').then(() =>
-            // monaco.d.ts was here in a previous release. Add a reference file here to avoid breaking changes
-            fs.writeFile(path.join(__dirname, '../release/min/monaco.d.ts'), '/// <reference types="../monaco" />\n')
-        ),
+        compileAMD(),
         compileTypes(),
     ]);
 }

@@ -1,3 +1,6 @@
-import { rollupAMDConfig } from './lib';
+import { rollupAMDConfig, rollupAMDOutput } from './lib';
 
-export default rollupAMDConfig('dev');
+export default {
+    ...rollupAMDConfig,
+    output: rollupAMDOutput('dev'),
+};

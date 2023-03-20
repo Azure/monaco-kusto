@@ -2,9 +2,16 @@ import * as path from 'node:path';
 
 import babel from '@rollup/plugin-babel';
 import nodeResolve from '@rollup/plugin-node-resolve';
-import commonJs from '@rollup/plugin-commonjs';
+import replace from '@rollup/plugin-replace';
+import virtual from '@rollup/plugin-virtual';
 
 import { banner, extensions, packageFolder } from './lib.js';
+
+const ESM_WORKER_LANGUAGE_SERVER_IMPORT = [
+    `import '@kusto/language-service/Kusto.JavaScript.Client.min';`,
+    `import '@kusto/language-service/bridge.min';`,
+    `import '@kusto/language-service-next/Kusto.Language.Bridge.min';`,
+].join('\n');
 
 /**
  * Bundles, but doesn't do any transpiling or minifying. Expectation is that
@@ -13,18 +20,22 @@ import { banner, extensions, packageFolder } from './lib.js';
  * @type {import('rollup').RollupOptions}
  */
 const config = {
-    /**
-     * @param {any} id
-     */
     external: /\/node_modules\//,
     input: {
         'monaco.contribution': path.join(packageFolder, 'src/monaco.contribution.ts'),
         'kusto.worker': path.join(packageFolder, 'src/kusto.worker.ts'),
         kustoMode: path.join(packageFolder, 'src/kustoMode.ts'),
     },
+    preserveEntrySignatures: 'strict',
     plugins: [
+        virtual({
+            'language-service': ESM_WORKER_LANGUAGE_SERVER_IMPORT,
+        }),
+        replace({
+            objectGuards: true,
+            preventAssignment: true,
+        }),
         nodeResolve({ extensions }),
-        commonJs(),
         babel({ extensions, babelHelpers: 'bundled', presets: ['@babel/preset-typescript'] }),
     ],
     output: {

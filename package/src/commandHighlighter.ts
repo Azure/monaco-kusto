@@ -11,11 +11,11 @@ export default class KustoCommandHighlighter implements monaco.editor.IEditorCon
     private decorations: string[] = [];
 
     /**
-     * Register to cursor movement and seleciton events.
+     * Register to cursor movement and selection events.
      * @param editor monaco editor instance
      */
     constructor(private editor: monaco.editor.ICodeEditor) {
-        // Note that selection update is triggered not only for selection changes, but also just when no text selection is occuring and cursor just moves around.
+        // Note that selection update is triggered not only for selection changes, but also just when no text selection is occurring and cursor just moves around.
         // This case is counted as a 0-length selection starting and ending on the cursor position.
         this.editor.onDidChangeCursorSelection((changeEvent) => {
             if (this.editor.getModel().getLanguageId() !== 'kusto') {

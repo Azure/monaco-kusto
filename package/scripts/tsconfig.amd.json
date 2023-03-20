@@ -6,13 +6,13 @@
         "rootDir": "../src",
         "module": "amd",
         "moduleResolution": "node",
-        "outDir": "../out/types",
+        "outDir": "../release/min",
         "emitDeclarationOnly": true,
         "declaration": true,
         "noEmit": false,
         "types": [
             "../monaco",
-            "monaco-editor-core/monaco",
+            "monaco-editor/monaco",
             "@kusto/language-service/Kusto.JavaScript.Client",
             "@kusto/language-service-next/Kusto.Language.Bridge"
         ]
