@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "dependencies": {
-        "@kusto/monaco-kusto": "6.1.0",
+        "@kusto/monaco-kusto": "6.1.1",
         "monaco-editor": "~0.35.0"
     },
     "scripts": {

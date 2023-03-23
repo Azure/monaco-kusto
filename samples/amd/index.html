@@ -16,28 +16,13 @@
     </head>
     <body>
         <div id="root"></div>
-
-        <script src=".//vs/language/kusto/bridge.min.js"></script>
-        <script type="text/javascript">
-            var System2 = System;
-        </script>
-        <script src=".//vs/language/kusto/kusto.javascript.client.min.js"></script>
-        <script src=".//vs/language/kusto/Kusto.Language.Bridge.min.js"></script>
         <script src="./vs/loader.js"></script>
         <script>
-            require.config({
-                paths: {},
-                shim: {
-                    'vs/language/kusto/monaco.contribution': {
-                        deps: ['vs/editor/editor.main'],
-                    },
-                },
-            });
-            require([
-                'vs/editor/editor.main',
-                'vs/editor/editor.main.nls',
-                'vs/language/kusto/monaco.contribution',
-            ], () => {
+            // 'vs/editor/editor.main' is not required here, but makes things
+            // load a little faster. Without it, require.js won't start loading
+            // it until after 'vs/language/kusto/monaco.contribution' is loaded
+            // and requests for it to be loaded.
+            require(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], () => {
                 const editor = monaco.editor.create(document.getElementById('root'), {
                     value: 'StormEvents | take 10',
                     language: 'kusto',

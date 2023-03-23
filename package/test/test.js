@@ -1,22 +1,9 @@
-// const shim = {
-//     // 'language-service/kusto.javascript.client.min': {
-//     //     deps: ['language-service/bridge.min'],
-//     // },
-//     // 'language-service-next/Kusto.Language.Bridge.min': {
-//     //     deps: ['language-service/kusto.javascript.client.min'],
-//     // },
-//     'vs/language/kusto/monaco.contribution': {
-//         deps: ['vs/editor/editor.main'],
-//     },
-// };
-
 const loader_dev_config = {
     baseUrl: '..',
     paths: {
         'vs/language/kusto': '../release/dev',
         vs: 'out/vs',
     },
-    // shim: shim,
 };
 
 const loader_release_config = {
@@ -25,7 +12,6 @@ const loader_release_config = {
         'vs/language/kusto': `../release/min`,
         vs: 'out/vs',
     },
-    // shim: shim,
 };
 
 fetch('./test/mode.txt')
@@ -35,11 +21,8 @@ fetch('./test/mode.txt')
         console.log(`dev: ${dev}`);
         mode = mode.trim();
         require.config(dev ? loader_dev_config : loader_release_config);
-        require([
-            'vs/editor/editor.main',
-            'vs/editor/editor.main.nls',
-            'vs/language/kusto/monaco.contribution',
-        ], function () {
+        // 'vs/editor/editor.main' is not required here, but makes things load a little faster
+        require(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], function () {
             const editor = monaco.editor.create(document.getElementById('container'), {
                 value: ['StormEvents | project StartTime , State | where State contains "Texas" | count'].join('\n'),
                 language: 'kusto',
