@@ -13,35 +13,33 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Usage
 
-### Sample project
+`npm install @kusto/monaco-editor` or `yarn add @kusto/monaco-editor`
 
-#### React
+### Package content
 
-See the [following path](samples/react) for a sample create-react-app project:
+-   `/esm` Contains esm version of the library
+-   `/dev` Contains an AMD version of the library
+-   `/min` Contains a minified AMD version of the library
 
-### Instructions:
+### AMD module system:
 
-1. yarn install
-
-#### AMD module system:
-
-Example at [./samples/amd](./samples/amd/README.md)
+Example at ![https://github.com/Azure/monaco-kusto/tree/master/samples/amd]()
 
 1. Run `npm run copyMonacoFilesAMD <path>` or `yarn copyMonacoFilesAMD <path>` where <path> is where you want the monaco and kusto amd modules to be. These files will need to be served as-in.
 2. Using a amd module loader, import `vs/language/kusto/monaco.contribution`
     1. The monaco editors included loader can be made available via a global require `require` by adding the script tag: `<script src="<path>/vs/loader.js"></script>`
 3. You should now be able to create monaco editors with `language: 'kusto'`. The kusto worker can be reached via the monaco global: `monaco.languages.kusto.getKustoWorker()`
 
-#### ESM
+### ESM
 
-Parcel example at [./samples/parcel](./samples/parcel/README.md)
+Parcel example at ![https://github.com/Azure/monaco-kusto/tree/master/samples/parcel]()
 
 1. Configure your bundler so `@kusto/monaco-kusto/release/esm/kusto.worker` has it's own entry point
 2. Configure monaco with that entry point and to use `globalAPI` using the `MonacoEnvironment`. This global needs to be set _before_ the monaco editor source is parsed so it will create a global api for this package to use.
     1. And example of steps 1 & 2 can be seen here: [./samples/parcel/index.html](). This was added to the html file to prevent parcel from including the monaco javascript above it
 3. You should now be able to create monaco editors with `language: 'kusto'`. The kusto worker can be reached via the monaco global: `monaco.languages.kusto.getKustoWorker()`
 
-## Setting a schema
+### Setting a schema
 
 There are 2 APIs to set a Kusto schema:
 
@@ -51,16 +49,19 @@ There are 2 APIs to set a Kusto schema:
    The result is a list of databases (see interface `Result` in `schema.ts`), so when this method is used,
    it also requires a cluster URI and the name of the database in context.
 
-## Setting up a dev environment
+## Contributing
+
+### Setting up a dev environment
 
 1. Install Node.js 16 from https://nodejs.org/
 2. Install Yarn from https://yarnpkg.com/
 3. Clone repo and run `yarn` in repo root
 4. Run `yarn watch` from /package and a live-server will automatically open the index.html
 
-## Build for release
+### Build for release
 
-`npm run prepublishOnly`
+1. Set CI environment variable to "tru"
+2. Run `yarn build`
 
 ## Changelog
 

@@ -1,4 +1,5 @@
 /out
 /release
 /test/mode.txt
+/README.md
 *.tgz

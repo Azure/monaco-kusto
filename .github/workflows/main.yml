@@ -19,8 +19,10 @@ jobs:
           cache: yarn
 
       - name: yarn install
-        run: |
-          yarn install --immutable
+        run: yarn install --immutable
+
+      - name: Copy README.md
+        run: cp ./README.md ./package/README.md
 
       - name: build
         working-directory: package
