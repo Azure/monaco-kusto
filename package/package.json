@@ -28,6 +28,7 @@
     "module": "./release/esm/monaco.contribution.js",
     "files": [
         "release",
+        "README.md",
         "copyMonacoFilesAMD"
     ],
     "bin": {
