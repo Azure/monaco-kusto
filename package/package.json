@@ -24,8 +24,8 @@
         "test": "jest",
         "clean": "rimraf ./out ./release"
     },
-    "main": "./release/min/monaco.contribution.js",
-    "types": "./release/min/monaco.contribution.d.ts",
+    "types": "./release/esm/monaco.contribution.d.ts",
+    "module": "./release/esm/monaco.contribution.js",
     "files": [
         "release",
         "copyMonacoFilesAMD"
