@@ -13,103 +13,33 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Usage
 
-### Sample project
+`npm install @kusto/monaco-editor` or `yarn add @kusto/monaco-editor`
 
-#### React
+### Package content
 
-See the [following path](samples/react) for a sample create-react-app project:
+-   `/esm` Contains esm version of the library
+-   `/dev` Contains an AMD version of the library
+-   `/min` Contains a minified AMD version of the library
 
-### Instructions:
+### AMD module system:
 
-1. yarn install
+Example at ![https://github.com/Azure/monaco-kusto/tree/master/samples/amd]()
 
-#### AMD module system:
+1. Run `npm run copyMonacoFilesAMD <path>` or `yarn copyMonacoFilesAMD <path>` where <path> is where you want the monaco and kusto amd modules to be. These files will need to be served as-in.
+2. Using a amd module loader, import `vs/language/kusto/monaco.contribution`
+    1. The monaco editors included loader can be made available via a global require `require` by adding the script tag: `<script src="<path>/vs/loader.js"></script>`
+3. You should now be able to create monaco editors with `language: 'kusto'`. The kusto worker can be reached via the monaco global: `monaco.languages.kusto.getKustoWorker()`
 
-1. add the following to your `index.html` (or other entry point)
+### ESM
 
-    ```xml
-    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/bridge.min.js"></script>
-    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/kusto.javascript.client.min.js"></script>
-    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/newtonsoft.json.min.js"></script>
-    <script src="%PUBLIC_URL%/monaco-editor/min/vs/language/kusto/Kusto.Language.Bridge.min.js"></script>
-    ```
+Parcel example at ![https://github.com/Azure/monaco-kusto/tree/master/samples/parcel]()
 
-    This is done since this package has a dependency on `kusto-language-service` but for now, we couldn't get `Bridge.Net` to produce valid modules with valid typescript typings.
+1. Configure your bundler so `@kusto/monaco-kusto/release/esm/kusto.worker` has it's own entry point
+2. Configure monaco with that entry point and to use `globalAPI` using the `MonacoEnvironment`. This global needs to be set _before_ the monaco editor source is parsed so it will create a global api for this package to use.
+    1. And example of steps 1 & 2 can be seen here: [./samples/parcel/index.html](). This was added to the html file to prevent parcel from including the monaco javascript above it
+3. You should now be able to create monaco editors with `language: 'kusto'`. The kusto worker can be reached via the monaco global: `monaco.languages.kusto.getKustoWorker()`
 
-    Until we do, consumer of this package will have to add the aformentioned lines globally in order for the package to work.
-    In the future we might load these programmatically ourselves (in fact - we already do this for the web monaco language service web worker).
-
-2. In order to load monaco and monaco-kusto in your application you will need to host monaco and monaco-kusto as static files on your web server, and use monaco's loader.js to load them.
-   for an example on how to do this, you can take a look at our sample code [here](samples/react/src/monaco-kusto.js)
-
-#### ESM (webpack example)
-
-1. define the following aliases in `resolve.alias`:
-
-```
-'vs/language/kusto/kustoMode': 'kustoMode',
-'bridge.min': '@kusto/monaco-kusto/release/esm/bridge.min',
-'kusto.javascript.client.min': '@kusto/monaco-kusto/release/esm/kusto.javascript.client.min.js',
-'Kusto.Language.Bridge.min': '@kusto/monaco-kusto/release/esm/Kusto.Language.Bridge.min.js',
-'Kusto': '@kusto/monaco-kusto/release/esm/Kusto.Language.Bridge.min.js',
-'monaco.contribution': '@kusto/monaco-kusto/release/esm/monaco.contribution'
-```
-
-2. define following loaders in `module.rules`:
-
-```
-{ test: /bridge\.js/, parser: { system: false } },
-{ test: /kusto\.javascript\.client\.min\.js/, parser: { system: false } },
-{ test: /Kusto\.Language\.Bridge\.min\.js/, parser: { system: false } },
-{ test: /kustoLanguageService/, parser: { system: false } },
-```
-
-Also, add the following dependency (shim) as loaders:
-
-```
-{ test: /Kusto\.Language\.Bridge\.min/, loader: 'exports-loader?window.Kusto!imports-loader?bridge.min,kusto.javascript.client.min' },
-{ test: /kustoMonarchLanguageDefinition/, loader: 'imports-loader?Kusto' },
-```
-
-3. Add the following custom loader to replace the importScripts usage in KustoLanguageService and use it:
-
-```
-module.exports = function loader(source) {
-    source = `var Kusto = require("@kusto/language-service-next/Kusto.Language.Bridge.min");\n${source}`;
-
-    return source.replace(/importScripts.*/g,'');;
-}
-```
-
-4. Define the following function in your window:
-
-```
-window.MonacoEnvironment = { globalAPI: true, getWorkerUrl: function() { return "<path_and_full_name_of_kusto_worker_chunk>"} };
-```
-
-5. Add "@kusto/monaco-kusto/release/esm/kusto.worker.js" as entry point to your webpack configuration.
-
-6. You'll need to merge the runtime chunk of this entry point with this entry point output chunk to one chunk,
-   and have this one call in getWorkerUrl in step 5.
-
-7. Create a monaco.editor object from an HTML element:
-
-```
-this.editor = monaco.editor.create(editorElement, editorConfig)
-```
-
-8. call monaco.contribution api:
-
-```
-import('monaco.contribution').then(async (contribution: any) => {
-    const model = this.monaco && this.monaco.editor.createModel("", 'kusto');
-    this.editor.setModel(model);
-    const workerAccessor: monaco.languages.kusto.WorkerAccessor = await monaco.languages.kusto.getKustoWorker();
-    const worker: monaco.languages.kusto.KustoWorker = await workerAccessor(model.uri);
-})
-```
-
-## Setting a schema
+### Setting a schema
 
 There are 2 APIs to set a Kusto schema:
 
@@ -119,16 +49,19 @@ There are 2 APIs to set a Kusto schema:
    The result is a list of databases (see interface `Result` in `schema.ts`), so when this method is used,
    it also requires a cluster URI and the name of the database in context.
 
-## Setting up a dev environment
+## Contributing
+
+### Setting up a dev environment
 
 1. Install Node.js 16 from https://nodejs.org/
 2. Install Yarn from https://yarnpkg.com/
 3. Clone repo and run `yarn` in repo root
 4. Run `yarn watch` from /package and a live-server will automatically open the index.html
 
-## Build for release
+### Build for release
 
-`npm run prepublishOnly`
+1. Set CI environment variable to "tru"
+2. Run `yarn build`
 
 ## Changelog
 

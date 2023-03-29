@@ -175,9 +175,14 @@ export class KustoWorker {
                     range: { start, end },
                 },
             } = result;
-            const range = new monaco.Range(start.line + 1, start.character + 1, end.line + 1, end.character + 1);
+
             return {
-                range,
+                range: {
+                    startLineNumber: start.line + 1,
+                    startColumn: start.character + 1,
+                    endLineNumber: end.line + 1,
+                    endColumn: end.character + 1,
+                },
                 text,
             };
         });

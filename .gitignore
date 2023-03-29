@@ -8,5 +8,7 @@
 !.yarn/sdks
 !.yarn/versions
 
+/.parcel-cache
+
 # macos folder metadata
 **/.DS_Store

@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "6.1.0",
+    "version": "6.1.1",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -21,13 +21,13 @@
         "watch": "ts-node ./scripts/watch.ts",
         "typecheck": "tsc",
         "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
-        "test": "jest",
-        "clean": "rimraf ./out ./release"
+        "clean": "rimraf ./release"
     },
-    "main": "./release/min/monaco.contribution.js",
-    "types": "./release/min/monaco.contribution.d.ts",
+    "types": "./release/esm/monaco.contribution.d.ts",
+    "module": "./release/esm/monaco.contribution.js",
     "files": [
         "release",
+        "README.md",
         "copyMonacoFilesAMD"
     ],
     "bin": {

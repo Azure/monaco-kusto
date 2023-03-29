@@ -1,0 +1,20 @@
+diff --git a/esm/vs/base/common/marked/marked.js b/esm/vs/base/common/marked/marked.js
+index a8ad563009ca0504a681c38bffe6d220950f6995..f95ee229716b5e509c275192ef99366d5c9749fe 100644
+--- a/esm/vs/base/common/marked/marked.js
++++ b/esm/vs/base/common/marked/marked.js
+@@ -19,8 +19,14 @@ let __marked_exports = {};
+ // ESM-uncomment-end
+ 
+  (function (global, factory) {
+-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
++  // Order swapped because we need first condition to always run.
++  // `ESM-uncomment-begin` section above appears to try and make this true, but
++  // parcel defines a `exports` variable that causes the other condition to
++  // run instead.
++  // Github issue: https://github.com/microsoft/monaco-editor/issues/2966
++  // PR: https://github.com/microsoft/vscode/pull/178179
+   typeof define === 'function' && define.amd ? define(['exports'], factory) :
++  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.marked = {}));
+ })(this, (function (exports) { 'use strict';
+ 
