@@ -1,30 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import * as monaco from 'monaco-editor';
+import '@kusto/monaco-kusto/release/esm/monaco.contribution';
 
-self.MonacoEnvironment = {
-    globalAPI: true,
-    getWorker(_moduleId, label) {
-        // https://webpack.js.org/guides/web-workers/
-        if (label === 'kusto') {
-            return new Worker(
-                /* webpackChunkName: "kusto-worker" */ new URL(
-                    '@kusto/monaco-kusto/release/esm/kusto.worker',
-                    import.meta.url
-                )
-            );
-        }
+self.MonacoEnvironment.getWorker = function (_moduleId, label) {
+    // https://webpack.js.org/guides/web-workers/
+    if (label === 'kusto') {
         return new Worker(
-            /* webpackChunkName: "editor-worker" */ new URL(
-                'monaco-editor/esm/vs/editor/editor.worker',
+            /* webpackChunkName: "kusto-worker" */ new URL(
+                '@kusto/monaco-kusto/release/esm/kusto.worker',
                 import.meta.url
             )
         );
-    },
+    }
+    return new Worker(
+        /* webpackChunkName: "editor-worker" */ new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url)
+    );
 };
-
-// // Must occur _after_ self.MonacoEnvironment.globalApi is defined
-import * as monaco from 'monaco-editor';
 
 const schema = {
     Plugins: [],
