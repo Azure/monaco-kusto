@@ -7,8 +7,6 @@ import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
 
-console.log('???');
-
 // --- Kusto configuration and defaults ---------
 
 export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.LanguageServiceDefaults {
