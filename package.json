@@ -17,7 +17,8 @@
     "packageManager": "yarn@3.4.1",
     "devDependencies": {
         "prettier": "^2.8.4",
-        "process": "^0.11.10"
+        "process": "^0.11.10",
+        "webpack-cli": "^5.0.1"
     },
     "resolutions": {
         "monaco-editor@~0.35.0": "patch:monaco-editor@npm%3A0.35.0#./.yarn/patches/monaco-editor-npm-0.35.0-f4a2faf37d.patch"
