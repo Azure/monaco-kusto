@@ -2,17 +2,24 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
-// https://webpack.js.org/guides/web-workers/
-// const kustoWorker = new Worker(new URL('@kusto/monaco-kusto/release/esm/kusto.worker', import.meta.url));
-const editorWorker = new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url));
-
 self.MonacoEnvironment = {
     globalAPI: true,
     getWorker(_moduleId, label) {
-        // if (label === 'kusto') {
-        //     return kustoWorker;
-        // }
-        return editorWorker;
+        // https://webpack.js.org/guides/web-workers/
+        if (label === 'kusto') {
+            return new Worker(
+                /* webpackChunkName: "kusto-worker" */ new URL(
+                    '@kusto/monaco-kusto/release/esm/kusto.worker',
+                    import.meta.url
+                )
+            );
+        }
+        return new Worker(
+            /* webpackChunkName: "editor-worker" */ new URL(
+                'monaco-editor/esm/vs/editor/editor.worker',
+                import.meta.url
+            )
+        );
     },
 };
 
