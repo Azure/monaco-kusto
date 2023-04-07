@@ -5,12 +5,15 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV == 'production';
 
+console.log({ isProduction });
+
 const stylesHandler = 'style-loader';
 
 const config = {
     entry: './src/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
+        globalObject: 'self',
     },
     resolve: {
         fallback: {
