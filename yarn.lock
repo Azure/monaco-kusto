@@ -1991,7 +1991,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/monaco-kusto@6.1.1, @kusto/monaco-kusto@workspace:package":
+"@kusto/monaco-kusto@npm:5.3.4":
+  version: 5.3.4
+  resolution: "@kusto/monaco-kusto@npm:5.3.4"
+  dependencies:
+    "@kusto/language-service": 0.0.38
+    "@kusto/language-service-next": 0.0.59
+  peerDependencies:
+    monaco-editor: 0.34.1
+  checksum: 5e0b12924d05d20b262a3f2d22a38a67ae15cd728baf55945334fc6ba5172aa8dc96028f77700b5e18b2bafced37c7dc2bec0e77a1a38a171eec844c0d533072
+  languageName: node
+  linkType: hard
+
+"@kusto/monaco-kusto@npm:6.1.1":
+  version: 6.1.1
+  resolution: "@kusto/monaco-kusto@npm:6.1.1"
+  dependencies:
+    "@kusto/language-service": 0.0.40
+    "@kusto/language-service-next": 0.0.63
+    lodash-es: ^4.17.21
+    vscode-languageserver-types: 3.16.0
+    xregexp: ^5.1.1
+  peerDependencies:
+    monaco-editor: ~0.35.0
+  bin:
+    copyMonacoFilesAMD: copyMonacoFilesAMD.js
+  checksum: bd0faaf5a24121983598a07211076106fbfff90983c19974892df794f2e7720280e3f05331b78c1862d79e450480930f37f94c4ea62c6329b44a22a267b97138
+  languageName: node
+  linkType: hard
+
+"@kusto/monaco-kusto@workspace:package":
   version: 0.0.0-use.local
   resolution: "@kusto/monaco-kusto@workspace:package"
   dependencies:
@@ -2031,18 +2060,6 @@ __metadata:
     copyMonacoFilesAMD: ./copyMonacoFilesAMD.js
   languageName: unknown
   linkType: soft
-
-"@kusto/monaco-kusto@npm:5.3.4":
-  version: 5.3.4
-  resolution: "@kusto/monaco-kusto@npm:5.3.4"
-  dependencies:
-    "@kusto/language-service": 0.0.38
-    "@kusto/language-service-next": 0.0.59
-  peerDependencies:
-    monaco-editor: 0.34.1
-  checksum: 5e0b12924d05d20b262a3f2d22a38a67ae15cd728baf55945334fc6ba5172aa8dc96028f77700b5e18b2bafced37c7dc2bec0e77a1a38a171eec844c0d533072
-  languageName: node
-  linkType: hard
 
 "@lezer/common@npm:^0.15.0, @lezer/common@npm:^0.15.7":
   version: 0.15.12
