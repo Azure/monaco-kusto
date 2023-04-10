@@ -1,6 +1,6 @@
 # Webpack/React Monaco Kusto AMD Example
 
-Created by calling (webpack init)[https://webpack.js.org/api/cli/#init] and then
+Created by calling [webpack init](https://webpack.js.org/api/cli/#init) and then
 modifying the output to support monaco-kusto's AMD module output. A more minimal
 AMD example is available here: [../amd]()
 
