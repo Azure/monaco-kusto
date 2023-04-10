@@ -35,19 +35,17 @@ const languageServiceFiles = [
 
 /**
  * Currently AMD builds require these files to be in a specific spot at
- * runtime. See `requireScripts` in kustoWorker.ts
+ * runtime. See {@link AMD_WORKER_LANGUAGE_SERVER_IMPORT}
  *
  * @param {string} target
  */
-export async function copyRunTimeDepsToOut(target) {
+export async function copyLanguageServerFiles(target) {
     for (const [from, to] of languageServiceFiles) {
         await fs.cp(require.resolve(from), path.join(packageFolder, target, to + '.js'));
     }
 }
 
 export const extensions = ['.js', '.ts'];
-
-// const entryPointsAMD = ['kustoMode', 'kustoWorker', 'monaco.contribution'];
 
 const amdLanguageServerAlias = Object.fromEntries(
     languageServiceFiles.map(([from, to]) => [from, 'vs/language/kusto/' + to])
