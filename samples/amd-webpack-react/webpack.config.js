@@ -13,12 +13,6 @@ const config = {
         path: path.resolve(__dirname, 'dist'),
         globalObject: 'self',
     },
-    resolve: {
-        fallback: {
-            // Suppress warning related to fs() call in language server code
-            fs: false,
-        },
-    },
     devServer: {
         open: true,
         host: 'localhost',
