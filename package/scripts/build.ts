@@ -9,7 +9,7 @@ import * as path from 'node:path';
 import * as rollup from 'rollup';
 
 import esmConfig from './rollup.esm.js';
-import { copyRunTimeDepsToOut, packageFolder, rollupAMDConfig, rollupAMDOutput } from './lib.js';
+import { copyLanguageServerFiles, packageFolder, rollupAMDConfig, rollupAMDOutput } from './lib.js';
 
 function createReleaseFolder() {
     const releaseFolder = path.join(packageFolder, './release');
@@ -30,8 +30,6 @@ async function compileAMD() {
     } finally {
         await bundle.close();
     }
-    // monaco.d.ts was here in a previous release. Add a reference file here to avoid breaking changes
-    await fs.writeFile(path.join(__dirname, '../release/min/monaco.d.ts'), '/// <reference types="../monaco" />\n');
 }
 
 async function compileESM() {
@@ -44,27 +42,22 @@ async function compileESM() {
     }
 }
 
-const exec = (command: string) =>
-    util
+function exec(command: string) {
+    return util
         .promisify(cp.exec)(command, { cwd: packageFolder })
         .then((res) => {
             process.stdout.write(res.stdout);
             process.stderr.write(res.stderr);
         });
+}
 
 async function compileTypes() {
     await Promise.all([
-        exec('yarn tsc -p ./scripts/tsconfig.amd.json').then(() =>
-            fs.cp(path.join(__dirname, '../release/min'), path.join(__dirname, '../release/dev'), {
-                recursive: true,
-                filter(source) {
-                    const ext = path.extname(source);
-                    return ext === '' || ext === '.ts';
-                },
-            })
-        ),
-        exec('yarn tsc -p ./scripts/tsconfig.esm.json'),
-        // copy file so it's relative position to the generated delegation files matches that of the source code. We need to do this because that's how tsc adds it's `/// <reference type="" />
+        exec('yarn tsc -p ./scripts/tsconfig.build.json'),
+
+        // copy file so it's relative position to the generated delegation files
+        // matches that of the source code. We need to do this because that's
+        // how tsc adds it's `/// <reference type="" />
         fs.cp(path.join(__dirname, '../monaco.d.ts'), path.join(__dirname, '../release/monaco.d.ts')),
     ]);
 }
@@ -72,8 +65,8 @@ async function compileTypes() {
 async function main() {
     createReleaseFolder();
     await Promise.all([
-        copyRunTimeDepsToOut('release/min'),
-        copyRunTimeDepsToOut('release/dev'),
+        copyLanguageServerFiles('release/min'),
+        copyLanguageServerFiles('release/dev'),
         compileESM(),
         compileAMD(),
         compileTypes(),
