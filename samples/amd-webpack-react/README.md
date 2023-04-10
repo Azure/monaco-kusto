@@ -1,6 +1,8 @@
 # Webpack/React Monaco Kusto AMD Example
 
-A more minimal AMD example is available here: [../amd]()
+Created by calling (webpack init)[https://webpack.js.org/api/cli/#init] and then
+modifying the output to support monaco-kusto's AMD module output. A more minimal
+AMD example is available here: [../amd]()
 
 ## Running
 
@@ -17,4 +19,5 @@ Changes have longer comments alongside them.
 -   Add `<script src="./vs/loader.js"></script>` to index.html
 -   Set `resolve.fallback.fs` to `false` in webpack config
 -   Added `copy-amd-files` to npm scripts
--   Call Monaco-editors AMD loader via `__non_webpack_require__()` instead of `require()`
+-   Call Monaco-editors AMD loader via `__non_webpack_require__()` instead of
+    `require()`
