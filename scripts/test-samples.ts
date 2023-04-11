@@ -46,6 +46,7 @@ async function main() {
         } finally {
             webserver.kill();
         }
+        await waitOn({ resources: ['http://localhost:3000'], reverse: true });
     }
 }
 
