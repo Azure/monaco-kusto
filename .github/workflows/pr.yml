@@ -26,7 +26,7 @@ jobs:
         run: yarn build
 
       - name: Install Playwright deps
-        run: yarn playwright install webkit chromium firefox
+        run: yarn playwright install-deps
 
       - name: test samples
         run: yarn test:samples
