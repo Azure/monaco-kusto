@@ -29,6 +29,7 @@ async function main() {
             webserver.stderr?.pipe(process.stderr);
             webserver.stdout?.pipe(process.stdout);
 
+            console.log('Waiting for webserver to start');
             await waitOn({ resources: ['http://localhost:3000'] });
 
             for (const browserType of [chromium, firefox, webkit]) {
@@ -41,11 +42,15 @@ async function main() {
 
                 assert(await page.evaluate('sanityCheck()'));
 
+                console.log('Sanity check passed!');
+
                 await browser.close();
             }
         } finally {
-            webserver.kill();
+            webserver.kill(9);
         }
+        // Webserver takes a moment to close after kill signal is sent
+        console.log('Waiting for webserver to stop');
         await waitOn({ resources: ['http://localhost:3000'], reverse: true });
     }
 }
