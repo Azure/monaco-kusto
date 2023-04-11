@@ -9,10 +9,12 @@
         "build:prod": "webpack --mode=production --node-env=production",
         "watch": "webpack --watch",
         "serve": "webpack serve",
-        "copy-amd-files": "copyMonacoFilesAMD ./public"
+        "copy-amd-files": "copyMonacoFilesAMD ./public",
+        "playwright:prepare": "yarn copy-amd-files",
+        "playwright:webserver": "webpack serve --port 3000 --no-open"
     },
     "dependencies": {
-        "@kusto/monaco-kusto": "6.1.1",
+        "@kusto/monaco-kusto": "workspace:*",
         "monaco-editor": "~0.35.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"

@@ -4,6 +4,17 @@ import '@kusto/monaco-kusto/release/esm/monaco.contribution';
 
 import './index.css';
 
+declare global {
+    interface Window {
+        sanityCheck(): Promise<boolean>;
+    }
+}
+
+// Called by playwright script in ci to validate things are working
+window.sanityCheck = async function () {
+    return !!(await monaco.languages.kusto.getKustoWorker());
+};
+
 const schema = {
     Plugins: [],
     Databases: {

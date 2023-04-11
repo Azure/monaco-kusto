@@ -16,8 +16,7 @@ jobs:
           cache: yarn
 
       - name: yarn install
-        run: |
-          yarn install --immutable
+        run: yarn install --immutable
 
       - name: Check formatting
         run: yarn format:check
@@ -25,3 +24,6 @@ jobs:
       - name: build
         working-directory: package
         run: yarn build
+
+      - name: test samples
+        run: yarn test:samples
