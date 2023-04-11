@@ -38,6 +38,8 @@ function App() {
     React.useLayoutEffect(() => {
         let disposed = false;
         let editor;
+        // monaco-editor's loader is called via a global `require` function. We need to call this via `__non_webpack_require__` to avoid webpack's module resolution.
+        //
         // https://webpack.js.org/api/module-variables/#__non_webpack_require__-webpack-specific
         __non_webpack_require__(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], () => {
             if (disposed) {
