@@ -20,14 +20,10 @@ async function main() {
             cp.execSync('yarn playwright:prepare', { cwd, stdio: 'inherit' });
         }
 
-        const webserver = cp.exec('yarn playwright:webserver', { cwd }, (err) => {
-            if (err) {
-                console.log(err);
-            }
-        });
+        const webserver = cp.spawn('yarn', ['playwright:webserver'], { cwd, stdio: 'inherit' });
 
-        webserver.stderr?.pipe(process.stderr);
-        webserver.stdout?.pipe(process.stdout);
+        // webserver.stderr?.pipe(process.stderr);
+        // webserver.stdout?.pipe(process.stdout);
 
         console.log('Waiting for webserver to start');
         await waitOn({ resources: ['http://localhost:3000'], timeout: 120_000 });
@@ -47,13 +43,14 @@ async function main() {
             await browser.close();
         }
 
-        // webserver.kill();
-
         const exited = new Promise((resolve) => {
             webserver.on('close', resolve);
         });
 
-        await new Promise((resolve) => treeKill(webserver.pid!, 'SIGTERM', resolve));
+        webserver.kill();
+
+        // worker.kill() wasn't working in ci
+        // await new Promise((resolve) => treeKill(webserver.pid!, 'SIGTERM', resolve));
 
         // Webserver takes a moment to close after kill signal is sent
         console.log('Waiting for webserver to stop');
