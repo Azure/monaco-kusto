@@ -11,10 +11,6 @@ const samplesFolder = path.join(__dirname, '../samples');
 
 async function main() {
     for (const dir of readdirSync(samplesFolder)) {
-        // if (dir !== 'amd-webpack-react') {
-        //     continue;
-        // }
-
         const cwd = path.join(samplesFolder, dir);
 
         const pkg = JSON.parse(await fs.readFile(path.join(cwd, 'package.json'), { encoding: 'utf-8' }));
