@@ -11,6 +11,10 @@ const samplesFolder = path.join(__dirname, '../samples');
 
 async function main() {
     for (const dir of readdirSync(samplesFolder)) {
+        // if (dir !== 'amd-webpack-react') {
+        //     continue;
+        // }
+
         const cwd = path.join(samplesFolder, dir);
 
         const pkg = JSON.parse(await fs.readFile(path.join(cwd, 'package.json'), { encoding: 'utf-8' }));
@@ -30,7 +34,7 @@ async function main() {
             webserver.stdout?.pipe(process.stdout);
 
             console.log('Waiting for webserver to start');
-            await waitOn({ resources: ['http://localhost:3000'] });
+            await waitOn({ resources: ['http://localhost:3000'], timeout: 10_000 });
 
             for (const browserType of [chromium, firefox, webkit]) {
                 console.log('samples/' + dir + ' ' + browserType.name());
@@ -47,11 +51,11 @@ async function main() {
                 await browser.close();
             }
         } finally {
-            webserver.kill(9);
+            webserver.kill();
         }
         // Webserver takes a moment to close after kill signal is sent
         console.log('Waiting for webserver to stop');
-        await waitOn({ resources: ['http://localhost:3000'], reverse: true });
+        // await waitOn({ resources: ['http://localhost:3000'], reverse: true, timeout: 3000 });
     }
 }
 
