@@ -29,33 +29,36 @@ async function main() {
             }
         });
 
-        try {
-            webserver.stderr?.pipe(process.stderr);
-            webserver.stdout?.pipe(process.stdout);
+        const exited = new Promise((resolve) => {
+            webserver.on('close', resolve);
+        });
 
-            console.log('Waiting for webserver to start');
-            await waitOn({ resources: ['http://localhost:3000'], timeout: 10_000 });
+        webserver.stderr?.pipe(process.stderr);
+        webserver.stdout?.pipe(process.stdout);
 
-            for (const browserType of [chromium, firefox, webkit]) {
-                console.log('samples/' + dir + ' ' + browserType.name());
+        console.log('Waiting for webserver to start');
+        await waitOn({ resources: ['http://localhost:3000'], timeout: 10_000 });
 
-                const browser = await browserType.launch();
-                const page = await browser.newPage();
+        for (const browserType of [chromium, firefox, webkit]) {
+            console.log('samples/' + dir + ' ' + browserType.name());
 
-                await page.goto('localhost:3000');
+            const browser = await browserType.launch();
+            const page = await browser.newPage();
 
-                assert(await page.evaluate('sanityCheck()'));
+            await page.goto('localhost:3000');
 
-                console.log('Sanity check passed!');
+            assert(await page.evaluate('sanityCheck()'));
 
-                await browser.close();
-            }
-        } finally {
-            webserver.kill();
+            console.log('Sanity check passed!');
+
+            await browser.close();
         }
+
+        webserver.kill();
+
         // Webserver takes a moment to close after kill signal is sent
         console.log('Waiting for webserver to stop');
-        // await waitOn({ resources: ['http://localhost:3000'], reverse: true, timeout: 3000 });
+        await exited;
     }
 }
 
