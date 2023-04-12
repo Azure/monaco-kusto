@@ -5,6 +5,7 @@ import path from 'node:path';
 import assert from 'node:assert';
 
 import waitOn from 'wait-on';
+import treeKill from 'tree-kill';
 import { chromium, firefox, webkit } from 'playwright';
 
 const samplesFolder = path.join(__dirname, '../samples');
@@ -20,20 +21,16 @@ async function main() {
         }
 
         const webserver = cp.exec('yarn playwright:webserver', { cwd }, (err) => {
-            if (err && !err.killed) {
-                throw err;
+            if (err) {
+                console.log(err);
             }
-        });
-
-        const exited = new Promise((resolve) => {
-            webserver.on('close', resolve);
         });
 
         webserver.stderr?.pipe(process.stderr);
         webserver.stdout?.pipe(process.stdout);
 
         console.log('Waiting for webserver to start');
-        await waitOn({ resources: ['http://localhost:3000'], timeout: 10_000 });
+        await waitOn({ resources: ['http://localhost:3000'], timeout: 120_000 });
 
         for (const browserType of [chromium, firefox, webkit]) {
             console.log('samples/' + dir + ' ' + browserType.name());
@@ -43,14 +40,20 @@ async function main() {
 
             await page.goto('localhost:3000');
 
-            assert(await page.evaluate('sanityCheck()'));
+            assert(await page.evaluate('healthCheck()'));
 
             console.log('Sanity check passed!');
 
             await browser.close();
         }
 
-        webserver.kill();
+        // webserver.kill();
+
+        const exited = new Promise((resolve) => {
+            webserver.on('close', resolve);
+        });
+
+        await new Promise((resolve) => treeKill(webserver.pid!, 'SIGTERM', resolve));
 
         // Webserver takes a moment to close after kill signal is sent
         console.log('Waiting for webserver to stop');

@@ -6692,6 +6692,7 @@ __metadata:
     playwright: ^1.32.2
     prettier: ^2.8.4
     process: ^0.11.10
+    tree-kill: ^1.2.2
     ts-node: ^10.9.1
     wait-on: ^7.0.1
   languageName: unknown

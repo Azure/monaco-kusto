@@ -6,12 +6,12 @@ import './index.css';
 
 declare global {
     interface Window {
-        sanityCheck(): Promise<boolean>;
+        healthCheck(): Promise<boolean>;
     }
 }
 
 // Called by playwright script in ci to validate things are working
-window.sanityCheck = async function () {
+window.healthCheck = async function () {
     return !!(await monaco.languages.kusto.getKustoWorker());
 };
 

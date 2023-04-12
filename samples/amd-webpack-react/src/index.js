@@ -33,7 +33,7 @@ const schema = {
 };
 
 // Called by playwright script in ci to validate things are working
-window.sanityCheck = async function () {
+window.healthCheck = async function () {
     await new Promise((resolve) =>
         __non_webpack_require__(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], () => resolve())
     );
