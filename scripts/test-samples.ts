@@ -5,7 +5,6 @@ import path from 'node:path';
 import assert from 'node:assert';
 
 import waitOn from 'wait-on';
-import treeKill from 'tree-kill';
 import { chromium, firefox, webkit } from 'playwright';
 
 const samplesFolder = path.join(__dirname, '../samples');
@@ -20,10 +19,9 @@ async function main() {
             cp.execSync('yarn playwright:prepare', { cwd, stdio: 'inherit' });
         }
 
+        // Running with cp.exec causes us to be unable to easily close some
+        // webservers in CI
         const webserver = cp.spawn('yarn', ['playwright:webserver'], { cwd, stdio: 'inherit' });
-
-        // webserver.stderr?.pipe(process.stderr);
-        // webserver.stdout?.pipe(process.stdout);
 
         console.log('Waiting for webserver to start');
         await waitOn({ resources: ['http://localhost:3000'], timeout: 120_000 });
@@ -48,9 +46,6 @@ async function main() {
         });
 
         webserver.kill();
-
-        // worker.kill() wasn't working in ci
-        // await new Promise((resolve) => treeKill(webserver.pid!, 'SIGTERM', resolve));
 
         // Webserver takes a moment to close after kill signal is sent
         console.log('Waiting for webserver to stop');
