@@ -8,9 +8,6 @@
         "build": "parcel build index.html",
         "playwright:webserver": "parcel index.html --port 3000"
     },
-    "alias": {
-        "./MonacoEnvironment.ts": "MonacoEnvironment"
-    },
     "dependencies": {
         "@kusto/monaco-kusto": "workspace:*",
         "monaco-editor": "~0.35.0",

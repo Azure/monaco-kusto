@@ -1,4 +1,6 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import kustoWorkerUrl from 'url:@kusto/monaco-kusto/release/esm/kusto.worker';
+import editorWorkerUrl from 'url:monaco-editor/esm/vs/editor/editor.worker';
 
 import '@kusto/monaco-kusto/release/esm/monaco.contribution';
 
@@ -13,6 +15,15 @@ declare global {
 // Called by playwright script in ci to validate things are working
 window.healthCheck = async function () {
     return !!(await monaco.languages.kusto.getKustoWorker());
+};
+
+// Can't set this in index.html because of a Parcel bug related to `url:*`
+// imports in html files: https://github.com/parcel-bundler/parcel/issues/8900
+self.MonacoEnvironment!.getWorkerUrl = function (_moduleId, label) {
+    if (label === 'kusto') {
+        return kustoWorkerUrl;
+    }
+    return editorWorkerUrl;
 };
 
 const schema = {
