@@ -6,7 +6,8 @@
     "license": "MIT",
     "scripts": {
         "format": "prettier --write .",
-        "format:check": "prettier --check ."
+        "format:check": "prettier --check .",
+        "test:samples": "ts-node ./scripts/test-samples.ts"
     },
     "workspaces": {
         "packages": [
@@ -16,8 +17,11 @@
     },
     "packageManager": "yarn@3.4.1",
     "devDependencies": {
+        "@types/wait-on": "^5.3.1",
+        "playwright": "^1.32.2",
         "prettier": "^2.8.4",
-        "process": "^0.11.10"
+        "ts-node": "^10.9.1",
+        "wait-on": "^7.0.1"
     },
     "resolutions": {
         "monaco-editor@~0.35.0": "patch:monaco-editor@npm%3A0.35.0#./.yarn/patches/monaco-editor-npm-0.35.0-f4a2faf37d.patch"

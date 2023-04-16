@@ -7,6 +7,8 @@
         "module": "esnext",
         "moduleResolution": "node",
         "noEmit": true,
+        "preserveWatchOutput": true,
+        "pretty": true,
         "types": [
             "../monaco",
             "monaco-editor/monaco",
