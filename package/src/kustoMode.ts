@@ -21,7 +21,7 @@ let workerPromise: Promise<languageFeatures.WorkerAccessor> = new Promise((resol
  */
 export function setupMode(
     defaults: LanguageServiceDefaultsImpl,
-    monacoInstance: typeof monaco
+    monacoInstance: typeof globalThis.monaco
 ): languageFeatures.WorkerAccessor {
     let onSchemaChange = new monaco.Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.

@@ -7,13 +7,15 @@ import { extend } from './extendedEditor';
 
 // --- Kusto configuration and defaults ---------
 
-export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.LanguageServiceDefaults {
-    private _onDidChange = new monaco.Emitter<monaco.languages.kusto.LanguageServiceDefaults>();
-    private _languageSettings: monaco.languages.kusto.LanguageSettings;
+export class LanguageServiceDefaultsImpl
+    implements globalThis.globalThis.monaco.languages.kusto.LanguageServiceDefaults
+{
+    private _onDidChange = new monaco.Emitter<globalThis.monaco.languages.kusto.LanguageServiceDefaults>();
+    private _languageSettings: globalThis.monaco.languages.kusto.LanguageSettings;
     // in milliseconds. For example - this is 2 minutes 2 * 60 * 1000
     private _workerMaxIdleTime: number;
 
-    constructor(languageSettings: monaco.languages.kusto.LanguageSettings) {
+    constructor(languageSettings: globalThis.monaco.languages.kusto.LanguageSettings) {
         this.setLanguageSettings(languageSettings);
         // default to never kill worker when idle.
         // reason: when killing worker - schema gets lost. We transmit the schema back to main process when killing
@@ -24,15 +26,15 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
         this._workerMaxIdleTime = 0;
     }
 
-    get onDidChange(): monaco.IEvent<monaco.languages.kusto.LanguageServiceDefaults> {
+    get onDidChange(): monaco.IEvent<globalThis.monaco.languages.kusto.LanguageServiceDefaults> {
         return this._onDidChange.event;
     }
 
-    get languageSettings(): monaco.languages.kusto.LanguageSettings {
+    get languageSettings(): globalThis.monaco.languages.kusto.LanguageSettings {
         return this._languageSettings;
     }
 
-    setLanguageSettings(options: monaco.languages.kusto.LanguageSettings): void {
+    setLanguageSettings(options: globalThis.monaco.languages.kusto.LanguageSettings): void {
         this._languageSettings = options || Object.create(null);
         this._onDidChange.fire(this);
     }
@@ -48,7 +50,7 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
     }
 }
 
-const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
+const defaultLanguageSettings: globalThis.monaco.languages.kusto.LanguageSettings = {
     includeControlCommands: true,
     newlineAfterPipe: true,
     openSuggestionDialogAfterPreviousSuggestionAccepted: true,
@@ -82,9 +84,9 @@ function withMode(callback: (module: typeof mode) => void): void {
     import('./kustoMode').then(callback);
 }
 
-export function setupMonacoKusto(monacoInstance: typeof monaco) {
+export function setupMonacoKusto(monacoInstance: typeof globalThis.monaco) {
     const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
-    function createAPI(): typeof monaco.languages.kusto {
+    function createAPI(): typeof globalThis.monaco.languages.kusto {
         return {
             kustoDefaults,
             getKustoWorker,
@@ -172,15 +174,15 @@ export function setupMonacoKusto(monacoInstance: typeof monaco) {
     // Most other language features are initialized in kustoMode.ts
     monacoInstance.editor.onDidCreateEditor((editor) => {
         // hook up extension methods to editor.
-        extend(editor);
+        extend(editor as globalThis.monaco.editor.ICodeEditor);
 
-        commandHighlighter = new KustoCommandHighlighter(editor);
+        commandHighlighter = new KustoCommandHighlighter(editor as globalThis.monaco.editor.ICodeEditor);
 
-        if (isStandaloneCodeEditor(editor)) {
-            commandFormatter = new KustoCommandFormatter(editor);
+        if (isStandaloneCodeEditor(editor as monaco.editor.ICodeEditor)) {
+            commandFormatter = new KustoCommandFormatter(editor as globalThis.monaco.editor.IStandaloneCodeEditor);
         }
 
-        triggerSuggestDialogWhenCompletionItemSelected(editor);
+        triggerSuggestDialogWhenCompletionItemSelected(editor as monaco.editor.ICodeEditor);
     });
 
     function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {
@@ -219,4 +221,4 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
 }
 
 // --- Registration to monaco editor ---
-setupMonacoKusto(monaco);
+setupMonacoKusto(monaco as typeof globalThis.monaco);

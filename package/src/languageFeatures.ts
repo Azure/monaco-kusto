@@ -20,17 +20,17 @@ interface Cancelable {
 }
 
 export class DiagnosticsAdapter {
-    private _disposables: monaco.IDisposable[] = [];
-    private _contentListener: { [uri: string]: monaco.IDisposable } = Object.create(null);
-    private _configurationListener: { [uri: string]: monaco.IDisposable } = Object.create(null);
-    private _schemaListener: { [uri: string]: monaco.IDisposable } = Object.create(null);
-    private _cursorListener: { [editorId: string]: monaco.IDisposable } = Object.create(null);
+    private _disposables: globalThis.monaco.IDisposable[] = [];
+    private _contentListener: { [uri: string]: globalThis.monaco.IDisposable } = Object.create(null);
+    private _configurationListener: { [uri: string]: globalThis.monaco.IDisposable } = Object.create(null);
+    private _schemaListener: { [uri: string]: globalThis.monaco.IDisposable } = Object.create(null);
+    private _cursorListener: { [editorId: string]: globalThis.monaco.IDisposable } = Object.create(null);
     private _debouncedValidations: {
         [uri: string]: ((intervals?: { start: number; end: number }[]) => void) & Cancelable;
     } = Object.create(null);
 
     constructor(
-        private _monacoInstance: typeof monaco,
+        private _monacoInstance: typeof globalThis.monaco,
         private _languageId: string,
         private _worker: WorkerAccessor,
         private defaults: LanguageServiceDefaultsImpl,
@@ -59,7 +59,7 @@ export class DiagnosticsAdapter {
             });
         };
 
-        const onEditorAdd = (editor: monaco.editor.ICodeEditor) => {
+        const onEditorAdd = (editor: globalThis.monaco.editor.ICodeEditor) => {
             const editorId = editor.getId();
 
             if (!this._cursorListener[editorId]) {
@@ -486,7 +486,7 @@ export class ColorizationAdapter {
     private decorations: string[] = [];
 
     constructor(
-        private _monacoInstance: typeof monaco,
+        private _monacoInstance: typeof globalThis.monaco,
         private _languageId: string,
         private _worker: WorkerAccessor,
         defaults: LanguageServiceDefaultsImpl,
@@ -832,7 +832,10 @@ function formatDocLink(docString?: string): monaco.languages.CompletionItem['doc
 }
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
-    constructor(private _worker: WorkerAccessor, private languageSettings: monaco.languages.kusto.LanguageSettings) {}
+    constructor(
+        private _worker: WorkerAccessor,
+        private languageSettings: globalThis.monaco.languages.kusto.LanguageSettings
+    ) {}
 
     public get triggerCharacters(): string[] {
         return [' '];
@@ -852,7 +855,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
             wordInfo.endColumn
         );
         const resource = model.uri;
-        const onDidProvideCompletionItems: monaco.languages.kusto.OnDidProvideCompletionItems =
+        const onDidProvideCompletionItems: globalThis.monaco.languages.kusto.OnDidProvideCompletionItems =
             this.languageSettings.onDidProvideCompletionItems;
 
         return this._worker(resource)

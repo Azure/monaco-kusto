@@ -69,7 +69,7 @@ async function main() {
         copyLanguageServerFiles('release/dev'),
         compileESM(),
         compileAMD(),
-        // compileTypes(),
+        compileTypes(),
     ]);
 }
 
