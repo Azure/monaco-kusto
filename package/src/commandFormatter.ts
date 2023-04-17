@@ -9,7 +9,7 @@ export default class KustoCommandFormatter {
                 return;
             }
             // Theoretically you would expect this code to run only once in onDidCreateEditor.
-            // Turns out that onDidCreateEditor is fired before the IStandaloneEditor is completely created (it is emmited by
+            // Turns out that onDidCreateEditor is fired before the IStandaloneEditor is completely created (it is emitted by
             // the super ctor before the child ctor was able to fully run).
             // Thus we don't have  a key binding provided yet when onDidCreateEditor is run, which is essential to call addAction.
             // By adding the action here in onDidChangeCursorSelection we're making sure that the editor has a key binding provider,

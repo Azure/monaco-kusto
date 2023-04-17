@@ -114,6 +114,8 @@ export function rollupAMDOutput(type) {
         dir: path.join(packageFolder, 'release', type),
         sourcemap: !process.env.CI,
         plugins: [type === 'min' && terser()],
-        globals: Object.fromEntries(languageServiceFiles),
+        globals: {
+            'monaco-editor': 'monaco',
+        },
     };
 }

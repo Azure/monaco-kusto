@@ -1,6 +1,4 @@
-// Import monaco-editor to ensure "monaco" global is available before any other
-// code is run
-import 'monaco-editor';
+import * as monaco from 'monaco-editor';
 
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
@@ -221,6 +219,4 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
 }
 
 // --- Registration to monaco editor ---
-if (monaco.editor) {
-    setupMonacoKusto(monaco);
-}
+setupMonacoKusto(monaco);
