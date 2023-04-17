@@ -65,13 +65,6 @@ declare module monaco.languages.kusto {
     export var kustoDefaults: LanguageServiceDefaults;
 
     export interface KustoWorker {
-        /**
-         * Sets an array of ambient parameters to be known by the language service.
-         * Language service assumes that these parameters will be provided externally when query gets executed and does
-         * not error-out when they are being referenced in the query.
-         * @param parameters the array of parameters
-         */
-        setParameter(parameters: ScalarParameter[]);
         setSchema(schema: Schema): Promise<void>;
         setSchemaFromShowSchema(
             schema: any,
@@ -89,7 +82,7 @@ declare module monaco.languages.kusto {
         getCommandAndLocationInContext(
             uri: string,
             offset: number
-        ): Promise<{ text: string; range: monaco.Range } | null>;
+        ): Promise<{ text: string; range: monaco.IRange } | null>;
         getCommandsInDocument(uri: string): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]>;
         getClientDirective(
             text: string

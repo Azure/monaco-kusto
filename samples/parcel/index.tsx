@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
-import '@kusto/monaco-kusto/release/esm/monaco.contribution';
+import { getKustoWorker } from '@kusto/monaco-kusto/release/esm/monaco.contribution';
 import kustoWorkerUrl from 'url:@kusto/monaco-kusto/release/esm/kusto.worker';
 import editorWorkerUrl from 'url:monaco-editor/esm/vs/editor/editor.worker';
 
@@ -23,7 +23,7 @@ self.MonacoEnvironment = {
 
 // Called by playwright script in ci to validate things are working
 window.healthCheck = async function () {
-    return !!(await monaco.languages.kusto.getKustoWorker());
+    return !!(await getKustoWorker());
 };
 
 const schema = {
@@ -67,9 +67,11 @@ window.addEventListener('resize', () => {
     editor.layout();
 });
 
-monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
+getKustoWorker().then((workerAccessor) => {
     const model = editor.getModel();
-    workerAccessor(model.uri).then((worker) => {
-        worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
-    });
+    if (model) {
+        workerAccessor(model.uri).then((worker) => {
+            worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
+        });
+    }
 });
