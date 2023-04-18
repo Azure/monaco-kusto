@@ -1,8 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+
+// Imports all monaco features and no languages. See monaco example (1) for a
+// more details on importing specific features
+// (1) https://github.com/microsoft/monaco-editor/blob/main/samples/browser-esm-webpack-small/index.js
+//
+// Replace edcore.main import with this to import all monaco-editor languages
+// import * as monaco from 'monaco-editor';
+//
+import * as monaco from 'monaco-editor/esm/vs/editor/edcore.main';
+
+import { getKustoWorker } from '@kusto/monaco-kusto';
+
 import './index.css';
-import * as monaco from 'monaco-editor';
-import '@kusto/monaco-kusto/release/esm/monaco.contribution';
+
+// Called by playwright script in ci to validate things are working
+window.healthCheck = async function () {
+    return !!(await getKustoWorker());
+};
 
 self.MonacoEnvironment.getWorker = function (_moduleId, label) {
     // https://webpack.js.org/guides/web-workers/
@@ -61,18 +76,18 @@ function App() {
             theme: 'kusto-light',
         });
 
-        // monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
-        //     if (disposed) {
-        //         return;
-        //     }
-        //     const model = editor.getModel();
-        //     workerAccessor(model.uri).then((worker) => {
-        //         if (disposed) {
-        //             return;
-        //         }
-        //         worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
-        //     });
-        // });
+        getKustoWorker().then((workerAccessor) => {
+            if (disposed) {
+                return;
+            }
+            const model = editor.getModel();
+            workerAccessor(model.uri).then((worker) => {
+                if (disposed) {
+                    return;
+                }
+                worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
+            });
+        });
 
         return () => {
             disposed = true;

@@ -1,15 +1,15 @@
-# 🚀 Welcome to your new awesome project!
+# Webpack/React Monaco Kusto AMD Example
 
-This project has been created using **webpack-cli**, you can now run
+Based on output of [webpack init](https://webpack.js.org/api/cli/#init)
 
-```
-npm run build
-```
+## Running
 
-or
+Run the below commands
 
-```
-yarn build
-```
+1. `yarn install`
+2. `yarn serve`
 
-to bundle your application
+## Notable changes
+
+-   Set ./webpack.config resolve.fs to `false` to suppress webpack warning about
+    `fs` import in @kusto/language-server code

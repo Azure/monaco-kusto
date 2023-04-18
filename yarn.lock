@@ -1512,23 +1512,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/monaco-kusto@npm:6.1.1":
-  version: 6.1.1
-  resolution: "@kusto/monaco-kusto@npm:6.1.1"
-  dependencies:
-    "@kusto/language-service": 0.0.40
-    "@kusto/language-service-next": 0.0.63
-    lodash-es: ^4.17.21
-    vscode-languageserver-types: 3.16.0
-    xregexp: ^5.1.1
-  peerDependencies:
-    monaco-editor: ~0.35.0
-  bin:
-    copyMonacoFilesAMD: copyMonacoFilesAMD.js
-  checksum: bd0faaf5a24121983598a07211076106fbfff90983c19974892df794f2e7720280e3f05331b78c1862d79e450480930f37f94c4ea62c6329b44a22a267b97138
-  languageName: node
-  linkType: hard
-
 "@kusto/monaco-kusto@workspace:*, @kusto/monaco-kusto@workspace:package":
   version: 0.0.0-use.local
   resolution: "@kusto/monaco-kusto@workspace:package"
@@ -6708,7 +6691,7 @@ __metadata:
     "@babel/core": ^7.21.4
     "@babel/preset-env": ^7.21.4
     "@babel/preset-react": ^7.18.6
-    "@kusto/monaco-kusto": 6.1.1
+    "@kusto/monaco-kusto": "workspace:*"
     babel-loader: ^9.1.2
     css-loader: ^6.7.3
     html-webpack-plugin: ^5.5.0
