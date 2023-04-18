@@ -13,3 +13,5 @@ Run the below commands
 
 -   Set ./webpack.config resolve.fs to `false` to suppress webpack warning about
     `fs` import in @kusto/language-server code
+-   Suppress "the request of a dependency is an expression" warning emitted from
+    @kusto/language-service/bridge

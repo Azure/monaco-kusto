@@ -25,19 +25,28 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 Example at [/samples/amd](https://github.com/Azure/monaco-kusto/tree/master/samples/amd)
 
-1. Run `npm run copyMonacoFilesAMD <path>` or `yarn copyMonacoFilesAMD <path>` where <path> is where you want the monaco and kusto amd modules to be. These files will need to be served as-in.
+1. Run `npm run copyMonacoFilesAMD <path>` or `yarn copyMonacoFilesAMD <path>`
+   where <path> is where you want the monaco and kusto amd modules to be. These
+   files will need to be served as-in.
 2. Using a amd module loader, import `vs/language/kusto/monaco.contribution`
-    1. The monaco editors included loader can be made available via a global require `require` by adding the script tag: `<script src="<path>/vs/loader.js"></script>`
-3. You should now be able to create monaco editors with `language: 'kusto'`. The kusto worker can be reached via the monaco global: `monaco.languages.kusto.getKustoWorker()`
+    1. The monaco editors included loader can be made available via a global
+       require `require` by adding the script tag: `<script
+src="<path>/vs/loader.js"></script>`
+3. You should now be able to create monaco editors with `language: 'kusto'`. The
+   kusto worker can be reached via the monaco global:
+   `monaco.languages.kusto.getKustoWorker()`
 
 ### ESM
 
 Parcel example at [/samples/parcel](https://github.com/Azure/monaco-kusto/tree/master/samples/parcel)
 
-1. Configure your bundler so `@kusto/monaco-kusto/release/esm/kusto.worker` has it's own entry point
-2. Configure monaco with that entry point and to use `globalAPI` using the `MonacoEnvironment`. This global needs to be set _before_ the monaco editor source is parsed so it will create a global api for this package to use.
-    1. And example of steps 1 & 2 can be seen here: [./samples/parcel/index.html](). This was added to the html file to prevent parcel from including the monaco javascript above it
-3. You should now be able to create monaco editors with `language: 'kusto'`. The kusto worker can be reached via the monaco global: `monaco.languages.kusto.getKustoWorker()`
+1. Configure your bundler so `@kusto/monaco-kusto/release/esm/kusto.worker` has
+   it's own entry point
+2. Configure the global `MonacoEnvironment` object to include the url for the
+   worker
+3. You should now be able to create monaco editors with `language: 'kusto'`. The
+   kusto worker can be reached via the monaco global:
+   `monaco.languages.kusto.getKustoWorker()`
 
 ### Setting a schema
 
@@ -45,9 +54,10 @@ There are 2 APIs to set a Kusto schema:
 
 1. `setSchema` - the passed schema is of type `ClusterType` (defined in `schema.ts`).
    The database in ROOT.database will be the one in context.
-2. `setSchemaFromShowSchema` - a method to set a schema from the result of the Kusto query `.show schema as json`.
-   The result is a list of databases (see interface `Result` in `schema.ts`), so when this method is used,
-   it also requires a cluster URI and the name of the database in context.
+2. `setSchemaFromShowSchema` - a method to set a schema from the result of the
+   Kusto query `.show schema as json`. The result is a list of databases (see
+   interface `Result` in `schema.ts`), so when this method is used, it also
+   requires a cluster URI and the name of the database in context.
 
 ## Contributing
 

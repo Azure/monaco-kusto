@@ -5,8 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV == 'production';
 
-console.log({ isProduction });
-
 const stylesHandler = 'style-loader';
 
 const config = {
@@ -51,6 +49,12 @@ const config = {
             // Learn more about loaders from https://webpack.js.org/loaders/
         ],
     },
+    ignoreWarnings: [
+        {
+            module: /@kusto\/language-service\/bridge\.min\.js$/,
+            message: /^Critical dependency: the request of a dependency is an expression$/,
+        },
+    ],
 };
 
 module.exports = () => {
