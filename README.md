@@ -28,9 +28,8 @@ Example at [/samples/amd](https://github.com/Azure/monaco-kusto/tree/master/samp
 1. Run `npm run copyMonacoFilesAMD <path>` or `yarn copyMonacoFilesAMD <path>`
    where <path> is where you want the monaco and kusto amd modules to be. These
    files will need to be served as-in.
-2. Using a amd module loader, import `vs/language/kusto/monaco.contribution`
-    1. The monaco editors included loader can be made available via a global
-       require `require` by adding the script tag: `<script
+2. Using a amd module loader, import `vs/language/kusto/monaco.contribution` 1. The monaco editors included loader can be made available via a global
+   require `require` by adding the script tag: `<script
 src="<path>/vs/loader.js"></script>`
 3. You should now be able to create monaco editors with `language: 'kusto'`. The
    kusto worker can be reached via the monaco global:
