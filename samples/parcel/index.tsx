@@ -1,4 +1,12 @@
-import * as monaco from 'monaco-editor';
+// Imports all monaco features and no languages. See monaco example (1) for a
+// more details on importing specific features
+//
+// https://github.com/microsoft/monaco-editor/blob/main/samples/browser-esm-webpack-small/index.js
+import * as monaco from 'monaco-editor/esm/vs/editor/edcore.main';
+
+// Replace edcore.main import with this to import all monaco-editor languages
+// import * as monaco from 'monaco-editor';
+
 import { getKustoWorker } from '@kusto/monaco-kusto';
 
 import kustoWorkerUrl from 'url:@kusto/monaco-kusto/release/esm/kusto.worker';
