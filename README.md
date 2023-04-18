@@ -38,10 +38,8 @@ Example at [/samples/amd](https://github.com/Azure/monaco-kusto/tree/master/samp
 
 Parcel example at [/samples/parcel](https://github.com/Azure/monaco-kusto/tree/master/samples/parcel)
 
-1. Configure your bundler so `@kusto/monaco-kusto/release/esm/kusto.worker` has
-   it's own entry point
-2. Configure the global `MonacoEnvironment` object to include the url for the
-   worker
+1. Configure your bundler so `@kusto/monaco-kusto/release/esm/kusto.worker` has it's own entry point
+2. Configure the global `MonacoEnvironment` with either `getWorkerUrl` or `getWorker`
 3. You should now be able to create monaco editors with `language: 'kusto'`. The
    kusto worker can be reached via the monaco global:
    `monaco.languages.kusto.getKustoWorker()`
