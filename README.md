@@ -65,6 +65,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 6.2.0
+
+-   Esm output not longer requires `self.MonacoEnvironment` to be true
+
 ### 6.0.0
 
 -   Improved quality of AMD build artifacts
