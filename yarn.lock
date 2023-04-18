@@ -6678,7 +6678,6 @@ __metadata:
     "@types/react-dom": ^16.8.4
     monaco-editor: ~0.35.0
     parcel: ^2.0.0
-    process: ^0.11.10
     react: ^16.13.0
     react-dom: ^16.13.1
     typescript: ^4.3.3
@@ -6692,6 +6691,7 @@ __metadata:
     "@types/wait-on": ^5.3.1
     playwright: ^1.32.2
     prettier: ^2.8.4
+    process: ^0.11.10
     ts-node: ^10.9.1
     wait-on: ^7.0.1
   languageName: unknown

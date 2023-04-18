@@ -9,28 +9,6 @@
 
     <body>
         <div id="root"></div>
-
-        <!--
-            This is here because MonacoEnvironment.globalAPI needs to be set
-            before `monaco-kusto` is parsed, which wasn't happening when it
-            was in ./src/index.ts
-
-            See ./README.md for more details
-        -->
-        <script type="module">
-            import kustoWorkerUrl from 'url:@kusto/monaco-kusto/release/esm/kusto.worker';
-            import editorWorkerUrl from 'url:monaco-editor/esm/vs/editor/editor.worker';
-
-            self.MonacoEnvironment = {
-                globalAPI: true,
-                getWorkerUrl(_moduleId, label) {
-                    if (label === 'kusto') {
-                        return kustoWorkerUrl;
-                    }
-                    return editorWorkerUrl;
-                },
-            };
-        </script>
         <script type="module" src="./index.tsx"></script>
     </body>
 </html>

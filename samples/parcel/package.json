@@ -9,12 +9,11 @@
         "playwright:webserver": "parcel index.html --port 3000"
     },
     "alias": {
-        "./MonacoEnvironment.ts": "MonacoEnvironment"
+        "process": false
     },
     "dependencies": {
         "@kusto/monaco-kusto": "workspace:*",
         "monaco-editor": "~0.35.0",
-        "process": "^0.11.10",
         "react": "^16.13.0",
         "react-dom": "^16.13.1"
     },

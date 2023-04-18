@@ -23,7 +23,7 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ### AMD module system:
 
-Example at ![https://github.com/Azure/monaco-kusto/tree/master/samples/amd]()
+Example at [/samples/amd](https://github.com/Azure/monaco-kusto/tree/master/samples/amd)
 
 1. Run `npm run copyMonacoFilesAMD <path>` or `yarn copyMonacoFilesAMD <path>` where <path> is where you want the monaco and kusto amd modules to be. These files will need to be served as-in.
 2. Using a amd module loader, import `vs/language/kusto/monaco.contribution`
@@ -32,7 +32,7 @@ Example at ![https://github.com/Azure/monaco-kusto/tree/master/samples/amd]()
 
 ### ESM
 
-Parcel example at ![https://github.com/Azure/monaco-kusto/tree/master/samples/parcel]()
+Parcel example at [/samples/parcel](https://github.com/Azure/monaco-kusto/tree/master/samples/parcel)
 
 1. Configure your bundler so `@kusto/monaco-kusto/release/esm/kusto.worker` has it's own entry point
 2. Configure monaco with that entry point and to use `globalAPI` using the `MonacoEnvironment`. This global needs to be set _before_ the monaco editor source is parsed so it will create a global api for this package to use.
@@ -64,6 +64,11 @@ There are 2 APIs to set a Kusto schema:
 2. Run `yarn build`
 
 ## Changelog
+
+### 6.2.0
+
+-   Esm output not longer requires `self.MonacoEnvironment` to be true
+-   `@kusto/monaco-kusto` no exports the same api as `monaco.languages.kusto`
 
 ### 6.0.0
 

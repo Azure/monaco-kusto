@@ -86,7 +86,7 @@ export const rollupAMDConfig = {
             preventAssignment: true,
             'Bridge.isNode': false,
         }),
-        alias({ entries: { ['monaco-editor']: 'vs/editor/editor.main' } }),
+        alias({ entries: { ['monaco-editor/esm/vs/editor/editor.api']: 'vs/editor/editor.main' } }),
         nodeResolve({ extensions }),
         commonJs(), // Required to bundle xregexp
         babel({
@@ -114,6 +114,8 @@ export function rollupAMDOutput(type) {
         dir: path.join(packageFolder, 'release', type),
         sourcemap: !process.env.CI,
         plugins: [type === 'min' && terser()],
-        globals: Object.fromEntries(languageServiceFiles),
+        globals: {
+            'monaco-editor': 'monaco',
+        },
     };
 }

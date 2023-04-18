@@ -1,21 +1,22 @@
-// Import monaco-editor to ensure "monaco" global is available before any other
-// code is run
-import 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
+import type { KustoWorker } from './kustoWorker';
 
 // --- Kusto configuration and defaults ---------
 
-export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.LanguageServiceDefaults {
-    private _onDidChange = new monaco.Emitter<monaco.languages.kusto.LanguageServiceDefaults>();
-    private _languageSettings: monaco.languages.kusto.LanguageSettings;
+export class LanguageServiceDefaultsImpl
+    implements globalThis.globalThis.monaco.languages.kusto.LanguageServiceDefaults
+{
+    private _onDidChange = new monaco.Emitter<globalThis.monaco.languages.kusto.LanguageServiceDefaults>();
+    private _languageSettings: globalThis.monaco.languages.kusto.LanguageSettings;
     // in milliseconds. For example - this is 2 minutes 2 * 60 * 1000
     private _workerMaxIdleTime: number;
 
-    constructor(languageSettings: monaco.languages.kusto.LanguageSettings) {
+    constructor(languageSettings: globalThis.monaco.languages.kusto.LanguageSettings) {
         this.setLanguageSettings(languageSettings);
         // default to never kill worker when idle.
         // reason: when killing worker - schema gets lost. We transmit the schema back to main process when killing
@@ -26,15 +27,15 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
         this._workerMaxIdleTime = 0;
     }
 
-    get onDidChange(): monaco.IEvent<monaco.languages.kusto.LanguageServiceDefaults> {
+    get onDidChange(): monaco.IEvent<globalThis.monaco.languages.kusto.LanguageServiceDefaults> {
         return this._onDidChange.event;
     }
 
-    get languageSettings(): monaco.languages.kusto.LanguageSettings {
+    get languageSettings(): globalThis.monaco.languages.kusto.LanguageSettings {
         return this._languageSettings;
     }
 
-    setLanguageSettings(options: monaco.languages.kusto.LanguageSettings): void {
+    setLanguageSettings(options: globalThis.monaco.languages.kusto.LanguageSettings): void {
         this._languageSettings = options || Object.create(null);
         this._onDidChange.fire(this);
     }
@@ -50,7 +51,7 @@ export class LanguageServiceDefaultsImpl implements monaco.languages.kusto.Langu
     }
 }
 
-const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
+const defaultLanguageSettings: globalThis.monaco.languages.kusto.LanguageSettings = {
     includeControlCommands: true,
     newlineAfterPipe: true,
     openSuggestionDialogAfterPreviousSuggestionAccepted: true,
@@ -72,7 +73,7 @@ const defaultLanguageSettings: monaco.languages.kusto.LanguageSettings = {
     enableQuickFixes: false,
 };
 
-function getKustoWorker(): Promise<any> {
+export function getKustoWorker(): Promise<(first: monaco.Uri, ...more: monaco.Uri[]) => Promise<KustoWorker>> {
     return new Promise((resolve, reject) => {
         withMode((mode) => {
             mode.getKustoWorker().then(resolve, reject);
@@ -84,143 +85,130 @@ function withMode(callback: (module: typeof mode) => void): void {
     import('./kustoMode').then(callback);
 }
 
-export function setupMonacoKusto(monacoInstance: typeof monaco) {
-    const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
-    function createAPI(): typeof monaco.languages.kusto {
-        return {
-            kustoDefaults,
-            getKustoWorker,
-        };
+export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
+
+monaco.languages.onLanguage('kusto', () => {
+    withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
+});
+
+monaco.languages.register({
+    id: 'kusto',
+    extensions: ['.csl', '.kql'],
+});
+
+// TODO: asked if there's a cleaner way to register an editor contribution. looks like monaco has an internal contribution registrar but it's no exposed in the API.
+// https://stackoverflow.com/questions/46700245/how-to-add-an-ieditorcontribution-to-monaco-editor
+let commandHighlighter: KustoCommandHighlighter;
+let commandFormatter: KustoCommandFormatter;
+
+monaco.editor.defineTheme('kusto-light', {
+    base: 'vs',
+    inherit: true,
+    rules: [
+        { token: 'comment', foreground: '008000' }, // CommentToken Green
+        { token: 'variable.predefined', foreground: '800080' }, // CalculatedColumnToken Purple
+        { token: 'function', foreground: '0000FF' }, // FunctionNameToken Blue
+        { token: 'operator.sql', foreground: 'CC3700' }, // _WAS_ OperatorToken OrangeRed, but wasn't accessible.
+        { token: 'string', foreground: 'B22222' }, // StringLiteralToken Firebrick
+        { token: 'operator.scss', foreground: '0000FF' }, // SubOperatorToken Blue
+        { token: 'variable', foreground: 'C71585' }, // TableColumnToken MediumVioletRed
+        { token: 'variable.parameter', foreground: '9932CC' }, // TableToken DarkOrchid
+        { token: '', foreground: '000000' }, // UnknownToken, PlainTextToken  Black
+        { token: 'type', foreground: '0000FF' }, // DataTypeToken Blue
+        { token: 'tag', foreground: '0000FF' }, // ControlCommandToken Blue
+        { token: 'annotation', foreground: '2B91AF' }, // QueryParametersToken FF2B91AF
+        { token: 'keyword', foreground: '0000FF' }, // CslCommandToken, PluginToken Blue
+        { token: 'number', foreground: '191970' }, // LetVariablesToken MidnightBlue
+        { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
+        { token: 'invalid', background: 'cd3131' },
+    ],
+    colors: {},
+});
+
+monaco.editor.defineTheme('kusto-dark', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+        { token: 'comment', foreground: '608B4E' }, // CommentToken Green
+        { token: 'variable.predefined', foreground: '4ec9b0' }, // CalculatedColumnToken Purple
+        { token: 'function', foreground: 'dcdcaa' }, // FunctionNameToken Blue
+        { token: 'operator.sql', foreground: '9cdcfe' }, // OperatorToken OrangeRed
+        { token: 'string', foreground: 'ce9178' }, // StringLiteralToken Firebrick
+        { token: 'operator.scss', foreground: '569cd6' }, // SubOperatorToken Blue
+        { token: 'variable', foreground: '4ec9b0' }, // TableColumnToken MediumVioletRed
+        { token: 'variable.parameter', foreground: 'c586c0' }, // TableToken DarkOrchid
+        { token: '', foreground: 'd4d4d4' }, // UnknownToken, PlainTextToken  Black
+        { token: 'type', foreground: '569cd6' }, // DataTypeToken Blue
+        { token: 'tag', foreground: '569cd6' }, // ControlCommandToken Blue
+        { token: 'annotation', foreground: '9cdcfe' }, // QueryParametersToken FF2B91AF
+        { token: 'keyword', foreground: '569cd6' }, // CslCommandToken, PluginToken Blue
+        { token: 'number', foreground: 'd7ba7d' }, // LetVariablesToken MidnightBlue
+        { token: 'annotation', foreground: 'b5cea8' }, // ClientDirectiveToken DarkViolet
+        { token: 'invalid', background: 'cd3131' },
+    ],
+    colors: {
+        // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
+    },
+});
+
+monaco.editor.defineTheme('kusto-dark2', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [],
+    colors: {
+        // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
+        'editor.background': '#1B1A19', // gray 200
+        'editorSuggestWidget.selectedBackground': '#004E8C',
+    },
+});
+
+// Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
+// Most other language features are initialized in kustoMode.ts
+monaco.editor.onDidCreateEditor((editor) => {
+    // hook up extension methods to editor.
+    extend(editor as globalThis.monaco.editor.ICodeEditor);
+
+    commandHighlighter = new KustoCommandHighlighter(editor as globalThis.monaco.editor.ICodeEditor);
+
+    if (isStandaloneCodeEditor(editor as monaco.editor.ICodeEditor)) {
+        commandFormatter = new KustoCommandFormatter(editor as globalThis.monaco.editor.IStandaloneCodeEditor);
     }
 
-    monacoInstance.languages.kusto = createAPI();
+    triggerSuggestDialogWhenCompletionItemSelected(editor as monaco.editor.ICodeEditor);
+});
 
-    monacoInstance.languages.onLanguage('kusto', () => {
-        withMode((mode) => mode.setupMode(kustoDefaults, monacoInstance));
-    });
-
-    monacoInstance.languages.register({
-        id: 'kusto',
-        extensions: ['.csl', '.kql'],
-    });
-
-    // TODO: asked if there's a cleaner way to register an editor contribution. looks like monaco has an internal contribution registrar but it's no exposed in the API.
-    // https://stackoverflow.com/questions/46700245/how-to-add-an-ieditorcontribution-to-monaco-editor
-    let commandHighlighter: KustoCommandHighlighter;
-    let commandFormatter: KustoCommandFormatter;
-
-    monacoInstance.editor.defineTheme('kusto-light', {
-        base: 'vs',
-        inherit: true,
-        rules: [
-            { token: 'comment', foreground: '008000' }, // CommentToken Green
-            { token: 'variable.predefined', foreground: '800080' }, // CalculatedColumnToken Purple
-            { token: 'function', foreground: '0000FF' }, // FunctionNameToken Blue
-            { token: 'operator.sql', foreground: 'CC3700' }, // _WAS_ OperatorToken OrangeRed, but wasn't accessible.
-            { token: 'string', foreground: 'B22222' }, // StringLiteralToken Firebrick
-            { token: 'operator.scss', foreground: '0000FF' }, // SubOperatorToken Blue
-            { token: 'variable', foreground: 'C71585' }, // TableColumnToken MediumVioletRed
-            { token: 'variable.parameter', foreground: '9932CC' }, // TableToken DarkOrchid
-            { token: '', foreground: '000000' }, // UnknownToken, PlainTextToken  Black
-            { token: 'type', foreground: '0000FF' }, // DataTypeToken Blue
-            { token: 'tag', foreground: '0000FF' }, // ControlCommandToken Blue
-            { token: 'annotation', foreground: '2B91AF' }, // QueryParametersToken FF2B91AF
-            { token: 'keyword', foreground: '0000FF' }, // CslCommandToken, PluginToken Blue
-            { token: 'number', foreground: '191970' }, // LetVariablesToken MidnightBlue
-            { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
-            { token: 'invalid', background: 'cd3131' },
-        ],
-        colors: {},
-    });
-
-    monacoInstance.editor.defineTheme('kusto-dark', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [
-            { token: 'comment', foreground: '608B4E' }, // CommentToken Green
-            { token: 'variable.predefined', foreground: '4ec9b0' }, // CalculatedColumnToken Purple
-            { token: 'function', foreground: 'dcdcaa' }, // FunctionNameToken Blue
-            { token: 'operator.sql', foreground: '9cdcfe' }, // OperatorToken OrangeRed
-            { token: 'string', foreground: 'ce9178' }, // StringLiteralToken Firebrick
-            { token: 'operator.scss', foreground: '569cd6' }, // SubOperatorToken Blue
-            { token: 'variable', foreground: '4ec9b0' }, // TableColumnToken MediumVioletRed
-            { token: 'variable.parameter', foreground: 'c586c0' }, // TableToken DarkOrchid
-            { token: '', foreground: 'd4d4d4' }, // UnknownToken, PlainTextToken  Black
-            { token: 'type', foreground: '569cd6' }, // DataTypeToken Blue
-            { token: 'tag', foreground: '569cd6' }, // ControlCommandToken Blue
-            { token: 'annotation', foreground: '9cdcfe' }, // QueryParametersToken FF2B91AF
-            { token: 'keyword', foreground: '569cd6' }, // CslCommandToken, PluginToken Blue
-            { token: 'number', foreground: 'd7ba7d' }, // LetVariablesToken MidnightBlue
-            { token: 'annotation', foreground: 'b5cea8' }, // ClientDirectiveToken DarkViolet
-            { token: 'invalid', background: 'cd3131' },
-        ],
-        colors: {
-            // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-        },
-    });
-
-    monacoInstance.editor.defineTheme('kusto-dark2', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [],
-        colors: {
-            // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-            'editor.background': '#1B1A19', // gray 200
-            'editorSuggestWidget.selectedBackground': '#004E8C',
-        },
-    });
-
-    // Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
-    // Most other language features are initialized in kustoMode.ts
-    monacoInstance.editor.onDidCreateEditor((editor) => {
-        // hook up extension methods to editor.
-        extend(editor);
-
-        commandHighlighter = new KustoCommandHighlighter(editor);
-
-        if (isStandaloneCodeEditor(editor)) {
-            commandFormatter = new KustoCommandFormatter(editor);
-        }
-
-        triggerSuggestDialogWhenCompletionItemSelected(editor);
-    });
-
-    function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {
-        editor.onDidChangeCursorSelection((event: monaco.editor.ICursorSelectionChangedEvent) => {
-            // checking the condition inside the event makes sure we will stay up to date when kusto configuration changes at runtime.
-            if (
-                kustoDefaults &&
-                kustoDefaults.languageSettings &&
-                kustoDefaults.languageSettings.openSuggestionDialogAfterPreviousSuggestionAccepted
-            ) {
-                var didAcceptSuggestion =
-                    event.source === 'snippet' && event.reason === monaco.editor.CursorChangeReason.NotSet;
-                // If the word at the current position is not null - meaning we did not add a space after completion.
-                // In this case we don't want to activate the eager mode, since it will display the current selected word..
-                if (
-                    !didAcceptSuggestion ||
-                    editor.getModel().getWordAtPosition(event.selection.getPosition()) !== null
-                ) {
-                    return;
-                }
-                event.selection;
-                // OK so now we in a situation where we know a suggestion was selected and we want to trigger another one.
-                // the only problem is that the suggestion widget itself listens to this same event in order to know it needs to close.
-                // The only problem is that we're ahead in line, so we're triggering a suggest operation that will be shut down once
-                // the next callback is called. This is why we're waiting here - to let all the callbacks run synchronously and be
-                // the 'last' subscriber to run. Granted this is hacky, but until monaco provides a specific event for suggestions,
-                // this is the best we have.
-                setTimeout(() => editor.trigger('monaco-kusto', 'editor.action.triggerSuggest', {}), 10);
+function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {
+    editor.onDidChangeCursorSelection((event: monaco.editor.ICursorSelectionChangedEvent) => {
+        // checking the condition inside the event makes sure we will stay up to date when kusto configuration changes at runtime.
+        if (
+            kustoDefaults &&
+            kustoDefaults.languageSettings &&
+            kustoDefaults.languageSettings.openSuggestionDialogAfterPreviousSuggestionAccepted
+        ) {
+            var didAcceptSuggestion =
+                event.source === 'snippet' && event.reason === monaco.editor.CursorChangeReason.NotSet;
+            // If the word at the current position is not null - meaning we did not add a space after completion.
+            // In this case we don't want to activate the eager mode, since it will display the current selected word..
+            if (!didAcceptSuggestion || editor.getModel().getWordAtPosition(event.selection.getPosition()) !== null) {
+                return;
             }
-        });
-    }
+            event.selection;
+            // OK so now we in a situation where we know a suggestion was selected and we want to trigger another one.
+            // the only problem is that the suggestion widget itself listens to this same event in order to know it needs to close.
+            // The only problem is that we're ahead in line, so we're triggering a suggest operation that will be shut down once
+            // the next callback is called. This is why we're waiting here - to let all the callbacks run synchronously and be
+            // the 'last' subscriber to run. Granted this is hacky, but until monaco provides a specific event for suggestions,
+            // this is the best we have.
+            setTimeout(() => editor.trigger('monaco-kusto', 'editor.action.triggerSuggest', {}), 10);
+        }
+    });
 }
 
 function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is monaco.editor.IStandaloneCodeEditor {
     return (editor as monaco.editor.IStandaloneCodeEditor).addAction !== undefined;
 }
 
-// --- Registration to monaco editor ---
-if (monaco.editor) {
-    setupMonacoKusto(monaco);
-}
+(monaco as typeof globalThis.monaco).languages.kusto = {
+    kustoDefaults,
+    getKustoWorker,
+};

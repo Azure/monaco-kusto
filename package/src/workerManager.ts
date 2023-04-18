@@ -1,8 +1,7 @@
+import type { IDisposable, Uri } from 'monaco-editor/esm/vs/editor/editor.api';
+
 import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import type { KustoWorker } from './kustoWorker';
-
-type IDisposable = monaco.IDisposable;
-type Uri = monaco.Uri;
 
 export class WorkerManager {
     private _storedState: {
