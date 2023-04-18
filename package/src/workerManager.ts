@@ -1,4 +1,4 @@
-import type { IDisposable, Uri } from 'monaco-editor';
+import type { IDisposable, Uri } from 'monaco-editor/esm/vs/editor/editor.api';
 
 import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
 import type { KustoWorker } from './kustoWorker';

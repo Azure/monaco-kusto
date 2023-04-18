@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import * as ls from 'vscode-languageserver-types';
 import debounce from 'lodash-es/debounce';

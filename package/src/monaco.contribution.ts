@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';

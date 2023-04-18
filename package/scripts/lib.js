@@ -86,7 +86,7 @@ export const rollupAMDConfig = {
             preventAssignment: true,
             'Bridge.isNode': false,
         }),
-        alias({ entries: { ['monaco-editor']: 'vs/editor/editor.main' } }),
+        alias({ entries: { ['monaco-editor/esm/vs/editor/editor.api']: 'vs/editor/editor.main' } }),
         nodeResolve({ extensions }),
         commonJs(), // Required to bundle xregexp
         babel({
