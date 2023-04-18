@@ -1,6 +1,6 @@
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import * as monaco from 'monaco-editor';
+import { getKustoWorker } from '@kusto/monaco-kusto';
 
-import { getKustoWorker } from '@kusto/monaco-kusto/release/esm/monaco.contribution';
 import kustoWorkerUrl from 'url:@kusto/monaco-kusto/release/esm/kusto.worker';
 import editorWorkerUrl from 'url:monaco-editor/esm/vs/editor/editor.worker';
 
