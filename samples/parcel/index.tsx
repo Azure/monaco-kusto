@@ -1,8 +1,38 @@
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+// Imports all monaco features and no languages. See monaco example (1) for a
+// more details on importing specific features
+//
+// https://github.com/microsoft/monaco-editor/blob/main/samples/browser-esm-webpack-small/index.js
+import * as monaco from 'monaco-editor/esm/vs/editor/edcore.main';
 
-import '@kusto/monaco-kusto/release/esm/monaco.contribution';
+// Replace edcore.main import with this to import all monaco-editor languages
+// import * as monaco from 'monaco-editor';
+
+import { getKustoWorker } from '@kusto/monaco-kusto';
+
+import kustoWorkerUrl from 'url:@kusto/monaco-kusto/release/esm/kusto.worker';
+import editorWorkerUrl from 'url:monaco-editor/esm/vs/editor/editor.worker';
 
 import './index.css';
+
+declare global {
+    interface Window {
+        healthCheck(): Promise<boolean>;
+    }
+}
+
+self.MonacoEnvironment = {
+    getWorkerUrl(_moduleId, label) {
+        if (label === 'kusto') {
+            return kustoWorkerUrl;
+        }
+        return editorWorkerUrl;
+    },
+};
+
+// Called by playwright script in ci to validate things are working
+window.healthCheck = async function () {
+    return !!(await getKustoWorker());
+};
 
 const schema = {
     Plugins: [],
@@ -45,9 +75,11 @@ window.addEventListener('resize', () => {
     editor.layout();
 });
 
-monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
+getKustoWorker().then((workerAccessor) => {
     const model = editor.getModel();
-    workerAccessor(model.uri).then((worker) => {
-        worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
-    });
+    if (model) {
+        workerAccessor(model.uri).then((worker) => {
+            worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
+        });
+    }
 });

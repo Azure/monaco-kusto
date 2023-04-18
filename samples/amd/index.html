@@ -18,6 +18,14 @@
         <div id="root"></div>
         <script src="./vs/loader.js"></script>
         <script>
+            // Called by playwright script in ci to validate things are working
+            window.healthCheck = async function () {
+                await new Promise((resolve) =>
+                    require(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], () => resolve())
+                );
+                return !!(await monaco.languages.kusto.getKustoWorker());
+            };
+
             // 'vs/editor/editor.main' is not required here, but makes things
             // load a little faster. Without it, require.js won't start loading
             // it until after 'vs/language/kusto/monaco.contribution' is loaded

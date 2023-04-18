@@ -16,8 +16,7 @@ jobs:
           cache: yarn
 
       - name: yarn install
-        run: |
-          yarn install --immutable
+        run: yarn install --immutable
 
       - name: Check formatting
         run: yarn format:check
@@ -25,3 +24,9 @@ jobs:
       - name: build
         working-directory: package
         run: yarn build
+
+      - name: Install Playwright deps
+        run: yarn playwright install-deps chrome firefox webkit
+
+      - name: test samples
+        run: yarn test:samples
