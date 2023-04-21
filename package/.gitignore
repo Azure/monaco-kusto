@@ -2,7 +2,7 @@
 /release
 /test/mode.txt
 
-# Copied from node_moduules to here so it can be served by the dev web server
+# Copied from node_modules to here so it can be served by the dev web server
 /monaco-editor.css
 
 /README.md
