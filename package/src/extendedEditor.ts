@@ -1,3 +1,5 @@
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+
 /**
  * Extending ICode editor to contain additional kusto-specific methods.
  * note that the extend method needs to be called at least once to take affect, otherwise this here code is useless.
