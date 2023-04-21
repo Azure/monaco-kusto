@@ -21,6 +21,11 @@ async function main() {
             },
         }),
 
+        fs.cp(
+            require.resolve('monaco-editor/dev/vs/editor/editor.main.css'),
+            path.join(packageFolder, 'monaco-editor.css')
+        ),
+
         copyLanguageServerFiles('out/vs/language/kusto'),
 
         // This is super weird. Why do we do this?
