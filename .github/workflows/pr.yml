@@ -26,7 +26,7 @@ jobs:
         run: yarn build
 
       - name: Typecheck
-        run: yarn workspaces foreach run ci:typecheck
+        run: yarn workspaces foreach -pv run ci:typecheck
 
       - name: Install Playwright deps
         run: yarn playwright install-deps chrome firefox webkit
