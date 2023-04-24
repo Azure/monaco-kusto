@@ -3,11 +3,13 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
-import { extend } from './extendedEditor';
+import { extend, getCurrentCommandRange } from './extendedEditor';
 import type { KustoWorker } from './kustoWorker';
 import type { LanguageServiceDefaults, LanguageSettings } from './types';
 
 export * from './types';
+
+export { getCurrentCommandRange } from './extendedEditor';
 
 // --- Kusto configuration and defaults ---------
 
@@ -212,6 +214,7 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
 const globalApi: typeof import('./monaco.contribution') = {
     kustoDefaults,
     getKustoWorker,
+    getCurrentCommandRange,
 };
 
 (monaco as any).languages.kusto = globalApi;
