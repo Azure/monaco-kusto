@@ -2,6 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
+declare global {
+    interface Window {
+        healthCheck(): Promise<boolean>;
+    }
+
+    function __non_webpack_require__(module: string[], callback: (api: any) => void): void;
+}
+
+let test: string = 5;
+
 const schema = {
     Plugins: [],
     Databases: {
@@ -34,7 +44,7 @@ const schema = {
 
 // Called by playwright script in ci to validate things are working
 window.healthCheck = async function () {
-    await new Promise((resolve) =>
+    await new Promise<void>((resolve) =>
         __non_webpack_require__(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], () => resolve())
     );
     return !!(await monaco.languages.kusto.getKustoWorker());
@@ -45,7 +55,7 @@ function App() {
 
     React.useLayoutEffect(() => {
         let disposed = false;
-        let editor;
+        let editor: monaco.editor.IStandaloneCodeEditor;
         // monaco-editor's loader is called via a global `require` function. We need to call this via `__non_webpack_require__` to avoid webpack's module resolution.
         //
         // https://webpack.js.org/api/module-variables/#__non_webpack_require__-webpack-specific
@@ -53,7 +63,7 @@ function App() {
             if (disposed) {
                 return;
             }
-            editor = monaco.editor.create(divRef.current, {
+            editor = monaco.editor.create(divRef.current!, {
                 value: 'StormEvents | take 10',
                 language: 'kusto',
                 theme: 'kusto-light',
@@ -64,6 +74,9 @@ function App() {
                     return;
                 }
                 const model = editor.getModel();
+                if (!model) {
+                    return;
+                }
                 workerAccessor(model.uri).then((worker) => {
                     if (disposed) {
                         return;
@@ -82,7 +95,7 @@ function App() {
     return <div className="editor" ref={divRef} />;
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
     <React.StrictMode>
         <App />

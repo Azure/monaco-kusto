@@ -55,10 +55,8 @@ async function compileTypes() {
     await Promise.all([
         exec('yarn tsc -p ./scripts/tsconfig.build.json'),
 
-        // copy file so it's relative position to the generated delegation files
-        // matches that of the source code. We need to do this because that's
-        // how tsc adds it's `/// <reference type="" />
-        fs.cp(path.join(__dirname, '../monaco.d.ts'), path.join(__dirname, '../release/monaco.d.ts')),
+        // TODO: Delete on next breaking release
+        fs.writeFile(path.join(__dirname, '../release/monaco.d.ts'), '/// <reference types="../globalApi.d.ts" />\n'),
     ]);
 }
 

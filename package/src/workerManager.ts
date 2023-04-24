@@ -1,6 +1,6 @@
-import type { IDisposable, Uri } from 'monaco-editor/esm/vs/editor/editor.api';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
-import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
+import type { LanguageServiceDefaults } from './monaco.contribution';
 import type { KustoWorker } from './kustoWorker';
 
 export class WorkerManager {
@@ -8,15 +8,15 @@ export class WorkerManager {
         schema: any;
     };
 
-    private _defaults: LanguageServiceDefaultsImpl;
+    private _defaults: LanguageServiceDefaults;
     private _idleCheckInterval: number;
     private _lastUsedTime: number;
-    private _configChangeListener: IDisposable;
+    private _configChangeListener: monaco.IDisposable;
 
     private _worker: monaco.editor.MonacoWebWorker<KustoWorker>;
     private _client: Promise<KustoWorker>;
 
-    constructor(private _monacoInstance: typeof monaco, defaults: LanguageServiceDefaultsImpl) {
+    constructor(private _monacoInstance: typeof monaco, defaults: LanguageServiceDefaults) {
         this._defaults = defaults;
         this._worker = null;
         this._idleCheckInterval = self.setInterval(() => this._checkIfIdle(), 30 * 1000);
@@ -94,7 +94,7 @@ export class WorkerManager {
         return this._client;
     }
 
-    getLanguageServiceWorker(...resources: Uri[]): Promise<KustoWorker> {
+    getLanguageServiceWorker(...resources: monaco.Uri[]): Promise<KustoWorker> {
         let _client: KustoWorker;
         return this._getClient()
             .then((client) => {

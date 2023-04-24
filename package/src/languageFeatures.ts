@@ -3,7 +3,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import * as ls from 'vscode-languageserver-types';
 import debounce from 'lodash-es/debounce';
 
-import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
+import type { LanguageServiceDefaults, LanguageSettings, OnDidProvideCompletionItems } from './monaco.contribution';
 import type { KustoWorker } from './kustoWorker';
 import type { Schema } from './languageService/schema';
 import type { ClassifiedRange } from './languageService/kustoLanguageService';
@@ -20,11 +20,11 @@ interface Cancelable {
 }
 
 export class DiagnosticsAdapter {
-    private _disposables: globalThis.monaco.IDisposable[] = [];
-    private _contentListener: { [uri: string]: globalThis.monaco.IDisposable } = Object.create(null);
-    private _configurationListener: { [uri: string]: globalThis.monaco.IDisposable } = Object.create(null);
-    private _schemaListener: { [uri: string]: globalThis.monaco.IDisposable } = Object.create(null);
-    private _cursorListener: { [editorId: string]: globalThis.monaco.IDisposable } = Object.create(null);
+    private _disposables: monaco.IDisposable[] = [];
+    private _contentListener: { [uri: string]: monaco.IDisposable } = Object.create(null);
+    private _configurationListener: { [uri: string]: monaco.IDisposable } = Object.create(null);
+    private _schemaListener: { [uri: string]: monaco.IDisposable } = Object.create(null);
+    private _cursorListener: { [editorId: string]: monaco.IDisposable } = Object.create(null);
     private _debouncedValidations: {
         [uri: string]: ((intervals?: { start: number; end: number }[]) => void) & Cancelable;
     } = Object.create(null);
@@ -33,7 +33,7 @@ export class DiagnosticsAdapter {
         private _monacoInstance: typeof globalThis.monaco,
         private _languageId: string,
         private _worker: WorkerAccessor,
-        private defaults: LanguageServiceDefaultsImpl,
+        private defaults: LanguageServiceDefaults,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
         const onModelAdd = (model: monaco.editor.IModel): void => {
@@ -59,7 +59,7 @@ export class DiagnosticsAdapter {
             });
         };
 
-        const onEditorAdd = (editor: globalThis.monaco.editor.ICodeEditor) => {
+        const onEditorAdd = (editor: monaco.editor.ICodeEditor) => {
             const editorId = editor.getId();
 
             if (!this._cursorListener[editorId]) {
@@ -489,7 +489,7 @@ export class ColorizationAdapter {
         private _monacoInstance: typeof globalThis.monaco,
         private _languageId: string,
         private _worker: WorkerAccessor,
-        defaults: LanguageServiceDefaultsImpl,
+        defaults: LanguageServiceDefaults,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
         injectCss();
@@ -832,10 +832,7 @@ function formatDocLink(docString?: string): monaco.languages.CompletionItem['doc
 }
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
-    constructor(
-        private _worker: WorkerAccessor,
-        private languageSettings: globalThis.monaco.languages.kusto.LanguageSettings
-    ) {}
+    constructor(private _worker: WorkerAccessor, private languageSettings: LanguageSettings) {}
 
     public get triggerCharacters(): string[] {
         return [' '];
@@ -855,7 +852,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
             wordInfo.endColumn
         );
         const resource = model.uri;
-        const onDidProvideCompletionItems: globalThis.monaco.languages.kusto.OnDidProvideCompletionItems =
+        const onDidProvideCompletionItems: OnDidProvideCompletionItems =
             this.languageSettings.onDidProvideCompletionItems;
 
         return this._worker(resource)
@@ -873,13 +870,15 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                         insertText: entry.insertText,
                         sortText: entry.sortText,
                         filterText: entry.filterText,
-                        documentation: formatDocLink(entry.documentation?.value),
+                        // TODO: Is this cast safe?
+                        documentation: formatDocLink((entry.documentation as undefined | ls.MarkupContent)?.value),
                         detail: entry.detail,
                         range: wordRange,
                         kind: toCompletionItemKind(entry.kind),
                     };
                     if (entry.textEdit) {
-                        item.range = toRange(entry.textEdit.range);
+                        // TODO: Where is the "range" property coming from?
+                        item.range = toRange((entry.textEdit as any).range);
                         item.insertText = entry.textEdit.newText;
                     }
                     if (entry.insertTextFormat === ls.InsertTextFormat.Snippet) {
