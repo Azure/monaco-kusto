@@ -10,8 +10,6 @@ declare global {
     function __non_webpack_require__(module: string[], callback: (api: any) => void): void;
 }
 
-let test: string = 5;
-
 const schema = {
     Plugins: [],
     Databases: {
