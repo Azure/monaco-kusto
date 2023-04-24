@@ -1,3 +1,5 @@
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+
 export default class KustoCommandFormatter {
     private actionAdded: boolean = false;
 
