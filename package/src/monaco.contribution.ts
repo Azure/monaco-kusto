@@ -166,12 +166,12 @@ monaco.editor.defineTheme('kusto-dark2', {
 // Most other language features are initialized in kustoMode.ts
 monaco.editor.onDidCreateEditor((editor) => {
     // hook up extension methods to editor.
-    extend(editor as globalThis.monaco.editor.ICodeEditor);
+    extend(editor);
 
     commandHighlighter = new KustoCommandHighlighter(editor as globalThis.monaco.editor.ICodeEditor);
 
-    if (isStandaloneCodeEditor(editor as monaco.editor.ICodeEditor)) {
-        commandFormatter = new KustoCommandFormatter(editor as globalThis.monaco.editor.IStandaloneCodeEditor);
+    if (isStandaloneCodeEditor(editor)) {
+        commandFormatter = new KustoCommandFormatter(editor);
     }
 
     triggerSuggestDialogWhenCompletionItemSelected(editor as monaco.editor.ICodeEditor);
