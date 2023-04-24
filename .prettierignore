@@ -5,6 +5,7 @@
 /package/release
 /samples/*/build
 /samples/*/dist
+/samples/amd-webpack-react/public/vs
 
 /kustoweb/public
 /kustoweb/build
