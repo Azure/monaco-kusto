@@ -83,7 +83,7 @@ There are 2 APIs to set a Kusto schema:
     `@kusto/monaco-kusto/release/monaco.d.ts`.
 -   ESM output no longer requires `MonacoEnvironment.globalApi` to be `true`
 -   Moved `@kusto/monaco-kusto/release/monaco.d.ts` content to
-    `@kusto/monaco-kusto/globalApi.d.ts`. Original file now references the new
+    `@kusto/monaco-kusto/globalApi.d.ts`. Original file now references this new
     one, and will be removed in a future release.
 
 ### 6.2.0
