@@ -72,6 +72,20 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 7.0.0
+
+-   BREAKING CHANGE: Bumped monaco-editor peer dependency to ~0.37.0
+    -   This version of monaco-editor no longer requires a patch to work with Parcel. Details here: https://github.com/microsoft/monaco-editor/issues/2966
+-   fix: "monaco is not defined" errors when consuming esm files
+-   Moved types from global interface (`monaco.languages.kusto.*`) to esm index
+    file `import { SomeType } from '@kusto/monaco-kusto`. With this, esm
+    consumer no longer need to include
+    `@kusto/monaco-kusto/release/monaco.d.ts`.
+-   ESM output no longer requires `MonacoEnvironment.globalApi` to be `true`
+-   Moved `@kusto/monaco-kusto/release/monaco.d.ts` content to
+    `@kusto/monaco-kusto/globalApi.d.ts`. Original file now references this new
+    one, and will be removed in a future release.
+
 ### 6.2.0
 
 -   Esm output not longer requires `self.MonacoEnvironment` to be true
