@@ -23,8 +23,5 @@
         "process": "^0.11.10",
         "ts-node": "^10.9.1",
         "wait-on": "^7.0.1"
-    },
-    "resolutions": {
-        "monaco-editor@~0.35.0": "patch:monaco-editor@npm%3A0.35.0#./.yarn/patches/monaco-editor-npm-0.35.0-f4a2faf37d.patch"
     }
 }

@@ -1536,7 +1536,7 @@ __metadata:
     http-server: ^0.12.3
     live-server: ^1.2.1
     lodash-es: ^4.17.21
-    monaco-editor: ~0.35.0
+    monaco-editor: ~0.37.0
     monaco-languages: 2.11.1
     rimraf: ^4.1.2
     rollup: ^3.17.3
@@ -1547,7 +1547,7 @@ __metadata:
     vscode-languageserver-types: 3.16.0
     xregexp: ^5.1.1
   peerDependencies:
-    monaco-editor: ~0.35.0
+    monaco-editor: ~0.37.0
   bin:
     copyMonacoFilesAMD: ./copyMonacoFilesAMD.js
   languageName: unknown
@@ -6624,17 +6624,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.35.0":
-  version: 0.35.0
-  resolution: "monaco-editor@npm:0.35.0"
-  checksum: ff86d99add0140a8513fbfdbf31488578d77d0cd85f4071f4399125208ae16c93eb34d72b47fb106de111be0043ba7dacf8a5144174f57d066c56fcd9aa9c8a4
-  languageName: node
-  linkType: hard
-
-"monaco-editor@patch:monaco-editor@npm%3A0.35.0#./.yarn/patches/monaco-editor-npm-0.35.0-f4a2faf37d.patch::locator=monaco-kusto%40workspace%3A.":
-  version: 0.35.0
-  resolution: "monaco-editor@patch:monaco-editor@npm%3A0.35.0#./.yarn/patches/monaco-editor-npm-0.35.0-f4a2faf37d.patch::version=0.35.0&hash=42a063&locator=monaco-kusto%40workspace%3A."
-  checksum: 0d6187d50dffed965b4dc20c18cfbdd224a2edc5b0aefe4bcd08a431bae70993605cfedc41ccce059c1e3d8a2c0c603e21c300831636dd5dfb0cf6b7ce7ba0f2
+"monaco-editor@npm:~0.37.0":
+  version: 0.37.1
+  resolution: "monaco-editor@npm:0.37.1"
+  checksum: f2ac123d3044a1386d36ba52bb617ad18fb1c745d515a63258858b41c91bb68b71b57c7e5aff3fc2b3226b22c12ca3ad5b14c117babc85eebcf80317cb10691b
   languageName: node
   linkType: hard
 
@@ -6644,7 +6637,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     live-server: ^1.2.2
-    monaco-editor: ~0.35.0
+    monaco-editor: ~0.37.0
   languageName: unknown
   linkType: soft
 
@@ -6659,7 +6652,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.7.3
     html-webpack-plugin: ^5.5.0
-    monaco-editor: ~0.35.0
+    monaco-editor: ~0.37.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -6676,7 +6669,7 @@ __metadata:
     "@kusto/monaco-kusto": "workspace:*"
     "@types/react": ^16.9.11
     "@types/react-dom": ^16.8.4
-    monaco-editor: ~0.35.0
+    monaco-editor: ~0.37.0
     parcel: ^2.0.0
     react: ^16.13.0
     react-dom: ^16.13.1
@@ -6695,7 +6688,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.7.3
     html-webpack-plugin: ^5.5.0
-    monaco-editor: ~0.35.0
+    monaco-editor: ~0.37.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
