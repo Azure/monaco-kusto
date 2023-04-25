@@ -1,4 +1,5 @@
 import * as ls from 'vscode-languageserver-types';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.worker';
 
 import * as kustoService from './languageService/kustoLanguageService';
 import type { LanguageSettings } from './languageService/settings';

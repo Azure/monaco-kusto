@@ -1,3 +1,6 @@
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { getCurrentCommandRange } from './extendedEditor';
+
 /**
  * Highlights the command that surround cursor location
  */
@@ -41,7 +44,10 @@ export default class KustoCommandHighlighter implements monaco.editor.IEditorCon
             return;
         }
 
-        const commandRange: monaco.Range = this.editor.getCurrentCommandRange(changeEvent.selection.getStartPosition());
+        const commandRange: monaco.Range = getCurrentCommandRange(
+            this.editor,
+            changeEvent.selection.getStartPosition()
+        );
         const decorations: monaco.editor.IModelDeltaDecoration[] = [
             {
                 range: commandRange,

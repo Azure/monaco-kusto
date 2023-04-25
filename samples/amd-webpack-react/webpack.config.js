@@ -8,7 +8,7 @@ const isProduction = process.env.NODE_ENV == 'production';
 const stylesHandler = 'style-loader';
 
 const config = {
-    entry: './src/index.js',
+    entry: './src/index.tsx',
     output: {
         path: path.resolve(__dirname, 'dist'),
         globalObject: 'self',
@@ -28,7 +28,7 @@ const config = {
     module: {
         rules: [
             {
-                test: /\.(js|jsx)$/i,
+                test: /\.(js|jsx|ts|tsx)$/i,
                 loader: 'babel-loader',
             },
             {

@@ -33,6 +33,7 @@ Example at [/samples/amd](https://github.com/Azure/monaco-kusto/tree/master/samp
 3. You should now be able to create monaco editors with `language: 'kusto'`. The
    kusto worker can be reached via the monaco global:
    `monaco.languages.kusto.getKustoWorker()`
+4. If using typeScript, add "@kusto/monaco-kusto/globalApi" to compilerOptions.types in tsconfig.json`
 
 ### ESM
 

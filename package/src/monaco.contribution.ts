@@ -3,20 +3,23 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
-import { extend } from './extendedEditor';
+import { extend, getCurrentCommandRange } from './extendedEditor';
 import type { KustoWorker } from './kustoWorker';
+import type { LanguageServiceDefaults, LanguageSettings } from './types';
+
+export * from './types';
+
+export { getCurrentCommandRange } from './extendedEditor';
 
 // --- Kusto configuration and defaults ---------
 
-export class LanguageServiceDefaultsImpl
-    implements globalThis.globalThis.monaco.languages.kusto.LanguageServiceDefaults
-{
-    private _onDidChange = new monaco.Emitter<globalThis.monaco.languages.kusto.LanguageServiceDefaults>();
-    private _languageSettings: globalThis.monaco.languages.kusto.LanguageSettings;
+class LanguageServiceDefaultsImpl implements LanguageServiceDefaults {
+    private _onDidChange = new monaco.Emitter<LanguageServiceDefaults>();
+    private _languageSettings: LanguageSettings;
     // in milliseconds. For example - this is 2 minutes 2 * 60 * 1000
     private _workerMaxIdleTime: number;
 
-    constructor(languageSettings: globalThis.monaco.languages.kusto.LanguageSettings) {
+    constructor(languageSettings: LanguageSettings) {
         this.setLanguageSettings(languageSettings);
         // default to never kill worker when idle.
         // reason: when killing worker - schema gets lost. We transmit the schema back to main process when killing
@@ -27,15 +30,15 @@ export class LanguageServiceDefaultsImpl
         this._workerMaxIdleTime = 0;
     }
 
-    get onDidChange(): monaco.IEvent<globalThis.monaco.languages.kusto.LanguageServiceDefaults> {
+    get onDidChange(): monaco.IEvent<LanguageServiceDefaults> {
         return this._onDidChange.event;
     }
 
-    get languageSettings(): globalThis.monaco.languages.kusto.LanguageSettings {
+    get languageSettings(): LanguageSettings {
         return this._languageSettings;
     }
 
-    setLanguageSettings(options: globalThis.monaco.languages.kusto.LanguageSettings): void {
+    setLanguageSettings(options: LanguageSettings): void {
         this._languageSettings = options || Object.create(null);
         this._onDidChange.fire(this);
     }
@@ -51,7 +54,7 @@ export class LanguageServiceDefaultsImpl
     }
 }
 
-const defaultLanguageSettings: globalThis.monaco.languages.kusto.LanguageSettings = {
+const defaultLanguageSettings: LanguageSettings = {
     includeControlCommands: true,
     newlineAfterPipe: true,
     openSuggestionDialogAfterPreviousSuggestionAccepted: true,
@@ -168,7 +171,7 @@ monaco.editor.onDidCreateEditor((editor) => {
     // hook up extension methods to editor.
     extend(editor);
 
-    commandHighlighter = new KustoCommandHighlighter(editor as globalThis.monaco.editor.ICodeEditor);
+    commandHighlighter = new KustoCommandHighlighter(editor as monaco.editor.ICodeEditor);
 
     if (isStandaloneCodeEditor(editor)) {
         commandFormatter = new KustoCommandFormatter(editor);
@@ -208,7 +211,10 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
     return (editor as monaco.editor.IStandaloneCodeEditor).addAction !== undefined;
 }
 
-(monaco as typeof globalThis.monaco).languages.kusto = {
+const globalApi: typeof import('./monaco.contribution') = {
     kustoDefaults,
     getKustoWorker,
+    getCurrentCommandRange,
 };
+
+(monaco as any).languages.kusto = globalApi;

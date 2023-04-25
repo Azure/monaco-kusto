@@ -64,7 +64,6 @@ const schema = {
     },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const editor = monaco.editor.create(document.getElementById('root')!, {
     value: 'StormEvents | take 10',
     language: 'kusto',

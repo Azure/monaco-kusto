@@ -1,3 +1,5 @@
+import type { OnDidProvideCompletionItems } from '../types';
+
 export interface LanguageSettings {
     includeControlCommands?: boolean;
     newlineAfterPipe?: boolean;
@@ -6,7 +8,7 @@ export interface LanguageSettings {
     useSemanticColorization?: boolean;
     useTokenColorization?: boolean;
     disabledCompletionItems?: string[];
-    onDidProvideCompletionItems?: monaco.languages.kusto.OnDidProvideCompletionItems;
+    onDidProvideCompletionItems?: OnDidProvideCompletionItems;
     enableHover?: boolean;
     formatter?: FormatterOptions;
     syntaxErrorAsMarkDown?: SyntaxErrorAsMarkDownOptions;

@@ -20,3 +20,4 @@ Changes have longer comments alongside them.
 -   Added `copy-amd-files` to npm scripts
 -   Call Monaco-editors AMD loader via `__non_webpack_require__()` instead of
     `require()`
+-   Add "@kusto/monaco-kusto/globalApi" to compilerOptions.types in tsconfig.json

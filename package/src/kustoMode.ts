@@ -2,7 +2,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import { WorkerManager } from './workerManager';
 import type { KustoWorker } from './kustoWorker';
-import type { LanguageServiceDefaultsImpl } from './monaco.contribution';
+import type { LanguageServiceDefaults } from './monaco.contribution';
 import { KustoLanguageDefinition } from './languageService/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
 import type { Schema, ScalarParameter, TabularParameter } from './languageService/schema';
@@ -20,7 +20,7 @@ let workerPromise: Promise<languageFeatures.WorkerAccessor> = new Promise((resol
  * @param defaults
  */
 export function setupMode(
-    defaults: LanguageServiceDefaultsImpl,
+    defaults: LanguageServiceDefaults,
     monacoInstance: typeof globalThis.monaco
 ): languageFeatures.WorkerAccessor {
     let onSchemaChange = new monaco.Emitter<Schema>();
