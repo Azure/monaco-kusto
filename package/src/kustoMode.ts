@@ -4,7 +4,7 @@ import { WorkerManager } from './workerManager';
 import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution';
 import { KustoLanguageDefinition } from './languageService/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
-import type { Schema, ScalarParameter, TabularParameter } from './languageService/schema';
+import type { Schema } from './languageService/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
 
 export interface AugmentedWorker extends KustoWorker, Omit<IKustoWorkerImpl, 'setSchemaFromShowSchema'> {}
