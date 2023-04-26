@@ -1484,7 +1484,7 @@ class KustoLanguageService implements LanguageService {
 
         const properties = this.toArray(withClause.Properties);
 
-        const props = properties.reduce(
+        const props = properties.reduce<RenderOptions>(
             (
                 prev: RenderOptions,
                 property: Kusto.Language.Syntax.SeparatedElement$1<Kusto.Language.Syntax.NamedParameter>
@@ -1547,7 +1547,7 @@ class KustoLanguageService implements LanguageService {
 
                 return prev;
             },
-            {} as RenderOptions
+            {}
         );
 
         const renderOptions: RenderOptions = { visualization, ...props };
