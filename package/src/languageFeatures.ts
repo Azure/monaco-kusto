@@ -4,13 +4,9 @@ import * as ls from 'vscode-languageserver-types';
 import debounce from 'lodash-es/debounce';
 
 import type { LanguageServiceDefaults, LanguageSettings, OnDidProvideCompletionItems } from './monaco.contribution';
-import type { KustoWorker } from './kustoWorker';
 import type { Schema } from './languageService/schema';
 import type { ClassifiedRange } from './languageService/kustoLanguageService';
-
-export interface WorkerAccessor {
-    (first: monaco.Uri, ...more: monaco.Uri[]): Promise<KustoWorker>;
-}
+import { AugmentedWorkerAccessor } from './kustoMode';
 
 // --- diagnostics ---
 
@@ -32,7 +28,7 @@ export class DiagnosticsAdapter {
     constructor(
         private _monacoInstance: typeof globalThis.monaco,
         private _languageId: string,
-        private _worker: WorkerAccessor,
+        private _worker: AugmentedWorkerAccessor,
         private defaults: LanguageServiceDefaults,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
@@ -488,7 +484,7 @@ export class ColorizationAdapter {
     constructor(
         private _monacoInstance: typeof globalThis.monaco,
         private _languageId: string,
-        private _worker: WorkerAccessor,
+        private _worker: AugmentedWorkerAccessor,
         defaults: LanguageServiceDefaults,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
@@ -832,7 +828,7 @@ function formatDocLink(docString?: string): monaco.languages.CompletionItem['doc
 }
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
-    constructor(private _worker: WorkerAccessor, private languageSettings: LanguageSettings) {}
+    constructor(private _worker: AugmentedWorkerAccessor, private languageSettings: LanguageSettings) {}
 
     public get triggerCharacters(): string[] {
         return [' '];
@@ -941,7 +937,7 @@ function toLocation(location: ls.Location): monaco.languages.Location {
 }
 
 export class DefinitionAdapter {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: AugmentedWorkerAccessor) {}
 
     public provideDefinition(
         model: monaco.editor.IReadOnlyModel,
@@ -966,7 +962,7 @@ export class DefinitionAdapter {
 // --- references ------
 
 export class ReferenceAdapter implements monaco.languages.ReferenceProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: AugmentedWorkerAccessor) {}
 
     provideReferences(
         model: monaco.editor.IReadOnlyModel,
@@ -1015,7 +1011,7 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit | undefined): monaco.languages.W
 }
 
 export class RenameAdapter implements monaco.languages.RenameProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: AugmentedWorkerAccessor) {}
 
     provideRenameEdits(
         model: monaco.editor.IReadOnlyModel,
@@ -1084,7 +1080,7 @@ function toSymbolKind(kind: ls.SymbolKind): monaco.languages.SymbolKind {
 // --- formatting -----
 
 export class DocumentFormatAdapter implements monaco.languages.DocumentFormattingEditProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: AugmentedWorkerAccessor) {}
 
     provideDocumentFormattingEdits(
         model: monaco.editor.IReadOnlyModel,
@@ -1099,7 +1095,7 @@ export class DocumentFormatAdapter implements monaco.languages.DocumentFormattin
 }
 
 export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEditProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: AugmentedWorkerAccessor) {}
 
     provideDocumentRangeFormattingEdits(
         model: monaco.editor.IReadOnlyModel,
@@ -1118,7 +1114,7 @@ export class FormatAdapter implements monaco.languages.DocumentRangeFormattingEd
 
 // --- Folding ---
 export class FoldingAdapter implements monaco.languages.FoldingRangeProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: AugmentedWorkerAccessor) {}
 
     provideFoldingRanges(
         model: monaco.editor.ITextModel,
@@ -1147,7 +1143,7 @@ function toFoldingRange(range: ls.FoldingRange): monaco.languages.FoldingRange {
 // --- hover ------
 
 export class HoverAdapter implements monaco.languages.HoverProvider {
-    constructor(private _worker: WorkerAccessor) {}
+    constructor(private _worker: AugmentedWorkerAccessor) {}
 
     provideHover(
         model: monaco.editor.IReadOnlyModel,

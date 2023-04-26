@@ -5,7 +5,7 @@ import { getCurrentCommandRange } from './extendedEditor';
  * Highlights the command that surround cursor location
  */
 export default class KustoCommandHighlighter implements monaco.editor.IEditorContribution {
-    private static readonly ID = 'editor.contrib.kustoCommandHighliter';
+    private static readonly ID = 'editor.contrib.kustoCommandHighlighter';
     private static CURRENT_COMMAND_HIGHLIGHT: monaco.editor.IModelDecorationOptions = {
         className: 'selectionHighlight',
     };

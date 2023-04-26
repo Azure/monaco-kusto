@@ -1,7 +1,7 @@
 import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import type { LanguageServiceDefaults } from './monaco.contribution';
-import type { KustoWorker } from './kustoWorker';
+import type { IKustoWorkerImpl } from './kustoWorker';
 
 export class WorkerManager {
     private _storedState: {
@@ -13,8 +13,8 @@ export class WorkerManager {
     private _lastUsedTime: number;
     private _configChangeListener: monaco.IDisposable;
 
-    private _worker: monaco.editor.MonacoWebWorker<KustoWorker>;
-    private _client: Promise<KustoWorker>;
+    private _worker: monaco.editor.MonacoWebWorker<IKustoWorkerImpl>;
+    private _client: Promise<IKustoWorkerImpl>;
 
     constructor(private _monacoInstance: typeof monaco, defaults: LanguageServiceDefaults) {
         this._defaults = defaults;
@@ -62,14 +62,14 @@ export class WorkerManager {
         }
     }
 
-    private _getClient(): Promise<KustoWorker> {
+    private _getClient(): Promise<IKustoWorkerImpl> {
         this._lastUsedTime = Date.now();
 
         // Since onDidProvideCompletionItems is not used in web worker, and since functions cannot be trivially serialized (throws exception unable to clone), We remove it here.
         const { onDidProvideCompletionItems, ...languageSettings } = this._defaults.languageSettings;
 
         if (!this._client) {
-            this._worker = this._monacoInstance.editor.createWebWorker<KustoWorker>({
+            this._worker = this._monacoInstance.editor.createWebWorker<IKustoWorkerImpl>({
                 // module that exports the create() method and returns a `KustoWorker` instance
                 moduleId: 'vs/language/kusto/kustoWorker',
 
@@ -94,8 +94,8 @@ export class WorkerManager {
         return this._client;
     }
 
-    getLanguageServiceWorker(...resources: monaco.Uri[]): Promise<KustoWorker> {
-        let _client: KustoWorker;
+    getLanguageServiceWorker(...resources: monaco.Uri[]): Promise<IKustoWorkerImpl> {
+        let _client: IKustoWorkerImpl;
         return this._getClient()
             .then((client) => {
                 _client = client;

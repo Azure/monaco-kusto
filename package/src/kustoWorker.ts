@@ -1,21 +1,34 @@
 import * as ls from 'vscode-languageserver-types';
-import type * as monaco from 'monaco-editor/esm/vs/editor/editor.worker';
+import type { worker } from 'monaco-editor/esm/vs/editor/editor.worker';
+import type { IRange } from 'monaco-editor/esm/vs/editor/editor.api';
 
 import * as kustoService from './languageService/kustoLanguageService';
 import type { LanguageSettings } from './languageService/settings';
 import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageService/schema';
 import type { ColorizationRange } from './languageService/kustoLanguageService';
 import type { RenderInfo } from './languageService/renderInfo';
+import type { ClusterReference, DatabaseReference, KustoWorker } from './types';
 
-export class KustoWorker {
+export type InterfaceFor<C> = {
+    [Member in keyof C]: C[Member];
+};
+
+/**
+ * We're using this interface to send messages to a worker, so using
+ * `InterfaceFor` to make it not nominal is more accurate. {@link KustoWorker}
+ * is the public, more limited version of this interface.
+ */
+export type IKustoWorkerImpl = InterfaceFor<KustoWorkerImpl>;
+
+export class KustoWorkerImpl {
     // --- model sync -----------------------
 
-    private _ctx: monaco.worker.IWorkerContext;
+    private _ctx: worker.IWorkerContext;
     private _languageService: kustoService.LanguageService;
     private _languageId: string;
     private _languageSettings: LanguageSettings;
 
-    constructor(ctx: monaco.worker.IWorkerContext, createData: ICreateData) {
+    constructor(ctx: worker.IWorkerContext, createData: ICreateData) {
         this._ctx = ctx;
         this._languageSettings = createData.languageSettings;
         this._languageService = kustoService.getKustoLanguageService();
@@ -28,7 +41,7 @@ export class KustoWorker {
         return this._languageService.setSchema(schema);
     }
 
-    addClusterToSchema(uri: string, clusterName: string, databasesNames: string[]): Promise<void> {
+    addClusterToSchema(uri: string, clusterName: string, databasesNames: readonly string[]): Promise<void> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`addClusterToSchema: document is ${document}. uri is ${uri}`);
@@ -154,10 +167,7 @@ export class KustoWorker {
      * @param uri document URI
      * @param cursorOffset offset from start of document to cursor
      */
-    getCommandAndLocationInContext(
-        uri: string,
-        cursorOffset: number
-    ): Promise<{ text: string; range: monaco.IRange } | null> {
+    getCommandAndLocationInContext(uri: string, cursorOffset: number): Promise<{ text: string; range: IRange } | null> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getCommandAndLocationInContext: document is ${document}. uri is ${uri}`);
@@ -300,7 +310,7 @@ export class KustoWorker {
         return this._languageService.setParameters(scalarParameters, tabularParameters);
     }
 
-    getClusterReferences(uri: string, cursorOffset: number): Promise<kustoService.ClusterReference[]> {
+    getClusterReferences(uri: string, cursorOffset: number): Promise<ClusterReference[]> {
         let document = this._getTextDocument(uri);
         if (!document) {
             return Promise.resolve(null);
@@ -308,7 +318,7 @@ export class KustoWorker {
         return this._languageService.getClusterReferences(document, cursorOffset);
     }
 
-    getDatabaseReferences(uri: string, cursorOffset: number): Promise<kustoService.DatabaseReference[]> {
+    getDatabaseReferences(uri: string, cursorOffset: number): Promise<DatabaseReference[]> {
         let document = this._getTextDocument(uri);
         if (!document) {
             return Promise.resolve(null);
@@ -332,6 +342,9 @@ export interface ICreateData {
     languageSettings: LanguageSettings;
 }
 
-export function create(ctx: monaco.worker.IWorkerContext, createData: ICreateData): KustoWorker {
-    return new KustoWorker(ctx, createData);
+/**
+ * Used when monaco-editor is resolved via amd modules
+ */
+export function create(ctx: worker.IWorkerContext, createData: ICreateData): IKustoWorkerImpl {
+    return new KustoWorkerImpl(ctx, createData);
 }

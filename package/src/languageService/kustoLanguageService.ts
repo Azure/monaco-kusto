@@ -18,6 +18,7 @@ import GlobalState = Kusto.Language.GlobalState;
 
 import { Database, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
+import type { ClusterReference, DatabaseReference } from '../types';
 
 let List = System.Collections.Generic.List$1;
 
@@ -194,7 +195,7 @@ export interface LanguageService {
     getDatabaseReferences(document: TextDocument, cursorOffset: number): Promise<DatabaseReference[]>;
     getClusterReferences(document: TextDocument, cursorOffset: number): Promise<ClusterReference[]>;
     addDatabaseToSchema(document: TextDocument, clusterName: string, databaseSchema: Database): Promise<void>;
-    addClusterToSchema(document: TextDocument, clusterName: string, databaseNames: string[]): Promise<void>;
+    addClusterToSchema(document: TextDocument, clusterName: string, databaseNames: readonly string[]): Promise<void>;
 }
 
 export type CmSchema = {
@@ -202,15 +203,6 @@ export type CmSchema = {
     services: k.KustoIntelliSenseServiceEntity[];
     connectionString: string;
 };
-
-export interface DatabaseReference {
-    databaseName: string;
-    clusterName: string;
-}
-
-export interface ClusterReference {
-    clusterName: string;
-}
 
 /**
  * Kusto Language service translates the kusto object model (transpiled from C# by Bridge.Net)
@@ -744,7 +736,7 @@ class KustoLanguageService implements LanguageService {
                         const allowSeverity =
                             (enableWarnings && d.Severity === 'Warning') ||
                             (enableSuggestions && d.Severity === 'Suggestion');
-                        const allowCode = !this._languageSettings.disabledDiagnoticCodes?.includes(d.Code);
+                        const allowCode = !this._languageSettings.disabledDiagnosticCodes?.includes(d.Code);
                         return allowSeverity && allowCode;
                     });
                     diagnostics = diagnostics.concat(filterredDiagnostics);
@@ -1492,7 +1484,7 @@ class KustoLanguageService implements LanguageService {
 
         const properties = this.toArray(withClause.Properties);
 
-        const props = properties.reduce(
+        const props = properties.reduce<RenderOptions>(
             (
                 prev: RenderOptions,
                 property: Kusto.Language.Syntax.SeparatedElement$1<Kusto.Language.Syntax.NamedParameter>
@@ -1555,7 +1547,7 @@ class KustoLanguageService implements LanguageService {
 
                 return prev;
             },
-            {} as RenderOptions
+            {}
         );
 
         const renderOptions: RenderOptions = { visualization, ...props };
