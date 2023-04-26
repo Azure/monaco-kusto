@@ -35,8 +35,8 @@ export interface KustoWorker {
         schema: any,
         clusterConnectionString: string,
         databaseInContextName: string,
-        globalScalarParameters: ScalarParameter[],
-        globalTabularParameters: TabularParameter[]
+        globalScalarParameters?: ScalarParameter[],
+        globalTabularParameters?: TabularParameter[]
     ): Promise<void>;
     normalizeSchema(
         schema: showSchema.Result,

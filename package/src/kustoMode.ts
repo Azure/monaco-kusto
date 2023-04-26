@@ -54,17 +54,16 @@ export function setupMode(
                     schema,
                     connection,
                     database,
-                    globalScalarParameters?: ScalarParameter[],
-                    globalTabularParameters?: TabularParameter[]
+                    globalScalarParameters,
+                    globalTabularParameters
                 ) {
-                    worker
-                        .normalizeSchema(schema, connection, database)
-                        .then((schema) =>
-                            globalScalarParameters
-                                ? { ...schema, globalScalarParameters, globalTabularParameters }
-                                : schema
-                        )
-                        .then((normalized) => augmentedSetSchema(normalized, worker));
+                    await worker
+                        .normalizeSchema(schema, connection, database).then(schema => {
+                            if (globalScalarParameters || globalTabularParameters) {
+                                schema = { ...schema, globalScalarParameters, globalTabularParameters }
+                            }
+                            augmentedSetSchema(schema, worker)ƒ;
+                        })
                 },
             })
         );
