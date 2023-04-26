@@ -1,6 +1,6 @@
 import * as ls from 'vscode-languageserver-types';
 import type { worker } from 'monaco-editor/esm/vs/editor/editor.worker';
-import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type { IRange } from 'monaco-editor/esm/vs/editor/editor.api';
 
 import * as kustoService from './languageService/kustoLanguageService';
 import type { LanguageSettings } from './languageService/settings';
@@ -167,10 +167,7 @@ export class KustoWorkerImpl {
      * @param uri document URI
      * @param cursorOffset offset from start of document to cursor
      */
-    getCommandAndLocationInContext(
-        uri: string,
-        cursorOffset: number
-    ): Promise<{ text: string; range: monaco.IRange } | null> {
+    getCommandAndLocationInContext(uri: string, cursorOffset: number): Promise<{ text: string; range: IRange } | null> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getCommandAndLocationInContext: document is ${document}. uri is ${uri}`);
