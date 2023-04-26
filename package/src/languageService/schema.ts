@@ -33,9 +33,14 @@ export interface TabularParameter {
     docstring?: string;
 }
 
-// an input parameter either be a scalar in which case it has a name, type and cslType, or it can be columnar, in which case
-// it will have a name, and a list of scalar types which are the column types.
-export type InputParameter = ScalarParameter & { columns?: ScalarParameter[] };
+/**
+ * An input parameter either be a scalar in which case it has a name, type and
+ * cslType, or it can be columnar, in which case it will have a name, and a list
+ * of scalar types which are the column types.
+ */
+export interface InputParameter extends ScalarParameter {
+    columns?: ScalarParameter[];
+}
 
 export interface Function {
     name: string;
@@ -43,6 +48,7 @@ export interface Function {
     inputParameters: InputParameter[];
     docstring?: string;
 }
+
 export interface Database {
     name: string;
     tables: Table[];

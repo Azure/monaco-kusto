@@ -1,39 +1,15 @@
 import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type * as ls from 'vscode-languageserver-types';
-
-export interface LanguageSettings {
-    includeControlCommands?: boolean;
-    newlineAfterPipe?: boolean;
-    syntaxErrorAsMarkDown?: SyntaxErrorAsMarkDownOptions;
-    openSuggestionDialogAfterPreviousSuggestionAccepted?: boolean;
-    useIntellisenseV2?: boolean;
-    useSemanticColorization?: boolean;
-    useTokenColorization?: boolean;
-    disabledCompletionItems?: string[];
-    onDidProvideCompletionItems?: OnDidProvideCompletionItems;
-    enableHover?: boolean;
-    formatter?: FormatterOptions;
-    enableQueryWarnings?: boolean;
-    enableQuerySuggestions?: boolean;
-    disabledDiagnosticCodes?: string[];
-    quickFixCodeActions?: QuickFixCodeActionOptions[];
-    enableQuickFixes?: boolean;
-}
-
-export interface SyntaxErrorAsMarkDownOptions {
-    header?: string;
-    icon?: string;
-    enableSyntaxErrorAsMarkDown?: boolean;
-}
-
-export type QuickFixCodeActionOptions = 'Extract Expression' | 'Extract Function' | 'Change to' | 'FixAll';
-
-export interface FormatterOptions {
-    indentationSize?: number;
-    pipeOperatorStyle?: FormatterPlacementStyle;
-}
-
-export type FormatterPlacementStyle = 'None' | 'NewLine' | 'Smart';
+import type {
+    Schema,
+    ScalarParameter,
+    TabularParameter,
+    EngineSchema,
+    Database,
+    showSchema,
+} from './languageService/schema';
+import type { RenderInfo } from './languageService/renderInfo';
+import type { LanguageSettings } from './languageService/settings';
 
 export interface LanguageServiceDefaults {
     readonly onDidChange: monaco.IEvent<LanguageServiceDefaults>;
@@ -62,7 +38,11 @@ export interface KustoWorker {
         globalScalarParameters: ScalarParameter[],
         globalTabularParameters: TabularParameter[]
     ): Promise<void>;
-    normalizeSchema(schema: any, clusterConnectionString: string, databaseInContextName: string): Promise<EngineSchema>;
+    normalizeSchema(
+        schema: showSchema.Result,
+        clusterConnectionString: string,
+        databaseInContextName: string
+    ): Promise<EngineSchema>;
     getCommandInContext(uri: string, cursorOffset: number): Promise<string | null>;
     getCommandAndLocationInContext(uri: string, offset: number): Promise<{ text: string; range: monaco.IRange } | null>;
     getCommandsInDocument(uri: string): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]>;
@@ -85,14 +65,14 @@ export interface KustoWorker {
     getGlobalParams(uri: string): Promise<{ name: string; type: string }[]>;
     /**
      * Get the global parameters that are actually being referenced in query.
-     * This is different from getQueryParams that will return the parameters declare using a query declaration
+     * This is different from getQueryParams that will return the parameters using a query declaration
      * statement.
      * It is also different from getGlobalParams that will return all global parameters whether used or not.
      */
     getReferencedGlobalParams(uri: string, cursorOffset?: number): Promise<{ name: string; type: string }[]>;
 
     getReferencedSymbols(
-        document: ls.TextDocument,
+        uri: string,
         cursorOffset?: number
     ): Promise<{ name: string; kind: string; display: string }[]>;
     /**
@@ -108,7 +88,10 @@ export interface KustoWorker {
         includeWarnings?: boolean,
         includeSuggestions?: boolean
     ): Promise<ls.Diagnostic[]>;
-    setParameters(scalarParameters: readonly ScalarParameter[], tabularParameters: readonly TabularParameter[]): void;
+    setParameters(
+        scalarParameters: readonly ScalarParameter[],
+        tabularParameters: readonly TabularParameter[]
+    ): Promise<void>;
     /**
      * Get all the database references from the current command.
      * If database's schema is already cached in previous calls to setSchema or addDatabaseToSchema it will not be returned.
@@ -163,115 +146,6 @@ export interface WorkerAccessor {
     (first: monaco.Uri, ...more: monaco.Uri[]): Promise<KustoWorker>;
 }
 
-export interface Column {
-    name: string;
-    type: string;
-    docstring?: string;
-}
-export interface Table {
-    name: string;
-    columns: Column[];
-    docstring?: string;
-}
-export interface ScalarParameter {
-    name: string;
-    type?: string;
-    cslType?: string;
-    cslDefaultValue?: string;
-}
-
-export interface TabularParameter {
-    name: string;
-    columns: Column[];
-    docstring?: string;
-}
-
-// an input parameter either be a scalar in which case it has a name, type and cslType, or it can be columnar, in which case
-// it will have a name, and a list of scalar types which are the column types.
-export type InputParameter = ScalarParameter & { columns?: ScalarParameter[] };
-
-export interface Function {
-    name: string;
-    body: string;
-    docstring?: string;
-    inputParameters: InputParameter[];
-}
-export interface Database {
-    name: string;
-    tables: Table[];
-    functions: Function[];
-    majorVersion: number;
-    minorVersion: number;
-}
-
-export interface EngineSchema {
-    clusterType: 'Engine';
-    cluster: {
-        connectionString: string;
-        databases: Database[];
-    };
-    database: Database | undefined; // a reference to the database that's in current context.
-}
-
-export interface ClusterMangerSchema {
-    clusterType: 'ClusterManager';
-    accounts: string[];
-    services: string[];
-    connectionString: string;
-}
-
-export interface DataManagementSchema {
-    clusterType: 'DataManagement';
-}
-
-export type Schema = EngineSchema | ClusterMangerSchema | DataManagementSchema;
-
-export declare type VisualizationType =
-    | 'anomalychart'
-    | 'areachart'
-    | 'barchart'
-    | 'columnchart'
-    | 'ladderchart'
-    | 'linechart'
-    | 'piechart'
-    | 'pivotchart'
-    | 'scatterchart'
-    | 'stackedareachart'
-    | 'timechart'
-    | 'table'
-    | 'timeline'
-    | 'timepivot'
-    | 'card';
-
-export declare type Scale = 'linear' | 'log';
-export declare type LegendVisibility = 'visible' | 'hidden';
-export declare type YSplit = 'none' | 'axes' | 'panels';
-export declare type Kind = 'default' | 'unstacked' | 'stacked' | 'stacked100' | 'map';
-
-export interface RenderOptions {
-    visualization?: null | VisualizationType;
-    title?: null | string;
-    xcolumn?: null | string;
-    series?: null | string[];
-    ycolumns?: null | string[];
-    xtitle?: null | string;
-    ytitle?: null | string;
-    xaxis?: null | Scale;
-    yaxis?: null | Scale;
-    legend?: null | LegendVisibility;
-    ySplit?: null | YSplit;
-    accumulate?: null | boolean;
-    kind?: null | Kind;
-    anomalycolumns?: null | string[];
-    ymin?: null | number;
-    ymax?: null | number;
-}
-
-export interface RenderInfo {
-    options: RenderOptions;
-    location: { startOffset: number; endOffset: number };
-}
-
 export interface DatabaseReference {
     databaseName: string;
     clusterName: string;
@@ -280,7 +154,5 @@ export interface DatabaseReference {
 export interface ClusterReference {
     clusterName: string;
 }
-
-export type RenderOptionKeys = keyof RenderOptions;
 
 export type OnDidProvideCompletionItems = (list: ls.CompletionList) => Promise<ls.CompletionList>;

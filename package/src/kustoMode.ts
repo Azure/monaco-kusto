@@ -1,16 +1,22 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import { WorkerManager } from './workerManager';
-import type { KustoWorker } from './kustoWorker';
-import type { LanguageServiceDefaults } from './monaco.contribution';
+import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution';
 import { KustoLanguageDefinition } from './languageService/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
 import type { Schema, ScalarParameter, TabularParameter } from './languageService/schema';
+import type { IKustoWorkerImpl } from './kustoWorker';
 
-let kustoWorker: languageFeatures.WorkerAccessor;
-let resolveWorker: (value: languageFeatures.WorkerAccessor | PromiseLike<languageFeatures.WorkerAccessor>) => void;
+export interface AugmentedWorker extends KustoWorker, Omit<IKustoWorkerImpl, 'setSchemaFromShowSchema'> {}
+
+export interface AugmentedWorkerAccessor {
+    (first: monaco.Uri, ...more: monaco.Uri[]): Promise<AugmentedWorker>;
+}
+
+let kustoWorker: AugmentedWorkerAccessor;
+let resolveWorker: (value: AugmentedWorkerAccessor | PromiseLike<AugmentedWorkerAccessor>) => void;
 let rejectWorker: (err: any) => void;
-let workerPromise: Promise<languageFeatures.WorkerAccessor> = new Promise((resolve, reject) => {
+let workerPromise: Promise<AugmentedWorkerAccessor> = new Promise((resolve, reject) => {
     resolveWorker = resolve;
     rejectWorker = reject;
 });
@@ -22,7 +28,7 @@ let workerPromise: Promise<languageFeatures.WorkerAccessor> = new Promise((resol
 export function setupMode(
     defaults: LanguageServiceDefaults,
     monacoInstance: typeof globalThis.monaco
-): languageFeatures.WorkerAccessor {
+): AugmentedWorkerAccessor {
     let onSchemaChange = new monaco.Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
     let disposables: monaco.IDisposable[] = [];
@@ -31,42 +37,36 @@ export function setupMode(
     const client = new WorkerManager(monacoInstance, defaults);
     disposables.push(client);
 
-    const workerAccessor = (first: monaco.Uri, ...more: monaco.Uri[]): Promise<KustoWorker> => {
-        const augmentedSetSchema = (
-            schema: Schema,
-            worker: KustoWorker,
-            globalScalarParameters?: ScalarParameter[],
-            globalTabularParameters?: TabularParameter[]
-        ) => {
+    const workerAccessor: AugmentedWorkerAccessor = (first, ...more) => {
+        const augmentedSetSchema = async (schema: Schema, worker: KustoWorker) => {
             const workerPromise = worker.setSchema(schema);
 
-            workerPromise.then(() => {
+            await workerPromise.then(() => {
                 onSchemaChange.fire(schema);
             });
         };
         const worker = client.getLanguageServiceWorker(...[first].concat(more));
         return worker.then(
-            (worker) =>
-                ({
-                    ...worker,
-                    setSchema: (schema) => augmentedSetSchema(schema, worker),
-                    setSchemaFromShowSchema: (
-                        schema,
-                        connection,
-                        database,
-                        globalScalarParameters?: ScalarParameter[],
-                        globalTabularParameters?: TabularParameter[]
-                    ) => {
-                        worker
-                            .normalizeSchema(schema, connection, database)
-                            .then((schema) =>
-                                globalScalarParameters
-                                    ? { ...schema, globalScalarParameters, globalTabularParameters }
-                                    : schema
-                            )
-                            .then((normalized) => augmentedSetSchema(normalized, worker));
-                    },
-                } as KustoWorker)
+            (worker): AugmentedWorker => ({
+                ...worker,
+                setSchema: (schema) => augmentedSetSchema(schema, worker),
+                async setSchemaFromShowSchema(
+                    schema,
+                    connection,
+                    database,
+                    globalScalarParameters?: ScalarParameter[],
+                    globalTabularParameters?: TabularParameter[]
+                ) {
+                    worker
+                        .normalizeSchema(schema, connection, database)
+                        .then((schema) =>
+                            globalScalarParameters
+                                ? { ...schema, globalScalarParameters, globalTabularParameters }
+                                : schema
+                        )
+                        .then((normalized) => augmentedSetSchema(normalized, worker));
+                },
+            })
         );
     };
 
@@ -178,6 +178,6 @@ export function setupMode(
     return kustoWorker;
 }
 
-export function getKustoWorker(): Promise<languageFeatures.WorkerAccessor> {
+export function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
     return workerPromise.then(() => kustoWorker);
 }

@@ -14,7 +14,7 @@ export interface LanguageSettings {
     syntaxErrorAsMarkDown?: SyntaxErrorAsMarkDownOptions;
     enableQueryWarnings?: boolean;
     enableQuerySuggestions?: boolean;
-    disabledDiagnoticCodes?: string[];
+    disabledDiagnosticCodes?: string[];
     quickFixCodeActions?: QuickFixCodeActionOptions[];
     enableQuickFixes?: boolean;
 }
@@ -30,6 +30,6 @@ export interface SyntaxErrorAsMarkDownOptions {
     enableSyntaxErrorAsMarkDown?: boolean;
 }
 
-export type QuickFixCodeActionOptions = 'Extract Expression' | 'Extract Function' | 'Change to';
+export type QuickFixCodeActionOptions = 'Extract Expression' | 'Extract Function' | 'Change to' | 'FixAll';
 
 export type FormatterPlacementStyle = 'None' | 'NewLine' | 'Smart';

@@ -4,9 +4,19 @@ import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend, getCurrentCommandRange } from './extendedEditor';
-import type { KustoWorker } from './kustoWorker';
-import type { LanguageServiceDefaults, LanguageSettings } from './types';
+import type { LanguageServiceDefaults, WorkerAccessor } from './types';
+import {
+    getCslTypeNameFromClrType,
+    getCallName,
+    getExpression,
+    getInputParametersAsCslString,
+    getEntityDataTypeFromCslType,
+} from './languageService/schema';
+import type { LanguageSettings } from './languageService/settings';
 
+export * from './languageService/schema';
+export * from './languageService/renderInfo';
+export * from './languageService/settings';
 export * from './types';
 
 export { getCurrentCommandRange } from './extendedEditor';
@@ -76,7 +86,7 @@ const defaultLanguageSettings: LanguageSettings = {
     enableQuickFixes: false,
 };
 
-export function getKustoWorker(): Promise<(first: monaco.Uri, ...more: monaco.Uri[]) => Promise<KustoWorker>> {
+export function getKustoWorker(): Promise<WorkerAccessor> {
     return new Promise((resolve, reject) => {
         withMode((mode) => {
             mode.getKustoWorker().then(resolve, reject);
@@ -212,6 +222,11 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
 }
 
 const globalApi: typeof import('./monaco.contribution') = {
+    getCslTypeNameFromClrType,
+    getCallName,
+    getExpression,
+    getInputParametersAsCslString,
+    getEntityDataTypeFromCslType,
     kustoDefaults,
     getKustoWorker,
     getCurrentCommandRange,
