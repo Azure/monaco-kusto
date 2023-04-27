@@ -72,6 +72,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 7.0.1
+
+-   fix: Exported types don't match types used in many cases
+
 ### 7.0.0
 
 -   BREAKING CHANGE: Bumped monaco-editor peer dependency to ~0.37.0
