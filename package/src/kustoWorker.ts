@@ -9,6 +9,17 @@ import type { ColorizationRange } from './languageService/kustoLanguageService';
 import type { RenderInfo } from './languageService/renderInfo';
 import type { ClusterReference, DatabaseReference, KustoWorker } from './types';
 
+export interface IWorkerContext<H = undefined> {
+    /**
+     * A proxy to the main thread host object.
+     */
+    host: H;
+    /**
+     * Get all available mirror models in this worker.
+     */
+    getMirrorModels(): IMirrorModel[];
+}
+
 export type InterfaceFor<C> = {
     [Member in keyof C]: C[Member];
 };
@@ -71,7 +82,7 @@ export class KustoWorkerImpl {
         return this._languageService.getSchema();
     }
 
-    getCommandInContext(uri: string, cursorOffset: number): Promise<string | null> {
+    async getCommandInContext(uri: string, cursorOffset: number): Promise<string | null> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getCommandInContext: document is ${document}. uri is ${uri}`);
@@ -86,7 +97,7 @@ export class KustoWorkerImpl {
         return commandInContext;
     }
 
-    getQueryParams(uri: string, cursorOffset: number): Promise<{ name: string; type: string }[]> {
+    async getQueryParams(uri: string, cursorOffset: number): Promise<null | { name: string; type: string }[]> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getQueryParams: document is ${document}. uri is ${uri}`);
@@ -101,7 +112,7 @@ export class KustoWorkerImpl {
         return queryParams;
     }
 
-    getGlobalParams(uri: string): Promise<{ name: string; type: string }[]> {
+    async getGlobalParams(uri: string): Promise<null | { name: string; type: string }[]> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getGLobalParams: document is ${document}. uri is ${uri}`);
@@ -131,7 +142,10 @@ export class KustoWorkerImpl {
         return referencedParams;
     }
 
-    getReferencedGlobalParams(uri: string, cursorOffset?: number): Promise<{ name: string; type: string }[]> {
+    async getReferencedGlobalParams(
+        uri: string,
+        cursorOffset?: number
+    ): Promise<null | { name: string; type: string }[]> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getReferencedGlobalParams: document is ${document}. uri is ${uri}`);
@@ -199,7 +213,9 @@ export class KustoWorkerImpl {
         });
     }
 
-    getCommandsInDocument(uri: string): Promise<{ absoluteStart: number; absoluteEnd: number; text: string }[]> {
+    async getCommandsInDocument(
+        uri: string
+    ): Promise<null | { absoluteStart: number; absoluteEnd: number; text: string }[]> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getCommandInDocument: document is ${document}. uri is ${uri}`);
@@ -209,7 +225,7 @@ export class KustoWorkerImpl {
         return this._languageService.getCommandsInDocument(document);
     }
 
-    doComplete(uri: string, position: ls.Position): Promise<ls.CompletionList> {
+    async doComplete(uri: string, position: ls.Position): Promise<null | ls.CompletionList> {
         let document = this._getTextDocument(uri);
         if (!document) {
             return null;

@@ -3,16 +3,9 @@
     "extends": "../tsconfig.json",
     "include": ["../src/monaco.contribution.ts", "../src/KustoWorker.ts", "../src/KustoMode.ts"],
     "compilerOptions": {
-        "rootDir": "../src",
-        "module": "esnext",
-        "moduleResolution": "node",
         "outDir": "../release/esm",
         "emitDeclarationOnly": true,
         "declaration": true,
-        "noEmit": false,
-        "types": [
-            "@kusto/language-service/Kusto.JavaScript.Client",
-            "@kusto/language-service-next/Kusto.Language.Bridge"
-        ]
+        "noEmit": false
     }
 }

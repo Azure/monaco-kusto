@@ -101,7 +101,7 @@ function withMode(callback: (module: typeof mode) => void): void {
 export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
 monaco.languages.onLanguage('kusto', () => {
-    withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
+    withMode((mode) => mode.setupMode(kustoDefaults, monaco));
 });
 
 monaco.languages.register({

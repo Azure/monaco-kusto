@@ -669,8 +669,8 @@ function getEnumKeys<E>(e: any) {
 function getClassificationColorTriplets(): { classification: string; colorLight: string; colorDark: string }[] {
     const result = Object.keys(ClassificationKind).map((key) => ({
         classification: key,
-        colorLight: classificationToColorLight[key],
-        colorDark: classificationToColorDark[key],
+        colorLight: classificationToColorLight[key as keyof typeof classificationToColorLight],
+        colorDark: classificationToColorDark[key as keyof typeof classificationToColorLight],
     }));
     return result;
 }

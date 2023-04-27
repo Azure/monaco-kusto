@@ -9,6 +9,8 @@
         "lib": ["es2020", "dom", "WebWorker.ImportScripts"],
         "noEmit": true,
         "skipLibCheck": true,
+        "strict": true,
+        "strictNullChecks": false,
         "allowSyntheticDefaultImports": true,
         "isolatedModules": true,
         "types": [
