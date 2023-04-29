@@ -100,6 +100,12 @@ function withMode(callback: (module: typeof mode) => void): void {
 
 export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
+export const themeNames = {
+    light: 'kusto-light',
+    dark: 'kusto-dark',
+    dark2: 'kusto-dark2',
+};
+
 monaco.languages.onLanguage('kusto', () => {
     withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
 });
@@ -109,12 +115,7 @@ monaco.languages.register({
     extensions: ['.csl', '.kql'],
 });
 
-// TODO: asked if there's a cleaner way to register an editor contribution. looks like monaco has an internal contribution registrar but it's no exposed in the API.
-// https://stackoverflow.com/questions/46700245/how-to-add-an-ieditorcontribution-to-monaco-editor
-let commandHighlighter: KustoCommandHighlighter;
-let commandFormatter: KustoCommandFormatter;
-
-monaco.editor.defineTheme('kusto-light', {
+monaco.editor.defineTheme(themeNames.light, {
     base: 'vs',
     inherit: true,
     rules: [
@@ -138,7 +139,7 @@ monaco.editor.defineTheme('kusto-light', {
     colors: {},
 });
 
-monaco.editor.defineTheme('kusto-dark', {
+monaco.editor.defineTheme(themeNames.dark, {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -164,7 +165,7 @@ monaco.editor.defineTheme('kusto-dark', {
     },
 });
 
-monaco.editor.defineTheme('kusto-dark2', {
+monaco.editor.defineTheme(themeNames.dark2, {
     base: 'vs-dark',
     inherit: true,
     rules: [],
@@ -178,16 +179,20 @@ monaco.editor.defineTheme('kusto-dark2', {
 // Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
 // Most other language features are initialized in kustoMode.ts
 monaco.editor.onDidCreateEditor((editor) => {
-    // hook up extension methods to editor.
-    extend(editor);
-
-    commandHighlighter = new KustoCommandHighlighter(editor as monaco.editor.ICodeEditor);
-
-    if (isStandaloneCodeEditor(editor)) {
-        commandFormatter = new KustoCommandFormatter(editor);
+    if (window.MonacoEnvironment?.globalAPI) {
+        // hook up extension methods to editor.
+        extend(editor);
     }
 
-    triggerSuggestDialogWhenCompletionItemSelected(editor as monaco.editor.ICodeEditor);
+    // TODO: asked if there's a cleaner way to register an editor contribution. looks like monaco has an internal contribution registrar but it's no exposed in the API.
+    // https://stackoverflow.com/questions/46700245/how-to-add-an-ieditorcontribution-to-monaco-editor
+    new KustoCommandHighlighter(editor);
+
+    if (isStandaloneCodeEditor(editor)) {
+        new KustoCommandFormatter(editor);
+    }
+
+    triggerSuggestDialogWhenCompletionItemSelected(editor);
 });
 
 function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {
@@ -230,6 +235,7 @@ const globalApi: typeof import('./monaco.contribution') = {
     kustoDefaults,
     getKustoWorker,
     getCurrentCommandRange,
+    themeNames,
 };
 
 (monaco as any).languages.kusto = globalApi;
