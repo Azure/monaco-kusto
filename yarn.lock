@@ -1500,17 +1500,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service-next@npm:0.0.63":
-  version: 0.0.63
-  resolution: "@kusto/language-service-next@npm:0.0.63"
-  checksum: f8d94fdc6f1604767ca0f4e57909f7c2358a4f91584a43a71a7080da7d4d791763b5cce4c67328e2617be9b2ed21dd9609f60c8b5434bbe88a2bac92e0c2ceae
+"@kusto/language-service-next@npm:0.0.64":
+  version: 0.0.64
+  resolution: "@kusto/language-service-next@npm:0.0.64"
+  checksum: 5460f4355c942de8b87645c3345041aad4b65b25551bd5752fce283b59e105a57abe512aea1c344f8eb84de94d05dfcef915286711faecc17e861a4758116dda
   languageName: node
   linkType: hard
 
-"@kusto/language-service@npm:0.0.40":
-  version: 0.0.40
-  resolution: "@kusto/language-service@npm:0.0.40"
-  checksum: 1aedb154e7ec0a39096e0fdcc90b124f3bba5e9e998739c94a79fff66db4a290ffa59c2c5235a51e8a095d8184d902e7202f5fee2f8807b597c410ce9895efca
+"@kusto/language-service@npm:0.0.41":
+  version: 0.0.41
+  resolution: "@kusto/language-service@npm:0.0.41"
+  checksum: e94dbc3eab542173fe7edc02c81f0288c805da63f4cbcfe591fe2c58625140d7d53677fab04386091056978532e981613451a6a8fd6a0adea36f8956efc108c1
   languageName: node
   linkType: hard
 
@@ -1521,8 +1521,8 @@ __metadata:
     "@babel/core": ^7.21.0
     "@babel/preset-env": ^7.20.2
     "@babel/preset-typescript": ^7.21.0
-    "@kusto/language-service": 0.0.40
-    "@kusto/language-service-next": 0.0.63
+    "@kusto/language-service": 0.0.41
+    "@kusto/language-service-next": 0.0.64
     "@rollup/plugin-alias": ^4.0.3
     "@rollup/plugin-babel": ^6.0.3
     "@rollup/plugin-commonjs": ^24.0.1
@@ -1539,7 +1539,6 @@ __metadata:
     live-server: ^1.2.1
     lodash-es: ^4.17.21
     monaco-editor: ~0.37.0
-    monaco-languages: 2.11.1
     rimraf: ^4.1.2
     rollup: ^3.17.3
     terser: ^5.16.2
@@ -6730,13 +6729,6 @@ __metadata:
     wait-on: ^7.0.1
   languageName: unknown
   linkType: soft
-
-"monaco-languages@npm:2.11.1":
-  version: 2.11.1
-  resolution: "monaco-languages@npm:2.11.1"
-  checksum: f49cb3563bdc07d4be45d3770b80bc03775d2b2ef8cb35e9eba580c9278671d63ce08f36fd7c0903886f908b71df440e6932aa3dc99f3a63f8fc9edf7e57b72d
-  languageName: node
-  linkType: hard
 
 "morgan@npm:^1.9.1":
   version: 1.10.0
