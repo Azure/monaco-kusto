@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "7.0.1",
+    "version": "7.0.2",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -20,7 +20,6 @@
         "build": "ts-node ./scripts/build.ts",
         "watch": "ts-node ./scripts/watch.ts",
         "typecheck": "tsc",
-        "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
         "clean": "rimraf ./release"
     },
     "types": "./release/esm/monaco.contribution.d.ts",
@@ -38,8 +37,8 @@
         "@babel/core": "^7.21.0",
         "@babel/preset-env": "^7.20.2",
         "@babel/preset-typescript": "^7.21.0",
-        "@kusto/language-service": "0.0.40",
-        "@kusto/language-service-next": "0.0.63",
+        "@kusto/language-service": "0.0.41",
+        "@kusto/language-service-next": "0.0.64",
         "@rollup/plugin-alias": "^4.0.3",
         "@rollup/plugin-babel": "^6.0.3",
         "@rollup/plugin-commonjs": "^24.0.1",
@@ -52,7 +51,6 @@
         "@types/node": "16",
         "@types/xregexp": "^4.4.0",
         "concurrently": "^7.6.0",
-        "http-server": "^0.12.3",
         "live-server": "^1.2.1",
         "monaco-editor": "~0.37.0",
         "monaco-languages": "2.11.1",
@@ -64,8 +62,8 @@
         "vscode-languageserver-textdocument": "1.0.4"
     },
     "dependencies": {
-        "@kusto/language-service": "0.0.40",
-        "@kusto/language-service-next": "0.0.63",
+        "@kusto/language-service": "0.0.41",
+        "@kusto/language-service-next": "0.0.64",
         "lodash-es": "^4.17.21",
         "vscode-languageserver-types": "3.16.0",
         "xregexp": "^5.1.1"
