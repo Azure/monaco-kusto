@@ -38,8 +38,6 @@
         "@babel/core": "^7.21.0",
         "@babel/preset-env": "^7.20.2",
         "@babel/preset-typescript": "^7.21.0",
-        "@kusto/language-service": "0.0.40",
-        "@kusto/language-service-next": "0.0.63",
         "@rollup/plugin-alias": "^4.0.3",
         "@rollup/plugin-babel": "^6.0.3",
         "@rollup/plugin-commonjs": "^24.0.1",
@@ -55,7 +53,6 @@
         "http-server": "^0.12.3",
         "live-server": "^1.2.1",
         "monaco-editor": "~0.37.0",
-        "monaco-languages": "2.11.1",
         "rimraf": "^4.1.2",
         "rollup": "^3.17.3",
         "terser": "^5.16.2",
@@ -64,8 +61,8 @@
         "vscode-languageserver-textdocument": "1.0.4"
     },
     "dependencies": {
-        "@kusto/language-service": "0.0.40",
-        "@kusto/language-service-next": "0.0.63",
+        "@kusto/language-service": "0.0.41",
+        "@kusto/language-service-next": "0.0.64",
         "lodash-es": "^4.17.21",
         "vscode-languageserver-types": "3.16.0",
         "xregexp": "^5.1.1"
