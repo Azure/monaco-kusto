@@ -67,7 +67,7 @@ function App() {
                 theme: 'kusto-light',
             });
 
-            monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
+            monaco.languages.kusto.getKustoWorker().then((workerAccessor: monaco.languages.kusto.WorkerAccessor) => {
                 if (disposed) {
                     return;
                 }
@@ -75,7 +75,7 @@ function App() {
                 if (!model) {
                     return;
                 }
-                workerAccessor(model.uri).then((worker) => {
+                workerAccessor(model.uri).then((worker: monaco.languages.kusto.KustoWorker) => {
                     if (disposed) {
                         return;
                     }
