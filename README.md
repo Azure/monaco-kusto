@@ -72,6 +72,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 7.2.1
+
+-   fix: Added types back to global api
+
 ### 7.2.0
 
 -   Added "themeNames" object to exports which contains the theme we register with monaco: kusto-light, kusto-dark, and kusto-dark2
