@@ -79,11 +79,11 @@ const defaultLanguageSettings: LanguageSettings = {
     syntaxErrorAsMarkDown: {
         enableSyntaxErrorAsMarkDown: false,
     },
-    enableQueryWarnings: false,
-    enableQuerySuggestions: false,
+    enableQueryWarnings: true,
+    enableQuerySuggestions: true,
     disabledDiagnosticCodes: [],
     quickFixCodeActions: ['Change to', 'FixAll'],
-    enableQuickFixes: false,
+    enableQuickFixes: true,
 };
 
 export function getKustoWorker(): Promise<WorkerAccessor> {
