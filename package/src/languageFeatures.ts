@@ -824,7 +824,7 @@ function formatDocLink(docString?: string): monaco.languages.CompletionItem['doc
                     ? linkWithoutPostfix
                     : `${documentationBaseUrl}/${linkWithoutPostfix}`;
                 if (documentationDocUriTransformer) {
-                    fullURL = documentationDocUriTransformer(fullURL);
+                    fullURL = documentationDocUriTransformer(fullURL, prop.toString());
                 }
                 return monaco.Uri.parse(fullURL);
             },
