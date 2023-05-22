@@ -812,24 +812,24 @@ function formatDocLink(docString?: string): monaco.languages.CompletionItem['doc
     if (!docString) {
         return undefined;
     }
-    const {
-        documentationBaseUrl = DEFAULT_DOCS_BASE_URL,
-        documentationDocUriTransformer
-    } = this.languageSettings;
-    const urisProxy = new Proxy({}, {
-        get(_target, prop, _receiver) {
-            // The link comes with a postfix of ".md" that we want to remove
-            const linkWithoutPostfix = prop.toString().replace('.md', '');
-            // Sometimes we get the link as a full URL. For example in the main doc link of the item
-            let fullURL = linkWithoutPostfix.startsWith('https')
-                ? linkWithoutPostfix
-                : `${documentationBaseUrl}/${linkWithoutPostfix}`;
-            if (documentationDocUriTransformer) {
-                fullURL = documentationDocUriTransformer(fullURL);
-            }
-            return monaco.Uri.parse(fullURL);
-        },
-    });
+    const { documentationBaseUrl = DEFAULT_DOCS_BASE_URL, documentationDocUriTransformer } = this.languageSettings;
+    const urisProxy = new Proxy(
+        {},
+        {
+            get(_target, prop, _receiver) {
+                // The link comes with a postfix of ".md" that we want to remove
+                const linkWithoutPostfix = prop.toString().replace('.md', '');
+                // Sometimes we get the link as a full URL. For example in the main doc link of the item
+                let fullURL = linkWithoutPostfix.startsWith('https')
+                    ? linkWithoutPostfix
+                    : `${documentationBaseUrl}/${linkWithoutPostfix}`;
+                if (documentationDocUriTransformer) {
+                    fullURL = documentationDocUriTransformer(fullURL);
+                }
+                return monaco.Uri.parse(fullURL);
+            },
+        }
+    );
     return { value: docString, isTrusted: true, uris: urisProxy };
 }
 
