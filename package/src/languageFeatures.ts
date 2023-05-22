@@ -805,22 +805,28 @@ function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
     };
 }
 
-const DOCS_BASE_URL = 'https://learn.microsoft.com/azure/data-explorer/kusto/query';
+const DEFAULT_DOCS_BASE_URL = 'https://learn.microsoft.com/azure/data-explorer/kusto/query';
 
 function formatDocLink(docString?: string): monaco.languages.CompletionItem['documentation'] {
     // If the docString is empty, we want to return undefined to prevent an empty documentation popup.
     if (!docString) {
         return undefined;
     }
-    const target: { [href: string]: monaco.UriComponents } = {};
-    const urisProxy = new Proxy(target, {
+    const {
+        documentationBaseUrl = DEFAULT_DOCS_BASE_URL,
+        documentationDocUriTransformer
+    } = this.languageSettings;
+    const urisProxy = new Proxy({}, {
         get(_target, prop, _receiver) {
             // The link comes with a postfix of ".md" that we want to remove
             const linkWithoutPostfix = prop.toString().replace('.md', '');
             // Sometimes we get the link as a full URL. For example in the main doc link of the item
-            const fullURL = linkWithoutPostfix.startsWith('https')
+            let fullURL = linkWithoutPostfix.startsWith('https')
                 ? linkWithoutPostfix
-                : `${DOCS_BASE_URL}/${linkWithoutPostfix}`;
+                : `${documentationBaseUrl}/${linkWithoutPostfix}`;
+            if (documentationDocUriTransformer) {
+                fullURL = documentationDocUriTransformer(fullURL);
+            }
             return monaco.Uri.parse(fullURL);
         },
     });
