@@ -807,7 +807,6 @@ function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
 
 const DEFAULT_DOCS_BASE_URL = 'https://learn.microsoft.com/azure/data-explorer/kusto/query';
 
-
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
     constructor(private _worker: AugmentedWorkerAccessor, private languageSettings: LanguageSettings) {}
 
@@ -878,21 +877,21 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
         }
         const { documentationBaseUrl = DEFAULT_DOCS_BASE_URL, documentationDocUriTransformer } = this.languageSettings;
         const urisProxy = new Proxy(
-          {},
-          {
-              get(_target, prop, _receiver) {
-                  // The link comes with a postfix of ".md" that we want to remove
-                  const linkWithoutPostfix = prop.toString().replace('.md', '');
-                  // Sometimes we get the link as a full URL. For example in the main doc link of the item
-                  let fullURL = linkWithoutPostfix.startsWith('https')
-                    ? linkWithoutPostfix
-                    : `${documentationBaseUrl}/${linkWithoutPostfix}`;
-                  if (documentationDocUriTransformer) {
-                      fullURL = documentationDocUriTransformer(fullURL, prop.toString());
-                  }
-                  return monaco.Uri.parse(fullURL);
-              },
-          }
+            {},
+            {
+                get(_target, prop, _receiver) {
+                    // The link comes with a postfix of ".md" that we want to remove
+                    const linkWithoutPostfix = prop.toString().replace('.md', '');
+                    // Sometimes we get the link as a full URL. For example in the main doc link of the item
+                    let fullURL = linkWithoutPostfix.startsWith('https')
+                        ? linkWithoutPostfix
+                        : `${documentationBaseUrl}/${linkWithoutPostfix}`;
+                    if (documentationDocUriTransformer) {
+                        fullURL = documentationDocUriTransformer(fullURL, prop.toString());
+                    }
+                    return monaco.Uri.parse(fullURL);
+                },
+            }
         );
         return { value: docString, isTrusted: true, uris: urisProxy };
     }
