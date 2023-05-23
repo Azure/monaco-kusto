@@ -807,31 +807,6 @@ function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
 
 const DEFAULT_DOCS_BASE_URL = 'https://learn.microsoft.com/azure/data-explorer/kusto/query';
 
-function formatDocLink(docString?: string): monaco.languages.CompletionItem['documentation'] {
-    // If the docString is empty, we want to return undefined to prevent an empty documentation popup.
-    if (!docString) {
-        return undefined;
-    }
-    const { documentationBaseUrl = DEFAULT_DOCS_BASE_URL, documentationDocUriTransformer } = this.languageSettings;
-    const urisProxy = new Proxy(
-        {},
-        {
-            get(_target, prop, _receiver) {
-                // The link comes with a postfix of ".md" that we want to remove
-                const linkWithoutPostfix = prop.toString().replace('.md', '');
-                // Sometimes we get the link as a full URL. For example in the main doc link of the item
-                let fullURL = linkWithoutPostfix.startsWith('https')
-                    ? linkWithoutPostfix
-                    : `${documentationBaseUrl}/${linkWithoutPostfix}`;
-                if (documentationDocUriTransformer) {
-                    fullURL = documentationDocUriTransformer(fullURL, prop.toString());
-                }
-                return monaco.Uri.parse(fullURL);
-            },
-        }
-    );
-    return { value: docString, isTrusted: true, uris: urisProxy };
-}
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
     constructor(private _worker: AugmentedWorkerAccessor, private languageSettings: LanguageSettings) {}
@@ -873,7 +848,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                         sortText: entry.sortText,
                         filterText: entry.filterText,
                         // TODO: Is this cast safe?
-                        documentation: formatDocLink((entry.documentation as undefined | ls.MarkupContent)?.value),
+                        documentation: this.formatDocLink((entry.documentation as undefined | ls.MarkupContent)?.value),
                         detail: entry.detail,
                         range: wordRange,
                         kind: toCompletionItemKind(entry.kind),
@@ -894,6 +869,32 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                     suggestions: items,
                 };
             });
+    }
+
+    private formatDocLink(docString?: string): monaco.languages.CompletionItem['documentation'] {
+        // If the docString is empty, we want to return undefined to prevent an empty documentation popup.
+        if (!docString) {
+            return undefined;
+        }
+        const { documentationBaseUrl = DEFAULT_DOCS_BASE_URL, documentationDocUriTransformer } = this.languageSettings;
+        const urisProxy = new Proxy(
+          {},
+          {
+              get(_target, prop, _receiver) {
+                  // The link comes with a postfix of ".md" that we want to remove
+                  const linkWithoutPostfix = prop.toString().replace('.md', '');
+                  // Sometimes we get the link as a full URL. For example in the main doc link of the item
+                  let fullURL = linkWithoutPostfix.startsWith('https')
+                    ? linkWithoutPostfix
+                    : `${documentationBaseUrl}/${linkWithoutPostfix}`;
+                  if (documentationDocUriTransformer) {
+                      fullURL = documentationDocUriTransformer(fullURL, prop.toString());
+                  }
+                  return monaco.Uri.parse(fullURL);
+              },
+          }
+        );
+        return { value: docString, isTrusted: true, uris: urisProxy };
     }
 }
 
