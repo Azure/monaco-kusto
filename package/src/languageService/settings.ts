@@ -17,6 +17,8 @@ export interface LanguageSettings {
     disabledDiagnosticCodes?: string[];
     quickFixCodeActions?: QuickFixCodeActionOptions[];
     enableQuickFixes?: boolean;
+    documentationBaseUrl?: boolean;
+    documentationDocUriTransformer?: (href: string, rawUrl: string) => string;
 }
 
 export interface FormatterOptions {
