@@ -11,6 +11,7 @@ import type { FormatterPlacementStyle, LanguageSettings } from './settings';
 import 'language-service';
 
 console.log({ MonacoEnvironment: self.MonacoEnvironment });
+console.log({ MonacoEnvironment2: MonacoEnvironment });
 
 import k = Kusto.Data.IntelliSense;
 import parsing = Kusto.Language.Parsing;
