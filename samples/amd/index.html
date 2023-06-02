@@ -18,6 +18,10 @@
         <div id="root"></div>
         <script src="./vs/loader.js"></script>
         <script>
+            window.MonacoEnvironment = {
+                test: 'asdf',
+            };
+
             // Called by playwright script in ci to validate things are working
             window.healthCheck = async function () {
                 await new Promise((resolve) =>

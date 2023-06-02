@@ -14,6 +14,10 @@ const loader_release_config = {
     },
 };
 
+window.MonacoEnvironment = {
+    baseUrl: '/',
+};
+
 fetch('./test/mode.txt')
     .then((response) => response.text())
     .then((mode) => {

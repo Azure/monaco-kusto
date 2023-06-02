@@ -10,6 +10,8 @@ import type { FormatterPlacementStyle, LanguageSettings } from './settings';
 // Replaced with @kusto/language-server imports at build time
 import 'language-service';
 
+console.log({ MonacoEnvironment: self.MonacoEnvironment });
+
 import k = Kusto.Data.IntelliSense;
 import parsing = Kusto.Language.Parsing;
 import k2 = Kusto.Language.Editor;
