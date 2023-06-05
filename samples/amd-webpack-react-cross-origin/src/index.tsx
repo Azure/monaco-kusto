@@ -40,6 +40,14 @@ const schema = {
     },
 };
 
+// Called by playwright script in ci to validate things are working
+window.healthCheck = async function () {
+    await new Promise<void>((resolve) =>
+        __non_webpack_require__(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], () => resolve())
+    );
+    return !!(await monaco.languages.kusto.getKustoWorker());
+};
+
 function App() {
     const divRef = React.useRef(null);
 
