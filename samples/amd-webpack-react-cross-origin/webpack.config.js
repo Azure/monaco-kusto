@@ -31,7 +31,7 @@ const config = {
                     from: '**/*',
                     to: '../dist/vs/',
                     globOptions: {
-                        ignore: ['**/*.map'],
+                        ignore: ['**/*.map', '**/basic-languages/**/*', '**/language/**/*'],
                     },
                 },
                 {
