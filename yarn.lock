@@ -1500,17 +1500,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service-next@npm:0.0.64":
-  version: 0.0.64
-  resolution: "@kusto/language-service-next@npm:0.0.64"
-  checksum: 5460f4355c942de8b87645c3345041aad4b65b25551bd5752fce283b59e105a57abe512aea1c344f8eb84de94d05dfcef915286711faecc17e861a4758116dda
+"@kusto/language-service-next@npm:0.0.66":
+  version: 0.0.66
+  resolution: "@kusto/language-service-next@npm:0.0.66"
+  checksum: d85dda481fc72b81097481ed6a8f51fe342cfbe17e8436c9a69ad22904e3c1695b4fbf26d63aef891e8d6f262d618e939e5ad5bdbd531c7cd4cd16ad91095865
   languageName: node
   linkType: hard
 
-"@kusto/language-service@npm:0.0.41":
-  version: 0.0.41
-  resolution: "@kusto/language-service@npm:0.0.41"
-  checksum: e94dbc3eab542173fe7edc02c81f0288c805da63f4cbcfe591fe2c58625140d7d53677fab04386091056978532e981613451a6a8fd6a0adea36f8956efc108c1
+"@kusto/language-service@npm:0.0.43":
+  version: 0.0.43
+  resolution: "@kusto/language-service@npm:0.0.43"
+  checksum: cae1ddf61424ff34e631e2defe54fc6344877079101b164d611606885207fef9128cfcf079f51b7dd8856132cf458e208396f418f7eb63c6342986c167a3be23
   languageName: node
   linkType: hard
 
@@ -1521,8 +1521,8 @@ __metadata:
     "@babel/core": ^7.21.0
     "@babel/preset-env": ^7.20.2
     "@babel/preset-typescript": ^7.21.0
-    "@kusto/language-service": 0.0.41
-    "@kusto/language-service-next": 0.0.64
+    "@kusto/language-service": 0.0.43
+    "@kusto/language-service-next": 0.0.66
     "@rollup/plugin-alias": ^4.0.3
     "@rollup/plugin-babel": ^6.0.3
     "@rollup/plugin-commonjs": ^24.0.1
@@ -1538,7 +1538,7 @@ __metadata:
     http-server: ^0.12.3
     live-server: ^1.2.1
     lodash-es: ^4.17.21
-    monaco-editor: ~0.37.0
+    monaco-editor: ~0.38.0
     rimraf: ^4.1.2
     rollup: ^3.17.3
     terser: ^5.16.2
@@ -1548,7 +1548,7 @@ __metadata:
     vscode-languageserver-types: 3.16.0
     xregexp: ^5.1.1
   peerDependencies:
-    monaco-editor: ~0.37.0
+    monaco-editor: ~0.38.0
   bin:
     copyMonacoFilesAMD: ./copyMonacoFilesAMD.js
   languageName: unknown
@@ -6749,10 +6749,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:~0.37.0":
-  version: 0.37.1
-  resolution: "monaco-editor@npm:0.37.1"
-  checksum: f2ac123d3044a1386d36ba52bb617ad18fb1c745d515a63258858b41c91bb68b71b57c7e5aff3fc2b3226b22c12ca3ad5b14c117babc85eebcf80317cb10691b
+"monaco-editor@npm:^0.38.0, monaco-editor@npm:~0.38.0":
+  version: 0.38.0
+  resolution: "monaco-editor@npm:0.38.0"
+  checksum: c5dcd6f9d178f9b87eb06021dc6f50a199bdc0e3ceecc608e2959867c48c3bf0c8723ac4e94270b20c89da188058afe928d2af141b5d87e8e1388e6a4d974eea
   languageName: node
   linkType: hard
 
@@ -6762,7 +6762,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     live-server: ^1.2.2
-    monaco-editor: ~0.37.0
+    monaco-editor: ^0.38.0
   languageName: unknown
   linkType: soft
 
@@ -6809,7 +6809,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.7.3
     html-webpack-plugin: ^5.5.0
-    monaco-editor: ~0.37.0
+    monaco-editor: ^0.38.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -6826,7 +6826,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     "@tsconfig/recommended": ^1.0.2
-    monaco-editor: ~0.37.0
+    monaco-editor: ^0.38.0
     parcel: ^2.0.0
     typescript: ^5.0.4
   languageName: unknown
@@ -6843,7 +6843,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.7.3
     html-webpack-plugin: ^5.5.0
-    monaco-editor: ~0.37.0
+    monaco-editor: ^0.38.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -7741,11 +7741,11 @@ __metadata:
   linkType: hard
 
 "qs@npm:^6.4.0":
-  version: 6.11.1
-  resolution: "qs@npm:6.11.1"
+  version: 6.11.2
+  resolution: "qs@npm:6.11.2"
   dependencies:
     side-channel: ^1.0.4
-  checksum: 82ee78ef12a16f3372fae5b64f76f8aedecb000feea882bbff1af146c147f6eb66b08f9c3f34d7e076f28563586956318b9b2ca41141846cdd6d5ad6f241d52f
+  checksum: e812f3c590b2262548647d62f1637b6989cc56656dc960b893fe2098d96e1bd633f36576f4cd7564dfbff9db42e17775884db96d846bebe4f37420d073ecdc0b
   languageName: node
   linkType: hard
 

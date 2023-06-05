@@ -56,7 +56,7 @@ async function compileTypes() {
         exec('yarn tsc -p ./scripts/tsconfig.build.json'),
 
         // TODO: Delete on next breaking release
-        fs.writeFile(path.join(__dirname, '../release/monaco.d.ts'), '/// <reference types="../globalApi.d.ts" />\n'),
+        fs.writeFile(path.join(__dirname, '../release/monaco.d.ts'), '/// <reference path="../globalApi.d.ts" />\n'),
     ]);
 }
 
