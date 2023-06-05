@@ -8,8 +8,10 @@
         "build:dev": "rm -rf ./dist && webpack --mode=development",
         "build:prod": "rm -rf ./dist && webpack --mode=production --node-env=production",
         "watch": "webpack --watch",
-        "serve": "webpack serve",
-        "ci:typecheck": "tsc"
+        "server": "node server.js",
+        "ci:typecheck": "tsc",
+        "playwright:prepare": "yarn build",
+        "playwright:webserver": "yarn server"
     },
     "dependencies": {
         "@kusto/monaco-kusto": "workspace:*",
