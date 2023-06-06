@@ -8,16 +8,15 @@
         "build:dev": "rm -rf ./dist && webpack --mode=development",
         "build:prod": "rm -rf ./dist && webpack --mode=production --node-env=production",
         "watch": "webpack --watch",
-        "serve": "webpack serve",
-        "copy-amd-files": "copyMonacoFilesAMD ./public",
-        "playwright:prepare": "yarn copy-amd-files",
-        "playwright:webserver": "webpack serve --port 3000 --no-open",
-        "ci:typecheck": "tsc"
+        "server": "node server.js",
+        "ci:typecheck": "tsc",
+        "playwright:prepare": "yarn build",
+        "playwright:webserver": "yarn server"
     },
     "dependencies": {
         "@kusto/monaco-kusto": "workspace:*",
         "express": "^4.18.2",
-        "monaco-editor": "~0.37.0",
+        "monaco-editor": "~0.38.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"
     },
