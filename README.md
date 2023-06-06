@@ -72,6 +72,13 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 7.3.0
+
+-   feat: Kusto worker will now respect `MonacoEnvironment.baseUrl`
+    configuration when running in a different origin. Checkout our [new
+    example](https://github.com/Azure/monaco-kusto/tree/master/samples/amd-webpack-react-cross-origin)
+    for details
+
 ### 7.2.1
 
 -   fix: Added types back to global api
