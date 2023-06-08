@@ -875,7 +875,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
         if (!docString) {
             return undefined;
         }
-        const { documentationBaseUrl = DEFAULT_DOCS_BASE_URL } = this.languageSettings;
+        const { documentationBaseUrl = DEFAULT_DOCS_BASE_URL, documentationSuffix } = this.languageSettings;
         const urisProxy = new Proxy(
             {},
             {
@@ -886,7 +886,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                     const fullURL = linkWithoutPostfix.startsWith('https')
                         ? linkWithoutPostfix
                         : `${documentationBaseUrl}/${linkWithoutPostfix}`;
-                    return monaco.Uri.parse(fullURL);
+                    return monaco.Uri.parse(`${fullURL}${documentationSuffix || ''}`);
                 },
             }
         );
