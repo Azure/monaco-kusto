@@ -881,12 +881,13 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
             {
                 get(_target, prop, _receiver) {
                     // The link comes with a postfix of ".md" that we want to remove
-                    const linkWithoutPostfix = prop.toString().replace('.md', '');
+                    let url = prop.toString().replace('.md', '');
                     // Sometimes we get the link as a full URL. For example in the main doc link of the item
-                    const fullURL = linkWithoutPostfix.startsWith('https')
-                        ? linkWithoutPostfix
-                        : `${documentationBaseUrl}/${linkWithoutPostfix}`;
-                    return monaco.Uri.parse(`${fullURL}${documentationSuffix || ''}`);
+                    if (!url.startsWith('https')) {
+                        url = `${documentationBaseUrl}/${url}`;
+                    }
+                    url += documentationSuffix || '';
+                    return monaco.Uri.parse(url);
                 },
             }
         );
