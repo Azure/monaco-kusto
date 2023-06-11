@@ -74,7 +74,7 @@ export interface KustoWorker {
     getReferencedSymbols(
         uri: string,
         cursorOffset?: number
-    ): Promise<{ name: string; kind: string; display: string }[]>;
+    ): Promise<{ name: string; kind: string }[]>;
     /**
      * Get visualization options in render command if present (null otherwise).
      */

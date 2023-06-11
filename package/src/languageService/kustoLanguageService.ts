@@ -124,7 +124,7 @@ const symbolKindToName = {
     [sym.SymbolKind.Parameter]: 'Parameter',
     [sym.SymbolKind.Pattern]: 'Pattern',
     [sym.SymbolKind.QueryOperatorParameter]: 'QueryOperatorParameter',
-    [sym.SymbolKind.Scalar]: 'Scalar',
+    [sym.SymbolKind.Primitive]: 'Primitive',
     [sym.SymbolKind.Table]: 'Table',
     [sym.SymbolKind.Tuple]: 'Tuple',
     [sym.SymbolKind.Variable]: 'Variable',
@@ -189,7 +189,7 @@ export interface LanguageService {
     getReferencedSymbols(
         document: TextDocument,
         offset?: number
-    ): Promise<{ name: string; kind: string; display: string }[]>;
+    ): Promise<{ name: string; kind: string }[]>;
     getReferencedGlobalParams(document: TextDocument, offset?: number): Promise<{ name: string; type: string }[]>;
     getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
     getDatabaseReferences(document: TextDocument, cursorOffset: number): Promise<DatabaseReference[]>;
@@ -1561,7 +1561,7 @@ class KustoLanguageService implements LanguageService {
     getReferencedSymbols(
         document: TextDocument,
         offset?: number
-    ): Promise<{ name: string; kind: string; display: string }[]> {
+    ): Promise<{ name: string; kind: string }[]> {
         const parsedAndAnalyzed = this.parseAndAnalyze(document, offset);
 
         if (!parsedAndAnalyzed) {
@@ -1578,7 +1578,6 @@ class KustoLanguageService implements LanguageService {
         const result = referencedSymbols.map((sym) => ({
             name: sym.Name,
             kind: symbolKindToName[sym.Kind] ?? `${sym.Kind}`,
-            display: sym.Display,
         }));
 
         return Promise.resolve(result);
