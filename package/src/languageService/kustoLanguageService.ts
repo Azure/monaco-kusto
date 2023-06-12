@@ -189,7 +189,7 @@ export interface LanguageService {
     getReferencedSymbols(
         document: TextDocument,
         offset?: number
-    ): Promise<{ name: string; kind: string }[]>;
+    ): Promise<{ name: string; kind: string; display: string }[]>;
     getReferencedGlobalParams(document: TextDocument, offset?: number): Promise<{ name: string; type: string }[]>;
     getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
     getDatabaseReferences(document: TextDocument, cursorOffset: number): Promise<DatabaseReference[]>;
@@ -1561,7 +1561,7 @@ class KustoLanguageService implements LanguageService {
     getReferencedSymbols(
         document: TextDocument,
         offset?: number
-    ): Promise<{ name: string; kind: string }[]> {
+    ): Promise<{ name: string; kind: string; display: string }[]> {
         const parsedAndAnalyzed = this.parseAndAnalyze(document, offset);
 
         if (!parsedAndAnalyzed) {
@@ -1578,6 +1578,7 @@ class KustoLanguageService implements LanguageService {
         const result = referencedSymbols.map((sym) => ({
             name: sym.Name,
             kind: symbolKindToName[sym.Kind] ?? `${sym.Kind}`,
+            display: `${sym.Name} (${sym.AlternateName})`,
         }));
 
         return Promise.resolve(result);

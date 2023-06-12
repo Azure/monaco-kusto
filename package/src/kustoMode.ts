@@ -7,7 +7,9 @@ import * as languageFeatures from './languageFeatures';
 import type { Schema } from './languageService/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
 
-export interface AugmentedWorker extends KustoWorker, Omit<IKustoWorkerImpl, 'setSchemaFromShowSchema'> {}
+export interface AugmentedWorker
+    extends KustoWorker,
+        Omit<IKustoWorkerImpl, 'setSchemaFromShowSchema' | 'getReferencedSymbols'> {}
 
 export interface AugmentedWorkerAccessor {
     (first: monaco.Uri, ...more: monaco.Uri[]): Promise<AugmentedWorker>;
