@@ -124,7 +124,7 @@ const symbolKindToName = {
     [sym.SymbolKind.Parameter]: 'Parameter',
     [sym.SymbolKind.Pattern]: 'Pattern',
     [sym.SymbolKind.QueryOperatorParameter]: 'QueryOperatorParameter',
-    [sym.SymbolKind.Scalar]: 'Scalar',
+    [sym.SymbolKind.Primitive]: 'Primitive',
     [sym.SymbolKind.Table]: 'Table',
     [sym.SymbolKind.Tuple]: 'Tuple',
     [sym.SymbolKind.Variable]: 'Variable',
@@ -1578,7 +1578,7 @@ class KustoLanguageService implements LanguageService {
         const result = referencedSymbols.map((sym) => ({
             name: sym.Name,
             kind: symbolKindToName[sym.Kind] ?? `${sym.Kind}`,
-            display: sym.Display,
+            display: `${sym.Name} (${sym.AlternateName})`,
         }));
 
         return Promise.resolve(result);
