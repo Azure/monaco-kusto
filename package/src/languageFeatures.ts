@@ -886,8 +886,12 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                     if (!url.startsWith('https')) {
                         url = `${documentationBaseUrl}/${url}`;
                     }
-                    url += documentationSuffix || '';
-                    return monaco.Uri.parse(url);
+                    const monacoUri = monaco.Uri.parse(url);
+                    if (documentationSuffix) {
+                        // We need to override the toString method to add the suffix, otherwise it gets encoded and page doesn't open
+                        monacoUri.toString = () => url + documentationSuffix;
+                    }
+                    return monacoUri;
                 },
             }
         );
