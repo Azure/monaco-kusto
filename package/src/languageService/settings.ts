@@ -19,8 +19,8 @@ export interface LanguageSettings {
     enableQuickFixes?: boolean;
     documentationBaseUrl?: boolean;
     /**
-    * will be added to the end of the documentation url in suggestions
-    */
+     * will be added to the end of the documentation url in suggestions
+     */
     documentationSuffix?: string;
 }
 
