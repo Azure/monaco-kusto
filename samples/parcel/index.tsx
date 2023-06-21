@@ -1,4 +1,5 @@
 // Imports all monaco features and no languages. See monaco example (1) for a
+// import {ITrustedTypePolicyOptions} from "monaco-editor";
 // more details on importing specific features
 // (1) https://github.com/microsoft/monaco-editor/blob/main/samples/browser-esm-webpack-small/index.js
 //
@@ -21,6 +22,9 @@ declare global {
 }
 
 self.MonacoEnvironment = {
+    createTrustedTypesPolicy() {
+        return undefined;
+    },
     getWorkerUrl(_moduleId, label) {
         if (label === 'kusto') {
             return kustoWorkerUrl;
