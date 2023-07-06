@@ -13,7 +13,8 @@ export type VisualizationType =
     | 'table'
     | 'timeline'
     | 'timepivot'
-    | 'card';
+    | 'card'
+    | 'plotly';
 
 export type Scale = 'linear' | 'log';
 export type LegendVisibility = 'visible' | 'hidden';
