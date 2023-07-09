@@ -442,7 +442,7 @@ class KustoLanguageService implements LanguageService {
 
                 // Adding to columns a prefix to their sortText so they will appear first in the list
                 let sortTextPrefix = lsItem.kind === ls.CompletionItemKind.Field ? 0 : itemsAsArray.length;
-                const countOfWords = lsItem.label.split('_').filter(item => !!item).length;
+                const countOfWords = lsItem.label.split('_').filter((item) => !!item).length;
                 // We always want results with multiple words to show after shorter options.
                 // For example: to show "count_distinct" after "count"
                 sortTextPrefix = sortTextPrefix * countOfWords;
