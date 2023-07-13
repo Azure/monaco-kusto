@@ -13,7 +13,7 @@
     },
     "dependencies": {
         "@kusto/monaco-kusto": "workspace:*",
-        "monaco-editor": "^0.39.0",
+        "monaco-editor": "^0.40.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"
     },
