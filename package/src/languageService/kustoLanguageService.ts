@@ -1058,6 +1058,7 @@ class KustoLanguageService implements LanguageService {
         this._kustoJsSchemaV2 = this._kustoJsSchemaV2.WithParameters(
             KustoLanguageService.toBridgeList([...scalarSymbols, ...tabularSymbols])
         );
+        this._script = this._script.WithGlobals(this._kustoJsSchemaV2);
         return Promise.resolve(undefined);
     }
 
