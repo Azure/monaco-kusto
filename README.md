@@ -72,6 +72,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 7.7.1
+
+-   fix: `KustoWorker#setParameters` will now apply changes immediately
+
 ### 7.3.0
 
 -   feat: Kusto worker will now respect `MonacoEnvironment.baseUrl`
