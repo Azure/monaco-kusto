@@ -72,7 +72,7 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
-### 7.7.1
+### 7.7.2
 
 -   fix: `KustoWorker#setParameters` will now apply changes immediately
 
