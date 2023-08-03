@@ -72,6 +72,10 @@ There are 2 APIs to set a Kusto schema:
 
 ## Changelog
 
+### 7.8.0
+
+-   feat: `plotly` is now supported in intellisense as a render command
+
 ### 7.7.2
 
 -   fix: `KustoWorker#setParameters` will now apply changes immediately
