@@ -10,4 +10,4 @@ updates:
     schedule:
       interval: 'weekly'
     # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#versioning-strategy
-    vesioning-strategy: 'increase-if-necessary'
+    versioning-strategy: 'increase-if-necessary'
