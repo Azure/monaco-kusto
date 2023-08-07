@@ -20,7 +20,7 @@
         "build": "ts-node ./scripts/build.ts",
         "watch": "ts-node ./scripts/watch.ts",
         "typecheck": "tsc",
-        "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
+        "test_release": "echo release > test/mode.txt && http-server --no-dotfiles -c-1 -p 8080 ./ -o index.html",
         "clean": "rimraf ./release"
     },
     "types": "./release/esm/monaco.contribution.d.ts",

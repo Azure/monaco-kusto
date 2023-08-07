@@ -8,7 +8,7 @@
     },
     "scripts": {
         "build": "copyMonacoFilesAMD .",
-        "start": "http-server ./",
+        "start": "http-server -o ./",
         "playwright:prepare": "yarn build",
         "playwright:webserver": "http-server --port=3000 ./"
     },
