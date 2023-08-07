@@ -1545,7 +1545,7 @@ __metadata:
     ts-node: ^10.9.1
     typescript: ^5.0.4
     vscode-languageserver-textdocument: 1.0.4
-    vscode-languageserver-types: 3.16.0
+    vscode-languageserver-types: 3.17.3
     xregexp: ^5.1.1
   peerDependencies:
     monaco-editor: ~0.40.0
@@ -9187,10 +9187,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-types@npm:3.16.0":
-  version: 3.16.0
-  resolution: "vscode-languageserver-types@npm:3.16.0"
-  checksum: 7a44fb10b9fbeb9529f832337b7f0430fc6275d62945b86851d425a950e22da3917ef5f6c552688191769dd1eae047c6ee9ec3d9f2280498353007c2dfe0725c
+"vscode-languageserver-types@npm:3.17.3":
+  version: 3.17.3
+  resolution: "vscode-languageserver-types@npm:3.17.3"
+  checksum: fbc8221297261f659a6482875ff2a419dc9d55965dc53745797da569ff9f819cd832e6f2699017baadd946548bbfe212e3f6971f3d960f12dc0ee9c629dacc07
   languageName: node
   linkType: hard
 
