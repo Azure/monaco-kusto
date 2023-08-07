@@ -37,7 +37,7 @@ async function main() {
     // the page
     concurrently(
         [
-            'live-server ./',
+            'http-server -o ./',
             'tsc -w -p ./scripts/tsconfig.watch.json',
             'yarn rollup -c ./scripts/rollup.dev.js -w --bundleConfigAsCjs',
         ],
