@@ -1543,7 +1543,7 @@ __metadata:
     terser: ^5.16.2
     ts-node: ^10.9.1
     typescript: ^5.0.4
-    vscode-languageserver-textdocument: 1.0.4
+    vscode-languageserver-textdocument: 1.0.8
     vscode-languageserver-types: 3.17.3
     xregexp: ^5.1.1
   peerDependencies:
@@ -8257,10 +8257,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-textdocument@npm:1.0.4":
-  version: 1.0.4
-  resolution: "vscode-languageserver-textdocument@npm:1.0.4"
-  checksum: d0b63abb9d22c1177c26df15807b028129fb966f0dfd01c9ae1d114f1c2a1262d8588bea3e6f6f2e400ada3836da844553d8bc21c64122242a212502ccf5f702
+"vscode-languageserver-textdocument@npm:1.0.8":
+  version: 1.0.8
+  resolution: "vscode-languageserver-textdocument@npm:1.0.8"
+  checksum: d6b685456ceca2736793d7fc1924d78a8483997c96c6ec4900d90e64115730da6c0c03e3fbc2c5d031a4592f2acd9cca2ca58a651b696c4f40b8690a48538c06
   languageName: node
   linkType: hard
 
