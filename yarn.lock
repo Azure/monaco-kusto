@@ -1340,6 +1340,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.21.0":
+  version: 7.22.15
+  resolution: "@babel/runtime@npm:7.22.15"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: 793296df1e41599a935a3d77ec01eb6088410d3fd4dbe4e92f06c6b7bb2f8355024e6d78621a3a35f44e0e23b0b59107f23d585384df4f3123256a1e1492040e
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.8.4":
   version: 7.21.0
   resolution: "@babel/runtime@npm:7.21.0"
@@ -1500,17 +1509,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service-next@npm:0.0.185":
-  version: 0.0.185
-  resolution: "@kusto/language-service-next@npm:0.0.185"
-  checksum: 661365b58f5b9954a2e15706b4aa993e482e4d36c2ea5bd2633b62d1e40c34667ab902aa4e4c821187b4a9531be42f469342a55c2c5bb6796a959a98545fc15b
+"@kusto/language-service-next@npm:0.0.189":
+  version: 0.0.189
+  resolution: "@kusto/language-service-next@npm:0.0.189"
+  checksum: c75312e44ee82306c86a964b9badf7e65b7e3327d46313f42287791c8baea59d57f174de5d5f9a4039175b28a1dd25ff5abe52b011886440db21dc6433230350
   languageName: node
   linkType: hard
 
-"@kusto/language-service@npm:0.0.162":
-  version: 0.0.162
-  resolution: "@kusto/language-service@npm:0.0.162"
-  checksum: f08caa5a76cfe48f637145253783413b87263d1e576b928455569794573a2dd574fcfbc4b9e6fce311ce8c31f1a2cb0f2b61de24fa77aec554390192a63be398
+"@kusto/language-service@npm:0.0.166":
+  version: 0.0.166
+  resolution: "@kusto/language-service@npm:0.0.166"
+  checksum: c03beacea89913bb329f552706dbc3430ecdd0c1f78b8ebc697743dd9988ff1ee6c04e938d752bcef4f5af87504ee2c08c201d300aa827503aecc48bd3e01ec1
   languageName: node
   linkType: hard
 
@@ -1521,8 +1530,8 @@ __metadata:
     "@babel/core": ^7.21.0
     "@babel/preset-env": ^7.20.2
     "@babel/preset-typescript": ^7.21.0
-    "@kusto/language-service": 0.0.162
-    "@kusto/language-service-next": 0.0.185
+    "@kusto/language-service": 0.0.166
+    "@kusto/language-service-next": 0.0.189
     "@rollup/plugin-alias": ^5.0.0
     "@rollup/plugin-babel": ^6.0.3
     "@rollup/plugin-commonjs": ^25.0.4
@@ -1534,10 +1543,10 @@ __metadata:
     "@types/lodash-es": ^4.17.6
     "@types/node": 16
     "@types/xregexp": ^4.4.0
-    concurrently: ^7.6.0
+    concurrently: ^8.2.1
     http-server: ^14.1.1
     lodash-es: ^4.17.21
-    monaco-editor: ~0.40.0
+    monaco-editor: ~0.43.0
     rimraf: ^4.1.2
     rollup: ^3.17.3
     terser: ^5.16.2
@@ -1547,7 +1556,7 @@ __metadata:
     vscode-languageserver-types: 3.17.3
     xregexp: ^5.1.1
   peerDependencies:
-    monaco-editor: ~0.40.0
+    monaco-editor: ~0.43.0
   bin:
     copyMonacoFilesAMD: ./copyMonacoFilesAMD.js
   languageName: unknown
@@ -4065,23 +4074,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concurrently@npm:^7.6.0":
-  version: 7.6.0
-  resolution: "concurrently@npm:7.6.0"
+"concurrently@npm:^8.2.1":
+  version: 8.2.1
+  resolution: "concurrently@npm:8.2.1"
   dependencies:
-    chalk: ^4.1.0
-    date-fns: ^2.29.1
+    chalk: ^4.1.2
+    date-fns: ^2.30.0
     lodash: ^4.17.21
-    rxjs: ^7.0.0
-    shell-quote: ^1.7.3
-    spawn-command: ^0.0.2-1
-    supports-color: ^8.1.0
+    rxjs: ^7.8.1
+    shell-quote: ^1.8.1
+    spawn-command: 0.0.2
+    supports-color: ^8.1.1
     tree-kill: ^1.2.2
-    yargs: ^17.3.1
+    yargs: ^17.7.2
   bin:
     conc: dist/bin/concurrently.js
     concurrently: dist/bin/concurrently.js
-  checksum: f705c9a7960f1b16559ca64958043faeeef6385c0bf30a03d1375e15ab2d96dba4f8166f1bbbb1c85e8da35ca0ce3c353875d71dff2aa132b2357bb533b3332e
+  checksum: 216cb16d5b301cbd9c657b19430836d1686fe8fa9b9ef35ef7ac601e1a5cf6535166a3e57de446696dbd5e7e3f45d78fc70f33c5fd4bb565342cd5e752c5b069
   languageName: node
   linkType: hard
 
@@ -4286,10 +4295,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.29.1":
-  version: 2.29.3
-  resolution: "date-fns@npm:2.29.3"
-  checksum: e01cf5b62af04e05dfff921bb9c9933310ed0e1ae9a81eb8653452e64dc841acf7f6e01e1a5ae5644d0337e9a7f936175fd2cb6819dc122fdd9c5e86c56be484
+"date-fns@npm:^2.30.0":
+  version: 2.30.0
+  resolution: "date-fns@npm:2.30.0"
+  dependencies:
+    "@babel/runtime": ^7.21.0
+  checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
   languageName: node
   linkType: hard
 
@@ -6274,10 +6285,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.40.0, monaco-editor@npm:~0.40.0":
-  version: 0.40.0
-  resolution: "monaco-editor@npm:0.40.0"
-  checksum: 9f879c254bfb9907cc0b23d26bd4bcaaabf9a2cfbd9926574e06ea94f4b9e5807299db9cae1f35820da6242d5d13d9382cb9db48b1340c54ba06620c242c25c7
+"monaco-editor@npm:^0.43.0, monaco-editor@npm:~0.43.0":
+  version: 0.43.0
+  resolution: "monaco-editor@npm:0.43.0"
+  checksum: eaebd9241f4fc2476d7eaf5f15fafc6c273675bba717bda5197576990d2b6a7189e282afe927e76cd46e60dfa8263eed6367c41b7ae8cea293b7d592e777cf52
   languageName: node
   linkType: hard
 
@@ -6287,7 +6298,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     http-server: ^14.1.1
-    monaco-editor: ^0.40.0
+    monaco-editor: ^0.43.0
   languageName: unknown
   linkType: soft
 
@@ -6308,7 +6319,7 @@ __metadata:
     css-loader: ^6.7.3
     express: ^4.18.2
     html-webpack-plugin: ^5.5.0
-    monaco-editor: ~0.40.0
+    monaco-editor: ~0.43.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -6334,7 +6345,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.7.3
     html-webpack-plugin: ^5.5.0
-    monaco-editor: ^0.40.0
+    monaco-editor: ^0.43.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -6351,7 +6362,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     "@tsconfig/recommended": ^1.0.2
-    monaco-editor: ^0.40.0
+    monaco-editor: ^0.43.0
     parcel: ^2.0.0
     typescript: ^5.0.4
   languageName: unknown
@@ -6368,7 +6379,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.7.3
     html-webpack-plugin: ^5.5.0
-    monaco-editor: ^0.40.0
+    monaco-editor: ^0.43.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -7293,6 +7304,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"regenerator-runtime@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "regenerator-runtime@npm:0.14.0"
+  checksum: 1c977ad82a82a4412e4f639d65d22be376d3ebdd30da2c003eeafdaaacd03fc00c2320f18120007ee700900979284fc78a9f00da7fb593f6e6eeebc673fba9a3
+  languageName: node
+  linkType: hard
+
 "regenerator-transform@npm:^0.15.1":
   version: 0.15.1
   resolution: "regenerator-transform@npm:0.15.1"
@@ -7483,12 +7501,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^7.0.0, rxjs@npm:^7.8.0":
+"rxjs@npm:^7.8.0":
   version: 7.8.0
   resolution: "rxjs@npm:7.8.0"
   dependencies:
     tslib: ^2.1.0
   checksum: 61b4d4fd323c1043d8d6ceb91f24183b28bcf5def4f01ca111511d5c6b66755bc5578587fe714ef5d67cf4c9f2e26f4490d4e1d8cabf9bd5967687835e9866a2
+  languageName: node
+  linkType: hard
+
+"rxjs@npm:^7.8.1":
+  version: 7.8.1
+  resolution: "rxjs@npm:7.8.1"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: de4b53db1063e618ec2eca0f7965d9137cabe98cf6be9272efe6c86b47c17b987383df8574861bcced18ebd590764125a901d5506082be84a8b8e364bf05f119
   languageName: node
   linkType: hard
 
@@ -7698,6 +7725,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"shell-quote@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "shell-quote@npm:1.8.1"
+  checksum: 5f01201f4ef504d4c6a9d0d283fa17075f6770bfbe4c5850b074974c68062f37929ca61700d95ad2ac8822e14e8c4b990ca0e6e9272e64befd74ce5e19f0736b
+  languageName: node
+  linkType: hard
+
 "side-channel@npm:^1.0.4":
   version: 1.0.4
   resolution: "side-channel@npm:1.0.4"
@@ -7793,7 +7827,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"spawn-command@npm:^0.0.2-1":
+"spawn-command@npm:0.0.2":
   version: 0.0.2
   resolution: "spawn-command@npm:0.0.2"
   checksum: e35c5d28177b4d461d33c88cc11f6f3a5079e2b132c11e1746453bbb7a0c0b8a634f07541a2a234fa4758239d88203b758def509161b651e81958894c0b4b64b
@@ -7936,7 +7970,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supports-color@npm:^8.0.0, supports-color@npm:^8.1.0":
+"supports-color@npm:^8.0.0, supports-color@npm:^8.1.1":
   version: 8.1.1
   resolution: "supports-color@npm:8.1.1"
   dependencies:
@@ -8648,9 +8682,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^17.3.1":
-  version: 17.7.1
-  resolution: "yargs@npm:17.7.1"
+"yargs@npm:^17.7.2":
+  version: 17.7.2
+  resolution: "yargs@npm:17.7.2"
   dependencies:
     cliui: ^8.0.1
     escalade: ^3.1.1
@@ -8659,7 +8693,7 @@ __metadata:
     string-width: ^4.2.3
     y18n: ^5.0.5
     yargs-parser: ^21.1.1
-  checksum: 3d8a43c336a4942bc68080768664aca85c7bd406f018bad362fd255c41c8f4e650277f42fd65d543fce99e084124ddafee7bbfc1a5c6a8fda4cec78609dcf8d4
+  checksum: 73b572e863aa4a8cbef323dd911d79d193b772defd5a51aab0aca2d446655216f5002c42c5306033968193bdbf892a7a4c110b0d77954a7fdf563e653967b56a
   languageName: node
   linkType: hard
 
