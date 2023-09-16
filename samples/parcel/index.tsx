@@ -22,6 +22,9 @@ declare global {
 }
 
 self.MonacoEnvironment = {
+    createTrustedTypesPolicy() {
+        return undefined;
+    },
     getWorkerUrl(_moduleId, label) {
         if (label === 'kusto') {
             return kustoWorkerUrl;
