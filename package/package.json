@@ -45,16 +45,16 @@
         "@rollup/plugin-replace": "^5.0.2",
         "@rollup/plugin-terser": "^0.4.3",
         "@rollup/plugin-virtual": "^3.0.1",
-        "@tsconfig/node16": "^1.0.3",
+        "@tsconfig/node20": "^20.1.2",
         "@types/lodash-es": "^4.17.9",
         "@types/node": "^20.6.3",
         "@types/xregexp": "^4.4.0",
         "concurrently": "^8.2.1",
         "http-server": "^14.1.1",
         "monaco-editor": "~0.39.0",
-        "rimraf": "^4.1.2",
+        "rimraf": "^5.0.1",
         "rollup": "^3.29.2",
-        "terser": "^5.16.2",
+        "terser": "^5.19.4",
         "ts-node": "^10.9.1",
         "typescript": "^5.2.2",
         "vscode-languageserver-textdocument": "1.0.8"
@@ -63,7 +63,7 @@
         "@kusto/language-service": "0.0.168",
         "@kusto/language-service-next": "0.0.191",
         "lodash-es": "^4.17.21",
-        "vscode-languageserver-types": "3.17.3",
+        "vscode-languageserver-types": "^3.17.4",
         "xregexp": "^5.1.1"
     },
     "peerDependencies": {
