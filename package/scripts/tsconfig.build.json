@@ -7,7 +7,6 @@
         "module": "esnext",
         "moduleResolution": "node",
         "outDir": "../release/esm",
-        "emitDeclarationOnly": true,
         "declaration": true,
         "noEmit": false,
         "types": [
