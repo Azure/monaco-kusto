@@ -1978,8 +1978,9 @@ class KustoLanguageService implements LanguageService {
         const tableSymbols: sym.Symbol[] = (db.tables || []).map(this.createTableSymbol);
         const functionSymbols = (db.functions || []).map(this.createFunctionSymbol);
         const entityGroupsSymbols = (db.entityGroups || []).map(this.createEntityGroupSymbol);
-        const databaseSymbol = new sym.DatabaseSymbol.ctor(
+        const databaseSymbol = new sym.DatabaseSymbol.$ctor2(
             db.name,
+            db.alternateName,
             tableSymbols.concat(functionSymbols).concat(entityGroupsSymbols)
         );
 
@@ -2449,24 +2450,30 @@ class KustoLanguageService implements LanguageService {
         return parsedAndAnalyzed;
     }
 
-    private static createFunctionSymbol(fn: s.Function) : sym.FunctionSymbol {
+    private static createFunctionSymbol(fn: s.Function): sym.FunctionSymbol {
         const parameters: sym.Parameter[] = fn.inputParameters.map((param) =>
-          KustoLanguageService.createParameter(param)
+            KustoLanguageService.createParameter(param)
         );
 
         // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
         return new sym.FunctionSymbol.$ctor14(
-          fn.name,
-          fn.body,
-          KustoLanguageService.toBridgeList(parameters),
-          fn.docstring
+            fn.name,
+            fn.body,
+            KustoLanguageService.toBridgeList(parameters),
+            fn.docstring
         );
-    };
+    }
 
     private static createTableSymbol({
-      name, columns, entityType, docstring, ...tbl
-  }: s.Table) : sym.TableSymbol | sym.MaterializedViewSymbol {
-        const columnSymbols = new Bridge.ArrayEnumerable(columns.map((col) => KustoLanguageService.createColumnSymbol(col)));
+        name,
+        columns,
+        entityType,
+        docstring,
+        ...tbl
+    }: s.Table): sym.TableSymbol | sym.MaterializedViewSymbol {
+        const columnSymbols = new Bridge.ArrayEnumerable(
+            columns.map((col) => KustoLanguageService.createColumnSymbol(col))
+        );
         switch (entityType) {
             case 'MaterializedViewTable':
                 const mvQuery = (tbl as s.MaterializedViewTable).mvQuery ?? null;
@@ -2474,12 +2481,14 @@ class KustoLanguageService implements LanguageService {
             case 'ExternalTable':
                 return new sym.ExternalTableSymbol.$ctor3(name, columnSymbols, docstring);
             default:
-                return  new sym.TableSymbol.$ctor6(name, columnSymbols, docstring);
+                return new sym.TableSymbol.$ctor6(name, columnSymbols, docstring);
         }
     }
 
-    private static createEntityGroupSymbol(entityGroup: s.EntityGroup) : sym.EntityGroupSymbol {
-        const entityGroupElementSymbols = entityGroup.members.map(member => new sym.EntityGroupElementSymbol.ctor(member));
+    private static createEntityGroupSymbol(entityGroup: s.EntityGroup): sym.EntityGroupSymbol {
+        const entityGroupElementSymbols = entityGroup.members.map(
+            (member) => new sym.EntityGroupElementSymbol.ctor(member)
+        );
         return new sym.EntityGroupSymbol.$ctor1(entityGroup.name, entityGroupElementSymbols);
     }
 }
