@@ -163,12 +163,14 @@ export interface LanguageService {
         clusterConnectionString: string,
         databaseInContextName: string,
         globalScalarParameters?: s.ScalarParameter[],
-        globalTabularParameters?: s.TabularParameter[]
+        globalTabularParameters?: s.TabularParameter[],
+        databaseInContextAlternateName?: string
     ): Promise<void>;
     normalizeSchema(
         schema: s.showSchema.Result,
         clusterConnectionString: string,
-        databaseInContextName: string
+        databaseInContextName: string,
+        databaseInContextAlternateName?: string
     ): Promise<s.EngineSchema>;
     getSchema(): Promise<s.Schema>;
     getCommandInContext(document: TextDocument, cursorOffset: number): Promise<string>;
@@ -1067,17 +1069,24 @@ class KustoLanguageService implements LanguageService {
      * @param schema schema json as received from .show schema as json
      * @param clusterConnectionString cluster connection string
      * @param databaseInContextName name of database in context
+     * @param globalScalarParameters
+     * @param globalTabularParameters
+     * @param databaseInContextAlternateName alternate name of database in context
      */
     setSchemaFromShowSchema(
         schema: s.showSchema.Result,
         clusterConnectionString: string,
         databaseInContextName: string,
         globalScalarParameters: s.ScalarParameter[],
-        globalTabularParameters: s.TabularParameter[]
+        globalTabularParameters: s.TabularParameter[],
+        databaseInContextAlternateName: string
     ): Promise<void> {
-        return this.normalizeSchema(schema, clusterConnectionString, databaseInContextName).then((normalized) =>
-            this.setSchema({ ...normalized, globalScalarParameters, globalTabularParameters })
-        );
+        return this.normalizeSchema(
+            schema,
+            clusterConnectionString,
+            databaseInContextName,
+            databaseInContextAlternateName
+        ).then((normalized) => this.setSchema({ ...normalized, globalScalarParameters, globalTabularParameters }));
     }
 
     /**
@@ -1085,11 +1094,13 @@ class KustoLanguageService implements LanguageService {
      * @param schema result of show schema
      * @param clusterConnectionString cluster connection string`
      * @param databaseInContextName database in context name
+     * @param databaseInContextAlternateName database in context alternate name
      */
     normalizeSchema(
         schema: s.showSchema.Result,
         clusterConnectionString: string,
-        databaseInContextName: string
+        databaseInContextName: string,
+        databaseInContextAlternateName?: string
     ): Promise<s.EngineSchema> {
         const databases: s.EngineSchema['cluster']['databases'] = Object.keys(schema.Databases)
             .map((key) => schema.Databases[key])
@@ -1105,7 +1116,7 @@ class KustoLanguageService implements LanguageService {
                     MajorVersion,
                 }: s.showSchema.Database) => ({
                     name: Name,
-                    alternateName: null,
+                    alternateName: databaseInContextAlternateName || null,
                     minorVersion: MinorVersion,
                     majorVersion: MajorVersion,
                     entityGroups: Object.entries(EntityGroups).map(([name, members]) => ({
