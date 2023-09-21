@@ -49,10 +49,16 @@ export interface Function {
     docstring?: string;
 }
 
+export interface EntityGroup {
+    name: string;
+    members: string[];
+}
+
 export interface Database {
     name: string;
     tables: Table[];
     functions: Function[];
+    entityGroups: EntityGroup[];
     majorVersion: number;
     minorVersion: number;
 }
@@ -215,6 +221,7 @@ export namespace showSchema {
         Tables: Tables;
         ExternalTables: Tables;
         MaterializedViews: Table;
+        EntityGroups: Record<string, string[]>;
         MajorVersion: number;
         MinorVersion: number;
         Functions: Functions;
