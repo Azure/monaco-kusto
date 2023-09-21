@@ -1980,7 +1980,7 @@ class KustoLanguageService implements LanguageService {
         const entityGroupsSymbols = (db.entityGroups || []).map(this.createEntityGroupSymbol);
         const databaseSymbol = new sym.DatabaseSymbol.$ctor2(
             db.name,
-            db.alternateName,
+            db.name + 'test',//db.alternateName,
             tableSymbols.concat(functionSymbols).concat(entityGroupsSymbols)
         );
 
