@@ -2499,10 +2499,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     private static createEntityGroupSymbol(entityGroup: s.EntityGroup): sym.EntityGroupSymbol {
-        const entityGroupElementSymbols = entityGroup.members.map(
-            (member) => new sym.EntityGroupElementSymbol.ctor(member)
-        );
-        return new sym.EntityGroupSymbol.$ctor1(entityGroup.name, entityGroupElementSymbols);
+        return new sym.EntityGroupSymbol.$ctor3(entityGroup.name, entityGroup.members.join(), null);
     }
 }
 
