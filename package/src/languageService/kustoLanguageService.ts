@@ -1116,7 +1116,7 @@ class KustoLanguageService implements LanguageService {
                     MajorVersion,
                 }: s.showSchema.Database) => ({
                     name: Name,
-                    alternateName: databaseInContextAlternateName || null,
+                    alternateName: databaseInContextAlternateName,
                     minorVersion: MinorVersion,
                     majorVersion: MajorVersion,
                     entityGroups: Object.entries(EntityGroups).map(([name, members]) => ({
@@ -1731,7 +1731,6 @@ class KustoLanguageService implements LanguageService {
             minorVersion: 0,
             entityGroups: [],
             name: 'Kuskus',
-            alternateName: null,
             tables: [
                 {
                     name: 'KustoLogs',
@@ -1993,7 +1992,7 @@ class KustoLanguageService implements LanguageService {
         const entityGroupsSymbols = (db.entityGroups || []).map(this.createEntityGroupSymbol);
         const databaseSymbol = new sym.DatabaseSymbol.$ctor2(
             db.name,
-            db.alternateName,
+            db.alternateName || null,
             tableSymbols.concat(functionSymbols).concat(entityGroupsSymbols)
         );
 
