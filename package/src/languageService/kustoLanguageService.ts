@@ -16,7 +16,7 @@ import k2 = Kusto.Language.Editor;
 import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
-import { Database, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
+import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference } from '../types';
 
@@ -163,12 +163,14 @@ export interface LanguageService {
         clusterConnectionString: string,
         databaseInContextName: string,
         globalScalarParameters?: s.ScalarParameter[],
-        globalTabularParameters?: s.TabularParameter[]
+        globalTabularParameters?: s.TabularParameter[],
+        databaseInContextAlternateName?: string
     ): Promise<void>;
     normalizeSchema(
         schema: s.showSchema.Result,
         clusterConnectionString: string,
-        databaseInContextName: string
+        databaseInContextName: string,
+        databaseInContextAlternateName?: string
     ): Promise<s.EngineSchema>;
     getSchema(): Promise<s.Schema>;
     getCommandInContext(document: TextDocument, cursorOffset: number): Promise<string>;
@@ -1067,17 +1069,24 @@ class KustoLanguageService implements LanguageService {
      * @param schema schema json as received from .show schema as json
      * @param clusterConnectionString cluster connection string
      * @param databaseInContextName name of database in context
+     * @param globalScalarParameters
+     * @param globalTabularParameters
+     * @param databaseInContextAlternateName alternate name of database in context
      */
     setSchemaFromShowSchema(
         schema: s.showSchema.Result,
         clusterConnectionString: string,
         databaseInContextName: string,
         globalScalarParameters: s.ScalarParameter[],
-        globalTabularParameters: s.TabularParameter[]
+        globalTabularParameters: s.TabularParameter[],
+        databaseInContextAlternateName: string
     ): Promise<void> {
-        return this.normalizeSchema(schema, clusterConnectionString, databaseInContextName).then((normalized) =>
-            this.setSchema({ ...normalized, globalScalarParameters, globalTabularParameters })
-        );
+        return this.normalizeSchema(
+            schema,
+            clusterConnectionString,
+            databaseInContextName,
+            databaseInContextAlternateName
+        ).then((normalized) => this.setSchema({ ...normalized, globalScalarParameters, globalTabularParameters }));
     }
 
     /**
@@ -1085,11 +1094,13 @@ class KustoLanguageService implements LanguageService {
      * @param schema result of show schema
      * @param clusterConnectionString cluster connection string`
      * @param databaseInContextName database in context name
+     * @param databaseInContextAlternateName database in context alternate name
      */
     normalizeSchema(
         schema: s.showSchema.Result,
         clusterConnectionString: string,
-        databaseInContextName: string
+        databaseInContextName: string,
+        databaseInContextAlternateName?: string
     ): Promise<s.EngineSchema> {
         const databases: s.EngineSchema['cluster']['databases'] = Object.keys(schema.Databases)
             .map((key) => schema.Databases[key])
@@ -1100,12 +1111,18 @@ class KustoLanguageService implements LanguageService {
                     ExternalTables,
                     MaterializedViews,
                     Functions,
+                    EntityGroups = {},
                     MinorVersion,
                     MajorVersion,
                 }: s.showSchema.Database) => ({
                     name: Name,
+                    alternateName: databaseInContextAlternateName || null,
                     minorVersion: MinorVersion,
                     majorVersion: MajorVersion,
+                    entityGroups: Object.entries(EntityGroups).map(([name, members]) => ({
+                        name,
+                        members,
+                    })),
                     tables: [].concat(
                         ...(
                             [
@@ -1712,7 +1729,9 @@ class KustoLanguageService implements LanguageService {
         const database: Database = {
             majorVersion: 0,
             minorVersion: 0,
+            entityGroups: [],
             name: 'Kuskus',
+            alternateName: null,
             tables: [
                 {
                     name: 'KustoLogs',
@@ -1969,47 +1988,14 @@ class KustoLanguageService implements LanguageService {
     }
 
     private static convertToDatabaseSymbol(db: s.Database): sym.DatabaseSymbol {
-        const createFunctionSymbol: (fn: s.Function) => sym.FunctionSymbol = (fn) => {
-            const parameters: sym.Parameter[] = fn.inputParameters.map((param) =>
-                KustoLanguageService.createParameter(param)
-            );
-
-            // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
-            return new sym.FunctionSymbol.$ctor14(
-                fn.name,
-                fn.body,
-                KustoLanguageService.toBridgeList(parameters),
-                fn.docstring
-            );
-        };
-
-        const createTableSymbol: (tbl: s.Table) => sym.TableSymbol | sym.MaterializedViewSymbol = (tbl) => {
-            const columnSymbols = tbl.columns.map((col) => KustoLanguageService.createColumnSymbol(col));
-            let symbol = new sym.TableSymbol.$ctor4(tbl.name, columnSymbols);
-            symbol.Description = tbl.docstring;
-
-            switch (tbl.entityType) {
-                case 'MaterializedViewTable':
-                    const mvQuery = (tbl as s.MaterializedViewTable).mvQuery ?? null;
-                    symbol = new sym.MaterializedViewSymbol.$ctor2(tbl.name, symbol.Columns, mvQuery, tbl.docstring);
-                    symbol = symbol.WithIsMaterializedView(true);
-                    break;
-                case 'ExternalTable':
-                    symbol = symbol.WithIsExternal(true);
-                    break;
-                default:
-            }
-
-            return symbol;
-        };
-
-        const createDatabaseSymbol: (db: s.Database) => sym.DatabaseSymbol = (db) => {
-            const tableSymbols: sym.Symbol[] = db.tables ? db.tables.map((tbl) => createTableSymbol(tbl)) : [];
-            const functionSymbols = db.functions ? db.functions.map((fun) => createFunctionSymbol(fun)) : [];
-            return new sym.DatabaseSymbol.ctor(db.name, tableSymbols.concat(functionSymbols));
-        };
-
-        const databaseSymbol = createDatabaseSymbol(db);
+        const tableSymbols: sym.Symbol[] = (db.tables || []).map(this.createTableSymbol);
+        const functionSymbols = (db.functions || []).map(this.createFunctionSymbol);
+        const entityGroupsSymbols = (db.entityGroups || []).map(this.createEntityGroupSymbol);
+        const databaseSymbol = new sym.DatabaseSymbol.$ctor2(
+            db.name,
+            db.alternateName,
+            tableSymbols.concat(functionSymbols).concat(entityGroupsSymbols)
+        );
 
         return databaseSymbol;
     }
@@ -2475,6 +2461,45 @@ class KustoLanguageService implements LanguageService {
         const parsedAndAnalyzed = Kusto.Language.KustoCode.ParseAndAnalyze(text, this._kustoJsSchemaV2);
 
         return parsedAndAnalyzed;
+    }
+
+    private static createFunctionSymbol(fn: s.Function): sym.FunctionSymbol {
+        const parameters: sym.Parameter[] = fn.inputParameters.map((param) =>
+            KustoLanguageService.createParameter(param)
+        );
+
+        // TODO: handle outputColumns (right now it doesn't seem to be implemented for any function).
+        return new sym.FunctionSymbol.$ctor14(
+            fn.name,
+            fn.body,
+            KustoLanguageService.toBridgeList(parameters),
+            fn.docstring
+        );
+    }
+
+    private static createTableSymbol({
+        name,
+        columns,
+        entityType,
+        docstring,
+        ...tbl
+    }: s.Table): sym.TableSymbol | sym.MaterializedViewSymbol {
+        const columnSymbols = new Bridge.ArrayEnumerable(
+            columns.map((col) => KustoLanguageService.createColumnSymbol(col))
+        );
+        switch (entityType) {
+            case 'MaterializedViewTable':
+                const mvQuery = (tbl as s.MaterializedViewTable).mvQuery ?? null;
+                return new sym.MaterializedViewSymbol.$ctor2(name, columnSymbols, mvQuery, docstring);
+            case 'ExternalTable':
+                return new sym.ExternalTableSymbol.$ctor3(name, columnSymbols, docstring);
+            default:
+                return new sym.TableSymbol.$ctor6(name, columnSymbols, docstring);
+        }
+    }
+
+    private static createEntityGroupSymbol(entityGroup: s.EntityGroup): sym.EntityGroupSymbol {
+        return new sym.EntityGroupSymbol.$ctor3(entityGroup.name, entityGroup.members.join(), null);
     }
 }
 
