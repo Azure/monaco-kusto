@@ -56,7 +56,7 @@ export interface EntityGroup {
 
 export interface Database {
     name: string;
-    alternateName: string;
+    alternateName?: string;
     tables: Table[];
     functions: Function[];
     entityGroups: EntityGroup[];
