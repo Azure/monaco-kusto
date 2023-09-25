@@ -60,7 +60,7 @@
         "vscode-languageserver-textdocument": "1.0.8"
     },
     "dependencies": {
-        "@kusto/language-service": "0.0.174",
+        "@kusto/language-service": "0.0.176",
         "@kusto/language-service-next": "0.0.197",
         "lodash-es": "^4.17.21",
         "vscode-languageserver-types": "^3.17.4",
