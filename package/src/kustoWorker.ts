@@ -44,7 +44,7 @@ export class KustoWorkerImpl {
     addClusterToSchema(
         uri: string,
         clusterName: string,
-        databases: readonly { name: string; alternativeName: string }[]
+        databases: readonly { name: string; alternativeName?: string }[]
     ): Promise<void> {
         const document = this._getTextDocument(uri);
         if (!document) {

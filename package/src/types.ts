@@ -135,7 +135,7 @@ export interface KustoWorker {
     addClusterToSchema(
         uri: string,
         clusterName: string,
-        databases: readonly { name: string; alternativeName: string }[]
+        databases: readonly { name: string; alternativeName?: string }[]
     ): Promise<void>;
 }
 

@@ -200,7 +200,7 @@ export interface LanguageService {
     addClusterToSchema(
         document: TextDocument,
         clusterName: string,
-        databases: readonly { name: string; alternativeName: string }[]
+        databases: readonly { name: string; alternativeName?: string }[]
     ): Promise<void>;
 }
 
@@ -994,7 +994,7 @@ class KustoLanguageService implements LanguageService {
     addClusterToSchema(
         document: TextDocument,
         clusterName: string,
-        databases: { name: string; alternativeName: string }[]
+        databases: { name: string; alternativeName?: string }[]
     ): Promise<void> {
         let clusterNameOnly = Kusto.Language.KustoFacts.GetHostName(clusterName);
         let cluster: sym.ClusterSymbol = this._kustoJsSchemaV2.GetCluster$1(clusterNameOnly);
@@ -1003,13 +1003,13 @@ class KustoLanguageService implements LanguageService {
             databases
                 .filter(({ name }) => !cluster.GetDatabase(name))
                 .forEach(({ name, alternativeName }) => {
-                    const symbol = new sym.DatabaseSymbol.$ctor3(name, alternativeName, undefined, false);
+                    const symbol = new sym.DatabaseSymbol.$ctor3(name, alternativeName || null, undefined, false);
                     cluster = cluster.AddDatabase(symbol);
                 });
         }
         if (!cluster) {
             const databaseSymbols = databases.map(({ name, alternativeName }) => {
-                return new sym.DatabaseSymbol.$ctor3(name, alternativeName, undefined, false);
+                return new sym.DatabaseSymbol.$ctor3(name, alternativeName || null, undefined, false);
             });
             const databaseSymbolsList = new (List<sym.DatabaseSymbol>(sym.DatabaseSymbol).$ctor1)(databaseSymbols);
             cluster = new sym.ClusterSymbol.$ctor1(clusterNameOnly, databaseSymbolsList, false);
