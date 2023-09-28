@@ -132,7 +132,11 @@ export interface KustoWorker {
      * - hosting app calls addClusterToSchema with the list of databases.
      * - now, when user type `cluster('help').database(` then the auto complete list will show all the databases.
      */
-    addClusterToSchema(uri: string, clusterName: string, databases: readonly { name:string, alternativeName: string }[]): Promise<void>;
+    addClusterToSchema(
+        uri: string,
+        clusterName: string,
+        databases: readonly { name: string; alternativeName: string }[]
+    ): Promise<void>;
 }
 
 /**
