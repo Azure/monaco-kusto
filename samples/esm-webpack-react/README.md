@@ -1,4 +1,4 @@
-# Webpack/React Monaco Kusto AMD Example
+# Webpack/React Monaco Kusto ESM Example
 
 Based on output of [webpack init](https://webpack.js.org/api/cli/#init)
 
