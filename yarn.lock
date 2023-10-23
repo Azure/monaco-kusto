@@ -3287,11 +3287,11 @@ __metadata:
   linkType: hard
 
 "@types/wait-on@npm:^5.3.1":
-  version: 5.3.1
-  resolution: "@types/wait-on@npm:5.3.1"
+  version: 5.3.3
+  resolution: "@types/wait-on@npm:5.3.3"
   dependencies:
     "@types/node": "*"
-  checksum: 2a6e88a107930963ceea016dc733dc259dc52faf864933cd4d6f7fc6db7165254c10f8bfcb3b803237b2869674d988319ea4f958c0b6fd3763c5fcb9e489565a
+  checksum: e2f15dfc43145bf1b61f83b27edbffe2c1e8c4fd3ac6f4fc2b813b4824c25892707673fb8e35de659e422ab58eed79c4bc11e48f98e0101126ef521f220eeeaf
   languageName: node
   linkType: hard
 
