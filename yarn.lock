@@ -1659,17 +1659,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service-next@npm:11.4.229":
-  version: 11.4.229
-  resolution: "@kusto/language-service-next@npm:11.4.229"
-  checksum: b5b0fa4ef7f2d8208367f7f939aa7aaf2c520c1a73001c468f9333bf26e4df511bf2e5a0daaecf609d881741bb422c1a00cd9c041484c20f7d8da951ce55ee45
+"@kusto/language-service-next@npm:11.4.231":
+  version: 11.4.231
+  resolution: "@kusto/language-service-next@npm:11.4.231"
+  checksum: 3a63ff77d279ce46b30f40b1753e251bad6f1883f8ccb65ee4122b6e70361b780c0c82c8b09ec985109d0b1a900dd41716f4f3c3b7fbc6a80df1fb12139949b5
   languageName: node
   linkType: hard
 
-"@kusto/language-service@npm:0.0.206":
-  version: 0.0.206
-  resolution: "@kusto/language-service@npm:0.0.206"
-  checksum: b20674fae71e1ada75996e70fe132eb41760b5ba86b5917d64c10acccc33155a083d555da55f629cfd7c1d3c25dc4040e010d95a824438541b97927ee8d45ace
+"@kusto/language-service@npm:0.0.208":
+  version: 0.0.208
+  resolution: "@kusto/language-service@npm:0.0.208"
+  checksum: 173a6f0b855e234a40f7536dc164ffc67853bec5b6fcb87c911caf7476094034cf2f5bb73ab8f264f7083a8cc589a2794fd8c0aeb70dd1b6c74a459f2c5f7e22
   languageName: node
   linkType: hard
 
@@ -1680,8 +1680,8 @@ __metadata:
     "@babel/core": ^7.22.20
     "@babel/preset-env": ^7.22.20
     "@babel/preset-typescript": ^7.22.15
-    "@kusto/language-service": 0.0.206
-    "@kusto/language-service-next": 11.4.229
+    "@kusto/language-service": 0.0.208
+    "@kusto/language-service-next": 11.4.231
     "@rollup/plugin-alias": ^5.0.0
     "@rollup/plugin-babel": ^6.0.3
     "@rollup/plugin-commonjs": ^25.0.4
@@ -1696,7 +1696,7 @@ __metadata:
     concurrently: ^8.2.1
     http-server: ^14.1.1
     lodash-es: ^4.17.21
-    monaco-editor: ~0.39.0
+    monaco-editor: ~0.41.0
     rimraf: ^5.0.1
     rollup: ^3.29.2
     terser: ^5.19.4
@@ -1706,7 +1706,7 @@ __metadata:
     vscode-languageserver-types: ^3.17.4
     xregexp: ^5.1.1
   peerDependencies:
-    monaco-editor: ~0.39.0
+    monaco-editor: ~0.41.0
   bin:
     copyMonacoFilesAMD: ./copyMonacoFilesAMD.js
   languageName: unknown
@@ -6558,10 +6558,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.39.0, monaco-editor@npm:~0.39.0":
-  version: 0.39.0
-  resolution: "monaco-editor@npm:0.39.0"
-  checksum: 6d906c5f07fc6761b93bebee70bc1c461d6bbea493252751f4e2e60f26678faced9261ed9cca21613511695e6d7b75c2f2214b6d53aaa479a7e0b6f2d912f90b
+"monaco-editor@npm:^0.41.0, monaco-editor@npm:~0.41.0":
+  version: 0.41.0
+  resolution: "monaco-editor@npm:0.41.0"
+  checksum: 873a8b4eb98d789dffa7509dc0875b277127f14d2a53215b7fee9c49f394d52727bd97f8700858e1f9da323988882274e7110f718cf06e457b02aa16ec32f6c4
   languageName: node
   linkType: hard
 
@@ -6571,7 +6571,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     http-server: ^14.1.1
-    monaco-editor: ^0.39.0
+    monaco-editor: ^0.41.0
   languageName: unknown
   linkType: soft
 
@@ -6592,7 +6592,7 @@ __metadata:
     css-loader: ^6.8.1
     express: ^4.18.2
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ~0.39.0
+    monaco-editor: ~0.41.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -6618,7 +6618,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.8.1
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.39.0
+    monaco-editor: ^0.41.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -6635,7 +6635,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     "@tsconfig/recommended": ^1.0.3
-    monaco-editor: ^0.39.0
+    monaco-editor: ^0.41.0
     parcel: ^2.0.0
     typescript: ^5.2.2
   languageName: unknown
@@ -6652,7 +6652,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.8.1
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.39.0
+    monaco-editor: ^0.41.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2

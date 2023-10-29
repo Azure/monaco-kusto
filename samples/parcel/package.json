@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "@kusto/monaco-kusto": "workspace:*",
-        "monaco-editor": "^0.39.0"
+        "monaco-editor": "^0.41.0"
     },
     "devDependencies": {
         "@tsconfig/recommended": "^1.0.3",
