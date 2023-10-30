@@ -1696,7 +1696,7 @@ __metadata:
     concurrently: ^8.2.1
     http-server: ^14.1.1
     lodash-es: ^4.17.21
-    monaco-editor: ~0.41.0
+    monaco-editor: ~0.44.0
     rimraf: ^5.0.1
     rollup: ^3.29.2
     terser: ^5.19.4
@@ -1706,7 +1706,7 @@ __metadata:
     vscode-languageserver-types: ^3.17.4
     xregexp: ^5.1.1
   peerDependencies:
-    monaco-editor: ~0.41.0
+    monaco-editor: ~0.44.0
   bin:
     copyMonacoFilesAMD: ./copyMonacoFilesAMD.js
   languageName: unknown
@@ -6558,10 +6558,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.41.0, monaco-editor@npm:~0.41.0":
-  version: 0.41.0
-  resolution: "monaco-editor@npm:0.41.0"
-  checksum: 873a8b4eb98d789dffa7509dc0875b277127f14d2a53215b7fee9c49f394d52727bd97f8700858e1f9da323988882274e7110f718cf06e457b02aa16ec32f6c4
+"monaco-editor@npm:^0.44.0, monaco-editor@npm:~0.44.0":
+  version: 0.44.0
+  resolution: "monaco-editor@npm:0.44.0"
+  checksum: 6e561b23e5e9090cbdbb820dae5895a8bf9d537acc09281756a8c428960da0481461c72f387cc9a2e14bff69ab4359186c98df2dd29d6d109f1ab7189b573a35
   languageName: node
   linkType: hard
 
@@ -6571,7 +6571,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     http-server: ^14.1.1
-    monaco-editor: ^0.41.0
+    monaco-editor: ^0.44.0
   languageName: unknown
   linkType: soft
 
@@ -6592,7 +6592,7 @@ __metadata:
     css-loader: ^6.8.1
     express: ^4.18.2
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ~0.41.0
+    monaco-editor: ~0.44.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -6618,7 +6618,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.8.1
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.41.0
+    monaco-editor: ^0.44.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -6635,7 +6635,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     "@tsconfig/recommended": ^1.0.3
-    monaco-editor: ^0.41.0
+    monaco-editor: ^0.44.0
     parcel: ^2.0.0
     typescript: ^5.2.2
   languageName: unknown
@@ -6652,7 +6652,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.8.1
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.41.0
+    monaco-editor: ^0.44.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2

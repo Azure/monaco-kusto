@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "@kusto/monaco-kusto": "workspace:*",
-        "monaco-editor": "^0.41.0"
+        "monaco-editor": "^0.44.0"
     },
     "scripts": {
         "build": "copyMonacoFilesAMD .",
