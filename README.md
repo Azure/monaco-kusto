@@ -13,7 +13,7 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 
 ## Usage
 
-`npm install @kusto/monaco-editor` or `yarn add @kusto/monaco-editor`
+`npm install @kusto/monaco-kusto` or `yarn add @kusto/monaco-kusto`
 
 ### Package content
 
