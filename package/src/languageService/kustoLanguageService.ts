@@ -1046,12 +1046,11 @@ class KustoLanguageService implements LanguageService {
         }
 
         // since V2 doesn't support control commands, we're initializing V1 intellisense for both cases and we'll going to use V1 intellisense for control commands.
-        return new Promise((resolve, reject) => {
-            const kustoJsSchema = schema ? KustoLanguageService.convertToKustoJsSchema(schema) : undefined;
-            this._kustoJsSchema = kustoJsSchema;
-            this.createRulesProvider(kustoJsSchema, schema.clusterType);
-            resolve(undefined);
-        });
+
+        const kustoJsSchema = schema ? KustoLanguageService.convertToKustoJsSchema(schema) : undefined;
+        this._kustoJsSchema = kustoJsSchema;
+        this.createRulesProvider(kustoJsSchema, schema.clusterType);
+        return Promise.resolve();
     }
 
     setParameters(scalarParameters: s.ScalarParameter[], tabularParameters: s.TabularParameter[]): Promise<void> {
@@ -1068,6 +1067,13 @@ class KustoLanguageService implements LanguageService {
             KustoLanguageService.toBridgeList([...scalarSymbols, ...tabularSymbols])
         );
         this._script = this._script?.WithGlobals(this._kustoJsSchemaV2);
+
+        // Set parameters is only working with the below code. It didn't used to need this, why does it now?!?
+        // Copy+pasted from setSchema
+        const kustoJsSchema = KustoLanguageService.convertToKustoJsSchema(this._schema);
+        this._kustoJsSchema = kustoJsSchema;
+        this.createRulesProvider(kustoJsSchema, this._schema.clusterType);
+
         return Promise.resolve(undefined);
     }
 
@@ -1088,12 +1094,14 @@ class KustoLanguageService implements LanguageService {
         globalTabularParameters: s.TabularParameter[],
         databaseInContextAlternateName: string
     ): Promise<void> {
-        return this.normalizeSchema(
+        const normalized = this._normalizeSchema(
             schema,
             clusterConnectionString,
             databaseInContextName,
             databaseInContextAlternateName
-        ).then((normalized) => this.setSchema({ ...normalized, globalScalarParameters, globalTabularParameters }));
+        );
+
+        return this.setSchema({ ...normalized, globalScalarParameters, globalTabularParameters });
     }
 
     /**
@@ -1103,12 +1111,12 @@ class KustoLanguageService implements LanguageService {
      * @param databaseInContextName database in context name
      * @param databaseInContextAlternateName database in context alternate name
      */
-    normalizeSchema(
+    _normalizeSchema(
         schema: s.showSchema.Result,
         clusterConnectionString: string,
         databaseInContextName: string,
         databaseInContextAlternateName?: string
-    ): Promise<s.EngineSchema> {
+    ): s.EngineSchema {
         const databases: s.EngineSchema['cluster']['databases'] = Object.keys(schema.Databases)
             .map((key) => schema.Databases[key])
             .map(
@@ -1180,7 +1188,7 @@ class KustoLanguageService implements LanguageService {
                 })
             );
 
-        const result: s.EngineSchema = {
+        return {
             clusterType: 'Engine',
             cluster: {
                 connectionString: clusterConnectionString,
@@ -1188,8 +1196,29 @@ class KustoLanguageService implements LanguageService {
             },
             database: databases.filter((db) => db.name === databaseInContextName)[0],
         };
+    }
 
-        return Promise.resolve(result);
+    /**
+     * Converts the result of .show schema as json to a normalized schema used by kusto language service.
+     * @param schema result of show schema
+     * @param clusterConnectionString cluster connection string`
+     * @param databaseInContextName database in context name
+     * @param databaseInContextAlternateName database in context alternate name
+     */
+    normalizeSchema(
+        schema: s.showSchema.Result,
+        clusterConnectionString: string,
+        databaseInContextName: string,
+        databaseInContextAlternateName?: string
+    ): Promise<s.EngineSchema> {
+        return Promise.resolve(
+            this._normalizeSchema(
+                schema,
+                clusterConnectionString,
+                databaseInContextName,
+                databaseInContextAlternateName
+            )
+        );
     }
 
     getSchema() {
