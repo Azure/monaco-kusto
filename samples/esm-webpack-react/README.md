@@ -12,7 +12,7 @@ Run the below commands
 4. In /package: `yarn build`
 5. In this folder: `yarn serve`
 
-## Notable changes
+## Notable changes to Webpack config
 
 -   Set ./webpack.config resolve.fs to `false` to suppress webpack warning about
     `fs` import in @kusto/language-server code
