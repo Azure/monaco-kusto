@@ -60,8 +60,8 @@ There are 2 APIs to set a Kusto schema:
 
 ### Setting up a dev environment
 
-1. Install Node.js 16 from https://nodejs.org/
-2. Install Yarn from https://yarnpkg.com/
+1. Install Node.js 20 https://nodejs.org/
+2. Run `corepack enable` to make the `yarn` package manager available (https://yarnpkg.com/getting-started/install)
 3. Clone repo and run `yarn` in repo root
 4. Run `yarn watch` from /package and a http-server will automatically open the index.html
 

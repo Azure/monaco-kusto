@@ -4,10 +4,14 @@ This example demonstrates how to serve the Monaco Kusto package from a CDN (or a
 
 To run and demonstrate this succeeds cross origin follow the below steps:
 
-1. Run `yarn`
-2. Run `yarn build`
-3. Run `yarn server`. This serves index.html on port 3000 and everything else on port 8080
-4. Browse to `localhost:3000`. You will see there is auto-completion and if you open the developer tools you will see a log demonstrating that the `MonacoEnvironment` property is available on the worker
+1. Install Node.js 20 https://nodejs.org/
+2. Run `corepack enable` to make the `yarn` package manager available (https://yarnpkg.com/getting-started/install)
+3. In any folder: Run `yarn`
+4. In /package: `yarn build`
+5. In this folder
+    1. Run `yarn build`
+    2. Run `yarn server`. This serves index.html on port 3000 and everything else on port 8080
+6. Browse to `localhost:3000`. You will see there is auto-completion and if you open the developer tools you will see a log demonstrating that the `MonacoEnvironment` property is available on the worker
 
 Key difference:
 
