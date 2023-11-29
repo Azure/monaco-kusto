@@ -14,11 +14,11 @@
     },
     "dependencies": {
         "@kusto/monaco-kusto": "workspace:*",
-        "monaco-editor": "^0.40.0"
+        "monaco-editor": "^0.41.0"
     },
     "devDependencies": {
-        "@tsconfig/recommended": "^1.0.2",
+        "@tsconfig/recommended": "^1.0.3",
         "parcel": "^2.0.0",
-        "typescript": "^5.0.4"
+        "typescript": "^5.2.2"
     }
 }

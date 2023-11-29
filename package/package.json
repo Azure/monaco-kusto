@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "7.8.0",
+    "version": "10.0.8",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -35,38 +35,38 @@
         "copyMonacoFilesAMD": "./copyMonacoFilesAMD.js"
     },
     "devDependencies": {
-        "@babel/core": "^7.21.0",
-        "@babel/preset-env": "^7.20.2",
-        "@babel/preset-typescript": "^7.21.0",
+        "@babel/core": "^7.22.20",
+        "@babel/preset-env": "^7.22.20",
+        "@babel/preset-typescript": "^7.22.15",
         "@rollup/plugin-alias": "^5.0.0",
         "@rollup/plugin-babel": "^6.0.3",
         "@rollup/plugin-commonjs": "^25.0.4",
-        "@rollup/plugin-node-resolve": "^15.0.1",
+        "@rollup/plugin-node-resolve": "^15.2.1",
         "@rollup/plugin-replace": "^5.0.2",
-        "@rollup/plugin-terser": "^0.4.0",
+        "@rollup/plugin-terser": "^0.4.3",
         "@rollup/plugin-virtual": "^3.0.1",
-        "@tsconfig/node16": "^1.0.3",
-        "@types/lodash-es": "^4.17.6",
-        "@types/node": "16",
+        "@tsconfig/node20": "^20.1.2",
+        "@types/lodash-es": "^4.17.9",
+        "@types/node": "^20.6.3",
         "@types/xregexp": "^4.4.0",
-        "concurrently": "^7.6.0",
+        "concurrently": "^8.2.1",
         "http-server": "^14.1.1",
-        "monaco-editor": "~0.40.0",
-        "rimraf": "^4.1.2",
-        "rollup": "^3.17.3",
-        "terser": "^5.16.2",
+        "monaco-editor": "~0.41.0",
+        "rimraf": "^5.0.1",
+        "rollup": "^3.29.2",
+        "terser": "^5.19.4",
         "ts-node": "^10.9.1",
-        "typescript": "^5.0.4",
+        "typescript": "^5.2.2",
         "vscode-languageserver-textdocument": "1.0.8"
     },
     "dependencies": {
-        "@kusto/language-service": "0.0.128",
-        "@kusto/language-service-next": "0.0.151",
+        "@kusto/language-service": "0.0.248",
+        "@kusto/language-service-next": "11.4.271",
         "lodash-es": "^4.17.21",
-        "vscode-languageserver-types": "3.17.3",
+        "vscode-languageserver-types": "^3.17.4",
         "xregexp": "^5.1.1"
     },
     "peerDependencies": {
-        "monaco-editor": "~0.40.0"
+        "monaco-editor": "~0.41.0"
     }
 }

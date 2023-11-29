@@ -41,13 +41,17 @@ export class KustoWorkerImpl {
         return this._languageService.setSchema(schema);
     }
 
-    addClusterToSchema(uri: string, clusterName: string, databasesNames: readonly string[]): Promise<void> {
+    addClusterToSchema(
+        uri: string,
+        clusterName: string,
+        databases: readonly { name: string; alternativeName?: string }[]
+    ): Promise<void> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`addClusterToSchema: document is ${document}. uri is ${uri}`);
             return Promise.resolve();
         }
-        return this._languageService.addClusterToSchema(document, clusterName, databasesNames);
+        return this._languageService.addClusterToSchema(document, clusterName, databases);
     }
 
     addDatabaseToSchema(uri: string, clusterName: string, databaseSchema: Database): Promise<void> {

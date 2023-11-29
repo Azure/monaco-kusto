@@ -49,10 +49,17 @@ export interface Function {
     readonly docstring?: string;
 }
 
+export interface EntityGroup {
+    readonly name: string;
+    readonly members: readonly string[];
+}
+
 export interface Database {
     readonly name: string;
+    readonly alternateName?: string;
     readonly tables: readonly Table[];
     readonly functions: readonly Function[];
+    readonly entityGroups: readonly EntityGroup[];
     readonly majorVersion: number;
     readonly minorVersion: number;
 }
@@ -63,7 +70,7 @@ export interface EngineSchema {
     readonly clusterType: 'Engine';
     readonly cluster: {
         readonly connectionString: string;
-        readonly databases: Database[];
+        readonly databases: readonly Database[];
     };
     readonly database: Database | undefined; // a reference to the database that's in current context.
     readonly globalScalarParameters?: readonly ScalarParameter[];
@@ -217,6 +224,7 @@ export namespace showSchema {
         readonly Tables: Tables;
         readonly ExternalTables: Tables;
         readonly MaterializedViews: Table;
+        readonly EntityGroups: Readonly<Record<string, readonly string[]>>;
         readonly MajorVersion: number;
         readonly MinorVersion: number;
         readonly Functions: Functions;
@@ -228,7 +236,7 @@ export namespace showSchema {
     }
 
     export interface Result {
-        readonly Plugins: unknown[]; // TODO: define Plugin
+        readonly Plugins: readonly unknown[]; // TODO: define Plugin
         readonly Databases: Databases;
     }
 }
