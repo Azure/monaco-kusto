@@ -1,7 +1,0 @@
-// The next import is needed to preload `bridge.min.js` because if I don't, some weird Vite-stuff makes it load
-// after `Kusto.JavaScript.Client.min` (in `kusto.worker.js`), which causes the `Bridge` object to be undefined.
-import '@kusto/language-service/bridge.min';
-
-import '@kusto/monaco-kusto/release/esm/kusto.worker';
-
-export {};

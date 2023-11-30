@@ -1,6 +1,10 @@
-import React from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/edcore.main';
 import { getKustoWorker } from '@kusto/monaco-kusto';
+import './index.css';
+
+// Vite doesn't let us directly import files in dependencies as url's for some
+// reason. Instead, we'll import local files as url's, and they'll import what
+// we really want.
 import kustoWorkerUrl from './monacoConfigHelperKustoWorker?url';
 import editorWorker from './monacoConfigHelperEditorWorker?url';
 
@@ -13,6 +17,11 @@ window.MonacoEnvironment = {
                 return new Worker(editorWorker, { type: 'module' });
         }
     },
+};
+
+// Called by playwright script in ci to validate things are working
+window.healthCheck = async function () {
+    return !!(await getKustoWorker());
 };
 
 const schema = {
@@ -45,38 +54,21 @@ const schema = {
     },
 };
 
-function App() {
-    const divRef = React.useRef(null);
+const editor = monaco.editor.create(document.getElementById('root'), {
+    value: 'StormEvents | take 10',
+    language: 'kusto',
+    theme: 'kusto-light',
+});
 
-    React.useLayoutEffect(() => {
-        let disposed = false;
+window.addEventListener('resize', () => {
+    editor.layout();
+});
 
-        const editor = monaco.editor.create(divRef.current, {
-            value: 'StormEvents | take 10',
-            language: 'kusto',
-            theme: 'kusto-light',
+getKustoWorker().then((workerAccessor) => {
+    const model = editor.getModel();
+    if (model) {
+        workerAccessor(model.uri).then((worker) => {
+            worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
         });
-
-        getKustoWorker().then((workerAccessor) => {
-            if (disposed) {
-                return;
-            }
-            const model = editor.getModel();
-            workerAccessor(model.uri).then((worker) => {
-                if (disposed) {
-                    return;
-                }
-                worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
-            });
-        });
-
-        return () => {
-            disposed = true;
-            editor.dispose();
-        };
-    });
-
-    return <div className="editor" ref={divRef} />;
-}
-
-export default App;
+    }
+});
