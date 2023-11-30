@@ -6,11 +6,13 @@ AMD example is available here: [../amd]()
 
 ## Running
 
-Run the below commands
-
-1. `yarn install`
-2. `yarn copy-amd-files`
-3. `yarn serve`
+1. Install Node.js 20 https://nodejs.org/
+2. Run `corepack enable` to make the `yarn` package manager available (https://yarnpkg.com/getting-started/install)
+3. In any folder: `yarn install`
+4. In /package: `yarn build`
+5. In this folder
+    1. `yarn copy-amd-files`
+    2. `yarn serve`
 
 ## Notable monaco-kusto AMD specific changes
 
