@@ -5,8 +5,8 @@ import './index.css';
 // Vite doesn't let us directly import files in dependencies as url's for some
 // reason. Instead, we'll import local files as url's, and they'll import what
 // we really want.
-import kustoWorkerUrl from './monacoConfigHelperKustoWorker?url';
-import editorWorker from './monacoConfigHelperEditorWorker?url';
+import kustoWorkerUrl from './kustoWorker?url';
+import editorWorker from './editorWorker?url';
 
 window.MonacoEnvironment = {
     getWorker(_moduleId, label) {
