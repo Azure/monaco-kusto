@@ -19,6 +19,7 @@ import GlobalState = Kusto.Language.GlobalState;
 import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference } from '../types';
+import { Mutable } from '../util';
 
 let List = System.Collections.Generic.List$1;
 
@@ -230,7 +231,7 @@ class KustoLanguageService implements LanguageService {
     private _clustersSetInGlobalState: Set<string>;
     private _nonEmptyDatabaseSetInGlobalState: Set<string>;
     private _languageSettings: LanguageSettings;
-    private _schema: s.Schema;
+    private _schema: Mutable<s.Schema>;
     private _schemaCache: {
         [cluster: string]: {
             [dbName: string]: { database: s.Database; symbol: sym.DatabaseSymbol; includesFunctions: boolean };
@@ -1927,7 +1928,7 @@ class KustoLanguageService implements LanguageService {
      * Returns something like '(x: string, T: (y: int))'
      * @param params input parameters (tabular or scalar)
      */
-    private static inputParameterToSignature(params: s.InputParameter[]) {
+    private static inputParameterToSignature(params: readonly s.InputParameter[]) {
         const signatureWithoutParens = params
             .map((param) => {
                 if (param.columns) {

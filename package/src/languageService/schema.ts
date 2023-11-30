@@ -1,36 +1,36 @@
 // Definition of schema object in the context of language services. This model is exposed to consumers of this library.
 
 export interface Column {
-    name: string;
-    type: string;
-    docstring?: string;
-    examples?: string[];
+    readonly name: string;
+    readonly type: string;
+    readonly docstring?: string;
+    readonly examples?: readonly string[];
 }
 export interface Table {
-    name: string;
-    entityType?: TableEntityType;
-    columns: Column[];
-    docstring?: string;
+    readonly name: string;
+    readonly entityType?: TableEntityType;
+    readonly columns: readonly Column[];
+    readonly docstring?: string;
 }
 
 export interface MaterializedViewTable extends Table {
-    entityType: 'MaterializedViewTable';
-    mvQuery?: string;
+    readonly entityType: 'MaterializedViewTable';
+    readonly mvQuery?: string;
 }
 
 export interface ScalarParameter {
-    name: string;
-    type?: string;
-    cslType?: string;
-    docstring?: string;
-    cslDefaultValue?: string;
-    examples?: string[];
+    readonly name: string;
+    readonly type?: string;
+    readonly cslType?: string;
+    readonly docstring?: string;
+    readonly cslDefaultValue?: string;
+    readonly examples?: readonly string[];
 }
 
 export interface TabularParameter {
-    name: string;
-    columns: Column[];
-    docstring?: string;
+    readonly name: string;
+    readonly columns: readonly Column[];
+    readonly docstring?: string;
 }
 
 /**
@@ -39,55 +39,55 @@ export interface TabularParameter {
  * of scalar types which are the column types.
  */
 export interface InputParameter extends ScalarParameter {
-    columns?: ScalarParameter[];
+    readonly columns?: ScalarParameter[];
 }
 
 export interface Function {
-    name: string;
-    body: string;
-    inputParameters: InputParameter[];
-    docstring?: string;
+    readonly name: string;
+    readonly body: string;
+    readonly inputParameters: readonly InputParameter[];
+    readonly docstring?: string;
 }
 
 export interface EntityGroup {
-    name: string;
-    members: string[];
+    readonly name: string;
+    readonly members: readonly string[];
 }
 
 export interface Database {
-    name: string;
-    alternateName?: string;
-    tables: Table[];
-    functions: Function[];
-    entityGroups: EntityGroup[];
-    majorVersion: number;
-    minorVersion: number;
+    readonly name: string;
+    readonly alternateName?: string;
+    readonly tables: readonly Table[];
+    readonly functions: readonly Function[];
+    readonly entityGroups: readonly EntityGroup[];
+    readonly majorVersion: number;
+    readonly minorVersion: number;
 }
 
 export type ClusterType = 'Engine' | 'DataManagement' | 'ClusterManager';
 
 export interface EngineSchema {
-    clusterType: 'Engine';
-    cluster: {
-        connectionString: string;
-        databases: Database[];
+    readonly clusterType: 'Engine';
+    readonly cluster: {
+        readonly connectionString: string;
+        readonly databases: readonly Database[];
     };
-    database: Database | undefined; // a reference to the database that's in current context.
-    globalScalarParameters?: ScalarParameter[];
-    globalTabularParameters?: TabularParameter[];
+    readonly database: Database | undefined; // a reference to the database that's in current context.
+    readonly globalScalarParameters?: readonly ScalarParameter[];
+    readonly globalTabularParameters?: readonly TabularParameter[];
 }
 
 export type TableEntityType = 'Table' | 'ExternalTable' | 'MaterializedViewTable';
 
 export interface ClusterMangerSchema {
-    clusterType: 'ClusterManager';
-    accounts: string[];
-    services: string[];
-    connectionString: string;
+    readonly clusterType: 'ClusterManager';
+    readonly accounts: readonly string[];
+    readonly services: readonly string[];
+    readonly connectionString: string;
 }
 
 export interface DataManagementSchema {
-    clusterType: 'DataManagement';
+    readonly clusterType: 'DataManagement';
 }
 
 /**
@@ -148,7 +148,7 @@ export const getCallName = (fn: Function): string =>
 export const getExpression = (fn: Function): string =>
     `let ${fn.name} = ${getInputParametersAsCslString(fn.inputParameters)} ${fn.body}`;
 
-export const getInputParametersAsCslString = (inputParameters: InputParameter[]): any =>
+export const getInputParametersAsCslString = (inputParameters: readonly InputParameter[]): any =>
     `(${inputParameters.map((inputParameter) => getInputParameterAsCslString(inputParameter)).join(',')})`;
 
 const getInputParameterAsCslString = (inputParameter: InputParameter): string => {
@@ -169,72 +169,74 @@ const getInputParameterAsCslString = (inputParameter: InputParameter): string =>
  */
 export namespace showSchema {
     export interface Column {
-        Name: string;
-        Type: string;
-        CslType: string;
-        DocString?: string;
-        Examples?: string[];
+        readonly Name: string;
+        readonly Type: string;
+        readonly CslType: string;
+        readonly DocString?: string;
+        readonly Examples?: readonly string[];
     }
 
     export interface Table {
-        Name: string;
-        EntityType: TableEntityType;
-        OrderedColumns: Column[];
-        DocString?: string;
+        readonly Name: string;
+        readonly EntityType: TableEntityType;
+        readonly OrderedColumns: readonly Column[];
+        readonly DocString?: string;
     }
 
     export interface Tables {
-        [tableName: string]: Table;
+        readonly [tableName: string]: Table;
     }
 
     export interface ScalarParameter {
-        Name: string;
-        Type?: string;
-        CslType?: string;
-        DocString?: string;
-        CslDefaultValue?: string;
+        readonly Name: string;
+        readonly Type?: string;
+        readonly CslType?: string;
+        readonly DocString?: string;
+        readonly CslDefaultValue?: string;
     }
 
     export interface TabularParameter {
-        Name: string;
-        Columns: Column[];
-        DocString?: string;
+        readonly Name: string;
+        readonly Columns: readonly Column[];
+        readonly DocString?: string;
     }
 
-    export type InputParameter = ScalarParameter & { Columns?: ScalarParameter[] };
+    export interface InputParameter extends ScalarParameter {
+        readonly Columns?: readonly ScalarParameter[];
+    }
 
     export interface Function {
-        Name: string;
-        InputParameters: InputParameter[];
-        Body: string;
-        Folder: string;
-        DocString: string;
-        FunctionKind: string;
-        OutputColumns: any[];
+        readonly Name: string;
+        readonly InputParameters: readonly InputParameter[];
+        readonly Body: string;
+        readonly Folder: string;
+        readonly DocString: string;
+        readonly FunctionKind: string;
+        readonly OutputColumns: readonly any[];
     }
 
     export interface Functions {
-        [functionName: string]: Function;
+        readonly [functionName: string]: Function;
     }
 
     export interface Database {
-        Name: string;
-        Tables: Tables;
-        ExternalTables: Tables;
-        MaterializedViews: Table;
-        EntityGroups: Record<string, string[]>;
-        MajorVersion: number;
-        MinorVersion: number;
-        Functions: Functions;
-        DatabaseAccessMode: string;
+        readonly Name: string;
+        readonly Tables: Tables;
+        readonly ExternalTables: Tables;
+        readonly MaterializedViews: Table;
+        readonly EntityGroups: Readonly<Record<string, readonly string[]>>;
+        readonly MajorVersion: number;
+        readonly MinorVersion: number;
+        readonly Functions: Functions;
+        readonly DatabaseAccessMode: string;
     }
 
     export interface Databases {
-        [dbName: string]: Database;
+        readonly [dbName: string]: Database;
     }
 
     export interface Result {
-        Plugins: Plugin[];
-        Databases: Databases;
+        readonly Plugins: readonly unknown[]; // TODO: define Plugin
+        readonly Databases: Databases;
     }
 }
