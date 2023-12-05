@@ -1,0 +1,20 @@
+{
+    "name": "monaco-kusto--esm-vite-sample",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "playwright:webserver": "vite --port 3000"
+    },
+    "dependencies": {
+        "@kusto/monaco-kusto": "^10.0.8",
+        "monaco-editor": "^0.41.0"
+    },
+    "devDependencies": {
+        "vite": "^5.0.0",
+        "vite-plugin-node-polyfills": "^0.17.0"
+    }
+}
