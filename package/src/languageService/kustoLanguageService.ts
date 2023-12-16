@@ -388,7 +388,6 @@ class KustoLanguageService implements LanguageService {
     }
 
     doCompleteV2(document: TextDocument, position: ls.Position): Promise<ls.CompletionList> {
-        debugger;
         if (!document) {
             return Promise.resolve(ls.CompletionList.create([]));
         }
@@ -1764,13 +1763,21 @@ class KustoLanguageService implements LanguageService {
 
     //#region dummy schema for manual testing
     static get dummySchema() {
+        const database: Database = {
+            majorVersion: 0,
+            minorVersion: 0,
+            entityGroups: [],
+            name: '',
+            tables: [],
+            functions: []
+        };
         const languageServiceSchema: s.EngineSchema = {
             clusterType: 'Engine',
             cluster: {
                 connectionString: '',
-                databases: [],
+                databases: [database],
             },
-            database: undefined,
+            database,
         };
 
         return languageServiceSchema;
