@@ -71,13 +71,14 @@ There are 2 APIs to set a Kusto schema:
 2. Run `yarn build`
 
 ## Changelog
+
 ### 10.0.0
 
 -   BREAKING CHANGE: addClusterToSchema know excepts databases as an object with name and alternative name instead of just a string name.
 
 ### 9.0.0
 
--   feat: support entity groups and database alternative name 
+-   feat: support entity groups and database alternative name
 
 ### 7.8.0
 
