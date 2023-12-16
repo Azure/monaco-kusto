@@ -279,6 +279,7 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.Variable]: k.OptionKind.Parameter,
         [k2.CompletionKind.Option]: k.OptionKind.Option,
         [k2.CompletionKind.Graph]: k.OptionKind.Graph,
+        [k2.CompletionKind.EntityGroup]: k.OptionKind.EntityGroup,
     };
 
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
@@ -2375,6 +2376,7 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
         [k2.CompletionKind.Option]: ls.CompletionItemKind.Text,
         [k2.CompletionKind.Graph]: ls.CompletionItemKind.Class,
+        [k2.CompletionKind.EntityGroup]: ls.CompletionItemKind.Class,
     };
 
     private kustoKindToLsKind(kustoKind: k.OptionKind): ls.CompletionItemKind {
