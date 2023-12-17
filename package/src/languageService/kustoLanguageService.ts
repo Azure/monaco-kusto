@@ -1764,21 +1764,13 @@ class KustoLanguageService implements LanguageService {
 
     //#region dummy schema for manual testing
     static get dummySchema() {
-        const database: Database = {
-            majorVersion: 0,
-            minorVersion: 0,
-            entityGroups: [],
-            name: '',
-            tables: [],
-            functions: [],
-        };
         const languageServiceSchema: s.EngineSchema = {
             clusterType: 'Engine',
             cluster: {
                 connectionString: '',
-                databases: [database],
+                databases: [],
             },
-            database,
+            database: undefined
         };
 
         return languageServiceSchema;
