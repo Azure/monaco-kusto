@@ -1770,7 +1770,7 @@ class KustoLanguageService implements LanguageService {
                 connectionString: '',
                 databases: [],
             },
-            database: undefined
+            database: undefined,
         };
 
         return languageServiceSchema;
