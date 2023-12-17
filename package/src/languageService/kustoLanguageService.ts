@@ -1770,7 +1770,7 @@ class KustoLanguageService implements LanguageService {
             entityGroups: [],
             name: '',
             tables: [],
-            functions: []
+            functions: [],
         };
         const languageServiceSchema: s.EngineSchema = {
             clusterType: 'Engine',
