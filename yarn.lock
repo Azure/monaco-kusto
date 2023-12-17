@@ -1789,17 +1789,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service-next@npm:11.4.291":
-  version: 11.4.291
-  resolution: "@kusto/language-service-next@npm:11.4.291"
-  checksum: 5bf8e83267bd594a913928b6b3671721f2e16503d927dc51ed142a77a2caaf3a2432bb8133d2f802734cfda4c560ec0fd7a0c7daa432631f7b12face4185fe5d
+"@kusto/language-service-next@npm:11.4.301":
+  version: 11.4.301
+  resolution: "@kusto/language-service-next@npm:11.4.301"
+  checksum: d96cc1c6d7f682592bafc55d1d7a4bac281b9da2a0fd66ebf34bd887a1e30e69c89d3a13b8c4b6e3ea2c06e63b4ee51350a4041d223416fd9004b05e18eeacf1
   languageName: node
   linkType: hard
 
-"@kusto/language-service@npm:0.0.268":
-  version: 0.0.268
-  resolution: "@kusto/language-service@npm:0.0.268"
-  checksum: 0f99fd1b323d5d59ae3f4bb25915a276f0c5129d50954a4a58b205355f1086956807611dead33abc856836533fcb119b43debb1062d62e59b0a30ab1cf8cef00
+"@kusto/language-service@npm:0.0.278":
+  version: 0.0.278
+  resolution: "@kusto/language-service@npm:0.0.278"
+  checksum: b70b7c7969e4ee7f1e5f3a575f1e2bd5ab9736567df62bdaa8b0e77d01f45d536df98ece50394d8fc489d6da0d1fe2197328d53e028b7ba4ac89f217d89e0336
   languageName: node
   linkType: hard
 
@@ -1810,8 +1810,8 @@ __metadata:
     "@babel/core": ^7.22.20
     "@babel/preset-env": ^7.22.20
     "@babel/preset-typescript": ^7.22.15
-    "@kusto/language-service": 0.0.268
-    "@kusto/language-service-next": 11.4.291
+    "@kusto/language-service": 0.0.278
+    "@kusto/language-service-next": 11.4.301
     "@rollup/plugin-alias": ^5.0.0
     "@rollup/plugin-babel": ^6.0.3
     "@rollup/plugin-commonjs": ^25.0.4

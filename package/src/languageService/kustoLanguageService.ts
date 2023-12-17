@@ -279,6 +279,7 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.Variable]: k.OptionKind.Parameter,
         [k2.CompletionKind.Option]: k.OptionKind.Option,
         [k2.CompletionKind.Graph]: k.OptionKind.Graph,
+        [k2.CompletionKind.EntityGroup]: k.OptionKind.EntityGroup,
     };
 
     constructor(schema: s.EngineSchema, languageSettings: LanguageSettings) {
@@ -1763,72 +1764,13 @@ class KustoLanguageService implements LanguageService {
 
     //#region dummy schema for manual testing
     static get dummySchema() {
-        const database: Database = {
-            majorVersion: 0,
-            minorVersion: 0,
-            entityGroups: [],
-            name: 'Kuskus',
-            tables: [
-                {
-                    name: 'KustoLogs',
-                    columns: [
-                        {
-                            name: 'Source',
-                            type: 'string',
-                        },
-                        {
-                            name: 'Timestamp',
-                            type: 'datetime',
-                        },
-                        {
-                            name: 'Directory',
-                            type: 'string',
-                        },
-                    ],
-                    docstring:
-                        'A dummy description to test that docstring shows as expected when hovering over a table',
-                },
-            ],
-            functions: [
-                {
-                    name: 'HowBig',
-                    inputParameters: [
-                        {
-                            name: 'T',
-                            columns: [
-                                {
-                                    name: 'Timestamp',
-                                    type: 'System.DateTime',
-                                    cslType: 'datetime',
-                                },
-                            ],
-                        },
-                    ],
-                    docstring:
-                        'A dummy description to test that docstring shows as expected when hovering over a function',
-                    body: "{\r\n    union \r\n    (T | count | project V='Volume', Metric = strcat(Count/1e9, ' Billion records')),\r\n    (T | summarize FirstRecord=min(Timestamp)| project V='Volume', Metric = strcat(toint((now()-FirstRecord)/1d), ' Days of data (from: ', format_datetime(FirstRecord, 'yyyy-MM-dd'),')')),\r\n    (T | where Timestamp > ago(1h) | count | project V='Velocity', Metric = strcat(Count/1e6, ' Million records / hour')),\r\n    (T | summarize Latency=now()-max(Timestamp) | project V='Velocity', Metric = strcat(Latency / 1sec, ' seconds latency')),\r\n    (T | take 1 | project V='Variety', Metric=tostring(pack_all()))\r\n    | order by V \r\n}",
-                },
-                {
-                    name: 'FindCIDPast24h',
-                    inputParameters: [
-                        {
-                            name: 'clientActivityId',
-                            type: 'System.String',
-                            cslType: 'string',
-                        },
-                    ],
-                    body: '{ KustoLogs | where Timestamp > now(-1d) | where ClientActivityId == clientActivityId}   ',
-                },
-            ],
-        };
-
         const languageServiceSchema: s.EngineSchema = {
             clusterType: 'Engine',
             cluster: {
-                connectionString: 'https://kuskus.kusto.windows.net;fed=true',
-                databases: [database],
+                connectionString: '',
+                databases: [],
             },
-            database: database,
+            database: undefined,
         };
 
         return languageServiceSchema;
@@ -2426,6 +2368,7 @@ class KustoLanguageService implements LanguageService {
         [k2.CompletionKind.Variable]: ls.CompletionItemKind.Variable,
         [k2.CompletionKind.Option]: ls.CompletionItemKind.Text,
         [k2.CompletionKind.Graph]: ls.CompletionItemKind.Class,
+        [k2.CompletionKind.EntityGroup]: ls.CompletionItemKind.Class,
     };
 
     private kustoKindToLsKind(kustoKind: k.OptionKind): ls.CompletionItemKind {
