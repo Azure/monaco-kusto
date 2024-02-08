@@ -627,7 +627,9 @@ export class ColorizationAdapter {
                 }
             })
             .catch((err) => {
-                // Hack to avoid crashing calling code, while still logging the error
+                // Hack to avoid crashing calling code, while still logging the
+                // error. Might be better to just let the error propagate, but
+                // that would require more investigation.
                 setTimeout(() => {
                     throw err;
                 }, 0);
