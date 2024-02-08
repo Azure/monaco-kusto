@@ -595,9 +595,15 @@ export class ColorizationAdapter {
         const versionNumberBeforeColorization = model.getVersionId();
         this._worker(resource)
             .then((worker) => {
+                if (model.isDisposed()) {
+                    return;
+                }
                 return worker.doColorization(resource.toString(), intervals);
             })
             .then((colorizationRanges) => {
+                if (model.isDisposed()) {
+                    return;
+                }
                 const newModel = this._monacoInstance.editor.getModel(model.uri);
                 const versionId = newModel.getVersionId();
 
@@ -649,8 +655,11 @@ export class ColorizationAdapter {
                     this.decorations = model.deltaDecorations(oldDecorations, newDecorations);
                 }
             })
-            .then(undefined, (err) => {
-                console.error(err);
+            .catch((err) => {
+                // Hack to avoid crashing calling code, while still logging the error
+                setTimeout(() => {
+                    throw err;
+                }, 0);
             });
     }
 }
