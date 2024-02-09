@@ -348,20 +348,6 @@ function toDiagnostics(resource: monaco.Uri, diag: ls.Diagnostic): monaco.editor
     };
 }
 
-// --- colorization ---
-function fromIRange(range: monaco.IRange): ls.Range {
-    if (!range) {
-        return undefined;
-    }
-
-    if (range instanceof monaco.Range) {
-        return { start: fromPosition(range.getStartPosition()), end: fromPosition(range.getEndPosition()) };
-    }
-
-    const { startLineNumber, startColumn, endLineNumber, endColumn } = range;
-    range = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
-}
-
 type kinds = keyof typeof Kusto.Language.Editor.ClassificationKind;
 
 /**
@@ -568,21 +554,6 @@ export class ColorizationAdapter {
         this._disposables = [];
     }
 
-    /**
-     * Return true if the range doesn't intersect any of the line ranges.
-     * @param range monaco.Range
-     * @param impactedLineRanges an array of line ranges
-     */
-    private _rangeDoesNotIntersectAny(
-        range: monaco.Range,
-        impactedLineRanges: { firstImpactedLine: number; lastImpactedLine: number }[]
-    ) {
-        return impactedLineRanges.every(
-            (lineRange) =>
-                range.startLineNumber > lineRange.lastImpactedLine || range.endLineNumber < lineRange.firstImpactedLine
-        );
-    }
-
     private _doColorization(
         model: monaco.editor.IModel,
         languageId: string,
@@ -595,9 +566,15 @@ export class ColorizationAdapter {
         const versionNumberBeforeColorization = model.getVersionId();
         this._worker(resource)
             .then((worker) => {
+                if (model.isDisposed()) {
+                    return;
+                }
                 return worker.doColorization(resource.toString(), intervals);
             })
             .then((colorizationRanges) => {
+                if (model.isDisposed()) {
+                    return;
+                }
                 const newModel = this._monacoInstance.editor.getModel(model.uri);
                 const versionId = newModel.getVersionId();
 
@@ -649,18 +626,15 @@ export class ColorizationAdapter {
                     this.decorations = model.deltaDecorations(oldDecorations, newDecorations);
                 }
             })
-            .then(undefined, (err) => {
-                console.error(err);
+            .catch((err) => {
+                // Hack to avoid crashing calling code, while still logging the
+                // error. Might be better to just let the error propagate
+                // normally, but that would require more investigation.
+                setTimeout(() => {
+                    throw err;
+                }, 0);
             });
     }
-}
-
-/**
- * Gets all keys of an enum (the string keys not the numeric values).
- * @param e Enum type
- */
-function getEnumKeys<E>(e: any) {
-    return Object.keys(e).filter((k) => typeof e[k] === 'number');
 }
 
 /**
@@ -1037,52 +1011,6 @@ export class RenameAdapter implements monaco.languages.RenameProvider {
                 return toWorkspaceEdit(edit);
             });
     }
-}
-
-// --- document symbols ------
-
-function toSymbolKind(kind: ls.SymbolKind): monaco.languages.SymbolKind {
-    let mKind = monaco.languages.SymbolKind;
-
-    switch (kind) {
-        case ls.SymbolKind.File:
-            return mKind.Array;
-        case ls.SymbolKind.Module:
-            return mKind.Module;
-        case ls.SymbolKind.Namespace:
-            return mKind.Namespace;
-        case ls.SymbolKind.Package:
-            return mKind.Package;
-        case ls.SymbolKind.Class:
-            return mKind.Class;
-        case ls.SymbolKind.Method:
-            return mKind.Method;
-        case ls.SymbolKind.Property:
-            return mKind.Property;
-        case ls.SymbolKind.Field:
-            return mKind.Field;
-        case ls.SymbolKind.Constructor:
-            return mKind.Constructor;
-        case ls.SymbolKind.Enum:
-            return mKind.Enum;
-        case ls.SymbolKind.Interface:
-            return mKind.Interface;
-        case ls.SymbolKind.Function:
-            return mKind.Function;
-        case ls.SymbolKind.Variable:
-            return mKind.Variable;
-        case ls.SymbolKind.Constant:
-            return mKind.Constant;
-        case ls.SymbolKind.String:
-            return mKind.String;
-        case ls.SymbolKind.Number:
-            return mKind.Number;
-        case ls.SymbolKind.Boolean:
-            return mKind.Boolean;
-        case ls.SymbolKind.Array:
-            return mKind.Array;
-    }
-    return mKind.Function;
 }
 
 // --- formatting -----
