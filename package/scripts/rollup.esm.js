@@ -21,7 +21,7 @@ const ESM_WORKER_LANGUAGE_SERVER_IMPORT = [
  * @type {import('rollup').RollupOptions}
  */
 const config = {
-    external: /\/node_modules\//,
+    external: /node_modules/,
     input: {
         'monaco.contribution': path.join(packageFolder, 'src/monaco.contribution.ts'),
         'kusto.worker': path.join(packageFolder, 'src/kusto.worker.ts'),
