@@ -51,7 +51,7 @@
         "@types/xregexp": "^4.4.0",
         "concurrently": "^8.2.1",
         "http-server": "^14.1.1",
-        "monaco-editor": "~0.46.0",
+        "monaco-editor": "^0.46.0",
         "rimraf": "^5.0.1",
         "rollup": "^3.29.2",
         "terser": "^5.19.4",
@@ -67,6 +67,6 @@
         "xregexp": "^5.1.1"
     },
     "peerDependencies": {
-        "monaco-editor": "~0.46.0"
+        "monaco-editor": "^0.46.0"
     }
 }
