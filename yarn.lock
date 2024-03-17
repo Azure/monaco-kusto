@@ -1768,7 +1768,7 @@ __metadata:
   peerDependencies:
     monaco-editor: ^0.46.0
   bin:
-    copyMonacoFilesAMD: ./copyMonacoFilesAMD.js
+    copyMonacoFilesAMD: copyMonacoFilesAMD.js
   languageName: unknown
   linkType: soft
 
