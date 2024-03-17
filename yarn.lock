@@ -7527,6 +7527,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^3.3.7":
+  version: 3.3.7
+  resolution: "nanoid@npm:3.3.7"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: d36c427e530713e4ac6567d488b489a36582ef89da1d6d4e3b87eded11eb10d7042a877958c6f104929809b2ab0bafa17652b076cdf84324aa75b30b722204f2
+  languageName: node
+  linkType: hard
+
 "negotiator@npm:0.6.3, negotiator@npm:^0.6.3":
   version: 0.6.3
   resolution: "negotiator@npm:0.6.3"
@@ -8212,7 +8221,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.21, postcss@npm:^8.4.31":
+"postcss@npm:^8.4.21":
   version: 8.4.31
   resolution: "postcss@npm:8.4.31"
   dependencies:
@@ -8220,6 +8229,17 @@ __metadata:
     picocolors: ^1.0.0
     source-map-js: ^1.0.2
   checksum: 1d8611341b073143ad90486fcdfeab49edd243377b1f51834dc4f6d028e82ce5190e4f11bb2633276864503654fb7cab28e67abdc0fbf9d1f88cad4a0ff0beea
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.35":
+  version: 8.4.35
+  resolution: "postcss@npm:8.4.35"
+  dependencies:
+    nanoid: ^3.3.7
+    picocolors: ^1.0.0
+    source-map-js: ^1.0.2
+  checksum: cf3c3124d3912a507603f6d9a49b3783f741075e9aa73eb592a6dd9194f9edab9d20a8875d16d137d4f779fe7b6fbd1f5727e39bfd1c3003724980ee4995e1da
   languageName: node
   linkType: hard
 
@@ -9735,12 +9755,12 @@ __metadata:
   linkType: hard
 
 "vite@npm:^5.0.0":
-  version: 5.0.4
-  resolution: "vite@npm:5.0.4"
+  version: 5.1.2
+  resolution: "vite@npm:5.1.2"
   dependencies:
     esbuild: ^0.19.3
     fsevents: ~2.3.3
-    postcss: ^8.4.31
+    postcss: ^8.4.35
     rollup: ^4.2.0
   peerDependencies:
     "@types/node": ^18.0.0 || >=20.0.0
@@ -9770,7 +9790,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: baa088f02f610bf0c7e48931e693781dae7367c1836ed19c202aace0e90fa5f6156669f562ba466585f3fdc50d9d75e82697456e1529cc8c2880af420a010ef3
+  checksum: deb606eda820912ffc5361b732bbd763bf82ac4c982f9b6ddfafd7c035067cba78adcdc34d053d5bb0ed3a191f99b17e80012b38e23e7cb9376e45ad6813fe23
   languageName: node
   linkType: hard
 
