@@ -540,7 +540,7 @@ class KustoLanguageService implements LanguageService {
 
         let context = this._rulesProvider.AnalyzeCommand$1(commandTextUntilCursor, currentCommand).Context;
 
-        let result = { v: null };
+        let result: { v: null | k.IntelliSenseRule } = { v: null };
         this._rulesProvider.TryMatchAnyRule(commandTextWithoutLastWord, result);
         let rule: k.IntelliSenseRule = result.v;
 
@@ -787,7 +787,7 @@ class KustoLanguageService implements LanguageService {
         const applyCodeActions = this.getApplyCodeActions(document, start, end);
         const resultActionsMap: ResultAction[] = applyCodeActions
             .map((applyCodeAction) => {
-                let changes = [];
+                let changes: ResultAction['changes'] = [];
                 const codeActionResults = this.toArray(block.Service.ApplyCodeAction(applyCodeAction, start).Actions);
                 const changeTextAction = codeActionResults.find(
                     (c) => c instanceof Kusto.Language.Editor.ChangeTextAction
@@ -1490,7 +1490,7 @@ class KustoLanguageService implements LanguageService {
             return Promise.resolve([]);
         }
 
-        const queryParams = [];
+        const queryParams: { name: string; type: string }[] = [];
         queryParamStatements.forEach((paramStatement: Kusto.Language.Syntax.QueryParametersStatement) => {
             paramStatement.WalkElements((el: any) =>
                 el.ReferencedSymbol && el.ReferencedSymbol.Type
@@ -1538,7 +1538,9 @@ class KustoLanguageService implements LanguageService {
             return Promise.resolve(info);
         }
 
-        const properties = this.toArray(withClause.Properties);
+        const properties = this.toArray(
+            withClause.Properties
+        ) as Kusto.Language.Syntax.SeparatedElement$1<Kusto.Language.Syntax.NamedParameter>[];
 
         const props = properties.reduce<RenderOptions>(
             (
@@ -1554,13 +1556,11 @@ class KustoLanguageService implements LanguageService {
                         break;
                     case 'ycolumns':
                     case 'anomalycolumns':
-                        const nameNodes = this.toArray((property.Element$1.Expression as any).Names);
+                        const nameNodes = this.toArray(
+                            (property.Element$1.Expression as any).Names
+                        ) as Kusto.Language.Syntax.SeparatedElement$1<Kusto.Language.Syntax.NameDeclaration>[];
 
-                        const values = nameNodes.map(
-                            (
-                                nameNode: Kusto.Language.Syntax.SeparatedElement$1<Kusto.Language.Syntax.NameDeclaration>
-                            ) => nameNode.Element$1.SimpleName
-                        );
+                        const values = nameNodes.map((nameNode) => nameNode.Element$1.SimpleName);
                         prev[name] = values;
                         break;
                     case 'ymin':
@@ -1791,25 +1791,28 @@ class KustoLanguageService implements LanguageService {
                 let kDatabaseInContext: k.KustoIntelliSenseDatabaseEntity = undefined;
 
                 kCluster.ConnectionString = schema.cluster.connectionString;
-                const databases = [];
+                const databases: k.KustoIntelliSenseDatabaseEntity[] = [];
                 schema.cluster.databases.forEach((database) => {
                     const kDatabase = new k.KustoIntelliSenseDatabaseEntity();
                     kDatabase.Name = database.name;
-                    const tables = [];
+                    const tables: k.KustoIntelliSenseTableEntity[] = [];
                     database.tables.forEach((table) => {
                         const kTable = new k.KustoIntelliSenseTableEntity();
                         kTable.Name = table.name;
-                        const cols = [];
+                        const cols: k.KustoIntelliSenseColumnEntity[] = [];
                         table.columns.forEach((column) => {
                             const kColumn = new k.KustoIntelliSenseColumnEntity();
                             kColumn.Name = column.name;
-                            kColumn.TypeCode = k.EntityDataType[getEntityDataTypeFromCslType(column.type)];
+                            kColumn.TypeCode =
+                                k.EntityDataType[
+                                    getEntityDataTypeFromCslType(column.type) as keyof typeof k.EntityDataType
+                                ];
                             cols.push(kColumn);
                         });
                         kTable.Columns = new Bridge.ArrayEnumerable(cols);
                         tables.push(kTable);
                     });
-                    const functions = [];
+                    const functions: k.KustoIntelliSenseFunctionEntity[] = [];
                     database.functions.forEach((fn) => {
                         const kFunction = new k.KustoIntelliSenseFunctionEntity();
                         (kFunction.Name = fn.name),
@@ -1988,10 +1991,12 @@ class KustoLanguageService implements LanguageService {
         }
 
         // Remove deleted databases from cache
-        const schemaDbLookup: { [dbName: string]: s.Database } = schema.cluster.databases.reduce(
-            (prev, curr) => (prev[curr.name] = curr),
-            {}
-        );
+        const schemaDbLookup: { [dbName: string]: s.Database } = schema.cluster.databases.reduce<
+            Record<string, s.Database>
+        >((prev, curr) => {
+            prev[curr.name] = curr;
+            return prev;
+        }, {});
         Object.keys(cached).map((dbName) => {
             if (!schemaDbLookup[dbName]) {
                 delete cached.dbName;
@@ -2311,7 +2316,7 @@ class KustoLanguageService implements LanguageService {
         );
     }
 
-    private _kustoKindtolsKind = {
+    private _kustoKindtolsKind: Record<k.OptionKind, ls.CompletionItemKind> = {
         [k.OptionKind.None]: ls.CompletionItemKind.Interface,
         [k.OptionKind.Operator]: ls.CompletionItemKind.Method,
         [k.OptionKind.Command]: ls.CompletionItemKind.Method,
@@ -2337,7 +2342,7 @@ class KustoLanguageService implements LanguageService {
         [k.OptionKind.FunctionFilter]: ls.CompletionItemKind.Field,
         [k.OptionKind.FunctionScalar]: ls.CompletionItemKind.Field,
         [k.OptionKind.ClientDirective]: ls.CompletionItemKind.Enum,
-    };
+    } as Record<k.OptionKind, ls.CompletionItemKind>; // TODO: Add missing keys and remove this cast
 
     private _kustoKindToLsKindV2: { [k in k2.CompletionKind]: ls.CompletionItemKind } = {
         [k2.CompletionKind.AggregateFunction]: ls.CompletionItemKind.Field,
@@ -2389,7 +2394,7 @@ class KustoLanguageService implements LanguageService {
         return (Bridge as any).toArray(bridgeList);
     }
 
-    private static toBridgeList(array): any {
+    private static toBridgeList(array: any): any {
         // copied from bridge.js from the implementation of Enumerable.prototype.toList
         return new (System.Collections.Generic.List$1(System.Object).$ctor1)(array);
     }

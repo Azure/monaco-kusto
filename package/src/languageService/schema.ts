@@ -120,7 +120,9 @@ const dotnetTypeToKustoType = {
     'System.Object': 'dynamic',
     'System.Data.SqlTypes.SqlDecimal': 'decimal',
 };
-export const getCslTypeNameFromClrType = (clrType: string): string => dotnetTypeToKustoType[clrType] || clrType;
+
+export const getCslTypeNameFromClrType = (clrType: string): string =>
+    (dotnetTypeToKustoType as Record<string, string>)[clrType] || clrType;
 
 const kustoTypeToEntityDataType = {
     object: 'Object',
@@ -140,7 +142,9 @@ const kustoTypeToEntityDataType = {
     dynamic: 'Dynamic',
     timespan: 'TimeSpan',
 };
-export const getEntityDataTypeFromCslType = (cslType: string): string => kustoTypeToEntityDataType[cslType] || cslType;
+
+export const getEntityDataTypeFromCslType = (cslType: string): string =>
+    (kustoTypeToEntityDataType as Record<string, string>)[cslType] || cslType;
 
 export const getCallName = (fn: Function): string =>
     `${fn.name}(${fn.inputParameters.map((p) => `{${p.name}}`).join(',')})`;
