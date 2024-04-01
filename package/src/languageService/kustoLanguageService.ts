@@ -2032,9 +2032,7 @@ class KustoLanguageService implements LanguageService {
         // const hostname = new URL(schema.cluster.connectionString.split(';')[0]).hostname;
         const hostname = schema.cluster.connectionString.match(/(.*\/\/)?([^\/;]*)/)[2];
         // safranke.eastus.kusto.windows.net --> safranke.eastus;
-        const clusterName = hostname.split(
-            hostname.includes('.kusto') ? '.kusto' : '.'
-        )[0];
+        const clusterName = hostname.split(hostname.includes('.kusto') ? '.kusto' : '.')[0];
         const clusterSymbol = new sym.ClusterSymbol.ctor(clusterName, databases);
 
         globalState = globalState.WithCluster(clusterSymbol);
