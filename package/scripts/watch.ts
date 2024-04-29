@@ -37,7 +37,7 @@ async function main() {
     // the page
     concurrently(
         [
-            'http-server -o ./',
+            'browser-sync start --server ./ --files ./',
             'tsc -w -p ./scripts/tsconfig.watch.json',
             'yarn rollup -c ./scripts/rollup.dev.js -w --bundleConfigAsCjs',
         ],
