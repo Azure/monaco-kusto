@@ -1757,7 +1757,7 @@ __metadata:
     concurrently: ^8.2.1
     http-server: ^14.1.1
     lodash-es: ^4.17.21
-    monaco-editor: ^0.48.0
+    monaco-editor: ^0.46.0
     rimraf: ^5.0.1
     rollup: ^3.29.2
     terser: ^5.19.4
@@ -1767,7 +1767,7 @@ __metadata:
     vscode-languageserver-types: ^3.17.4
     xregexp: ^5.1.1
   peerDependencies:
-    monaco-editor: ^0.48.0
+    monaco-editor: ^0.46.0
   bin:
     copyMonacoFilesAMD: copyMonacoFilesAMD.js
   languageName: unknown
@@ -7645,13 +7645,6 @@ __metadata:
   version: 0.46.0
   resolution: "monaco-editor@npm:0.46.0"
   checksum: be7aaa2747b8d3a3537f56c9353ebe779b188eb1480f6453fa1e346d8ccdd27068cb4508c8f6f3b8cc07ac0f792a3d6df36168d54cd6e074742182525115be86
-  languageName: node
-  linkType: hard
-
-"monaco-editor@npm:^0.48.0":
-  version: 0.48.0
-  resolution: "monaco-editor@npm:0.48.0"
-  checksum: 611eaded772935a8b7491325672a165efcb5fde69da4fabd822eae799765655fb55b4ef0fac411103a49c65679c597da82177e06f6f466b001af6117e8107e28
   languageName: node
   linkType: hard
 
