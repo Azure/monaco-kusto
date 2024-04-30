@@ -1719,10 +1719,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service-next@npm:11.5.0":
-  version: 11.5.0
-  resolution: "@kusto/language-service-next@npm:11.5.0"
-  checksum: b61fc1ec254113e5a145d30391b8c0113ec48fe5dfb11ee5be17ca688f5c60d982e75cae5ca1ed6cf3aeeb05e0ff66cf6906e0234190e11ed801576975210488
+"@kusto/language-service-next@npm:11.5.3":
+  version: 11.5.3
+  resolution: "@kusto/language-service-next@npm:11.5.3"
+  checksum: 2add7533feb01b3ddbae769bc01a0ffffedfb76c1393b8e7ddb521482d1212c0123c9a5e6fb90ab67412fd33c2557ffe61449d7b354f4d9ffe42ac60ff948522
   languageName: node
   linkType: hard
 
@@ -1741,7 +1741,7 @@ __metadata:
     "@babel/preset-env": ^7.22.20
     "@babel/preset-typescript": ^7.22.15
     "@kusto/language-service": 0.0.278
-    "@kusto/language-service-next": 11.5.0
+    "@kusto/language-service-next": 11.5.3
     "@rollup/plugin-alias": ^5.0.0
     "@rollup/plugin-babel": ^6.0.3
     "@rollup/plugin-commonjs": ^25.0.4
@@ -1757,7 +1757,7 @@ __metadata:
     concurrently: ^8.2.1
     http-server: ^14.1.1
     lodash-es: ^4.17.21
-    monaco-editor: ^0.46.0
+    monaco-editor: ^0.48.0
     rimraf: ^5.0.1
     rollup: ^3.29.2
     terser: ^5.19.4
@@ -1767,7 +1767,7 @@ __metadata:
     vscode-languageserver-types: ^3.17.4
     xregexp: ^5.1.1
   peerDependencies:
-    monaco-editor: ^0.46.0
+    monaco-editor: ^0.48.0
   bin:
     copyMonacoFilesAMD: copyMonacoFilesAMD.js
   languageName: unknown
@@ -7641,17 +7641,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.46.0":
+"monaco-editor@npm:^0.46.0":
   version: 0.46.0
   resolution: "monaco-editor@npm:0.46.0"
   checksum: be7aaa2747b8d3a3537f56c9353ebe779b188eb1480f6453fa1e346d8ccdd27068cb4508c8f6f3b8cc07ac0f792a3d6df36168d54cd6e074742182525115be86
   languageName: node
   linkType: hard
 
-"monaco-editor@patch:monaco-editor@npm%3A0.46.0#./.yarn/patches/monaco-editor-npm-0.46.0-fb69b10c11.patch::locator=monaco-kusto%40workspace%3A.":
-  version: 0.46.0
-  resolution: "monaco-editor@patch:monaco-editor@npm%3A0.46.0#./.yarn/patches/monaco-editor-npm-0.46.0-fb69b10c11.patch::version=0.46.0&hash=e0292b&locator=monaco-kusto%40workspace%3A."
-  checksum: 4b1f28cd5e0446cfc0b324ad0413b497132fce3b4487d3b6531a0640138d80033df37353e77650e41e5034a8691ee64d7b29bb6e1ecc8cd22fa42ea9549cea68
+"monaco-editor@npm:^0.48.0":
+  version: 0.48.0
+  resolution: "monaco-editor@npm:0.48.0"
+  checksum: 611eaded772935a8b7491325672a165efcb5fde69da4fabd822eae799765655fb55b4ef0fac411103a49c65679c597da82177e06f6f466b001af6117e8107e28
   languageName: node
   linkType: hard
 

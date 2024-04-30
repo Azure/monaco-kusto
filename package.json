@@ -27,6 +27,6 @@
         "wait-on": "^7.0.1"
     },
     "resolutions": {
-        "monaco-editor@^0.46.0": "patch:monaco-editor@npm%3A0.46.0#./.yarn/patches/monaco-editor-npm-0.46.0-fb69b10c11.patch"
+        "monaco-editor@^0.47.0": "patch:monaco-editor@npm%3A0.46.0#./.yarn/patches/monaco-editor-npm-0.46.0-fb69b10c11.patch"
     }
 }
