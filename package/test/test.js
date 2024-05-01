@@ -23,8 +23,12 @@ fetch('./test/mode.txt')
         require.config(dev ? loader_dev_config : loader_release_config);
         // 'vs/editor/editor.main' is not required here, but makes things load a little faster
         require(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], function () {
+            const defaultValue = 'StormEvents \n| project StartTime , State \n| where State contains "Texas" \n| count';
+            const storageValue = localStorage.getItem('dev-kusto-query');
+            const value = storageValue?.trim().length ? storageValue : defaultValue;
+
             const editor = monaco.editor.create(document.getElementById('container'), {
-                value: 'StormEvents \n| project StartTime , State \n| where State contains "Texas" \n| count',
+                value,
                 language: 'kusto',
                 selectionHighlight: false,
                 theme: 'kusto-light',
@@ -32,6 +36,10 @@ fetch('./test/mode.txt')
                 suggest: {
                     selectionMode: 'whenQuickSuggestion',
                 },
+            });
+
+            editor.onDidChangeModelContent(() => {
+                localStorage.setItem('dev-kusto-query', editor.getValue());
             });
 
             window.getCurrentCommand = () => {
