@@ -24,7 +24,7 @@ fetch('./test/mode.txt')
         // 'vs/editor/editor.main' is not required here, but makes things load a little faster
         require(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], function () {
             const editor = monaco.editor.create(document.getElementById('container'), {
-                value: ['StormEvents | project StartTime , State | where State contains "Texas" | count'].join('\n'),
+                value: 'StormEvents \n| project StartTime , State \n| where State contains "Texas" \n| count',
                 language: 'kusto',
                 selectionHighlight: false,
                 theme: 'kusto-light',
