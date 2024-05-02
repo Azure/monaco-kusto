@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "10.0.19",
+    "version": "10.0.20",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -62,7 +62,7 @@
     },
     "dependencies": {
         "@kusto/language-service": "0.0.278",
-        "@kusto/language-service-next": "11.5.0",
+        "@kusto/language-service-next": "11.5.3",
         "lodash-es": "^4.17.21",
         "vscode-languageserver-types": "^3.17.4",
         "xregexp": "^5.1.1"
