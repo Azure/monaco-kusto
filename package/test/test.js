@@ -38,9 +38,19 @@ fetch('./test/mode.txt')
                 },
             });
 
-            editor.onDidChangeModelContent(() => {
+            const updateEditorValueInLocalStorage = () => {
                 localStorage.setItem('dev-kusto-query', editor.getValue());
-            });
+            };
+            const debouncedUpdateEditorValueInLocalStorage = (function () {
+                let timeoutID;
+                return () => {
+                    clearTimeout(timeoutID);
+                    timeoutID = setTimeout(() => {
+                        updateEditorValueInLocalStorage();
+                    }, 1000);
+                };
+            })();
+            editor.onDidChangeModelContent(debouncedUpdateEditorValueInLocalStorage);
 
             window.getCurrentCommand = () => {
                 monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
