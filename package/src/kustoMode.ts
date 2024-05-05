@@ -2,9 +2,9 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import { WorkerManager } from './workerManager';
 import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution';
-import { KustoLanguageDefinition } from './languageService/kustoMonarchLanguageDefinition';
+import { KustoLanguageDefinition } from './languageServiceWrapper/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
-import type { Schema } from './languageService/schema';
+import type { Schema } from './languageServiceWrapper/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
 
 export interface AugmentedWorker

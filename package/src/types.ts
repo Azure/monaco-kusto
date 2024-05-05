@@ -7,9 +7,9 @@ import type {
     EngineSchema,
     Database,
     showSchema,
-} from './languageService/schema';
-import type { RenderInfo } from './languageService/renderInfo';
-import type { LanguageSettings } from './languageService/settings';
+} from './languageServiceWrapper/schema';
+import type { RenderInfo } from './languageServiceWrapper/renderInfo';
+import type { LanguageSettings } from './languageServiceWrapper/settings';
 
 export interface LanguageServiceDefaults {
     readonly onDidChange: monaco.IEvent<LanguageServiceDefaults>;
