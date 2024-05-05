@@ -27,7 +27,7 @@ fetch('./test/mode.txt')
             const storageValue = localStorage.getItem('dev-kusto-query');
             const value = storageValue?.trim().length ? storageValue : defaultValue;
 
-            const editor = monaco.editor.create(document.getElementById('container'), {
+            const editor = monaco.editor.create(document.getElementById('editor'), {
                 value,
                 language: 'kusto',
                 selectionHighlight: false,

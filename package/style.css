@@ -1,0 +1,28 @@
+.main-container {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.editor {
+    width: 800px;
+    height: 600px;
+    border: 1px solid grey;
+    border-radius: 4px;
+    flex-wrap: wrap;
+}
+
+.actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 8px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}

@@ -2,80 +2,80 @@
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-        <!--Override default .vs .Function style rule, otherwise intellisense is blue.-->
-        <style>
-            .vs .Function {
-                color: inherit !important;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="./style.css">
     </head>
 
     <body>
-        <h2>Monaco Editor Kusto test page</h2>
-
-        <script></script>
-        <div id="container" style="width: 800px; height: 600px; border: 1px solid grey"></div>
-
+        <h1>Monaco Editor Kusto test page</h1>
         <script src="./out/vs/loader.js"></script>
         <script src="./test/test.js"></script>
-        <div>
-            <button onclick="setKuskus()">Kuskus</button>
-            <button onclick="setHelp()">Help</button>
-            <button onclick="setHelpWithParameter()">Help with injected parameter</button>
-            <button onclick="setDM()">DM</button>
-            <button onclick="setCustomSchema()">CustomSchema</button>
+
+        <div class="main-container">
+            <div id="editor" class="editor"></div>
+
+            <div class="actions-container">
+                <div>
+                    <button onclick="setKuskus()">Kuskus</button>
+                    <button onclick="setHelp()">Help</button>
+                    <button onclick="setHelpWithParameter()">Help with injected parameter</button>
+                    <button onclick="setDM()">DM</button>
+                    <button onclick="setCustomSchema()">CustomSchema</button>
+                </div>
+                <div>
+                    <button onclick="setSemanticOff()">Semantic colorization Off</button>
+                    <button onclick="setSemanticOn()">Semantic colorization On</button>
+                </div>
+                <div>
+                    <button onclick="enableSyntaxErrorAsMarkDown()">Enable syntax error as markdown</button>
+                    <button onclick="disableSyntaxErrorAsMarkDown()">Disable syntax error as markdown</button>
+                </div>
+                <div>
+                    <button onclick="setNewLineFormatting()">Set New Line Formatting</button>
+                    <button onclick="setSmartFormatting()">Set Smart Formatting</button>
+                </div>
+                <div>
+                    <button onclick="setIntellisenseV1()">V1 Intellisense</button>
+                    <button onclick="setIntellisenseV2()">V2 Intellisense</button>
+                </div>
+                <div>
+                    <button onclick="enableQueryWarnings()">Enable Warnings</button>
+                    <button onclick="disableQueryWarnings()">Disable Warnings</button>
+                </div>
+                <div>
+                    <button onclick="enableQuerySuggestions()">Enable Suggestions</button>
+                    <button onclick="disableQuerySuggestions()">Disable Suggestions</button>
+                </div>
+                <div>
+                    <button onclick="enableQuickFix()">Enable Quick fix</button>
+                    <button onclick="disableQuickFix()">Disable Quick fix</button>
+                </div>
+                <div>
+                    <button onClick="setDarkTheme()">Dark Theme</button>
+                    <button onClick="setLightTheme()">Light Theme</button>
+                </div>
+                <div>
+                    <button onClick="setDisableClusterCompletion()">Disable Cluster keyword completion</button>
+                    <button onClick="setEnableClusterCompletion()">Enalbe Cluster keyword completion</button>
+                </div>
+                <div>
+                    <button onclick="getCurrentCommand()">Show current Command and position</button>
+                </div>
+                <div>
+                    <button onclick="getQueryParams()">Show current query params</button>
+                    <button onclick="getGlobalParams()">Show all global params</button>
+                    <button onclick="getReferencedGlobalParams()">Show Referenced global params</button>
+                    <button onclick="getReferencedSymbols()">Show Referenced symbols</button>
+                </div>
+                <div>
+                    <button onclick="getRenderInfo()">Show Visualization Options</button>
+                    <button onclick="getDatabaseReferences()">Get Database References</button>
+                    <button onclick="getClusterReferences()">Get Cluster References</button>
+                </div>
+                <div>
+                    <button onclick="checkOnDidProvideCompletionItems()">onDidProvideCompletionItems</button>
+                </div>
+                <div id="currentCommand"></div>
+            </div>
         </div>
-        <div>
-            <button onclick="setSemanticOff()">Semantic colorization Off</button>
-            <button onclick="setSemanticOn()">Semantic colorization On</button>
-        </div>
-        <div>
-            <button onclick="enableSyntaxErrorAsMarkDown()">Enable syntax error as markdown</button>
-            <button onclick="disableSyntaxErrorAsMarkDown()">Disable syntax error as markdown</button>
-        </div>
-        <div>
-            <button onclick="setNewLineFormatting()">Set New Line Formatting</button>
-            <button onclick="setSmartFormatting()">Set Smart Formatting</button>
-        </div>
-        <div>
-            <button onclick="setIntellisenseV1()">V1 Intellisense</button>
-            <button onclick="setIntellisenseV2()">V2 Intellisense</button>
-        </div>
-        <div>
-            <button onclick="enableQueryWarnings()">Enable Warnings</button>
-            <button onclick="disableQueryWarnings()">Disable Warnings</button>
-        </div>
-        <div>
-            <button onclick="enableQuerySuggestions()">Enable Suggestions</button>
-            <button onclick="disableQuerySuggestions()">Disable Suggestions</button>
-        </div>
-        <div>
-            <button onclick="enableQuickFix()">Enable Quick fix</button>
-            <button onclick="disableQuickFix()">Disable Quick fix</button>
-        </div>
-        <div>
-            <button onClick="setDarkTheme()">Dark Theme</button>
-            <button onClick="setLightTheme()">Light Theme</button>
-        </div>
-        <div>
-            <button onClick="setDisableClusterCompletion()">Disable Cluster keyword completion</button>
-            <button onClick="setEnableClusterCompletion()">Enalbe Cluster keyword completion</button>
-        </div>
-        <div>
-            <button onclick="getCurrentCommand()">Show current Command and position</button>
-        </div>
-        <div>
-            <button onclick="getQueryParams()">Show current query params</button>
-            <button onclick="getGlobalParams()">Show all global params</button>
-            <button onclick="getReferencedGlobalParams()">Show Referenced global params</button>
-            <button onclick="getReferencedSymbols()">Show Referenced symbols</button>
-            <button onclick="getRenderInfo()">Show Visualization Options</button>
-            <button onclick="getDatabaseReferences()">Get Database References</button>
-            <button onclick="getClusterReferences()">Get Cluster References</button>
-        </div>
-        <div>
-            <button onclick="checkOnDidProvideCompletionItems()">onDidProvideCompletionItems</button>
-        </div>
-        <div id="currentCommand"></div>
     </body>
 </html>
