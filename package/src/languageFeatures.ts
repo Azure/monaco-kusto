@@ -4,8 +4,8 @@ import * as ls from 'vscode-languageserver-types';
 import debounce from 'lodash-es/debounce';
 
 import type { LanguageServiceDefaults, LanguageSettings, OnDidProvideCompletionItems } from './monaco.contribution';
-import type { Schema } from './languageServiceWrapper/schema';
-import type { ClassifiedRange } from './languageServiceWrapper/kustoLanguageService';
+import type { Schema } from './languageServiceManager/schema';
+import type { ClassifiedRange } from './languageServiceManager/kustoLanguageService';
 import { AugmentedWorkerAccessor } from './kustoMode';
 
 // --- diagnostics ---

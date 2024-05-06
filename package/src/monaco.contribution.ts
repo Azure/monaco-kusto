@@ -11,12 +11,12 @@ import {
     getExpression,
     getInputParametersAsCslString,
     getEntityDataTypeFromCslType,
-} from './languageServiceWrapper/schema';
-import type { LanguageSettings } from './languageServiceWrapper/settings';
+} from './languageServiceManager/schema';
+import type { LanguageSettings } from './languageServiceManager/settings';
 
-export * from './languageServiceWrapper/schema';
-export * from './languageServiceWrapper/renderInfo';
-export * from './languageServiceWrapper/settings';
+export * from './languageServiceManager/schema';
+export * from './languageServiceManager/renderInfo';
+export * from './languageServiceManager/settings';
 export * from './types';
 
 export { getCurrentCommandRange } from './extendedEditor';
