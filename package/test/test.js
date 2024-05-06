@@ -38,6 +38,8 @@ fetch('./test/mode.txt')
                 },
             });
 
+            applyDefaultsOnDomElements();
+
             const updateEditorValueInLocalStorage = () => {
                 localStorage.setItem('dev-kusto-query', editor.getValue());
             };
@@ -569,6 +571,24 @@ fetch('./test/mode.txt')
                     });
                 });
             };
+            window.withIncludeExtendedSyntax = (event) => {
+                const includeExtendedSyntax = event.target.checked;
+                const completionOptions = { includeExtendedSyntax };
+
+                monaco.languages.kusto.getKustoWorker().then(() => {
+                    const currentMonacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    const newMonacoSettings = Object.assign({}, currentMonacoSettings, { completionOptions });
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(newMonacoSettings);
+                });
+            };
+
             window.setHelp();
         });
     });
+
+function applyDefaultsOnDomElements() {
+    const languageSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+
+    const includeExtendedSyntaxCheckbox = document.getElementById('includeExtendedSyntax');
+    includeExtendedSyntaxCheckbox.checked = languageSettings.completionOptions.includeExtendedSyntax;
+}

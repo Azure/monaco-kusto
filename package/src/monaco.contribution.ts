@@ -84,6 +84,7 @@ const defaultLanguageSettings: LanguageSettings = {
     disabledDiagnosticCodes: [],
     quickFixCodeActions: ['Change to', 'FixAll'],
     enableQuickFixes: false,
+    completionOptions: { includeExtendedSyntax: false },
 };
 
 export function getKustoWorker(): Promise<WorkerAccessor> {

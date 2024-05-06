@@ -403,7 +403,10 @@ class KustoLanguageService implements LanguageService {
         let currentCommand = script.GetBlockAtPosition(cursorOffset);
 
         // get completion items
-        const completionItems = currentCommand.Service.GetCompletionItems(cursorOffset);
+        const { includeExtendedSyntax } = this._languageSettings.completionOptions;
+        const completionOptions =
+            Kusto.Language.Editor.CompletionOptions.Default.WithIncludeExtendedSyntax(includeExtendedSyntax);
+        const completionItems = currentCommand.Service.GetCompletionItems(cursorOffset, completionOptions);
 
         let disabledItems = this.disabledCompletionItemsV2;
         if (this._languageSettings.disabledCompletionItems) {
@@ -2487,6 +2490,7 @@ let languageService = new KustoLanguageService(KustoLanguageService.dummySchema,
     includeControlCommands: true,
     useIntellisenseV2: true,
     useSemanticColorization: true,
+    completionOptions: { includeExtendedSyntax: false },
 });
 
 /**
