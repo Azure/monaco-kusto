@@ -785,7 +785,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
     constructor(private _worker: AugmentedWorkerAccessor, private languageSettings: LanguageSettings) {}
 
     public get triggerCharacters(): string[] {
-        return [' '];
+        return [' ', '.', '('];
     }
 
     provideCompletionItems(

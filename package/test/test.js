@@ -23,8 +23,12 @@ fetch('./test/mode.txt')
         require.config(dev ? loader_dev_config : loader_release_config);
         // 'vs/editor/editor.main' is not required here, but makes things load a little faster
         require(['vs/editor/editor.main', 'vs/language/kusto/monaco.contribution'], function () {
+            const defaultValue = 'StormEvents \n| project StartTime , State \n| where State contains "Texas" \n| count';
+            const storageValue = localStorage.getItem('dev-kusto-query');
+            const value = storageValue?.trim().length ? storageValue : defaultValue;
+
             const editor = monaco.editor.create(document.getElementById('container'), {
-                value: ['StormEvents | project StartTime , State | where State contains "Texas" | count'].join('\n'),
+                value,
                 language: 'kusto',
                 selectionHighlight: false,
                 theme: 'kusto-light',
@@ -33,6 +37,20 @@ fetch('./test/mode.txt')
                     selectionMode: 'whenQuickSuggestion',
                 },
             });
+
+            const updateEditorValueInLocalStorage = () => {
+                localStorage.setItem('dev-kusto-query', editor.getValue());
+            };
+            const debouncedUpdateEditorValueInLocalStorage = (function () {
+                let timeoutID;
+                return () => {
+                    clearTimeout(timeoutID);
+                    timeoutID = setTimeout(() => {
+                        updateEditorValueInLocalStorage();
+                    }, 1000);
+                };
+            })();
+            editor.onDidChangeModelContent(debouncedUpdateEditorValueInLocalStorage);
 
             window.getCurrentCommand = () => {
                 monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
