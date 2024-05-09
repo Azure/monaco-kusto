@@ -231,6 +231,7 @@ class KustoLanguageService implements LanguageService {
     private _clustersSetInGlobalState: Set<string>;
     private _nonEmptyDatabaseSetInGlobalState: Set<string>;
     private _languageSettings: LanguageSettings;
+    private _completionOptions: Kusto.Language.Editor.CompletionOptions;
     private _schema: Mutable<s.Schema>;
     private _schemaCache: {
         [cluster: string]: {
@@ -335,6 +336,10 @@ class KustoLanguageService implements LanguageService {
     configure(languageSettings: LanguageSettings) {
         this._languageSettings = languageSettings;
 
+        const { includeExtendedSyntax } = this._languageSettings.completionOptions;
+        this._completionOptions =
+            Kusto.Language.Editor.CompletionOptions.Default.WithIncludeExtendedSyntax(includeExtendedSyntax);
+
         // Since we're still reverting to V1 intellisense for control commands, we need to update the rules provider
         // (which is a notion of V1 intellisense).
         this.createRulesProvider(this._kustoJsSchema, this._schema.clusterType);
@@ -402,11 +407,7 @@ class KustoLanguageService implements LanguageService {
         const cursorOffset = document.offsetAt(position);
         let currentCommand = script.GetBlockAtPosition(cursorOffset);
 
-        // get completion items
-        const { includeExtendedSyntax } = this._languageSettings.completionOptions;
-        const completionOptions =
-            Kusto.Language.Editor.CompletionOptions.Default.WithIncludeExtendedSyntax(includeExtendedSyntax);
-        const completionItems = currentCommand.Service.GetCompletionItems(cursorOffset, completionOptions);
+        const completionItems = currentCommand.Service.GetCompletionItems(cursorOffset, this._completionOptions);
 
         let disabledItems = this.disabledCompletionItemsV2;
         if (this._languageSettings.disabledCompletionItems) {
