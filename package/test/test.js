@@ -27,7 +27,7 @@ fetch('./test/mode.txt')
             const storageValue = localStorage.getItem('dev-kusto-query');
             const value = storageValue?.trim().length ? storageValue : defaultValue;
 
-            const editor = monaco.editor.create(document.getElementById('container'), {
+            const editor = monaco.editor.create(document.getElementById('editor'), {
                 value,
                 language: 'kusto',
                 selectionHighlight: false,
@@ -37,6 +37,8 @@ fetch('./test/mode.txt')
                     selectionMode: 'whenQuickSuggestion',
                 },
             });
+
+            applyDefaultsOnDomElements();
 
             const updateEditorValueInLocalStorage = () => {
                 localStorage.setItem('dev-kusto-query', editor.getValue());
@@ -569,6 +571,24 @@ fetch('./test/mode.txt')
                     });
                 });
             };
+            window.withIncludeExtendedSyntax = (event) => {
+                const includeExtendedSyntax = event.target.checked;
+                const completionOptions = { includeExtendedSyntax };
+
+                monaco.languages.kusto.getKustoWorker().then(() => {
+                    const currentMonacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+                    const newMonacoSettings = Object.assign({}, currentMonacoSettings, { completionOptions });
+                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(newMonacoSettings);
+                });
+            };
+
             window.setHelp();
         });
     });
+
+function applyDefaultsOnDomElements() {
+    const languageSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+
+    const includeExtendedSyntaxCheckbox = document.getElementById('includeExtendedSyntax');
+    includeExtendedSyntaxCheckbox.checked = languageSettings.completionOptions.includeExtendedSyntax;
+}

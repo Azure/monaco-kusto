@@ -22,6 +22,7 @@ export interface LanguageSettings {
      * will be added to the end of the documentation url in suggestions
      */
     documentationSuffix?: string;
+    completionOptions: CompletionOptions;
 }
 
 export interface FormatterOptions {
@@ -38,3 +39,7 @@ export interface SyntaxErrorAsMarkDownOptions {
 export type QuickFixCodeActionOptions = 'Extract Expression' | 'Extract Function' | 'Change to' | 'FixAll';
 
 export type FormatterPlacementStyle = 'None' | 'NewLine' | 'Smart';
+
+export type CompletionOptions = {
+    includeExtendedSyntax: boolean;
+};

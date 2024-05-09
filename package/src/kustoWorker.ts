@@ -2,11 +2,11 @@ import * as ls from 'vscode-languageserver-types';
 import type { worker } from 'monaco-editor/esm/vs/editor/editor.worker';
 import type { IRange } from 'monaco-editor/esm/vs/editor/editor.api';
 
-import * as kustoService from './languageService/kustoLanguageService';
-import type { LanguageSettings } from './languageService/settings';
-import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageService/schema';
-import type { ColorizationRange } from './languageService/kustoLanguageService';
-import type { RenderInfo } from './languageService/renderInfo';
+import * as kustoService from './languageServiceManager/kustoLanguageService';
+import type { LanguageSettings } from './languageServiceManager/settings';
+import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageServiceManager/schema';
+import type { ColorizationRange } from './languageServiceManager/kustoLanguageService';
+import type { RenderInfo } from './languageServiceManager/renderInfo';
 import type { ClusterReference, DatabaseReference, KustoWorker } from './types';
 
 export type InterfaceFor<C> = {

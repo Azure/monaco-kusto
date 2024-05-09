@@ -11,12 +11,12 @@ import {
     getExpression,
     getInputParametersAsCslString,
     getEntityDataTypeFromCslType,
-} from './languageService/schema';
-import type { LanguageSettings } from './languageService/settings';
+} from './languageServiceManager/schema';
+import type { LanguageSettings } from './languageServiceManager/settings';
 
-export * from './languageService/schema';
-export * from './languageService/renderInfo';
-export * from './languageService/settings';
+export * from './languageServiceManager/schema';
+export * from './languageServiceManager/renderInfo';
+export * from './languageServiceManager/settings';
 export * from './types';
 
 export { getCurrentCommandRange } from './extendedEditor';
@@ -84,6 +84,7 @@ const defaultLanguageSettings: LanguageSettings = {
     disabledDiagnosticCodes: [],
     quickFixCodeActions: ['Change to', 'FixAll'],
     enableQuickFixes: false,
+    completionOptions: { includeExtendedSyntax: false },
 };
 
 export function getKustoWorker(): Promise<WorkerAccessor> {
