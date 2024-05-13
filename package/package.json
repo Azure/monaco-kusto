@@ -59,6 +59,8 @@
         "terser": "^5.19.4",
         "ts-node": "^10.9.1",
         "typescript": "^5.2.2",
+        "vite": "^5.2.11",
+        "vite-plugin-node-polyfills": "^0.21.0",
         "vscode-languageserver-textdocument": "1.0.8"
     },
     "dependencies": {
