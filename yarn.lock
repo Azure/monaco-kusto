@@ -1903,6 +1903,7 @@ __metadata:
     "@babel/preset-typescript": ^7.22.15
     "@kusto/language-service": 0.0.278
     "@kusto/language-service-next": 11.5.3
+    "@playwright/test": ^1.44.0
     "@rollup/plugin-alias": ^5.0.0
     "@rollup/plugin-babel": ^6.0.3
     "@rollup/plugin-commonjs": ^25.0.4
@@ -2919,6 +2920,17 @@ __metadata:
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
   checksum: 6ad6a00fc4f2f2cfc6bff76fb1d88b8ee20bc0601e18ebb01b6d4be583733a860239a521a7fbca73b612e66705078809483549d2b18f370eb346c5155c8e4a0f
+  languageName: node
+  linkType: hard
+
+"@playwright/test@npm:^1.44.0":
+  version: 1.44.0
+  resolution: "@playwright/test@npm:1.44.0"
+  dependencies:
+    playwright: 1.44.0
+  bin:
+    playwright: cli.js
+  checksum: 64cb12e26156e0530d16cec629d82c228db7a57fe29096a6961a18fc8b7fc5f35e28f8905af7039fad5d3af0224d38e93dba479760db2ce16a63c5e2fbe2990c
   languageName: node
   linkType: hard
 
@@ -8890,18 +8902,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:^1.32.2":
-  version: 1.32.2
-  resolution: "playwright@npm:1.32.2"
-  dependencies:
-    playwright-core: 1.32.2
-  bin:
-    playwright: cli.js
-  checksum: 36967299a5c4c02830bcb7fb94b96d6c6a7a2d7e749feb924509e89b1fdc34f8ee2218cfaf75e5f32572663568b468ad28fdc170bced41869d5ed69f9a7ff384
-  languageName: node
-  linkType: hard
-
-"playwright@npm:^1.44.0":
+"playwright@npm:1.44.0, playwright@npm:^1.44.0":
   version: 1.44.0
   resolution: "playwright@npm:1.44.0"
   dependencies:
@@ -8913,6 +8914,17 @@ __metadata:
   bin:
     playwright: cli.js
   checksum: 22653ded652f436c1a837842009a175e8acb91ab340bb3deee87dbdb7205b439bd174f5f20591eb67f0171728c9f8f4bdfa3668a517da6bc7b45a4a79eabdbd5
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.32.2":
+  version: 1.32.2
+  resolution: "playwright@npm:1.32.2"
+  dependencies:
+    playwright-core: 1.32.2
+  bin:
+    playwright: cli.js
+  checksum: 36967299a5c4c02830bcb7fb94b96d6c6a7a2d7e749feb924509e89b1fdc34f8ee2218cfaf75e5f32572663568b468ad28fdc170bced41869d5ed69f9a7ff384
   languageName: node
   linkType: hard
 
