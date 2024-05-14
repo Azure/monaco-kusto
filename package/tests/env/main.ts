@@ -5,7 +5,9 @@ import './index.css';
 // Vite doesn't let us directly import files in dependencies as url's for some
 // reason. Instead, we'll import local files as url's, and they'll import what
 // we really want.
+// @ts-ignore
 import kustoWorkerUrl from './kustoWorker?url';
+// @ts-ignore
 import editorWorker from './editorWorker?url';
 
 window.MonacoEnvironment = {
@@ -17,11 +19,6 @@ window.MonacoEnvironment = {
                 return new Worker(editorWorker, { type: 'module' });
         }
     },
-};
-
-// Called by playwright script in ci to validate things are working
-window.healthCheck = async function () {
-    return !!(await getKustoWorker());
 };
 
 const schema = {
