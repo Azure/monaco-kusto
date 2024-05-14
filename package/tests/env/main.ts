@@ -52,7 +52,7 @@ const schema = {
 };
 
 const editor = monaco.editor.create(document.getElementById('root'), {
-    value: 'StormEvents \n| take 10 \n| where StartTime > ago(1d)',
+    value: '',
     language: 'kusto',
     theme: 'kusto-light',
 });

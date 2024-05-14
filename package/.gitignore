@@ -7,3 +7,11 @@
 
 /README.md
 *.tgz
+
+# Vite
+.vite
+
+# Playwright
+.test-results
+test-results
+playwright-report
