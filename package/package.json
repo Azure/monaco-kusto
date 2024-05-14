@@ -21,7 +21,8 @@
         "watch": "ts-node ./scripts/watch.ts",
         "typecheck": "tsc",
         "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
-        "clean": "rimraf ./release"
+        "clean": "rimraf ./release",
+        "dev": "vite tests --port 7777"
     },
     "types": "./release/esm/monaco.contribution.d.ts",
     "module": "./release/esm/monaco.contribution.js",
