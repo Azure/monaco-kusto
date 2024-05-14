@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
-// https://vitejs.dev/config/
 export default defineConfig({
     // nodePolyfills required because of @kusto/language-service
     plugins: [nodePolyfills({ overrides: { fs: null } })],
@@ -15,5 +14,8 @@ export default defineConfig({
             'monaco-editor/esm/vs/editor/editor.worker',
             'xregexp',
         ],
+    },
+    server: {
+        port: 7777,
     },
 });

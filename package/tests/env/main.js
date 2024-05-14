@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/edcore.main';
-import { getKustoWorker } from '@kusto/monaco-kusto';
+import { getKustoWorker } from '../../release/esm/monaco.contribution';
 import './index.css';
 
 // Vite doesn't let us directly import files in dependencies as url's for some
@@ -55,7 +55,7 @@ const schema = {
 };
 
 const editor = monaco.editor.create(document.getElementById('root'), {
-    value: 'StormEvents | take 10',
+    value: 'StormEvents \n| take 10 \n| where StartTime > ago(1d)',
     language: 'kusto',
     theme: 'kusto-light',
 });

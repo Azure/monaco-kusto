@@ -4,4 +4,4 @@
 // necessary for Vite.
 import '@kusto/language-service/bridge.min';
 
-import '@kusto/monaco-kusto/release/esm/kusto.worker';
+import '../../release/esm/kusto.worker';
