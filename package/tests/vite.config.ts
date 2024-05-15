@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
+    appType: 'spa',
     // nodePolyfills required because of @kusto/language-service
     plugins: [nodePolyfills({ overrides: { fs: null } })],
     optimizeDeps: {
@@ -16,6 +17,7 @@ export default defineConfig({
         ],
     },
     server: {
+        strictPort: true,
         port: 7777,
     },
 });

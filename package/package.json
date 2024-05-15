@@ -22,8 +22,10 @@
     "typecheck": "tsc",
     "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
     "clean": "rimraf ./release",
-    "dev": "ts-node ./scripts/dev.ts",
-    "test": "ts-node ./scripts/test.ts"
+    "start": "ts-node ./scripts/dev.ts",
+    "test": "ts-node ./scripts/test.ts",
+    "test:watch": "ts-node ./scripts/test.ts --watch",
+    "test:install": "playwright install --with-deps chromium"
   },
   "types": "./release/esm/monaco.contribution.d.ts",
   "module": "./release/esm/monaco.contribution.js",
