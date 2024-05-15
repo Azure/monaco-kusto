@@ -1920,7 +1920,6 @@ __metadata:
     http-server: ^14.1.1
     lodash-es: ^4.17.21
     monaco-editor: ^0.46.0
-    playwright: ^1.44.0
     rimraf: ^5.0.1
     rollup: ^3.29.2
     terser: ^5.19.4
@@ -8163,6 +8162,7 @@ __metadata:
   dependencies:
     "@types/node": ^20.6.3
     "@types/wait-on": ^5.3.1
+    playwright: ^1.44.0
     prettier: ^2.8.4
     process: ^0.11.10
     ts-node: ^10.9.1
