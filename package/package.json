@@ -1,81 +1,81 @@
 {
-  "name": "@kusto/monaco-kusto",
-  "version": "10.0.21",
-  "description": "CSL, KQL plugin for the Monaco Editor",
-  "author": {
-    "name": "Microsoft"
-  },
-  "license": "MIT",
-  "keywords": [
-    "Azure Data Explorer",
-    "ADE",
-    "kusto"
-  ],
-  "homepage": "https://github.com/Azure/monaco-kusto",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Azure/monaco-kusto"
-  },
-  "scripts": {
-    "build": "ts-node ./scripts/build.ts",
-    "watch": "ts-node ./scripts/watch.ts",
-    "typecheck": "tsc",
-    "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
-    "clean": "rimraf ./release",
-    "start": "ts-node ./scripts/dev.ts",
-    "test": "ts-node ./scripts/test.ts",
-    "test:watch": "ts-node ./scripts/test.ts --watch",
-    "test:install": "playwright install --with-deps chromium"
-  },
-  "types": "./release/esm/monaco.contribution.d.ts",
-  "module": "./release/esm/monaco.contribution.js",
-  "files": [
-    "release",
-    "README.md",
-    "copyMonacoFilesAMD",
-    "globalApi.d.ts"
-  ],
-  "bin": {
-    "copyMonacoFilesAMD": "copyMonacoFilesAMD.js"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.22.20",
-    "@babel/preset-env": "^7.22.20",
-    "@babel/preset-typescript": "^7.22.15",
-    "@playwright/test": "^1.44.0",
-    "@rollup/plugin-alias": "^5.0.0",
-    "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-commonjs": "^25.0.4",
-    "@rollup/plugin-node-resolve": "^15.2.1",
-    "@rollup/plugin-replace": "^5.0.2",
-    "@rollup/plugin-terser": "^0.4.3",
-    "@rollup/plugin-virtual": "^3.0.1",
-    "@tsconfig/node20": "^20.1.2",
-    "@types/lodash-es": "^4.17.9",
-    "@types/node": "^20.6.3",
-    "@types/xregexp": "^4.4.0",
-    "browser-sync": "^3.0.2",
-    "concurrently": "^8.2.1",
-    "http-server": "^14.1.1",
-    "monaco-editor": "^0.46.0",
-    "playwright": "^1.44.0",
-    "rimraf": "^5.0.1",
-    "rollup": "^3.29.2",
-    "terser": "^5.19.4",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.2.11",
-    "vite-plugin-node-polyfills": "^0.21.0",
-    "vscode-languageserver-textdocument": "1.0.8"
-  },
-  "dependencies": {
-    "@kusto/language-service": "0.0.278",
-    "@kusto/language-service-next": "11.5.3",
-    "lodash-es": "^4.17.21",
-    "vscode-languageserver-types": "^3.17.4",
-    "xregexp": "^5.1.1"
-  },
-  "peerDependencies": {
-    "monaco-editor": "^0.46.0"
-  }
+    "name": "@kusto/monaco-kusto",
+    "version": "10.0.21",
+    "description": "CSL, KQL plugin for the Monaco Editor",
+    "author": {
+        "name": "Microsoft"
+    },
+    "license": "MIT",
+    "keywords": [
+        "Azure Data Explorer",
+        "ADE",
+        "kusto"
+    ],
+    "homepage": "https://github.com/Azure/monaco-kusto",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Azure/monaco-kusto"
+    },
+    "scripts": {
+        "build": "ts-node ./scripts/build.ts",
+        "watch": "ts-node ./scripts/watch.ts",
+        "typecheck": "tsc",
+        "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
+        "clean": "rimraf ./release",
+        "start": "ts-node ./scripts/dev.ts",
+        "test": "ts-node ./scripts/test.ts",
+        "test:watch": "ts-node ./scripts/test.ts --watch",
+        "test:install": "playwright install --with-deps chromium"
+    },
+    "types": "./release/esm/monaco.contribution.d.ts",
+    "module": "./release/esm/monaco.contribution.js",
+    "files": [
+        "release",
+        "README.md",
+        "copyMonacoFilesAMD",
+        "globalApi.d.ts"
+    ],
+    "bin": {
+        "copyMonacoFilesAMD": "copyMonacoFilesAMD.js"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.22.20",
+        "@babel/preset-env": "^7.22.20",
+        "@babel/preset-typescript": "^7.22.15",
+        "@playwright/test": "^1.44.0",
+        "@rollup/plugin-alias": "^5.0.0",
+        "@rollup/plugin-babel": "^6.0.3",
+        "@rollup/plugin-commonjs": "^25.0.4",
+        "@rollup/plugin-node-resolve": "^15.2.1",
+        "@rollup/plugin-replace": "^5.0.2",
+        "@rollup/plugin-terser": "^0.4.3",
+        "@rollup/plugin-virtual": "^3.0.1",
+        "@tsconfig/node20": "^20.1.2",
+        "@types/lodash-es": "^4.17.9",
+        "@types/node": "^20.6.3",
+        "@types/xregexp": "^4.4.0",
+        "browser-sync": "^3.0.2",
+        "concurrently": "^8.2.1",
+        "http-server": "^14.1.1",
+        "monaco-editor": "^0.46.0",
+        "playwright": "^1.44.0",
+        "rimraf": "^5.0.1",
+        "rollup": "^3.29.2",
+        "terser": "^5.19.4",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.2.2",
+        "vite": "^5.2.11",
+        "vite-plugin-node-polyfills": "^0.21.0",
+        "vscode-languageserver-textdocument": "1.0.8"
+    },
+    "dependencies": {
+        "@kusto/language-service": "0.0.278",
+        "@kusto/language-service-next": "11.5.3",
+        "lodash-es": "^4.17.21",
+        "vscode-languageserver-types": "^3.17.4",
+        "xregexp": "^5.1.1"
+    },
+    "peerDependencies": {
+        "monaco-editor": "^0.46.0"
+    }
 }
