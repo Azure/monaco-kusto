@@ -8,7 +8,7 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test:samples": "ts-node ./scripts/test-samples.ts",
-        "test:install": "playwright install-deps chrome firefox webkit"
+        "test:install": "playwright install-deps chrome firefox webkit && yarn playwright install"
     },
     "workspaces": {
         "packages": [
