@@ -24,8 +24,7 @@
         "clean": "rimraf ./release",
         "start": "ts-node ./scripts/dev.ts",
         "test": "ts-node ./scripts/test.ts",
-        "test:watch": "ts-node ./scripts/test.ts --watch",
-        "test:install": "playwright install --with-deps chromium"
+        "test:watch": "ts-node ./scripts/test.ts --watch"
     },
     "types": "./release/esm/monaco.contribution.d.ts",
     "module": "./release/esm/monaco.contribution.js",
