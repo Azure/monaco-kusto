@@ -7,7 +7,7 @@ async function main() {
     const watch = argv.includes('--watch');
 
     const buildOnce = 'yarn rollup -c ./scripts/rollup.esm.js --bundleConfigAsCjs';
-    const buildWatch = 'yarn rollup -c ./scripts/rollup.esm.js --bundleConfigAsCjs';
+    const buildWatch = 'yarn rollup -c ./scripts/rollup.esm.js -w --bundleConfigAsCjs';
     const build = watch ? buildWatch : buildOnce;
 
     const testsRun = 'yarn playwright test --trace=retain-on-failure -c tests/playwright.config.ts';
