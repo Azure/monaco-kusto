@@ -28,7 +28,8 @@ Example at [/samples/amd](https://github.com/Azure/monaco-kusto/tree/master/samp
 1. Run `npm run copyMonacoFilesAMD <path>` or `yarn copyMonacoFilesAMD <path>`
    where <path> is where you want the monaco and kusto amd modules to be. These
    files will need to be served as-in.
-2. Using a amd module loader, import `vs/language/kusto/monaco.contribution` 1. The monaco editors included loader can be made available via a global
+2. Using a amd module loader, import `vs/language/kusto/monaco.contribution` 1. The monaco editors included loader can
+   be made available via a global
    require `require` by adding the script tag: `<script src="<path>/vs/loader.js"></script>`
 3. You should now be able to create monaco editors with `language: 'kusto'`. The
    kusto worker can be reached via the monaco global:
@@ -58,6 +59,8 @@ There are 2 APIs to set a Kusto schema:
 
 ## Contributing
 
+Every PR should come with a test that checks it.
+
 ### Setting up a dev environment
 
 1. Install Node.js 20 https://nodejs.org/
@@ -70,11 +73,18 @@ There are 2 APIs to set a Kusto schema:
 1. Set CI environment variable to "tru"
 2. Run `yarn build`
 
+## Running integration tests
+
+1. Run `yarn test:install` from the root of the project
+2. Run `yarn test` from the package folder to run the tests in headless mode
+3. Run `yarn test:watch` from the package folder to run the tests in a browser and rebuild after each change
+
 ## Changelog
 
 ### 10.0.0
 
--   BREAKING CHANGE: addClusterToSchema know excepts databases as an object with name and alternative name instead of just a string name.
+-   BREAKING CHANGE: addClusterToSchema know excepts databases as an object with name and alternative name instead of just
+    a string name.
 
 ### 9.0.0
 
@@ -101,7 +111,8 @@ There are 2 APIs to set a Kusto schema:
 
 ### 7.2.0
 
--   Added "themeNames" object to exports which contains the theme we register with monaco: kusto-light, kusto-dark, and kusto-dark2
+-   Added "themeNames" object to exports which contains the theme we register with monaco: kusto-light, kusto-dark, and
+    kusto-dark2
 
 ### 7.0.1
 
@@ -110,7 +121,8 @@ There are 2 APIs to set a Kusto schema:
 ### 7.0.0
 
 -   BREAKING CHANGE: Bumped monaco-editor peer dependency to ~0.37.0
-    -   This version of monaco-editor no longer requires a patch to work with Parcel. Details here: https://github.com/microsoft/monaco-editor/issues/2966
+    -   This version of monaco-editor no longer requires a patch to work with Parcel. Details
+        here: https://github.com/microsoft/monaco-editor/issues/2966
 -   fix: "monaco is not defined" errors when consuming esm files
 -   Moved types from global interface (`monaco.languages.kusto.*`) to esm index
     file `import { SomeType } from '@kusto/monaco-kusto`. With this, esm
@@ -216,8 +228,10 @@ There are 2 APIs to set a Kusto schema:
 
 ### 3.2.0
 
--   A function validation fails (shows squiggly red lines), if the function is defined with a parameter that has a default value, but it is used without passing a value for that parameter.
--   Fix bug: Scalars function parameters are always showing "Table expected" error with squiggly error red line when using setSchemaFromShowSchema.
+-   A function validation fails (shows squiggly red lines), if the function is defined with a parameter that has a default
+    value, but it is used without passing a value for that parameter.
+-   Fix bug: Scalars function parameters are always showing "Table expected" error with squiggly error red line when using
+    setSchemaFromShowSchema.
 
 ### 3.1.0-beta.3
 
@@ -225,7 +239,8 @@ There are 2 APIs to set a Kusto schema:
 
 ### 3.0.1
 
--   Fix exception "Cannot read property 'getText' of null TypeError: Cannot read property 'getText' of null at e.parseDocumentV2"
+-   Fix exception "Cannot read property 'getText' of null TypeError: Cannot read property 'getText' of null at
+    e.parseDocumentV2"
 -   Added a sample react project
 
 ### 3.0.0
@@ -333,7 +348,8 @@ There are 2 APIs to set a Kusto schema:
 
 #### Added
 
--   Added `getReferencedGlobalParams` that returns the global (ambient) parameters that are actually being referenced in the query.
+-   Added `getReferencedGlobalParams` that returns the global (ambient) parameters that are actually being referenced in
+    the query.
 
 ### 2.0.3
 
@@ -388,7 +404,8 @@ There are 2 APIs to set a Kusto schema:
 
 #### Added
 
--   Introduce a new function in language service called `getQueryParams`. it will return an array of all delcared query parameters for the query on cursor.
+-   Introduce a new function in language service called `getQueryParams`. it will return an array of all delcared query
+    parameters for the query on cursor.
 
 ### 1.1.14 (9/16/2019)
 
@@ -431,7 +448,8 @@ There are 2 APIs to set a Kusto schema:
 
 #### Bug fix
 
--   don't kill web worker after 2 minutes of inactivity by default. Reason: In exterme cases where schema is very large, trying to stringify the schema in web worker causes an OOM. This is configurable though.
+-   don't kill web worker after 2 minutes of inactivity by default. Reason: In exterme cases where schema is very large,
+    trying to stringify the schema in web worker causes an OOM. This is configurable though.
 
 ### 1.0.6 (6/6/2019)
 
@@ -566,7 +584,8 @@ There are 2 APIs to set a Kusto schema:
 
 #### Bug Fix
 
--   fix quirks in interactions between non-semantic and semantic colorization by not using semantic coloring to color plain text.
+-   fix quirks in interactions between non-semantic and semantic colorization by not using semantic coloring to color
+    plain text.
 
 ### 0.1.11
 
@@ -579,16 +598,19 @@ There are 2 APIs to set a Kusto schema:
 ### Bug Fixes
 
 -   Intellisense didn't work properly when editing in the middle of a block that is not the 1st block on the page.
--   Monarch colorization now colorizes sub-opeators the same as semantic colorization (which makes the changes less jarring when completing semantic colorization).
+-   Monarch colorization now colorizes sub-opeators the same as semantic colorization (which makes the changes less
+    jarring when completing semantic colorization).
 -   When switching context, colorization didn't recolorize.
 -   (perf) Only colorize the currently edited block(s) - this supports multi-cursor editing
--   (perf) don't deeply parse the entire doc when doing completion. just get the list of commands and then parse the relevant command's all tokns.
+-   (perf) don't deeply parse the entire doc when doing completion. just get the list of commands and then parse the
+    relevant command's all tokns.
 
 ### 0.1.1
 
 ### Added
 
--   removed semantic colorization from main thread. From now on basic colorization (schema-unaware) will happen on main thread, and semantic colorization will happen in background thread. This should improve typing performance
+-   removed semantic colorization from main thread. From now on basic colorization (schema-unaware) will happen on main
+    thread, and semantic colorization will happen in background thread. This should improve typing performance
     on long rows, or on large databases.
 
 ### 0.1.0
@@ -631,7 +653,8 @@ There are 2 APIs to set a Kusto schema:
 
 #### Bug Fixes
 
--   **[breaking]** Cache clutsser schema in memory. This breaks backward compatibility since it now requries schema to include minor and major version of databases.
+-   **[breaking]** Cache clutsser schema in memory. This breaks backward compatibility since it now requries schema to
+    include minor and major version of databases.
 
 ### 0.89
 
@@ -682,7 +705,8 @@ There are 2 APIs to set a Kusto schema:
 -   update version of @kusto/language-service-next to 0.0.10, integrated following functionality:
 
 1. library orders items on its own, so no need to order in monaco-kusto
-2. add support for the cursor not ending in the end of the completion text (like in the 1st parmaeter7 of a function for example)
+2. add support for the cursor not ending in the end of the completion text (like in the 1st parmaeter7 of a function for
+   example)
 3. add '|' after table name
 
 -   Make sure to never parse the same text more than once.
@@ -714,7 +738,8 @@ There are 2 APIs to set a Kusto schema:
 
 #### Bug Fixes
 
--   **[breaking]** - Update monaco-editor peer dependency to "^0.12.0" because of bug fixes performed there. Also making the
+-   **[breaking]** - Update monaco-editor peer dependency to "^0.12.0" because of bug fixes performed there. Also making
+    the
     dependency more permissive (allow later minor versions).
 
 ### 0.67
@@ -727,19 +752,22 @@ There are 2 APIs to set a Kusto schema:
 
 #### Functionality
 
--   updated @kusto/lagnuage-service to latest version. this contains the latest operators, documentation, and charting logic.
+-   updated @kusto/lagnuage-service to latest version. this contains the latest operators, documentation, and charting
+    logic.
 
 ### 0.64
 
 #### Bug Fixes
 
--   Added peer dependency for `monaco-editor@0.11` so that consumers of the package get a warning if their version of monaco is too old.
+-   Added peer dependency for `monaco-editor@0.11` so that consumers of the package get a warning if their version of
+    monaco is too old.
 
 ### 0.63
 
 #### Functionality
 
--   **[breaking]** - The package now requires `monaco-editor@0.11.1` to function correctly. adds support for markdown in intellisense documentation.
+-   **[breaking]** - The package now requires `monaco-editor@0.11.1` to function correctly. adds support for markdown in
+    intellisense documentation.
 
 ### 0.62
 
@@ -751,7 +779,8 @@ There are 2 APIs to set a Kusto schema:
 
 #### Functionality
 
--   **[breaking]**: make setSchema async so that big schemas do not block the ui thread (specifically - tokenization code is running in ui thread so it can block rendering).
+-   **[breaking]**: make setSchema async so that big schemas do not block the ui thread (specifically - tokenization code
+    is running in ui thread so it can block rendering).
 
 ### 0.60
 

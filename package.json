@@ -7,7 +7,8 @@
     "scripts": {
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "test:samples": "ts-node ./scripts/test-samples.ts"
+        "test:samples": "ts-node ./scripts/test-samples.ts",
+        "test:install": "playwright install-deps chrome firefox webkit && yarn playwright install"
     },
     "workspaces": {
         "packages": [
@@ -19,7 +20,7 @@
     "devDependencies": {
         "@types/node": "^20.6.3",
         "@types/wait-on": "^5.3.1",
-        "playwright": "^1.32.2",
+        "playwright": "^1.44.0",
         "prettier": "^2.8.4",
         "process": "^0.11.10",
         "ts-node": "^10.9.1",

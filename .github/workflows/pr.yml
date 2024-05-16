@@ -29,7 +29,11 @@ jobs:
         run: yarn workspaces foreach -pv run ci:typecheck
 
       - name: Install Playwright deps
-        run: yarn playwright install-deps chrome firefox webkit
+        run: yarn test:install
 
       - name: test samples
         run: yarn test:samples
+
+      - name: integration tests
+        working-directory: package
+        run: yarn test

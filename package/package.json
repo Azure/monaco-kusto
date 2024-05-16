@@ -21,7 +21,10 @@
         "watch": "ts-node ./scripts/watch.ts",
         "typecheck": "tsc",
         "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
-        "clean": "rimraf ./release"
+        "clean": "rimraf ./release",
+        "start": "ts-node ./scripts/dev.ts",
+        "test": "playwright test --trace=retain-on-failure -c tests/playwright.config.ts",
+        "test:watch": "ts-node ./scripts/test.ts"
     },
     "types": "./release/esm/monaco.contribution.d.ts",
     "module": "./release/esm/monaco.contribution.js",
@@ -38,6 +41,7 @@
         "@babel/core": "^7.22.20",
         "@babel/preset-env": "^7.22.20",
         "@babel/preset-typescript": "^7.22.15",
+        "@playwright/test": "^1.44.0",
         "@rollup/plugin-alias": "^5.0.0",
         "@rollup/plugin-babel": "^6.0.3",
         "@rollup/plugin-commonjs": "^25.0.4",
@@ -58,6 +62,8 @@
         "terser": "^5.19.4",
         "ts-node": "^10.9.1",
         "typescript": "^5.2.2",
+        "vite": "^5.2.11",
+        "vite-plugin-node-polyfills": "^0.21.0",
         "vscode-languageserver-textdocument": "1.0.8"
     },
     "dependencies": {

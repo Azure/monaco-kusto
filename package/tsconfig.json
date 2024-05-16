@@ -1,8 +1,8 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
-    "include": ["./src/**/*"],
+    "include": ["./src/**/*", "./tests/**/*"],
     "compilerOptions": {
-        "rootDir": "./src",
+        "rootDir": "./",
         "module": "esnext",
         "moduleResolution": "node",
         "target": "es5",
