@@ -1,14 +1,16 @@
 import { test, expect } from '@playwright/test';
+import { IntelliSenseDriver, EditorDriver } from './testkit/drivers';
 
 const initialValue = 'StormEvents \n| take 10 ';
 
 test('trigger completion on "("', async ({ page }) => {
     await page.goto('http://localhost:7777/');
 
-    const value = `${initialValue} \n| where StartTime > ago`;
-    await page.getByRole('textbox').fill(value);
-    await page.keyboard.type('(');
+    const editor = new EditorDriver(page);
+    await editor.fill(initialValue);
+    await editor.appendToEnd('| where StartTime > ago(');
 
-    const option = page.getByRole('option').first();
-    await expect(option).toHaveText('1d');
+    const intellisense = new IntelliSenseDriver(page);
+    const option = await intellisense.getOptionByIndex(0);
+    expect(option).toBe('1d');
 });
