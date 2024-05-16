@@ -12,7 +12,7 @@ export class EditorDriver {
         await editor.fill(value);
     }
 
-    async appendToEnd(value: string): Promise<void> {
+    async type(value: string): Promise<void> {
         const editor = await this.page.waitForSelector('[role="textbox"]');
         await editor.focus();
         await this.page.keyboard.type(value);
