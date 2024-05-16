@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { loadPageAndWait } from './testkit';
 import { IntelliSenseDriver, EditorDriver } from './testkit/drivers';
 
 const initialValue = 'StormEvents \n| take 10 ';
@@ -8,7 +9,7 @@ test.describe('Completion items tests', () => {
     let intellisense: IntelliSenseDriver;
 
     test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:7777/');
+        await loadPageAndWait(page);
         editor = new EditorDriver(page);
         await editor.fill(initialValue);
         intellisense = new IntelliSenseDriver(page);
