@@ -10,5 +10,5 @@ test('trigger completion on "("', async ({ page }) => {
     await page.keyboard.type('(');
 
     const option = page.getByRole('option').first();
-    await expect(option).toHaveText('1dbreak');
+    await expect(option).toHaveText('1d');
 });
