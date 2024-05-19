@@ -1,6 +1,7 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/edcore.main';
 import { getKustoWorker } from '../../release/esm/monaco.contribution';
 import './index.css';
+import debounce from 'lodash/debounce';
 
 // Vite doesn't let us directly import files in dependencies as url's for some
 // reason. Instead, we'll import local files as url's, and they'll import what
@@ -51,11 +52,31 @@ const schema = {
     },
 };
 
+function getEditorValue(): string {
+    const defaultValue = '';
+    const storageValue = localStorage.getItem('dev-kusto-query');
+    return storageValue?.trim().length ? storageValue : defaultValue;
+}
+
 const editor = monaco.editor.create(document.getElementById('root'), {
-    value: '',
+    value: getEditorValue(),
     language: 'kusto',
     theme: 'kusto-light',
+    selectOnLineNumbers: true,
+    automaticLayout: true,
+    minimap: {
+        enabled: false,
+    },
+    fixedOverflowWidgets: true,
+    suggest: {
+        selectionMode: 'whenQuickSuggestion',
+    },
+    copyWithSyntaxHighlighting: true,
 });
+
+const updateEditorValueInLocalStorage = () => localStorage.setItem('dev-kusto-query', editor.getValue());
+const debouncedUpdateEditorValueInLocalStorage = debounce(updateEditorValueInLocalStorage, 1000);
+editor.onDidChangeModelContent(debouncedUpdateEditorValueInLocalStorage);
 
 window.addEventListener('resize', () => {
     editor.layout();

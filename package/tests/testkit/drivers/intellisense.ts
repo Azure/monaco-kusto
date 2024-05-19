@@ -1,4 +1,5 @@
-import { ElementHandle, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
+import { Locator } from 'playwright';
 
 export class IntelliSenseDriver {
     private page: Page;
@@ -7,15 +8,11 @@ export class IntelliSenseDriver {
         this.page = page;
     }
 
-    async getAllOptions(): Promise<string[]> {
-        const options = await this.page.$$eval('[role="option"]', (options) =>
-            options.map((option) => option.textContent || '')
-        );
-        return options;
+    getAllOptions(): Locator {
+        return this.page.getByRole('option');
     }
 
-    async getOptionByIndex(index: number): Promise<string | null> {
-        const option = this.page.getByRole('option').nth(index);
-        return option.textContent();
+    getOptionByIndex(index: number): Locator {
+        return this.page.getByRole('option').nth(index);
     }
 }
