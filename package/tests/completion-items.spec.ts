@@ -26,6 +26,6 @@ test.describe('Completion items tests', () => {
         await editor.type('| where StartTime > ago');
 
         const options = intellisense.getAllOptions();
-        await expect(options).toHaveCount(1);
+        await expect(options).toHaveCount(2);
     });
 });
