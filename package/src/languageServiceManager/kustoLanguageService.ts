@@ -435,7 +435,7 @@ class KustoLanguageService implements LanguageService {
                     kItem.DisplayText
                 );
                 const helpTopic: k.CslTopicDocumentation = this.getTopic(v1CompletionOption);
-                // If we have AfterText it means that the cursor should no be placed at end of suggested text.
+                // If we have AfterText it means that the cursor should not be placed at end of suggested text.
                 // In that case we switch to snippet format and represent the point where the cursor should be as
                 // as '\$0'
                 const { textToInsert, format } =
@@ -463,7 +463,7 @@ class KustoLanguageService implements LanguageService {
                 lsItem.textEdit = ls.TextEdit.replace(ls.Range.create(startPosition, endPosition), textToInsert);
                 lsItem.sortText = this.getSortText(sortTextPrefix + i + 1);
                 // Changing the first letter to be lower case, to ignore case-sensitive matching
-                lsItem.filterText = lsItem.label.charAt(0).toLowerCase() + lsItem.label.slice(1);
+                lsItem.filterText = kItem.MatchText.charAt(0).toLowerCase() + kItem.MatchText.slice(1);
                 lsItem.kind = this.kustoKindToLsKindV2(kItem.Kind);
                 lsItem.insertTextFormat = format;
                 lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;

@@ -194,6 +194,8 @@ monaco.editor.onDidCreateEditor((editor) => {
     }
 
     triggerSuggestDialogWhenCompletionItemSelected(editor);
+
+    // editor.updateOptions({ suggest: { filterGraceful: false } });
 });
 
 function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {

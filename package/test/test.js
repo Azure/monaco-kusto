@@ -33,9 +33,16 @@ fetch('./test/mode.txt')
                 selectionHighlight: false,
                 theme: 'kusto-light',
                 folding: true,
+                selectOnLineNumbers: true,
+                automaticLayout: true,
+                minimap: {
+                    enabled: false,
+                },
+                fixedOverflowWidgets: true,
                 suggest: {
                     selectionMode: 'whenQuickSuggestion',
                 },
+                copyWithSyntaxHighlighting: true,
             });
 
             applyDefaultsOnDomElements();
