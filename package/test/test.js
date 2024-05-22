@@ -39,9 +39,6 @@ fetch('./test/mode.txt')
                     enabled: false,
                 },
                 fixedOverflowWidgets: true,
-                suggest: {
-                    selectionMode: 'whenQuickSuggestion',
-                },
                 copyWithSyntaxHighlighting: true,
             });
 
