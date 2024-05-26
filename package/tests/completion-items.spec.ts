@@ -22,7 +22,7 @@ test.describe('completion items', () => {
         await expect(option).toHaveText('1d');
     });
 
-    test('match with exact substring and exclude parameters', async ({ page }) => {
+    test('match with exact substring and exclude parameters', async () => {
         await editor.type('| where StartTime > ago');
 
         const options = await intellisense.getAllOptions();
