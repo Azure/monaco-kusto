@@ -194,8 +194,6 @@ monaco.editor.onDidCreateEditor((editor) => {
     }
 
     triggerSuggestDialogWhenCompletionItemSelected(editor);
-
-    // editor.updateOptions({ suggest: { filterGraceful: false } });
 });
 
 function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {
@@ -214,7 +212,7 @@ function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.IC
                 return;
             }
             event.selection;
-            // OK so now we in a situation where we know a suggestion was selected and we want to trigger another one.
+            // OK so now we in a situation where we know a suggestion was selected, and we want to trigger another one.
             // the only problem is that the suggestion widget itself listens to this same event in order to know it needs to close.
             // The only problem is that we're ahead in line, so we're triggering a suggest operation that will be shut down once
             // the next callback is called. This is why we're waiting here - to let all the callbacks run synchronously and be

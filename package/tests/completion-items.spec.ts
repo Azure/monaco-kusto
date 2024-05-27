@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { loadPageAndWait } from './testkit';
 import { IntelliSenseDriver, EditorDriver } from './testkit/drivers';
 
-test.describe('Completion items tests', () => {
+test.describe('completion items', () => {
     let editor: EditorDriver;
     let intellisense: IntelliSenseDriver;
 
@@ -15,17 +15,17 @@ test.describe('Completion items tests', () => {
         intellisense = new IntelliSenseDriver(page);
     });
 
-    test('trigger completion on "("', async () => {
-        await editor.type('| where StartTime > ago(');
+    test('triggered on "("', async () => {
+        await editor.type('StormEvents \n| where StartTime > ago(');
 
-        const option = intellisense.getOptionByIndex(0);
+        const option = await intellisense.getOptionByIndex(0);
         await expect(option).toHaveText('1d');
     });
 
-    test('match with exact substring and exclude parameters', async ({ page }) => {
+    test('match with exact substring and exclude parameters', async () => {
         await editor.type('| where StartTime > ago');
 
-        const options = intellisense.getAllOptions();
-        await expect(options).toHaveCount(2);
+        const options = await intellisense.getAllOptions();
+        expect(options).toHaveLength(2);
     });
 });

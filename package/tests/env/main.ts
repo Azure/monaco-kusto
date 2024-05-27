@@ -58,7 +58,7 @@ function getEditorValue(): string {
     return storageValue?.trim().length ? storageValue : defaultValue;
 }
 
-const editor = monaco.editor.create(document.getElementById('root'), {
+const editor = monaco.editor.create(document.getElementById('editor'), {
     value: getEditorValue(),
     language: 'kusto',
     theme: 'kusto-light',
@@ -90,3 +90,30 @@ getKustoWorker().then((workerAccessor) => {
         });
     }
 });
+
+applyDefaultsOnDomElements();
+
+function applyDefaultsOnDomElements() {
+    const languageSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+
+    const openSuggestionDialogAfterPreviousSuggestionAccepted = document.getElementById(
+        'openSuggestionDialogAfterPreviousSuggestionAccepted'
+    );
+    (openSuggestionDialogAfterPreviousSuggestionAccepted as HTMLInputElement).checked =
+        languageSettings.openSuggestionDialogAfterPreviousSuggestionAccepted;
+}
+
+function updateLanguageSettings(event: Event) {
+    const property = (event.target as HTMLInputElement).id;
+    const value = (event.target as HTMLInputElement).checked;
+
+    monaco.languages.kusto.getKustoWorker().then(() => {
+        const currentMonacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
+        const newMonacoSettings = Object.assign({}, currentMonacoSettings, {
+            [property]: value,
+        });
+        monaco.languages.kusto.kustoDefaults.setLanguageSettings(newMonacoSettings);
+    });
+}
+
+(window as any).updateLanguageSettings = updateLanguageSettings;

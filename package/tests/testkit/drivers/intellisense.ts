@@ -8,11 +8,27 @@ export class IntelliSenseDriver {
         this.page = page;
     }
 
-    getAllOptions(): Locator {
-        return this.page.getByRole('option');
+    async waitForIntelliSense(): Promise<void> {
+        await this.page.waitForSelector('[role="listbox"]');
     }
 
-    getOptionByIndex(index: number): Locator {
+    async getAllOptions(): Promise<Locator[]> {
+        await this.waitForIntelliSense();
+        return this.page.getByRole('option').all();
+    }
+
+    async getOptionByIndex(index: number): Promise<Locator> {
+        await this.waitForIntelliSense();
         return this.page.getByRole('option').nth(index);
+    }
+
+    async applySelected(): Promise<void> {
+        await this.waitForIntelliSense();
+        await this.page.keyboard.press('Enter');
+    }
+
+    async getSelectedOption(): Promise<Locator> {
+        await this.waitForIntelliSense();
+        return this.page.locator('[role="option"].focused');
     }
 }

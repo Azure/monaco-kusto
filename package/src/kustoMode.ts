@@ -173,6 +173,13 @@ export function setupMode(
             lineComment: '//',
             blockComment: null,
         },
+        autoClosingPairs: [
+            { open: '{', close: '}' },
+            { open: '[', close: ']' },
+            { open: '(', close: ')' },
+            { open: "'", close: "'", notIn: ['string', 'comment'] },
+            { open: '"', close: '"', notIn: ['string', 'comment'] },
+        ],
     });
 
     return kustoWorker;
