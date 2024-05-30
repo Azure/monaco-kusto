@@ -23,6 +23,7 @@
         "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
         "clean": "rimraf ./release",
         "start": "ts-node ./scripts/dev.ts",
+        "test": "jest",
         "test:integration": "playwright test --trace=retain-on-failure -c tests/playwright.config.ts",
         "test:integration:watch": "ts-node ./scripts/test.ts"
     },
