@@ -44,6 +44,11 @@ const schema = {
                             Type: 'System.String',
                             CslType: 'string',
                         },
+                        {
+                            Name: 'counter',
+                            Type: 'System.Number',
+                            CslType: 'number',
+                        },
                     ],
                 },
             },

@@ -20,6 +20,7 @@ import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFrom
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference } from '../types';
 import { Mutable } from '../util';
+import { createSortingText } from './competionItemSort';
 
 let List = System.Collections.Generic.List$1;
 
@@ -429,8 +430,8 @@ class KustoLanguageService implements LanguageService {
                             disabledItems[item.MatchText] === item.Kind)
                     )
             )
-            .map((kItem, i) => {
-                const v1CompletionOption = new k.CompletionOption(
+            .map((kItem, index) => {
+                const v1CompletionOption: k.CompletionOption = new k.CompletionOption(
                     this._toOptionKind[kItem.Kind] || k.OptionKind.None,
                     kItem.DisplayText
                 );
@@ -452,19 +453,13 @@ class KustoLanguageService implements LanguageService {
                           };
                 const lsItem = ls.CompletionItem.create(kItem.DisplayText);
 
-                // Adding to columns a prefix to their sortText so they will appear first in the list
-                let sortTextPrefix = lsItem.kind === ls.CompletionItemKind.Field ? 0 : itemsAsArray.length;
-                const countOfWords = lsItem.label.split('_').filter((item) => !!item).length;
-                // We always want results with multiple words to show after shorter options.
-                // For example: to show "count_distinct" after "count"
-                sortTextPrefix = sortTextPrefix * countOfWords;
                 const startPosition = document.positionAt(completionItems.EditStart);
                 const endPosition = document.positionAt(completionItems.EditStart + completionItems.EditLength);
                 lsItem.textEdit = ls.TextEdit.replace(ls.Range.create(startPosition, endPosition), textToInsert);
-                lsItem.sortText = this.getSortText(sortTextPrefix + i + 1);
                 // Changing the first letter to be lower case, to ignore case-sensitive matching
                 lsItem.filterText = kItem.MatchText.charAt(0).toLowerCase() + kItem.MatchText.slice(1);
                 lsItem.kind = this.kustoKindToLsKindV2(kItem.Kind);
+                lsItem.sortText = createSortingText(index);
                 lsItem.insertTextFormat = format;
                 lsItem.detail = helpTopic ? helpTopic.ShortDescription : undefined;
                 lsItem.documentation = helpTopic
@@ -566,14 +561,14 @@ class KustoLanguageService implements LanguageService {
                     (option) =>
                         !(option && option.Value && this.disabledCompletionItemsV1[option.Value] === option.Kind)
                 )
-                .map((option: k.CompletionOption, ordinal: number) => {
+                .map((option: k.CompletionOption, index: number) => {
                     const { insertText, insertTextFormat } = this.getTextToInsert(rule, option);
                     const helpTopic: k.CslTopicDocumentation = k.CslDocumentation.Instance.GetTopic(option);
                     const item = ls.CompletionItem.create(option.Value);
                     item.kind = this.kustoKindToLsKind(option.Kind);
                     item.insertText = insertText;
                     item.insertTextFormat = insertTextFormat;
-                    item.sortText = this.getSortText(ordinal + 1);
+                    item.sortText = createSortingText(index);
                     item.detail = helpTopic ? helpTopic.ShortDescription : undefined;
                     item.documentation = helpTopic
                         ? { value: helpTopic.LongDescription, kind: ls.MarkupKind.Markdown }
@@ -2098,35 +2093,6 @@ class KustoLanguageService implements LanguageService {
         const newEndPosition = document.positionAt(newEndOffset);
         const newRange = ls.Range.create(range.start, newEndPosition);
         return newRange;
-    }
-
-    /**
-     * Maps numbers to strings, such that if a>b numerically, f(a)>f(b) lexicographically.
-     * 1 -> "a", 26 -> "z", 27 -> "za", 28 -> "zb", 52 -> "zz", 53 ->"zza"
-     * @param order - The number to be converted to a sorting-string. order should start at 1.
-     * @returns A string repenting the order.
-     */
-    private getSortText(order: number): string {
-        if (order <= 0) {
-            throw new RangeError(`order should be a number >= 1. instead got ${order}`);
-        }
-
-        let sortText = '';
-        let numCharacters = 26; // "z" - "a" + 1;
-
-        let div = Math.floor(order / numCharacters);
-
-        for (let i = 0; i < div; ++i) {
-            sortText += 'z';
-        }
-
-        let reminder = order % numCharacters;
-
-        if (reminder > 0) {
-            sortText += String.fromCharCode(96 + reminder);
-        }
-
-        return sortText;
     }
 
     /**
