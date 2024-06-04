@@ -1,12 +1,12 @@
 diff --git a/esm/vs/base/common/platform.js b/esm/vs/base/common/platform.js
-index d507327daec3cdf5027bd886f898c364c5433ecd..9dc769654606b60bc71922dd40f2146db97dcbb9 100644
+index bd06f6f0eb6492f32ff9a6c7319162a55670e421..da2875afe2f74560cdebec8178a39562df42cfbc 100644
 --- a/esm/vs/base/common/platform.js
 +++ b/esm/vs/base/common/platform.js
 @@ -26,9 +26,11 @@ if (typeof $globalThis.vscode !== 'undefined' && typeof $globalThis.vscode.proce
      // Native environment (sandboxed)
      nodeProcess = $globalThis.vscode.process;
  }
--else if (typeof process !== 'undefined') {
+-else if (typeof process !== 'undefined' && typeof ((_a = process === null || process === void 0 ? void 0 : process.versions) === null || _a === void 0 ? void 0 : _a.node) === 'string') {
 +// Work around bug in Parcel causing $globalThis.process !== process
 +// https://github.com/parcel-bundler/parcel/issues/9549
 +else if (typeof $globalThis.process !== 'undefined') {
@@ -14,5 +14,5 @@ index d507327daec3cdf5027bd886f898c364c5433ecd..9dc769654606b60bc71922dd40f2146d
 -    nodeProcess = process;
 +    nodeProcess = $globalThis.process;
  }
- const isElectronProcess = typeof ((_a = nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.versions) === null || _a === void 0 ? void 0 : _a.electron) === 'string';
+ const isElectronProcess = typeof ((_b = nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.versions) === null || _b === void 0 ? void 0 : _b.electron) === 'string';
  const isElectronRenderer = isElectronProcess && (nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.type) === 'renderer';
