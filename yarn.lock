@@ -1919,7 +1919,7 @@ __metadata:
     concurrently: ^8.2.1
     http-server: ^14.1.1
     lodash-es: ^4.17.21
-    monaco-editor: ^0.46.0
+    monaco-editor: ^0.49.0
     rimraf: ^5.0.1
     rollup: ^3.29.2
     terser: ^5.19.4
@@ -1931,7 +1931,7 @@ __metadata:
     vscode-languageserver-types: ^3.17.4
     xregexp: ^5.1.1
   peerDependencies:
-    monaco-editor: ^0.46.0
+    monaco-editor: 0.49.0
   bin:
     copyMonacoFilesAMD: copyMonacoFilesAMD.js
   languageName: unknown
@@ -8034,17 +8034,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.46.0":
-  version: 0.46.0
-  resolution: "monaco-editor@npm:0.46.0"
-  checksum: be7aaa2747b8d3a3537f56c9353ebe779b188eb1480f6453fa1e346d8ccdd27068cb4508c8f6f3b8cc07ac0f792a3d6df36168d54cd6e074742182525115be86
-  languageName: node
-  linkType: hard
-
-"monaco-editor@patch:monaco-editor@npm%3A0.46.0#./.yarn/patches/monaco-editor-npm-0.46.0-fb69b10c11.patch::locator=monaco-kusto%40workspace%3A.":
-  version: 0.46.0
-  resolution: "monaco-editor@patch:monaco-editor@npm%3A0.46.0#./.yarn/patches/monaco-editor-npm-0.46.0-fb69b10c11.patch::version=0.46.0&hash=e0292b&locator=monaco-kusto%40workspace%3A."
-  checksum: 4b1f28cd5e0446cfc0b324ad0413b497132fce3b4487d3b6531a0640138d80033df37353e77650e41e5034a8691ee64d7b29bb6e1ecc8cd22fa42ea9549cea68
+"monaco-editor@npm:^0.49.0":
+  version: 0.49.0
+  resolution: "monaco-editor@npm:0.49.0"
+  checksum: 133b41b2b32d120ff6bc12d68a72501c90ff6de2e15e915a44c25f3f3ab29d164bd94ba501e13329e855b3000bd035319b01be122e76ab7f3fab6731cf0a323c
   languageName: node
   linkType: hard
 
@@ -8054,7 +8047,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     http-server: ^14.1.1
-    monaco-editor: ^0.46.0
+    monaco-editor: ^0.49.0
   languageName: unknown
   linkType: soft
 
@@ -8075,7 +8068,7 @@ __metadata:
     css-loader: ^6.8.1
     express: ^4.18.2
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.46.0
+    monaco-editor: ^0.49.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -8101,7 +8094,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.8.1
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.46.0
+    monaco-editor: ^0.49.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -8118,7 +8111,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     "@tsconfig/recommended": ^1.0.3
-    monaco-editor: ^0.46.0
+    monaco-editor: ^0.49.0
     parcel: ^2.0.0
     typescript: ^5.2.2
   languageName: unknown
@@ -8129,7 +8122,7 @@ __metadata:
   resolution: "monaco-kusto--esm-vite-sample@workspace:samples/esm-vite"
   dependencies:
     "@kusto/monaco-kusto": ^10.0.8
-    monaco-editor: ^0.46.0
+    monaco-editor: ^0.49.0
     vite: ^5.0.0
     vite-plugin-node-polyfills: ^0.17.0
   languageName: unknown
@@ -8146,7 +8139,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.8.1
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.46.0
+    monaco-editor: ^0.49.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2

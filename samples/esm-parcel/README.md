@@ -15,7 +15,7 @@ Parcel docs on shimming globals: https://parceljs.org/features/node-emulation/#s
 
 Recent monaco versions use `typeof process` to check if it's running in a node environment. Parcel doesn't have the ability to make this check return `false` so we need to patch monaco to use `globalThis.process` instead.
 
-The yarn patch file this repo uses can be seen at `/.yarn/patches/monaco-editor-npm-0.46.0-fb69b10c11.patch`.
+The yarn patch file this repo uses can be seen at `/.yarn/patches/monaco-editor-npm-0.49.0-fb69b10c11.patch`.
 
 Yarn docs for patching packages: https://yarnpkg.com/cli/patch
 
