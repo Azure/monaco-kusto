@@ -81,6 +81,11 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 11.0.0
+
+-   BREAKING CHANGE: Removed the useIntellisenseV2 option; it now defaults to true.
+-   feat: upgrade language service next to 11.5.5
+
 ### 10.0.0
 
 -   BREAKING CHANGE: addClusterToSchema know excepts databases as an object with name and alternative name instead of just
