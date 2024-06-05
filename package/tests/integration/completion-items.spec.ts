@@ -1,38 +1,40 @@
 import { test, expect } from '@playwright/test';
-import { loadPageAndWait } from './testkit';
-import { IntelliSenseDriver, EditorDriver } from './testkit/drivers';
+import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
 
 test.describe('completion items', () => {
-    let editor: EditorDriver;
-    let intellisense: IntelliSenseDriver;
+    let model: MonaKustoModel;
 
     test.beforeEach(async ({ page }) => {
         await loadPageAndWait(page);
+        model = createMonaKustoModel(page);
 
-        editor = new EditorDriver(page);
         const initialValue = 'StormEvents \n';
+        const editor = model.editor().locator;
+        await editor.focus();
         await editor.fill(initialValue);
-        intellisense = new IntelliSenseDriver(page);
     });
 
-    test('triggered on "("', async () => {
-        await editor.type('StormEvents \n| where StartTime > ago(');
+    test('triggered on "("', async ({ page }) => {
+        await page.keyboard.type('StormEvents \n| where StartTime > ago(');
 
-        const option = await intellisense.getOptionByIndex(0);
-        await expect(option).toHaveText('1d');
+        await model.intellisense().wait();
+        const option = model.intellisense().option(0);
+        await expect(option.locator).toHaveText('1d');
     });
 
-    test('match with exact substring and exclude parameters', async () => {
-        await editor.type('| where StartTime > ago');
+    test('match with exact substring and exclude parameters', async ({ page }) => {
+        await page.keyboard.type('| where StartTime > ago');
 
-        const options = await intellisense.getAllOptions();
-        expect(options).toHaveLength(2);
+        await model.intellisense().wait();
+        const options = model.intellisense().options();
+        await expect(options.locator).toHaveCount(2);
     });
 
     test('ordered by columns first', async ({ page }) => {
-        await editor.type('| sort by ');
+        await page.keyboard.type('| sort by ');
 
-        const option = await intellisense.getOptionByIndex(0);
-        await expect(option).toHaveText('counter');
+        await model.intellisense().wait();
+        const option = model.intellisense().option(0);
+        await expect(option.locator).toHaveText('counter');
     });
 });
