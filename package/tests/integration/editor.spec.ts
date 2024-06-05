@@ -1,14 +1,14 @@
 import { test, expect } from '@playwright/test';
-import { loadPageAndWait } from './testkit';
-import { EditorDriver } from './testkit/drivers';
+import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
 
 test.describe('editor', () => {
-    let editor: EditorDriver;
+    let model: MonaKustoModel;
 
     test.beforeEach(async ({ page }) => {
         await loadPageAndWait(page);
+        model = createMonaKustoModel(page);
 
-        editor = new EditorDriver(page);
+        await model.editor().locator.focus();
     });
 
     test.describe('surrounding pairs', () => {
@@ -25,13 +25,14 @@ test.describe('editor', () => {
         ];
 
         pairs.forEach(({ open, close }) => {
-            test(`should auto close ${open}`, async () => {
-                await editor.type(open);
-                let editorValue = await editor.value();
+            test(`should auto close ${open}`, async ({ page }) => {
+                await page.keyboard.type(open);
+                const editor = model.editor().locator;
+                let editorValue = await editor.inputValue();
                 expect(editorValue).toEqual(`${open}${close}`);
 
-                await editor.press('Backspace');
-                editorValue = await editor.value();
+                await page.keyboard.press('Backspace');
+                editorValue = await editor.inputValue();
                 expect(editorValue).toEqual('');
             });
         });
