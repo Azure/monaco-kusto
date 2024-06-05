@@ -482,18 +482,6 @@ fetch('./test/mode.txt')
                     monacoSettings.useSemanticColorization = true;
                     monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
                 });
-            window.setIntellisenseV1 = () =>
-                monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
-                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
-                    monacoSettings.useIntellisenseV2 = false;
-                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
-                });
-            window.setIntellisenseV2 = () =>
-                monaco.languages.kusto.getKustoWorker().then((workerAccessor) => {
-                    const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
-                    monacoSettings.useIntellisenseV2 = true;
-                    monaco.languages.kusto.kustoDefaults.setLanguageSettings(monacoSettings);
-                });
             window.enableQueryWarnings = () => {
                 const monacoSettings = monaco.languages.kusto.kustoDefaults.languageSettings;
                 monacoSettings.enableQueryWarnings = true;

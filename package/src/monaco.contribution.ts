@@ -68,7 +68,6 @@ const defaultLanguageSettings: LanguageSettings = {
     includeControlCommands: true,
     newlineAfterPipe: true,
     openSuggestionDialogAfterPreviousSuggestionAccepted: true,
-    useIntellisenseV2: true,
     useSemanticColorization: true,
     useTokenColorization: false,
     enableHover: true,
