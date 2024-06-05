@@ -6,18 +6,10 @@ export const createMonaKustoModel = (page: Page) => {
 
     return {
         intellisense: () => ({
-            wait: () => {
-                return page.waitForSelector('[role="listbox"]');
-            },
-            options: () => {
-                return page.getByRole('option');
-            },
-            option: (index: number) => {
-                return page.locator('[role="option"]').nth(index);
-            },
-            selected: () => {
-                return page.locator('[role="option"].focused');
-            },
+            wait: async () => page.waitForSelector('[role="listbox"]'),
+            options: () => ({ locator: page.getByRole('option') }),
+            option: (index: number) => ({ locator: page.locator('[role="option"]').nth(index) }),
+            selected: () => ({ locator: page.locator('[role="option"].focused') }),
         }),
         editor: () => ({
             locator: editor,

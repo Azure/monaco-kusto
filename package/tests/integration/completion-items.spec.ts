@@ -19,7 +19,7 @@ test.describe('completion items', () => {
 
         await model.intellisense().wait();
         const option = model.intellisense().option(0);
-        await expect(option).toHaveText('1d');
+        await expect(option.locator).toHaveText('1d');
     });
 
     test('match with exact substring and exclude parameters', async ({ page }) => {
@@ -27,7 +27,7 @@ test.describe('completion items', () => {
 
         await model.intellisense().wait();
         const options = model.intellisense().options();
-        await expect(options).toHaveCount(2);
+        await expect(options.locator).toHaveCount(2);
     });
 
     test('ordered by columns first', async ({ page }) => {
@@ -35,6 +35,6 @@ test.describe('completion items', () => {
 
         await model.intellisense().wait();
         const option = model.intellisense().option(0);
-        await expect(option).toHaveText('counter');
+        await expect(option.locator).toHaveText('counter');
     });
 });
