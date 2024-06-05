@@ -36,4 +36,4 @@ jobs:
 
       - name: integration tests
         working-directory: package
-        run: yarn test
+        run: yarn test:integration

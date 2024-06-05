@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/edcore.main';
-import { getKustoWorker } from '../../release/esm/monaco.contribution';
+import { getKustoWorker } from '../../../release/esm/monaco.contribution';
 import './index.css';
 import debounce from 'lodash/debounce';
 
@@ -43,6 +43,11 @@ const schema = {
                             Name: 'State',
                             Type: 'System.String',
                             CslType: 'string',
+                        },
+                        {
+                            Name: 'counter',
+                            Type: 'System.Number',
+                            CslType: 'number',
                         },
                     ],
                 },

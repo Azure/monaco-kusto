@@ -23,8 +23,9 @@
         "test_release": "echo release > test/mode.txt && http-server -c-1 -p 8080 ./ -o index.html",
         "clean": "rimraf ./release",
         "start": "ts-node ./scripts/dev.ts",
-        "test": "playwright test --trace=retain-on-failure -c tests/playwright.config.ts",
-        "test:watch": "ts-node ./scripts/test.ts"
+        "test": "jest",
+        "test:integration": "playwright test --trace=retain-on-failure -c tests/integration/playwright.config.ts",
+        "test:integration:watch": "ts-node ./scripts/test.ts"
     },
     "types": "./release/esm/monaco.contribution.d.ts",
     "module": "./release/esm/monaco.contribution.js",
@@ -56,10 +57,12 @@
         "browser-sync": "^3.0.2",
         "concurrently": "^8.2.1",
         "http-server": "^14.1.1",
-        "monaco-editor": "^0.46.0",
+        "jest": "^29.7.0",
+        "monaco-editor": "^0.49.0",
         "rimraf": "^5.0.1",
         "rollup": "^3.29.2",
         "terser": "^5.19.4",
+        "ts-jest": "^29.1.4",
         "ts-node": "^10.9.1",
         "typescript": "^5.2.2",
         "vite": "^5.2.11",
@@ -68,12 +71,12 @@
     },
     "dependencies": {
         "@kusto/language-service": "0.0.278",
-        "@kusto/language-service-next": "11.5.3",
+        "@kusto/language-service-next": "11.5.5",
         "lodash-es": "^4.17.21",
         "vscode-languageserver-types": "^3.17.4",
         "xregexp": "^5.1.1"
     },
     "peerDependencies": {
-        "monaco-editor": "^0.46.0"
+        "monaco-editor": "0.49.0"
     }
 }

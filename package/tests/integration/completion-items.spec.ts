@@ -28,4 +28,11 @@ test.describe('completion items', () => {
         const options = await intellisense.getAllOptions();
         expect(options).toHaveLength(2);
     });
+
+    test('ordered by columns first', async ({ page }) => {
+        await editor.type('| sort by ');
+
+        const option = await intellisense.getOptionByIndex(0);
+        await expect(option).toHaveText('counter');
+    });
 });
