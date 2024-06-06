@@ -25,11 +25,14 @@ async function main() {
         // webservers in CI
         const webserver = cp.spawn('yarn', ['playwright:webserver'], { cwd, stdio: 'inherit' });
 
-        console.log('Waiting for webserver to start');
+        const testFolder = `samples/${dir}`;
+        console.log(`${testFolder} > Waiting for webserver to start`);
         await waitOn({ resources: ['http://localhost:3000'], timeout: 120_000 });
 
-        for (const browserType of [chromium, firefox, webkit]) {
-            console.log('samples/' + dir + ' ' + browserType.name());
+        const browsers = [chromium, firefox, webkit];
+        for (const browserType of browsers) {
+            const testType = `${testFolder}${browserType.name()}`;
+            console.log(`${testType} > Starting test`);
 
             const browser = await browserType.launch();
             const page = await browser.newPage();
@@ -38,9 +41,9 @@ async function main() {
 
             try {
                 assert(await page.evaluate('healthCheck()'));
-                console.log('Sanity check passed!');
+                console.log(`${testType} > Sanity check passed!`);
             } catch (error) {
-                console.error('Sanity check failed!', error);
+                console.error(`${testType} > Sanity check failed!`, error);
                 errorOccurred = true;
             } finally {
                 await browser.close();
@@ -54,7 +57,7 @@ async function main() {
         webserver.kill();
 
         // Webserver takes a moment to close after kill signal is sent
-        console.log('Waiting for webserver to stop');
+        console.log(`${testFolder} > Waiting for webserver to stop`);
         await exited;
     }
 
