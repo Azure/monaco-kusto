@@ -10,6 +10,8 @@ import { chromium, firefox, webkit } from 'playwright';
 const samplesFolder = path.join(__dirname, '../samples');
 
 async function main() {
+    let errorOccurred = false;
+
     for (const dir of readdirSync(samplesFolder)) {
         const cwd = path.join(samplesFolder, dir);
 
@@ -34,11 +36,15 @@ async function main() {
 
             await page.goto('localhost:3000');
 
-            assert(await page.evaluate('healthCheck()'));
-
-            console.log('Sanity check passed!');
-
-            await browser.close();
+            try {
+                assert(await page.evaluate('healthCheck()'));
+                console.log('Sanity check passed!');
+            } catch (error) {
+                console.error('Sanity check failed!', error);
+                errorOccurred = true;
+            } finally {
+                await browser.close();
+            }
         }
 
         const exited = new Promise((resolve) => {
@@ -50,6 +56,10 @@ async function main() {
         // Webserver takes a moment to close after kill signal is sent
         console.log('Waiting for webserver to stop');
         await exited;
+    }
+
+    if (errorOccurred) {
+        throw new Error('One or more samples failed the sanity check.');
     }
 }
 
