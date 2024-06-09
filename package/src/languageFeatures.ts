@@ -8,6 +8,7 @@ import type { Schema } from './languageServiceManager/schema';
 import type { ClassifiedRange } from './languageServiceManager/kustoLanguageService';
 import { AugmentedWorkerAccessor } from './kustoMode';
 import { CompletionCacheManager, createCompletionCacheManager } from './completionCacheManager/completionCacheManager';
+import { createCompletionFilteredText } from './languageFeatures.utils';
 
 // --- diagnostics ---
 
@@ -821,15 +822,14 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
             .getCompletionItems(word, resource, fromPosition(position))
             .then((info) => (onDidProvideCompletionItems ? onDidProvideCompletionItems(info) : info))
             .then((info) => {
-                if (!info) {
-                    return;
-                }
+                if (!info) return;
+
                 let items: monaco.languages.CompletionItem[] = info.items.map((entry) => {
                     let item: monaco.languages.CompletionItem = {
                         label: entry.label,
                         insertText: entry.insertText,
                         sortText: entry.sortText,
-                        filterText: entry.filterText,
+                        filterText: createCompletionFilteredText(word, entry),
                         // TODO: Is this cast safe?
                         documentation: this.formatDocLink((entry.documentation as undefined | ls.MarkupContent)?.value),
                         detail: entry.detail,

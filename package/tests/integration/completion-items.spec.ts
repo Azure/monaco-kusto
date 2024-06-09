@@ -22,7 +22,7 @@ test.describe('completion items', () => {
         await expect(option.locator).toHaveText('1d');
     });
 
-    test('match with exact substring and exclude parameters', async ({ page }) => {
+    test('exclude parameters on matching results', async ({ page }) => {
         await page.keyboard.type('| where StartTime > ago');
 
         await model.intellisense().wait();
@@ -40,11 +40,11 @@ test.describe('completion items', () => {
         });
 
         test('ordered by columns first', async ({ page }) => {
-            await page.keyboard.type('| where time');
-
+            await page.keyboard.type('| where t');
             await model.intellisense().wait();
-            const option = model.intellisense().option(0);
-            await expect(option.locator).toHaveText('StartTime');
+
+            await page.keyboard.type('ime');
+            await expect(model.intellisense().option(0).locator).toHaveText('StartTime');
         });
     });
 });

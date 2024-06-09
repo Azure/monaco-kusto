@@ -21,9 +21,18 @@ export function completionListBuilder() {
 export function completionItemBuilder() {
     const completionItem: CompletionItem = {
         label: faker.lorem.word(),
+        filterText: faker.lorem.word(),
     };
 
     const builder = {
+        withFilterText: (filterText: string) => {
+            completionItem.filterText = filterText;
+            return builder;
+        },
+        withForcePrecedence: (forcePrecedence: boolean) => {
+            completionItem.data = { forcePrecedence };
+            return builder;
+        },
         build: (): CompletionItem => completionItem,
     };
 
