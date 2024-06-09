@@ -34,6 +34,10 @@ jobs:
       - name: test samples
         run: yarn test:samples
 
+      - name: unit tests
+        working-directory: package
+        run: yarn test
+
       - name: integration tests
         working-directory: package
         run: yarn test:integration
