@@ -8,14 +8,16 @@ test.describe('completion items', () => {
         await loadPageAndWait(page);
         model = createMonaKustoModel(page);
 
-        const initialValue = 'StormEvents \n';
+        const initialValue = 'StormEvents';
         const editor = model.editor().locator;
         await editor.focus();
         await editor.fill(initialValue);
+        await model.intellisense().wait();
+        await page.keyboard.press('Enter');
     });
 
     test('triggered on "("', async ({ page }) => {
-        await page.keyboard.type('StormEvents \n| where StartTime > ago(');
+        await page.keyboard.type('where StartTime > ago(');
 
         await model.intellisense().wait();
         const option = model.intellisense().option(0);
@@ -23,7 +25,7 @@ test.describe('completion items', () => {
     });
 
     test('exclude parameters on matching results', async ({ page }) => {
-        await page.keyboard.type('| where StartTime > ago');
+        await page.keyboard.type('where StartTime > ago');
 
         await model.intellisense().wait();
         const options = model.intellisense().options();
@@ -32,7 +34,7 @@ test.describe('completion items', () => {
 
     test.describe('ordered by relevance', () => {
         test('verify alphabetical order of functions', async ({ page }) => {
-            await page.keyboard.type('| sort by ');
+            await page.keyboard.type('sort by ');
 
             await model.intellisense().wait();
             const option = model.intellisense().option(0);
@@ -40,7 +42,7 @@ test.describe('completion items', () => {
         });
 
         test('ordered by columns first', async ({ page }) => {
-            await page.keyboard.type('| where t');
+            await page.keyboard.type('where t');
             await model.intellisense().wait();
 
             await page.keyboard.type('ime');
