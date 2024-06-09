@@ -30,11 +30,21 @@ test.describe('completion items', () => {
         await expect(options.locator).toHaveCount(2);
     });
 
-    test('ordered by columns first', async ({ page }) => {
-        await page.keyboard.type('| sort by ');
+    test.describe('ordered by relevance', () => {
+        test('verify alphabetical order of functions', async ({ page }) => {
+            await page.keyboard.type('| sort by ');
 
-        await model.intellisense().wait();
-        const option = model.intellisense().option(0);
-        await expect(option.locator).toHaveText('counter');
+            await model.intellisense().wait();
+            const option = model.intellisense().option(0);
+            await expect(option.locator).toHaveText('counter');
+        });
+
+        test('ordered by columns first', async ({ page }) => {
+            await page.keyboard.type('| where time');
+
+            await model.intellisense().wait();
+            const option = model.intellisense().option(0);
+            await expect(option.locator).toHaveText('StartTime');
+        });
     });
 });
