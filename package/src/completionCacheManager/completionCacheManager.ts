@@ -7,7 +7,7 @@ export const createCompletionCacheManager = (getFromLanguageService: GetFromLang
 
     return {
         getCompletionItems: async (word: string | undefined, resource: monaco.Uri, position: ls.Position) => {
-            const isIncluded = word?.includes(lastWord) || lastWord?.includes(word);
+            const isIncluded = word?.includes(lastWord);
             const shouldGetItems = !lastWord || !word || !isIncluded;
             if (shouldGetItems) {
                 completionList = await getFromLanguageService(resource, position);
