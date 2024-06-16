@@ -1,6 +1,6 @@
 import type * as monaco from 'monaco-editor/esm/vs/editor/editor.worker';
 
-export const KustoLanguageDefinition: monaco.languages.IMonarchLanguage = {
+export const kustoLanguageDefinition: monaco.languages.IMonarchLanguage = {
     name: 'kusto',
     mimeTypes: ['text/kusto'],
     displayName: 'Kusto',

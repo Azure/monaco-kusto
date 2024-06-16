@@ -2,7 +2,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import { WorkerManager } from './workerManager';
 import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution';
-import { KustoLanguageDefinition } from './syntax-highlighting/kustoMonarchLanguageDefinition';
+import { kustoLanguageDefinition } from './syntax-highlighting/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
 import type { Schema } from './languageServiceManager/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
@@ -82,7 +82,7 @@ export function setupMode(
     // Monaco tokenization runs in main thread so we're using a quick schema-unaware tokenization.
     // a web worker will run semantic colorization in the background (ColorizationAdapter).
     if (defaults.languageSettings.useTokenColorization) {
-        monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
+        monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(language, kustoLanguageDefinition);
     }
 
     // listen to configuration changes and if we're switching from semantic to monarch colorization, do the switch.
@@ -95,7 +95,7 @@ export function setupMode(
         if (e.languageSettings.useTokenColorization && monarchTokensProvider == undefined) {
             monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
                 language,
-                KustoLanguageDefinition
+                kustoLanguageDefinition
             );
         }
     });
