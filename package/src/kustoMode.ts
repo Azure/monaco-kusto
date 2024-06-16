@@ -2,7 +2,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import { WorkerManager } from './workerManager';
 import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution';
-import { KustoLanguageDefinition } from './languageServiceManager/kustoMonarchLanguageDefinition';
+import { KustoLanguageDefinition } from './syntax-highlighting/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
 import type { Schema } from './languageServiceManager/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
