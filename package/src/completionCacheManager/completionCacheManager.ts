@@ -2,19 +2,18 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import * as ls from 'vscode-languageserver-types';
 
 export const createCompletionCacheManager = (getFromLanguageService: GetFromLanguageService) => {
-    let completionList: ls.CompletionList | undefined;
+    let completionList: Promise<ls.CompletionList> | undefined;
     let lastWord: string | undefined;
 
     return {
-        getCompletionItems: async (word: string | undefined, resource: monaco.Uri, position: ls.Position) => {
-            const isIncluded = word?.includes(lastWord);
-            const shouldGetItems = !lastWord || !word || !isIncluded;
+        getCompletionItems: (word: string | undefined, resource: monaco.Uri, position: ls.Position) => {
+            const shouldGetItems = !lastWord || !word || !word?.includes(lastWord);
             if (shouldGetItems) {
-                completionList = await getFromLanguageService(resource, position);
+                completionList = getFromLanguageService(resource, position);
             }
 
             lastWord = word;
-            return Promise.resolve(completionList);
+            return completionList;
         },
     };
 };

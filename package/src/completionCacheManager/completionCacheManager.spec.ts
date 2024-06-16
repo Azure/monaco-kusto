@@ -1,4 +1,4 @@
-import { test, describe, expect, beforeEach, afterEach } from '@jest/globals';
+import { test, describe, expect, beforeEach } from '@jest/globals';
 import { CompletionCacheManager, GetFromLanguageService, createCompletionCacheManager } from './completionCacheManager';
 import * as monaco from 'monaco-editor';
 import * as ls from 'vscode-languageserver-types';
