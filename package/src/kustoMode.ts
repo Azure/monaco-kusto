@@ -6,6 +6,7 @@ import { KustoLanguageDefinition } from './syntax-highlighting/kustoMonarchLangu
 import * as languageFeatures from './languageFeatures';
 import type { Schema } from './languageServiceManager/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
+import { ColorizationAdapter } from './syntax-highlighting/ColorizationAdapter';
 
 export interface AugmentedWorker
     extends KustoWorker,
@@ -109,15 +110,14 @@ export function setupMode(
         )
     );
 
-    disposables.push(
-        new languageFeatures.ColorizationAdapter(
-            monacoInstance,
-            language,
-            workerAccessor,
-            defaults,
-            onSchemaChange.event
-        )
+    const colorizationAdapter = new ColorizationAdapter(
+        monacoInstance,
+        language,
+        workerAccessor,
+        defaults,
+        onSchemaChange.event
     );
+    disposables.push(colorizationAdapter);
 
     disposables.push(
         monacoInstance.languages.registerDocumentRangeFormattingEditProvider(
