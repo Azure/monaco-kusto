@@ -14,7 +14,8 @@
         "types": [
             "@kusto/language-service/Kusto.JavaScript.Client",
             "@kusto/language-service-next/Kusto.Language.Bridge",
-            "node"
+            "node",
+            "jest"
         ]
     }
 }

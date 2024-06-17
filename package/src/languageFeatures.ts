@@ -7,6 +7,8 @@ import type { LanguageServiceDefaults, LanguageSettings, OnDidProvideCompletionI
 import type { Schema } from './languageServiceManager/schema';
 import type { ClassifiedRange } from './languageServiceManager/kustoLanguageService';
 import { AugmentedWorkerAccessor } from './kustoMode';
+import { CompletionCacheManager, createCompletionCacheManager } from './completionCacheManager/completionCacheManager';
+import { createCompletionFilteredText } from './languageFeatures.utils';
 
 // --- diagnostics ---
 
@@ -782,7 +784,17 @@ function toTextEdit(textEdit: ls.TextEdit): monaco.editor.ISingleEditOperation {
 const DEFAULT_DOCS_BASE_URL = 'https://learn.microsoft.com/azure/data-explorer/kusto/query';
 
 export class CompletionAdapter implements monaco.languages.CompletionItemProvider {
-    constructor(private _worker: AugmentedWorkerAccessor, private languageSettings: LanguageSettings) {}
+    private readonly languageSettings: LanguageSettings;
+    private completionCacheManager: CompletionCacheManager;
+
+    constructor(workerAccessor: AugmentedWorkerAccessor, languageSettings: LanguageSettings) {
+        this.languageSettings = languageSettings;
+        const getFromLanguageService = async (resource: monaco.Uri, position: ls.Position) => {
+            const worker = await workerAccessor(resource);
+            return worker.doComplete(resource.toString(), position);
+        };
+        this.completionCacheManager = createCompletionCacheManager(getFromLanguageService);
+    }
 
     public get triggerCharacters(): string[] {
         return [' ', '.', '('];
@@ -802,24 +814,22 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
             wordInfo.endColumn
         );
         const resource = model.uri;
+        const word = model?.getWordAtPosition(position)?.word;
         const onDidProvideCompletionItems: OnDidProvideCompletionItems =
             this.languageSettings.onDidProvideCompletionItems;
 
-        return this._worker(resource)
-            .then((worker) => {
-                return worker.doComplete(resource.toString(), fromPosition(position));
-            })
+        return this.completionCacheManager
+            .getCompletionItems(word, resource, fromPosition(position))
             .then((info) => (onDidProvideCompletionItems ? onDidProvideCompletionItems(info) : info))
             .then((info) => {
-                if (!info) {
-                    return;
-                }
+                if (!info) return;
+
                 let items: monaco.languages.CompletionItem[] = info.items.map((entry) => {
                     let item: monaco.languages.CompletionItem = {
                         label: entry.label,
                         insertText: entry.insertText,
                         sortText: entry.sortText,
-                        filterText: entry.filterText,
+                        filterText: createCompletionFilteredText(word, entry),
                         // TODO: Is this cast safe?
                         documentation: this.formatDocLink((entry.documentation as undefined | ls.MarkupContent)?.value),
                         detail: entry.detail,
@@ -838,7 +848,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                 });
 
                 return {
-                    isIncomplete: info.isIncomplete,
+                    incomplete: true,
                     suggestions: items,
                 };
             });
