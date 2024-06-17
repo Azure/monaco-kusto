@@ -73,18 +73,27 @@ Every PR should come with a test that checks it.
 1. Set CI environment variable to "tru"
 2. Run `yarn build`
 
+## Running unit tests
+
+-   Run `yarn test` from the package folder to run all unit tests
+
 ## Running integration tests
 
-1. Run `yarn test:install` from the root of the project
-2. Run `yarn test` from the package folder to run the tests in headless mode
-3. Run `yarn test:watch` from the package folder to run the tests in a browser and rebuild after each change
+-   Run `yarn test:integration:install` from the root of the project
+-   Run `yarn test:integration` from the package folder to run the tests in headless mode
+-   Run `yarn test:integration:watch` from the package folder to run the tests in a browser and rebuild after each change
 
 ## Changelog
+
+### 11.1.0
+
+-   feat: Modify the ordering of completion items so that columns always appear at the top.
+-   feat: upgrade language service next to 11.5.6.
 
 ### 11.0.0
 
 -   BREAKING CHANGE: Removed the useIntellisenseV2 option; it now defaults to true.
--   feat: upgrade language service next to 11.5.5
+-   feat: upgrade language service next to 11.5.5.
 
 ### 10.0.0
 
