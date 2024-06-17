@@ -81,10 +81,15 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 11.1.0
+
+-   feat: Modify the ordering of completion items so that columns always appear at the top.
+-   feat: upgrade language service next to 11.5.6.
+
 ### 11.0.0
 
 -   BREAKING CHANGE: Removed the useIntellisenseV2 option; it now defaults to true.
--   feat: upgrade language service next to 11.5.5
+-   feat: upgrade language service next to 11.5.5.
 
 ### 10.0.0
 
