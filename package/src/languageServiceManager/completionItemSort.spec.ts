@@ -45,7 +45,11 @@ describe('sortByMatchTextKeepingKindOrder', () => {
             .withMatchText('bin')
             .withKind(k2.CompletionKind.BuiltInFunction)
             .build();
-        const items = [item1, item2, item3, item4];
+        const item5 = kustoCompletionItemBuilder()
+            .withMatchText('avg')
+            .withKind(k2.CompletionKind.AggregateFunction)
+            .build();
+        const items = [item1, item2, item3, item4, item5];
 
         const sortedItems = sortByMatchTextKeepingKindOrder(items);
 
@@ -53,5 +57,6 @@ describe('sortByMatchTextKeepingKindOrder', () => {
         expect(sortedItems[1].MatchText).toBe('count_distinct');
         expect(sortedItems[2].MatchText).toBe('bin');
         expect(sortedItems[3].MatchText).toBe('bin_at');
+        expect(sortedItems[4].MatchText).toBe('avg');
     });
 });
