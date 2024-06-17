@@ -34,11 +34,13 @@ test.describe('completion items', () => {
 
     test.describe('ordered by relevance', () => {
         test('verify alphabetical order of functions', async ({ page }) => {
-            await page.keyboard.type('sort by ');
+            await page.keyboard.type('summarize coun');
 
             await model.intellisense().wait();
-            const option = model.intellisense().option(0);
-            await expect(option.locator).toHaveText('counter');
+            const option1 = model.intellisense().option(0);
+            await expect(option1.locator).toContainText('count()');
+            const option2 = model.intellisense().option(1);
+            await expect(option2.locator).toContainText('count_distinct(');
         });
 
         test('ordered by columns first', async ({ page }) => {

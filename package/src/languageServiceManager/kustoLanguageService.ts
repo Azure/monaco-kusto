@@ -20,7 +20,7 @@ import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFrom
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference } from '../types';
 import { Mutable } from '../util';
-import { createSortingText } from './competionItemSort';
+import { createSortingText, sortByMatchTextKeepingKindOrder } from './competionItemSort';
 
 let List = System.Collections.Generic.List$1;
 
@@ -419,7 +419,8 @@ class KustoLanguageService implements LanguageService {
             });
         }
         const itemsAsArray = this.toArray<k2.CompletionItem>(completionItems.Items);
-        let items: ls.CompletionItem[] = itemsAsArray
+        const sortedArray = sortByMatchTextKeepingKindOrder(itemsAsArray);
+        let items: ls.CompletionItem[] = sortedArray
             .filter(
                 (item) =>
                     !(
