@@ -50,5 +50,12 @@ test.describe('completion items', () => {
             await page.keyboard.type('ime');
             await expect(model.intellisense().option(0).locator).toHaveText('StartTime');
         });
+
+        test('suggests "where" after table name and Enter', async ({ page }) => {
+            await model.intellisense().wait();
+
+            const firstOption = model.intellisense().option(0);
+            await expect(firstOption.locator).toContainText('where');
+        });
     });
 });

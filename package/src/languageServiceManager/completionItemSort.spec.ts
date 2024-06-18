@@ -28,35 +28,22 @@ describe('createSortingText', () => {
 });
 
 describe('sortByMatchTextKeepingKindOrder', () => {
-    test('should sort by match text grouped by kind', () => {
-        const item1 = kustoCompletionItemBuilder()
-            .withMatchText('count_distinct')
-            .withKind(k2.CompletionKind.AggregateFunction)
-            .build();
-        const item2 = kustoCompletionItemBuilder()
-            .withMatchText('count')
-            .withKind(k2.CompletionKind.AggregateFunction)
-            .build();
-        const item3 = kustoCompletionItemBuilder()
-            .withMatchText('bin_at')
-            .withKind(k2.CompletionKind.BuiltInFunction)
-            .build();
-        const item4 = kustoCompletionItemBuilder()
-            .withMatchText('bin')
-            .withKind(k2.CompletionKind.BuiltInFunction)
-            .build();
-        const item5 = kustoCompletionItemBuilder()
-            .withMatchText('avg')
-            .withKind(k2.CompletionKind.AggregateFunction)
-            .build();
-        const items = [item1, item2, item3, item4, item5];
+    test('should sort by match text grouped by kind and first char', () => {
+        const items = [
+            kustoCompletionItemBuilder().withMatchText('where').withKind(k2.CompletionKind.AggregateFunction).build(),
+            kustoCompletionItemBuilder()
+                .withMatchText('count_distinct')
+                .withKind(k2.CompletionKind.AggregateFunction)
+                .build(),
+            kustoCompletionItemBuilder().withMatchText('count').withKind(k2.CompletionKind.AggregateFunction).build(),
+            kustoCompletionItemBuilder().withMatchText('bin_at').withKind(k2.CompletionKind.BuiltInFunction).build(),
+            kustoCompletionItemBuilder().withMatchText('bin').withKind(k2.CompletionKind.BuiltInFunction).build(),
+            kustoCompletionItemBuilder().withMatchText('avg').withKind(k2.CompletionKind.AggregateFunction).build(),
+        ];
 
         const sortedItems = sortByMatchTextKeepingKindOrder(items);
 
-        expect(sortedItems[0].MatchText).toBe('count');
-        expect(sortedItems[1].MatchText).toBe('count_distinct');
-        expect(sortedItems[2].MatchText).toBe('bin');
-        expect(sortedItems[3].MatchText).toBe('bin_at');
-        expect(sortedItems[4].MatchText).toBe('avg');
+        const results = sortedItems.map((item) => item.MatchText);
+        expect(results).toEqual(['where', 'count', 'count_distinct', 'bin', 'bin_at', 'avg']);
     });
 });

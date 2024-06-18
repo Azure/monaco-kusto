@@ -5,20 +5,25 @@ export const createSortingText = (priority: number) => {
 };
 
 export function sortByMatchTextKeepingKindOrder(items: k2.CompletionItem[]) {
-    const groupedByKind = groupContiguousByKind(items);
+    const groupedByKind = groupContiguousByKindAndFirstChar(items);
     const sortedGroupedItems = sortGroupedItems(groupedByKind);
     return sortedGroupedItems.flat();
 }
 
 function sortGroupedItems(groupedItems: k2.CompletionItem[][]) {
-    return groupedItems.map((group) => group.sort((i1, i2) => i1.MatchText.localeCompare(i2.MatchText)));
+    return groupedItems.map((group) => {
+        if (group.length === 1) return group;
+        return group.sort((i1, i2) => i1.MatchText.localeCompare(i2.MatchText));
+    });
 }
 
-function groupContiguousByKind(items: k2.CompletionItem[]) {
+function groupContiguousByKindAndFirstChar(items: k2.CompletionItem[]) {
     return items.reduce((result: k2.CompletionItem[][], item: k2.CompletionItem) => {
         const lastGroup = last(result);
+        const lastItem = last(lastGroup);
 
-        const shouldCreateNewGroup = !lastGroup || last(lastGroup)?.Kind !== item.Kind;
+        const shouldCreateNewGroup =
+            !lastItem || lastItem.Kind !== item.Kind || lastItem.MatchText[0] !== item.MatchText[0];
         if (shouldCreateNewGroup) result.push([]);
         last(result).push(item);
 
@@ -27,5 +32,6 @@ function groupContiguousByKind(items: k2.CompletionItem[]) {
 }
 
 function last<T>(array: T[]): T | undefined {
+    if (!array) return undefined;
     return array.length > 0 ? array[array.length - 1] : undefined;
 }
