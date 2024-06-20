@@ -1,11 +1,16 @@
 import k2 = Kusto.Language.Editor;
 import { faker } from '@faker-js/faker';
 
+interface KustoCompletionItem extends k2.CompletionItem {
+    Priority: number;
+}
+
 export function kustoCompletionItemBuilder() {
-    const completionItem: k2.CompletionItem = {
+    const completionItem: KustoCompletionItem = {
         Kind: k2.CompletionKind.Unknown,
         DisplayText: faker.lorem.word(),
         MatchText: null,
+        Priority: null,
         ApplyTexts: null,
         BeforeText: null,
         AfterText: null,
@@ -30,6 +35,10 @@ export function kustoCompletionItemBuilder() {
         },
         withMatchText: (matchText: string) => {
             completionItem.MatchText = matchText;
+            return builder;
+        },
+        withPriority: (priority: number) => {
+            completionItem.Priority = priority;
             return builder;
         },
         build: (): k2.CompletionItem => completionItem,
