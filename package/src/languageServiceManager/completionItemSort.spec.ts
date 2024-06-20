@@ -1,6 +1,6 @@
 import k2 = Kusto.Language.Editor;
 import { test, describe, expect } from '@jest/globals';
-import { createSortingText, sortByMatchTextKeepingKindOrder } from './competionItemSort';
+import { createSortingText, sortCompletionItems } from './competionItemSort';
 import { kustoCompletionItemBuilder } from '../../tests/unit/builders/KustoCompletionItem';
 
 describe('createSortingText', () => {
@@ -27,23 +27,44 @@ describe('createSortingText', () => {
     });
 });
 
-describe('sortByMatchTextKeepingKindOrder', () => {
+describe('sortCompletionItems', () => {
     test('should sort by match text grouped by kind and first char', () => {
         const items = [
-            kustoCompletionItemBuilder().withMatchText('where').withKind(k2.CompletionKind.AggregateFunction).build(),
             kustoCompletionItemBuilder()
                 .withMatchText('count_distinct')
+                .withPriority(2)
                 .withKind(k2.CompletionKind.AggregateFunction)
                 .build(),
-            kustoCompletionItemBuilder().withMatchText('count').withKind(k2.CompletionKind.AggregateFunction).build(),
-            kustoCompletionItemBuilder().withMatchText('bin_at').withKind(k2.CompletionKind.BuiltInFunction).build(),
-            kustoCompletionItemBuilder().withMatchText('bin').withKind(k2.CompletionKind.BuiltInFunction).build(),
-            kustoCompletionItemBuilder().withMatchText('avg').withKind(k2.CompletionKind.AggregateFunction).build(),
+            kustoCompletionItemBuilder()
+                .withMatchText('count')
+                .withPriority(2)
+                .withKind(k2.CompletionKind.AggregateFunction)
+                .build(),
+            kustoCompletionItemBuilder()
+                .withMatchText('where')
+                .withPriority(0)
+                .withKind(k2.CompletionKind.AggregateFunction)
+                .build(),
+            kustoCompletionItemBuilder()
+                .withMatchText('bin_at')
+                .withPriority(2)
+                .withKind(k2.CompletionKind.BuiltInFunction)
+                .build(),
+            kustoCompletionItemBuilder()
+                .withMatchText('bin')
+                .withPriority(2)
+                .withKind(k2.CompletionKind.BuiltInFunction)
+                .build(),
+            kustoCompletionItemBuilder()
+                .withMatchText('avg')
+                .withPriority(2)
+                .withKind(k2.CompletionKind.AggregateFunction)
+                .build(),
         ];
 
-        const sortedItems = sortByMatchTextKeepingKindOrder(items);
+        const sortedItems = sortCompletionItems(items);
 
         const results = sortedItems.map((item) => item.MatchText);
-        expect(results).toEqual(['where', 'count', 'count_distinct', 'bin', 'bin_at', 'avg']);
+        expect(results).toEqual(['where', 'avg', 'count', 'count_distinct', 'bin', 'bin_at']);
     });
 });
