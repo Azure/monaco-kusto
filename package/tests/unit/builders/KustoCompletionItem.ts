@@ -11,6 +11,7 @@ export function kustoCompletionItemBuilder() {
         AfterText: null,
         EditText: null,
         Retrigger: null,
+        OrderText: null,
         WithKind: null,
         WithDisplayText: null,
         WithMatchText: null,
@@ -21,6 +22,7 @@ export function kustoCompletionItemBuilder() {
         WithEditText: null,
         WithAfterText: null,
         WithRetrigger: null,
+        WithOrderText: null,
     };
 
     const builder = {

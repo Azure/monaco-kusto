@@ -73,7 +73,7 @@
     },
     "dependencies": {
         "@kusto/language-service": "0.0.278",
-        "@kusto/language-service-next": "11.5.6",
+        "@kusto/language-service-next": "11.6.0",
         "lodash-es": "^4.17.21",
         "vscode-languageserver-types": "^3.17.4",
         "xregexp": "^5.1.1"
