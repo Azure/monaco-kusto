@@ -134,4 +134,32 @@ function updateLanguageSettings(event: Event) {
     });
 }
 
+function setThemeMode(event: Event) {
+    const theme = (event.target as HTMLInputElement).value;
+    updateThemeInLocalStorage(theme);
+    monaco.editor.setTheme(theme);
+}
+
+const updateThemeInLocalStorage = (theme = 'kusto-light') => {
+    localStorage.setItem('dev-theme', theme);
+};
+
+applyDefaultTheme();
+
+function getInitialThemeValue(): string {
+    const defaultValue = 'kusto-light';
+    const storageValue = localStorage.getItem('dev-theme');
+    return storageValue?.trim().length ? storageValue : defaultValue;
+}
+
+function applyDefaultTheme() {
+    const value = getInitialThemeValue();
+    const themeRadios = document.getElementsByName('theme');
+    const radioArray = Array.from(themeRadios);
+    const radioToCheck = radioArray.find((radio: HTMLInputElement) => radio.value === value);
+    (radioToCheck as HTMLInputElement).checked = true;
+    monaco.editor.setTheme(value);
+}
+
 (window as any).updateLanguageSettings = updateLanguageSettings;
+(window as any).setThemeMode = setThemeMode;
