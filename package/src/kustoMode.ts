@@ -5,7 +5,7 @@ import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution
 import * as languageFeatures from './languageFeatures';
 import type { Schema } from './languageServiceManager/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
-import { SemanticTokensProvider } from './syntax-highlighting/DocumentSemanticTokensProvider';
+import { SemanticTokensProvider } from './syntax-highlighting/SemanticTokensProvider';
 import { kustoLanguageDefinition } from './syntax-highlighting/kustoMonarchLanguageDefinition';
 import { LANGUAGE_ID } from './globals';
 
@@ -84,7 +84,7 @@ export function setupMode(
         )
     );
 
-    const semanticTokenProvider = new SemanticTokensProvider(workerAccessor);
+    const semanticTokenProvider = new SemanticTokensProvider(workerAccessor, monacoInstance);
     monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
 
     disposables.push(

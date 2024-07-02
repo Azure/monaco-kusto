@@ -8,6 +8,7 @@ import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from 
 import type { ColorizationRange } from './languageServiceManager/kustoLanguageService';
 import type { RenderInfo } from './languageServiceManager/renderInfo';
 import type { ClusterReference, DatabaseReference, KustoWorker } from './types';
+import { ClassificationRange, DocumentSemanticToken } from './syntax-highlighting/types';
 
 export type InterfaceFor<C> = {
     [Member in keyof C]: C[Member];
@@ -276,6 +277,11 @@ export class KustoWorkerImpl {
             colorizationIntervals
         );
         return colorizationInfo;
+    }
+
+    getClassifications(uri: string): Promise<ClassificationRange[]> {
+        const document = this._getTextDocument(uri);
+        return this._languageService.getClassifications(document);
     }
 
     getClientDirective(text: string): Promise<{ isClientDirective: boolean; directiveWithoutLeadingComments: string }> {

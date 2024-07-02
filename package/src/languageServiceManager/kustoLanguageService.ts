@@ -20,6 +20,11 @@ import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFrom
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference } from '../types';
 import { Mutable } from '../util';
+<<<<<<< Updated upstream
+=======
+import { createSortingText, sortByMatchTextKeepingKindOrder } from './competionItemSort';
+import { ClassificationRange, DocumentSemanticToken } from '../syntax-highlighting/types';
+>>>>>>> Stashed changes
 
 let List = System.Collections.Generic.List$1;
 
@@ -151,6 +156,7 @@ export interface LanguageService {
         includeSuggestions?: boolean
     ): Promise<ls.Diagnostic[]>;
     getResultActions(document: TextDocument, start: number, end: number): Promise<ResultAction[]>;
+    getClassifications(document: TextDocument): Promise<ClassificationRange[]>;
     doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
     doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
@@ -794,6 +800,25 @@ class KustoLanguageService implements LanguageService {
                 }
                 return ls.Diagnostic.create(range, diag.Message, severity, diag.Code);
             });
+    }
+
+    async getClassifications(document: TextDocument): Promise<ClassificationRange[]> {
+        const codeScript = this.parseDocumentV2(document);
+        const codeBlocks = this.toArray<k2.CodeBlock>(codeScript.Blocks);
+        const classificationRanges = codeBlocks.map((block) => {
+            const { Classifications } = block.Service.GetClassifications(block.Start, block.Length);
+            return this.toArray<k2.ClassifiedRange>(Classifications);
+        });
+
+        return classificationRanges.flatMap((ranges) => {
+            return ranges.map((range) => {
+                const { line, character } = document.positionAt(range.Start);
+                const length = range.Length;
+                const kind = range.Kind;
+
+                return { line, character, length, kind };
+            });
+        });
     }
 
     /**
