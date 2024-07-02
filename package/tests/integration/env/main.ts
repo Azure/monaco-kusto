@@ -89,6 +89,7 @@ const editor = monaco.editor.create(document.getElementById('editor'), {
         selectionMode: 'whenQuickSuggestion',
     },
     copyWithSyntaxHighlighting: true,
+    'semanticHighlighting.enabled': true,
 });
 
 const updateEditorValueInLocalStorage = () => localStorage.setItem('dev-kusto-query', editor.getValue());

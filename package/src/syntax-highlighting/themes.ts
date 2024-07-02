@@ -30,6 +30,8 @@ const light: monaco.editor.IStandaloneThemeData = {
         { token: 'number', foreground: '191970' }, // LetVariablesToken MidnightBlue
         { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
         { token: 'invalid', background: 'cd3131' },
+        { token: 'column', background: 'C71585' },
+        { token: 'table', foreground: 'C71585' },
     ],
     colors: {},
 };
@@ -54,6 +56,8 @@ const dark: monaco.editor.IStandaloneThemeData = {
         { token: 'number', foreground: 'd7ba7d' }, // LetVariablesToken MidnightBlue
         { token: 'annotation', foreground: 'b5cea8' }, // ClientDirectiveToken DarkViolet
         { token: 'invalid', background: 'cd3131' },
+        { token: 'column', background: '4ec9b0' },
+        { token: 'table', background: 'c586c0' },
     ],
     colors: {
         // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors

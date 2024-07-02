@@ -2,11 +2,12 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import { WorkerManager } from './workerManager';
 import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution';
-import { kustoLanguageDefinition } from './syntax-highlighting/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
 import type { Schema } from './languageServiceManager/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
-import { ColorizationAdapter } from './syntax-highlighting/ColorizationAdapter';
+import { SemanticTokensProvider } from './syntax-highlighting/DocumentSemanticTokensProvider';
+import { kustoLanguageDefinition } from './syntax-highlighting/kustoMonarchLanguageDefinition';
+import { LANGUAGE_ID } from './globals';
 
 export interface AugmentedWorker
     extends KustoWorker,
@@ -35,7 +36,6 @@ export function setupMode(
     let onSchemaChange = new monaco.Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
     let disposables: monaco.IDisposable[] = [];
-    let monarchTokensProvider: monaco.IDisposable;
 
     const client = new WorkerManager(monacoInstance, defaults);
     disposables.push(client);
@@ -71,100 +71,81 @@ export function setupMode(
         );
     };
 
-    const language = 'kusto';
+    const monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
+        LANGUAGE_ID,
+        kustoLanguageDefinition
+    );
+    disposables.push(monarchTokensProvider);
+
     disposables.push(
         monacoInstance.languages.registerCompletionItemProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings)
         )
     );
 
-    // Monaco tokenization runs in main thread so we're using a quick schema-unaware tokenization.
-    // a web worker will run semantic colorization in the background (ColorizationAdapter).
-    if (defaults.languageSettings.useTokenColorization) {
-        monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(language, kustoLanguageDefinition);
-    }
-
-    // listen to configuration changes and if we're switching from semantic to monarch colorization, do the switch.
-    defaults.onDidChange((e) => {
-        if (!e.languageSettings.useTokenColorization && monarchTokensProvider !== undefined) {
-            monarchTokensProvider.dispose();
-            monarchTokensProvider = undefined;
-        }
-
-        if (e.languageSettings.useTokenColorization && monarchTokensProvider == undefined) {
-            monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
-                language,
-                kustoLanguageDefinition
-            );
-        }
-    });
+    const semanticTokenProvider = new SemanticTokensProvider(workerAccessor);
+    monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
 
     disposables.push(
         new languageFeatures.DiagnosticsAdapter(
             monacoInstance,
-            language,
+            LANGUAGE_ID,
             workerAccessor,
             defaults,
             onSchemaChange.event
         )
     );
 
-    const colorizationAdapter = new ColorizationAdapter(
-        monacoInstance,
-        language,
-        workerAccessor,
-        defaults,
-        onSchemaChange.event
-    );
-    disposables.push(colorizationAdapter);
-
     disposables.push(
         monacoInstance.languages.registerDocumentRangeFormattingEditProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.FormatAdapter(workerAccessor)
         )
     );
 
     disposables.push(
         monacoInstance.languages.registerFoldingRangeProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.FoldingAdapter(workerAccessor)
         )
     );
 
     disposables.push(
         monacoInstance.languages.registerDefinitionProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.DefinitionAdapter(workerAccessor)
         )
     );
 
     disposables.push(
-        monacoInstance.languages.registerRenameProvider(language, new languageFeatures.RenameAdapter(workerAccessor))
+        monacoInstance.languages.registerRenameProvider(LANGUAGE_ID, new languageFeatures.RenameAdapter(workerAccessor))
     );
 
     disposables.push(
         monacoInstance.languages.registerReferenceProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.ReferenceAdapter(workerAccessor)
         )
     );
 
     if (defaults.languageSettings.enableHover) {
         disposables.push(
-            monacoInstance.languages.registerHoverProvider(language, new languageFeatures.HoverAdapter(workerAccessor))
+            monacoInstance.languages.registerHoverProvider(
+                LANGUAGE_ID,
+                new languageFeatures.HoverAdapter(workerAccessor)
+            )
         );
     }
 
     monacoInstance.languages.registerDocumentFormattingEditProvider(
-        language,
+        LANGUAGE_ID,
         new languageFeatures.DocumentFormatAdapter(workerAccessor)
     );
     kustoWorker = workerAccessor;
     resolveWorker(workerAccessor);
 
-    monacoInstance.languages.setLanguageConfiguration(language, {
+    monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, {
         folding: {
             offSide: false,
             markers: { start: /^\s*[\r\n]/gm, end: /^\s*[\r\n]/gm },
