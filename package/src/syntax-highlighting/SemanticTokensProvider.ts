@@ -1,6 +1,6 @@
 import type * as monaco from 'monaco-editor';
-import { ClassificationRange, DocumentSemanticToken, tokens } from './types';
 import { editor } from 'monaco-editor';
+import { ClassificationRange, DocumentSemanticToken, tokenTypes } from './types';
 
 type ClassificationsGetter = (resource: monaco.Uri) => Promise<ClassificationRange[]>;
 
@@ -13,8 +13,7 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
     }
 
     getLegend() {
-        const tokenTypes: tokens[] = [tokens.whatever, tokens.comment, tokens.string];
-        return { tokenTypes, tokenModifiers: [] };
+        return { tokenTypes: tokenTypes, tokenModifiers: [] };
     }
 
     async provideDocumentSemanticTokens(model: editor.ITextModel) {
@@ -30,7 +29,7 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
         };
     }
 
-    releaseDocumentSemanticTokens(resultId) {}
+    releaseDocumentSemanticTokens() {}
 
     private classificationsToDocumentSemanticTokens(classifications: ClassificationRange[]): DocumentSemanticToken[] {
         const emptyClassification = { line: 0, character: 0, length: 0, kind: 0 };
@@ -39,7 +38,7 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
             const { line, character, length, kind } = classification;
 
             const deltaLine = line - last.line;
-            const deltaStart = deltaLine ? 0 : character - last.character;
+            const deltaStart = deltaLine ? character : character - last.character;
 
             return [deltaLine, deltaStart, length, kind, 0];
         });

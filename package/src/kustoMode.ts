@@ -173,3 +173,23 @@ export function setupMode(
 export function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
     return workerPromise.then(() => kustoWorker);
 }
+
+// function registerOnChangeEvent(monacoInstance: typeof monaco) {
+//     let versionIdToEvents = {};
+//
+//     const models = monacoInstance.editor.getModels();
+//     models.forEach((model: monaco.editor.IModel) => {
+//         const versionId = model.getVersionId();
+//         versionIdToEvents[versionId] = [];
+//
+//         const debouncedLog = debounce((events) => {
+//             console.log('events', events);
+//             versionIdToEvents[versionId] = [];
+//         }, 500);
+//
+//         model.onDidChangeContent((e) => {
+//             versionIdToEvents[versionId].push(e);
+//             debouncedLog(versionIdToEvents[versionId]);
+//         });
+//     });
+// }

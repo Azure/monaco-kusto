@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { tokens } from './types';
+import { Tokens } from './types';
 
 export enum ThemeNames {
     light = 'kusto-light',
@@ -11,28 +11,61 @@ interface Theme {
     data: monaco.editor.IStandaloneThemeData;
 }
 
+const colors = {
+    white: '#DCDCDC',
+    lightGoldenrodYellow: '#FAFAD2',
+    softGold: '#D7BA7D',
+    paleChestnut: '#D69D85',
+    paleVioletRed: '#DB7093',
+    firebrick: '#B22222',
+    orangeRed: '#FF4500',
+    mediumVioletRed: '#C71585',
+    magenta: '#FF00FF', // for debugging
+    darkOrchid: '#9932CC',
+    darkViolet: '#9400D3',
+    midnightBlue: '#191970',
+    blue: '#0000FF',
+    blueSapphire: '#004E8C',
+    tealBlue: '#2B91AF',
+    skyBlue: '#569CD6',
+    lightSkyBlue: '#92CAF4',
+    mediumTurquoise: '#4EC9B0',
+    oliveDrab: '#608B4E',
+    green: '#008000',
+    jetBlack: '#1B1A19',
+    black: '#000000',
+};
+
 const light: monaco.editor.IStandaloneThemeData = {
     base: 'vs',
     inherit: true,
     rules: [
-        { token: '', foreground: '#000000' },
-        { token: tokens.comment, foreground: '#008000' },
-
-        // { token: 'variable.predefined', foreground: '#800080' },
-        // { token: 'function', foreground: '#0000FF' },
-        // { token: 'operator.sql', foreground: '#CC3700' },
-        // { token: 'string', foreground: '#B22222' },
-        // { token: 'operator.scss', foreground: '#0000FF' },
-        // { token: 'variable', foreground: '#C71585' },
-        // { token: 'variable.parameter', foreground: '#9932CC' },
-        // { token: 'type', foreground: '#0000FF' },
-        // { token: 'tag', foreground: '#0000FF' },
-        // { token: 'annotation', foreground: '#2B91AF' },
-        // { token: 'keyword', foreground: '#0000FF' },
-        // { token: 'number', foreground: '#191970' },
-        // { token: 'annotation', foreground: '#9400D3' },
-        // { token: 'column', background: '#C71585' },
-        // { token: 'table', foreground: '#C71585' },
+        { token: '', foreground: colors.black },
+        { token: Tokens.PlainText, foreground: colors.black },
+        { token: Tokens.Comment, foreground: colors.green },
+        { token: Tokens.Punctuation, foreground: colors.black },
+        { token: Tokens.Directive, foreground: colors.darkViolet },
+        { token: Tokens.Literal, foreground: colors.black },
+        { token: Tokens.StringLiteral, foreground: colors.firebrick },
+        { token: Tokens.Type, foreground: colors.blue },
+        { token: Tokens.Column, foreground: colors.mediumVioletRed },
+        { token: Tokens.Table, foreground: colors.darkOrchid },
+        { token: Tokens.Database, foreground: colors.darkOrchid },
+        { token: Tokens.Function, foreground: colors.blue },
+        { token: Tokens.Parameter, foreground: colors.midnightBlue },
+        { token: Tokens.Variable, foreground: colors.midnightBlue },
+        { token: Tokens.Identifier, foreground: colors.black },
+        { token: Tokens.ClientParameter, foreground: colors.tealBlue },
+        { token: Tokens.QueryParameter, foreground: colors.tealBlue },
+        { token: Tokens.ScalarParameter, foreground: colors.blue },
+        { token: Tokens.MathOperator, foreground: colors.black },
+        { token: Tokens.QueryOperator, foreground: colors.orangeRed },
+        { token: Tokens.Command, foreground: colors.blue },
+        { token: Tokens.Keyword, foreground: colors.blue },
+        { token: Tokens.MaterializedView, foreground: colors.darkOrchid },
+        { token: Tokens.SchemaMember, foreground: colors.black }, // check this one
+        { token: Tokens.SignatureParameter, foreground: colors.black }, // check this one
+        { token: Tokens.Option, foreground: colors.black }, // check this one
     ],
     colors: {},
 };
@@ -41,24 +74,32 @@ const dark: monaco.editor.IStandaloneThemeData = {
     base: 'vs-dark',
     inherit: true,
     rules: [
-        { token: '', foreground: '#d4d4d4' },
-        { token: tokens.comment, foreground: '#608B4E' },
-
-        // { token: 'variable.predefined', foreground: '#4ec9b0' },
-        // { token: 'function', foreground: '#dcdcaa' },
-        // { token: 'operator.sql', foreground: '#9cdcfe' },
-        // { token: 'string', foreground: '#ce9178' },
-        // { token: 'operator.scss', foreground: '#569cd6' },
-        // { token: 'variable', foreground: '#4ec9b0' },
-        // { token: 'variable.parameter', foreground: '#c586c0' },
-        // { token: 'type', foreground: '#569cd6' },
-        // { token: 'tag', foreground: '#569cd6' },
-        // { token: 'annotation', foreground: '#9cdcfe' },
-        // { token: 'keyword', foreground: '#569cd6' },
-        // { token: 'number', foreground: '#d7ba7d' },
-        // { token: 'annotation', foreground: '#b5cea8' },
-        // { token: 'column', background: '#4ec9b0' },
-        // { token: 'table', background: '#c586c0' },
+        { token: '', foreground: colors.white },
+        { token: Tokens.PlainText, foreground: colors.white },
+        { token: Tokens.Comment, foreground: colors.oliveDrab },
+        { token: Tokens.Punctuation, foreground: colors.white },
+        { token: Tokens.Directive, foreground: colors.lightGoldenrodYellow },
+        { token: Tokens.Literal, foreground: colors.white },
+        { token: Tokens.StringLiteral, foreground: colors.paleChestnut },
+        { token: Tokens.Type, foreground: colors.skyBlue },
+        { token: Tokens.Column, foreground: colors.paleVioletRed },
+        { token: Tokens.Table, foreground: colors.softGold },
+        { token: Tokens.Database, foreground: colors.softGold },
+        { token: Tokens.Function, foreground: colors.skyBlue },
+        { token: Tokens.Parameter, foreground: colors.lightSkyBlue },
+        { token: Tokens.Variable, foreground: colors.lightSkyBlue },
+        { token: Tokens.Identifier, foreground: colors.white },
+        { token: Tokens.ClientParameter, foreground: colors.tealBlue },
+        { token: Tokens.QueryParameter, foreground: colors.tealBlue },
+        { token: Tokens.ScalarParameter, foreground: colors.skyBlue },
+        { token: Tokens.MathOperator, foreground: colors.white },
+        { token: Tokens.QueryOperator, foreground: colors.mediumTurquoise },
+        { token: Tokens.Command, foreground: colors.skyBlue },
+        { token: Tokens.Keyword, foreground: colors.skyBlue },
+        { token: Tokens.MaterializedView, foreground: colors.softGold },
+        { token: Tokens.SchemaMember, foreground: colors.black }, // check this one
+        { token: Tokens.SignatureParameter, foreground: colors.black }, // check this one
+        { token: Tokens.Option, foreground: colors.black }, // check this one
     ],
     colors: {},
 };
@@ -68,8 +109,8 @@ const dark2: monaco.editor.IStandaloneThemeData = {
     inherit: true,
     rules: [],
     colors: {
-        'editor.background': '#1B1A19', // gray 200
-        'editorSuggestWidget.selectedBackground': '#004E8C',
+        'editor.background': colors.jetBlack,
+        'editorSuggestWidget.selectedBackground': colors.blueSapphire,
     },
 };
 
