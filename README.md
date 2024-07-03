@@ -85,7 +85,11 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
-### 11.2.0
+### 11.2.1
+
+-   feat: upgrade language-service-next to 11.6.1.
+
+-   ### 11.2.0
 
 -   feat: fix bugs related to last version upgrade.
 -   feat: upgrade language-service-next to 11.6.0.
