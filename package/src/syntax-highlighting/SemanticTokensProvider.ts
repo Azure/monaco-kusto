@@ -1,17 +1,15 @@
 import type * as monaco from 'monaco-editor';
-import { AugmentedWorkerAccessor } from '../kustoMode';
 import { ClassificationRange, DocumentSemanticToken, tokens } from './types';
+import { editor } from 'monaco-editor';
+
+type ClassificationsGetter = (resource: monaco.Uri) => Promise<ClassificationRange[]>;
 
 export class SemanticTokensProvider implements monaco.languages.DocumentSemanticTokensProvider {
-    private readonly worker: AugmentedWorkerAccessor;
-    private readonly monacoInstance: typeof monaco;
-    private lastVersionId: number;
+    private readonly classificationsGetter: ClassificationsGetter;
+    private semanticTokens: DocumentSemanticToken[];
 
-    constructor(worker: AugmentedWorkerAccessor, monacoInstance: typeof monaco) {
-        this.worker = worker;
-        this.monacoInstance = monacoInstance;
-
-        this.registerOnChangeEvent();
+    constructor(classificationsGetter: ClassificationsGetter) {
+        this.classificationsGetter = classificationsGetter;
     }
 
     getLegend() {
@@ -19,34 +17,22 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
         return { tokenTypes, tokenModifiers: [] };
     }
 
-    async provideDocumentSemanticTokens(model, lastResultId, token) {
+    async provideDocumentSemanticTokens(model: editor.ITextModel) {
         const currentVersionId = model.getVersionId();
-
         const resource = model.uri;
-        const worker = await this.worker(resource);
-        const classifications = await worker.getClassifications(resource.toString());
-        const semanticTokens = this.classificationToDocumentSemanticToken(classifications);
+        const classifications = await this.classificationsGetter(resource);
+        const semanticTokens = this.classificationsToDocumentSemanticTokens(classifications);
         const data = new Uint32Array(semanticTokens.flatMap((el) => el));
 
         return {
             data,
-            resultId: undefined,
+            resultId: model.getVersionId().toString(),
         };
     }
-    releaseDocumentSemanticTokens(resultId) {
-        this.lastVersionId = resultId;
-    }
 
-    private registerOnChangeEvent() {
-        const models = this.monacoInstance.editor.getModels();
-        models.forEach((model: monaco.editor.IModel) => {
-            model.onDidChangeContent((e) => {
-                console.log('onDidChangeContent', e);
-            });
-        });
-    }
+    releaseDocumentSemanticTokens(resultId) {}
 
-    private classificationToDocumentSemanticToken(classifications: ClassificationRange[]): DocumentSemanticToken[] {
+    private classificationsToDocumentSemanticTokens(classifications: ClassificationRange[]): DocumentSemanticToken[] {
         const emptyClassification = { line: 0, character: 0, length: 0, kind: 0 };
         return classifications.map((classification, index) => {
             const last = classifications[index - 1] ?? emptyClassification;

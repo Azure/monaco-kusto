@@ -20,11 +20,7 @@ import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFrom
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference } from '../types';
 import { Mutable } from '../util';
-<<<<<<< Updated upstream
-=======
-import { createSortingText, sortByMatchTextKeepingKindOrder } from './competionItemSort';
-import { ClassificationRange, DocumentSemanticToken } from '../syntax-highlighting/types';
->>>>>>> Stashed changes
+import { ClassificationRange } from '../syntax-highlighting/types';
 
 let List = System.Collections.Generic.List$1;
 

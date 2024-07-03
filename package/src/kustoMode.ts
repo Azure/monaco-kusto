@@ -84,7 +84,11 @@ export function setupMode(
         )
     );
 
-    const semanticTokenProvider = new SemanticTokensProvider(workerAccessor, monacoInstance);
+    const classificationsGetter = async (resource: monaco.Uri) => {
+        const worker = await workerAccessor(resource);
+        return worker.getClassifications(resource.toString());
+    };
+    const semanticTokenProvider = new SemanticTokensProvider(classificationsGetter);
     monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
 
     disposables.push(

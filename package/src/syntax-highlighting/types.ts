@@ -1,5 +1,3 @@
-import 'language-service';
-
 export type ClassificationKind = Kusto.Language.Editor.ClassificationKind;
 
 export enum tokens {
