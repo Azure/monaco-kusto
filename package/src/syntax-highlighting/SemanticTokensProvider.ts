@@ -16,7 +16,11 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
         return { tokenTypes: tokenTypes, tokenModifiers: [] };
     }
 
-    async provideDocumentSemanticTokens(model: editor.ITextModel) {
+    async provideDocumentSemanticTokens(
+        model: editor.ITextModel,
+        lastResultId: string | undefined,
+        token: monaco.CancellationToken
+    ) {
         const currentVersionId = model.getVersionId();
         const resource = model.uri;
         const classifications = await this.classificationsGetter(resource);

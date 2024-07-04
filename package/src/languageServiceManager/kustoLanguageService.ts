@@ -811,9 +811,6 @@ class KustoLanguageService implements LanguageService {
                 const { line, character } = document.positionAt(range.Start);
                 const length = range.Length;
                 const kind = range.Kind;
-                // if (kind === k2.ClassificationKind.PlainText) {
-                debugger;
-                // }
 
                 return { line, character, length, kind };
             });
