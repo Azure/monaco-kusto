@@ -69,8 +69,6 @@ const defaultLanguageSettings: LanguageSettings = {
     includeControlCommands: true,
     newlineAfterPipe: true,
     openSuggestionDialogAfterPreviousSuggestionAccepted: true,
-    useSemanticColorization: true,
-    useTokenColorization: false,
     enableHover: true,
     formatter: {
         indentationSize: 4,
