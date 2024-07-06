@@ -71,12 +71,6 @@ export function setupMode(
         );
     };
 
-    const monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
-        LANGUAGE_ID,
-        kustoLanguageDefinition
-    );
-    disposables.push(monarchTokensProvider);
-
     disposables.push(
         monacoInstance.languages.registerCompletionItemProvider(
             LANGUAGE_ID,
@@ -84,12 +78,8 @@ export function setupMode(
         )
     );
 
-    const classificationsGetter = async (resource: monaco.Uri) => {
-        const worker = await workerAccessor(resource);
-        return worker.getClassifications(resource.toString());
-    };
-    const semanticTokenProvider = new SemanticTokensProvider(classificationsGetter);
-    monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
+    setMonarchTokensProvider(monacoInstance, disposables);
+    registerDocumentSemanticTokensProvider(workerAccessor, monacoInstance);
 
     disposables.push(
         new languageFeatures.DiagnosticsAdapter(
@@ -174,22 +164,26 @@ export function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
     return workerPromise.then(() => kustoWorker);
 }
 
-// function registerOnChangeEvent(monacoInstance: typeof monaco) {
-//     let versionIdToEvents = {};
-//
-//     const models = monacoInstance.editor.getModels();
-//     models.forEach((model: monaco.editor.IModel) => {
-//         const versionId = model.getVersionId();
-//         versionIdToEvents[versionId] = [];
-//
-//         const debouncedLog = debounce((events) => {
-//             console.log('events', events);
-//             versionIdToEvents[versionId] = [];
-//         }, 500);
-//
-//         model.onDidChangeContent((e) => {
-//             versionIdToEvents[versionId].push(e);
-//             debouncedLog(versionIdToEvents[versionId]);
-//         });
-//     });
-// }
+// This function sets the Monarch token provider,
+// enabling fast syntax highlighting before the language service is called for semantic coloring.
+function setMonarchTokensProvider(monacoInstance: typeof globalThis.monaco, disposables: monaco.IDisposable[]) {
+    const monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
+        LANGUAGE_ID,
+        kustoLanguageDefinition
+    );
+    disposables.push(monarchTokensProvider);
+}
+
+// This function registers a semantic token provider that utilizes the language service
+// for more context-relevant syntax highlighting.
+function registerDocumentSemanticTokensProvider(
+    workerAccessor: AugmentedWorkerAccessor,
+    monacoInstance: typeof globalThis.monaco
+) {
+    const classificationsGetter = async (resource: monaco.Uri) => {
+        const worker = await workerAccessor(resource);
+        return worker.getClassifications(resource.toString());
+    };
+    const semanticTokenProvider = new SemanticTokensProvider(classificationsGetter);
+    monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
+}
