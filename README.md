@@ -85,6 +85,22 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.0
+
+### Breaking Changes
+
+-   Replaced syntax highlighting in Monaco-Kusto. The old method injected CSS for each KQL classified block, causing copy-to-clipboard issues. The new implementation uses:
+    -   **Monarch Tokens**: Efficient syntax highlighting leveraging Monaco Editor capabilities.
+    -   **Semantic Syntax Highlighting**: Uses Kusto Language Service for context-aware highlighting.
+-   Removed `useSemanticColorization` and `useTokenColorization` settings.
+-   To enable new highlighting, add the following flag when creating the Monaco editor:
+    ```javascript
+    monaco.editor.create(document.getElementById('editor'), {
+        // current flags...
+        'semanticHighlighting.enabled': true,
+    });
+    ```
+
 ### 11.4.0
 
 -   feat: IntelliSense completion items now maintain the original order from the language service, with the most relevant option automatically focused based on the user's input.
@@ -97,7 +113,7 @@ Every PR should come with a test that checks it.
 
 -   feat: Upgrade language-service-next to 11.6.1.
 
--   ### 11.2.0
+### 11.2.0
 
 -   feat: Fix bugs related to last version upgrade.
 -   feat: Upgrade language-service-next to 11.6.0.
