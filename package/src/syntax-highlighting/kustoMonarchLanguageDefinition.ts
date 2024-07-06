@@ -2,7 +2,8 @@ import type * as monaco from 'monaco-editor';
 import { LANGUAGE_ID } from '../globals';
 import { Tokens } from './types';
 
-const promotedOperatorCommandTokens = [
+// TODO: add more static keywords for faster coloring
+const queryOperators = [
     'where',
     'count',
     'extend',
@@ -43,7 +44,6 @@ const promotedOperatorCommandTokens = [
     'graph-to-table',
     'graph-merge',
 ];
-
 const commands = [
     '.add',
     '.alter',
@@ -77,14 +77,16 @@ const commands = [
     '.rename',
     '.run',
 ];
+const functions = ['sum', 'count'];
 
 export const kustoLanguageDefinition: monaco.languages.IMonarchLanguage = {
     name: LANGUAGE_ID,
     mimeTypes: ['text/kusto'],
     displayName: 'Kusto',
     defaultToken: 'invalid',
-    promotedOperatorCommandTokens,
+    queryOperators,
     commands,
+    functions,
     tokenizer: {
         root: [
             [/(\/\/.*$)/, Tokens.Comment],
@@ -94,8 +96,9 @@ export const kustoLanguageDefinition: monaco.languages.IMonarchLanguage = {
                 /[\w@#\-$\.]+/,
                 {
                     cases: {
-                        '@promotedOperatorCommandTokens': Tokens.QueryOperator,
+                        '@queryOperators': Tokens.QueryOperator,
                         '@commands': Tokens.Command,
+                        '@functions': Tokens.Function,
                         '@default': 'identifier',
                     },
                 },

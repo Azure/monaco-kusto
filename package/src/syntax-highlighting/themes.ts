@@ -4,7 +4,6 @@ import { Tokens } from './types';
 export enum ThemeNames {
     light = 'kusto-light',
     dark = 'kusto-dark',
-    dark2 = 'kusto-dark2',
 }
 interface Theme {
     name: ThemeNames;
@@ -101,13 +100,6 @@ const dark: monaco.editor.IStandaloneThemeData = {
         { token: Tokens.SignatureParameter, foreground: colors.black }, // check this one
         { token: Tokens.Option, foreground: colors.black }, // check this one
     ],
-    colors: {},
-};
-
-const dark2: monaco.editor.IStandaloneThemeData = {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [],
     colors: {
         'editor.background': colors.jetBlack,
         'editorSuggestWidget.selectedBackground': colors.blueSapphire,
@@ -117,5 +109,4 @@ const dark2: monaco.editor.IStandaloneThemeData = {
 export const themes: Theme[] = [
     { name: ThemeNames.light, data: light },
     { name: ThemeNames.dark, data: dark },
-    { name: ThemeNames.dark2, data: dark2 },
 ];

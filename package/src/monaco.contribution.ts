@@ -99,12 +99,6 @@ function withMode(callback: (module: typeof mode) => void): void {
 
 export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
-export const themeNames = {
-    light: ThemeNames.light,
-    dark: ThemeNames.dark,
-    dark2: ThemeNames.dark2,
-};
-
 monaco.languages.onLanguage('kusto', () => {
     withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
 });
@@ -175,7 +169,6 @@ const globalApi: typeof import('./monaco.contribution') = {
     kustoDefaults,
     getKustoWorker,
     getCurrentCommandRange,
-    themeNames,
 };
 
 (monaco as any).languages.kusto = globalApi;

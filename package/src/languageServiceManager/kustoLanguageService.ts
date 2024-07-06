@@ -797,8 +797,6 @@ class KustoLanguageService implements LanguageService {
                 const { line, character } = document.positionAt(range.Start);
                 const length = range.Length;
                 const kind = range.Kind;
-                // const text = document.getText().slice(range.Start, range.Start + range.Length);
-                // console.log(text, kind);
 
                 return { line, character, length, kind };
             });
