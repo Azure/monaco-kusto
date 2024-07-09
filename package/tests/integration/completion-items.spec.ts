@@ -32,6 +32,14 @@ test.describe('completion items', () => {
         await expect(options.locator).toHaveCount(2);
     });
 
+    test('exclude punctuation only syntax', async ({ page }) => {
+        await page.keyboard.type('lookup kind = ');
+
+        await model.intellisense().wait();
+        const options = model.intellisense().options();
+        await expect(options.locator.first()).not.toContainText('[');
+    });
+
     test.describe('ordered by relevance', () => {
         test('verify alphabetical order of functions', async ({ page }) => {
             await page.keyboard.type('summarize coun');
