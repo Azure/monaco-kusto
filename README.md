@@ -93,6 +93,7 @@ Every PR should come with a test that checks it.
     -   **Monarch Tokens**: Efficient syntax highlighting leveraging Monaco Editor capabilities.
     -   **Semantic Syntax Highlighting**: Uses Kusto Language Service for context-aware highlighting.
 -   Removed `useSemanticColorization` and `useTokenColorization` settings.
+-   Renamed `kusto-dark2` theme to `kusto-dark`
 -   To enable new highlighting, add the following flag when creating the Monaco editor:
     ```javascript
     monaco.editor.create(document.getElementById('editor'), {
