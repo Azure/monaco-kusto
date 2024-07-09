@@ -6,8 +6,6 @@ type ClassificationsGetter = (resource: monaco.Uri) => Promise<ClassificationRan
 
 export class SemanticTokensProvider implements monaco.languages.DocumentSemanticTokensProvider {
     private readonly classificationsGetter: ClassificationsGetter;
-    private dataCache: Uint32Array;
-    private lastVersionId: string;
 
     constructor(classificationsGetter: ClassificationsGetter) {
         this.classificationsGetter = classificationsGetter;
@@ -18,11 +16,7 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
     }
 
     async provideDocumentSemanticTokens(model: editor.ITextModel) {
-        const currentVersionId = model.getVersionId().toString();
-        if (this.lastVersionId === currentVersionId) {
-            // theme changed, but the document didn't
-            return { data: this.dataCache, resultId: currentVersionId };
-        }
+        console.log('provideDocumentSemanticTokens');
 
         const resource = model.uri;
         const classifications = await this.classificationsGetter(resource);
@@ -31,12 +25,9 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
             return semanticTokenMaker(classification, last);
         });
 
-        this.dataCache = new Uint32Array(semanticTokens.flat());
-        this.lastVersionId = currentVersionId;
-
         return {
-            data: this.dataCache,
-            resultId: this.lastVersionId,
+            data: new Uint32Array(semanticTokens.flat()),
+            resultId: model.getVersionId().toString(),
         };
     }
 
