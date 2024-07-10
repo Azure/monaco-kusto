@@ -338,7 +338,9 @@ class KustoLanguageService implements LanguageService {
 
         const { includeExtendedSyntax } = this._languageSettings.completionOptions;
         this._completionOptions =
-            Kusto.Language.Editor.CompletionOptions.Default.WithIncludeExtendedSyntax(includeExtendedSyntax);
+            Kusto.Language.Editor.CompletionOptions.Default.WithIncludeExtendedSyntax(
+                includeExtendedSyntax
+            ).WithIncludePunctuationOnlySyntax(false);
 
         // Since we're still reverting to V1 intellisense for control commands, we need to update the rules provider
         // (which is a notion of V1 intellisense).
