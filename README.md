@@ -85,7 +85,7 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
-### 11.2.2
+### 11.3.0
 
 -   fix: Exclude punctuation-only syntax from completion items.
 
