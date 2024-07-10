@@ -466,7 +466,6 @@ class KustoLanguageService implements LanguageService {
                 lsItem.documentation = helpTopic
                     ? { value: this.formatHelpTopic(helpTopic), kind: ls.MarkupKind.Markdown }
                     : undefined;
-                lsItem.data = { forcePrecedence: kItem.Kind === k2.CompletionKind.Column };
                 return lsItem;
             });
 

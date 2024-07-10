@@ -7,7 +7,7 @@ export function createCompletionFilteredText(
     if (!searchWord) return completionItem.filterText;
 
     const containedInFilterText = completionItem.filterText.toLowerCase().includes(searchWord.toLowerCase());
-    const shouldPrependSearchWord = completionItem.data.forcePrecedence && containedInFilterText;
+    if (!containedInFilterText) return completionItem.filterText;
 
-    return shouldPrependSearchWord ? `${searchWord}${completionItem.filterText}` : completionItem.filterText;
+    return `${searchWord}${completionItem.filterText}`;
 }

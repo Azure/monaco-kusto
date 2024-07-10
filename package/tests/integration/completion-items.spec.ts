@@ -51,12 +51,15 @@ test.describe('completion items', () => {
             await expect(option2.locator).toContainText('count_distinct(');
         });
 
-        test('ordered by columns first', async ({ page }) => {
+        test('keeps language-service ordering', async ({ page }) => {
             await page.keyboard.type('where t');
             await model.intellisense().wait();
 
             await page.keyboard.type('ime');
-            await expect(model.intellisense().option(0).locator).toHaveText('StartTime');
+
+            await expect(model.intellisense().option(0).locator).toHaveText('EndTime');
+            await expect(model.intellisense().option(1).locator).toHaveText('StartTime');
+            await expect(model.intellisense().option(2).locator).toHaveText('datetime()');
         });
     });
 });
