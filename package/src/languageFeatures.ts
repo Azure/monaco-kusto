@@ -8,7 +8,7 @@ import type { Schema } from './languageServiceManager/schema';
 import type { ClassifiedRange } from './languageServiceManager/kustoLanguageService';
 import { AugmentedWorkerAccessor } from './kustoMode';
 import { CompletionCacheManager, createCompletionCacheManager } from './completionCacheManager/completionCacheManager';
-import { createCompletionFilteredText } from './languageFeatures.utils';
+import { createCompletionFilteredText, getSelectedIndex } from './languageFeatures.utils';
 
 // --- diagnostics ---
 
@@ -814,27 +814,30 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
             wordInfo.endColumn
         );
         const resource = model.uri;
-        const word = model?.getWordAtPosition(position)?.word;
+        const userInput = model?.getWordAtPosition(position)?.word;
         const onDidProvideCompletionItems: OnDidProvideCompletionItems =
             this.languageSettings.onDidProvideCompletionItems;
 
         return this.completionCacheManager
-            .getCompletionItems(word, resource, fromPosition(position))
+            .getCompletionItems(userInput, resource, fromPosition(position))
             .then((info) => (onDidProvideCompletionItems ? onDidProvideCompletionItems(info) : info))
             .then((info) => {
                 if (!info) return;
 
-                let items: monaco.languages.CompletionItem[] = info.items.map((entry) => {
+                const selectedItemIndex = getSelectedIndex(info.items, userInput);
+
+                let items: monaco.languages.CompletionItem[] = info.items.map((entry, index) => {
                     let item: monaco.languages.CompletionItem = {
                         label: entry.label,
                         insertText: entry.insertText,
                         sortText: entry.sortText,
-                        filterText: createCompletionFilteredText(word, entry),
+                        filterText: createCompletionFilteredText(userInput, entry),
                         // TODO: Is this cast safe?
                         documentation: this.formatDocLink((entry.documentation as undefined | ls.MarkupContent)?.value),
                         detail: entry.detail,
                         range: wordRange,
                         kind: toCompletionItemKind(entry.kind),
+                        preselect: index === selectedItemIndex,
                     };
                     if (entry.textEdit) {
                         // TODO: Where is the "range" property coming from?
