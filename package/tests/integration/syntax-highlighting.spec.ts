@@ -1,5 +1,28 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
+import { ThemeName, themes } from '../../src/syntax-highlighting/themes';
+import { Token } from '../../src/syntax-highlighting/types';
+import convert from 'color-convert';
+
+const query = `// Query to analyze storm events 
+StormEvents
+| where State == "Custom State 1"
+| project StartTime, EndTime, Duration = datetime_diff('minute', EndTime, StartTime)
+| summarize TotalDuration = avg(Duration) by State
+| order by TotalDuration desc`;
+
+const queryTokensToQueryParts = {
+    [Token.Comment]: ['// Query to analyze storm events'],
+    [Token.Table]: ['StormEvents'],
+    [Token.QueryOperator]: ['where', 'project', 'summarize', 'order'],
+    [Token.Column]: ['StartTime', 'EndTime', 'Duration', 'TotalDuration'],
+    [Token.Function]: ['datetime_diff', 'avg'],
+    [Token.StringLiteral]: ['Custom State 1', 'minute'],
+    [Token.MathOperator]: ['=='],
+    [Token.Punctuation]: ['|', ',', '(', ')', '='],
+};
+
+const themeNames = [ThemeName.light, ThemeName.dark];
 
 test.describe('syntax highlighting', () => {
     let model: MonaKustoModel;
@@ -9,81 +32,54 @@ test.describe('syntax highlighting', () => {
         await loadPageAndWait(page);
         model = createMonaKustoModel(page);
 
-        const query = `// Query to analyze storm events 
-StormEvents
-| where State == "Custom State 1"
-| project StartTime, EndTime, Duration = datetime_diff('minute', EndTime, StartTime)
-| summarize TotalDuration = avg(Duration) by State
-| order by TotalDuration desc`;
         const editor = model.editor().locator;
         await editor.focus();
         await editor.fill(query);
         await page.keyboard.press('Enter');
-        assertTextColor = getAssertTextColor(page);
+
+        assertTextColor = createAssertTextColor(page);
     });
 
-    test('comments are green', async ({ page }) => {
-        const rgbGreen = 'rgb(0, 128, 0)';
-        await assertTextColor('// Query to analyze storm events', rgbGreen);
-    });
+    themeNames.forEach(async (theme) => {
+        test.describe(`theme: ${theme}`, () => {
+            const tokensToColors = getTokensToColors(theme);
 
-    test('tables are purple', async ({ page }) => {
-        const darkOrchid = 'rgb(153, 50, 204)';
-        await assertTextColor('StormEvents', darkOrchid);
-    });
+            test.beforeEach(async () => {
+                await model.editor().setTheme(theme);
+            });
 
-    test('query operators are orange', async ({ page }) => {
-        const orangeRed = 'rgb(255, 69, 0)';
-        await assertTextColor('where', orangeRed);
-        await assertTextColor('project', orangeRed);
-        await assertTextColor('summarize', orangeRed);
-        await assertTextColor('order', orangeRed);
-    });
-
-    test('columns are violet', async ({ page }) => {
-        const mediumVioletRed = 'rgb(199, 21, 133)';
-        await assertTextColor('StartTime', mediumVioletRed);
-        await assertTextColor('EndTime', mediumVioletRed);
-        await assertTextColor('Duration', mediumVioletRed);
-        await assertTextColor('TotalDuration', mediumVioletRed);
-    });
-
-    test('functions are blue', async ({ page }) => {
-        const blue = 'rgb(0, 0, 255)';
-        await assertTextColor('datetime_diff', blue);
-        await assertTextColor('avg', blue);
-    });
-
-    test('keywords are blue', async ({ page }) => {
-        const blue = 'rgb(0, 0, 255)';
-        await assertTextColor('by', blue);
-        await assertTextColor('desc', blue);
-    });
-
-    test('string literals are red', async ({ page }) => {
-        const fireBrick = 'rgb(178, 34, 34)';
-        await assertTextColor('Custom State 1', fireBrick);
-        await assertTextColor('minute', fireBrick);
-    });
-
-    test('math operators are black', async ({ page }) => {
-        const black = 'rgb(0, 0, 0)';
-        await assertTextColor('==', black);
-    });
-
-    test('punctuations are black', async ({ page }) => {
-        const black = 'rgb(0, 0, 0)';
-        await assertTextColor('|', black);
-        await assertTextColor(',', black);
-        await assertTextColor(' = ', black);
-        await assertTextColor('(', black);
-        await assertTextColor(')', black);
+            for (const [token, queryParts] of Object.entries(queryTokensToQueryParts)) {
+                const colorInHex = tokensToColors[token];
+                test(`${token} foreground color is ${colorInHex}`, async () => {
+                    const queryAssertions = queryParts.map((part) => assertTextColor(part, colorInHex));
+                    await Promise.all(queryAssertions);
+                });
+            }
+        });
     });
 });
 
-function getAssertTextColor(page: Page) {
-    return async (text: string, expectedColor: string) => {
+function getTokensToColors(theme: ThemeName) {
+    const themeRules = themes.find((t) => t.name === theme)?.data.rules;
+    return themeRules.reduce((tokensToColorsAcc, rule) => {
+        tokensToColorsAcc[rule.token] = rule.foreground;
+        return tokensToColorsAcc;
+    }, {});
+}
+
+function createAssertTextColor(page: Page) {
+    return async (text: string, expectedColorInHex: string) => {
+        const expectedColor = hexToRgb(expectedColorInHex);
         const elements = await page.getByText(text).all();
+        if (elements.length === 0) {
+            return expect(elements.length).not.toBe(0);
+        }
+
         await Promise.all(elements.map((element) => expect(element).toHaveCSS('color', expectedColor)));
     };
+}
+
+function hexToRgb(hex: string): string {
+    const [r, g, b] = convert.hex.rgb(hex);
+    return `rgb(${r}, ${g}, ${b})`;
 }

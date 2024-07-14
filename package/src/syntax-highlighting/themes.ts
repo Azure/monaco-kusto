@@ -1,12 +1,12 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { Tokens } from './types';
+import { Token } from './types';
 
-export enum ThemeNames {
+export enum ThemeName {
     light = 'kusto-light',
     dark = 'kusto-dark',
 }
 interface Theme {
-    name: ThemeNames;
+    name: ThemeName;
     data: monaco.editor.IStandaloneThemeData;
 }
 
@@ -40,31 +40,31 @@ const light: monaco.editor.IStandaloneThemeData = {
     inherit: true,
     rules: [
         { token: '', foreground: colors.black },
-        { token: Tokens.PlainText, foreground: colors.black },
-        { token: Tokens.Comment, foreground: colors.green },
-        { token: Tokens.Punctuation, foreground: colors.black },
-        { token: Tokens.Directive, foreground: colors.darkViolet },
-        { token: Tokens.Literal, foreground: colors.black },
-        { token: Tokens.StringLiteral, foreground: colors.firebrick },
-        { token: Tokens.Type, foreground: colors.blue },
-        { token: Tokens.Column, foreground: colors.mediumVioletRed },
-        { token: Tokens.Table, foreground: colors.darkOrchid },
-        { token: Tokens.Database, foreground: colors.darkOrchid },
-        { token: Tokens.Function, foreground: colors.blue },
-        { token: Tokens.Parameter, foreground: colors.midnightBlue },
-        { token: Tokens.Variable, foreground: colors.midnightBlue },
-        { token: Tokens.Identifier, foreground: colors.black },
-        { token: Tokens.ClientParameter, foreground: colors.tealBlue },
-        { token: Tokens.QueryParameter, foreground: colors.tealBlue },
-        { token: Tokens.ScalarParameter, foreground: colors.blue },
-        { token: Tokens.MathOperator, foreground: colors.black },
-        { token: Tokens.QueryOperator, foreground: colors.orangeRed },
-        { token: Tokens.Command, foreground: colors.blue },
-        { token: Tokens.Keyword, foreground: colors.blue },
-        { token: Tokens.MaterializedView, foreground: colors.darkOrchid },
-        { token: Tokens.SchemaMember, foreground: colors.black }, // check this one
-        { token: Tokens.SignatureParameter, foreground: colors.black }, // check this one
-        { token: Tokens.Option, foreground: colors.black }, // check this one
+        { token: Token.PlainText, foreground: colors.black },
+        { token: Token.Comment, foreground: colors.green },
+        { token: Token.Punctuation, foreground: colors.black },
+        { token: Token.Directive, foreground: colors.darkViolet },
+        { token: Token.Literal, foreground: colors.black },
+        { token: Token.StringLiteral, foreground: colors.firebrick },
+        { token: Token.Type, foreground: colors.blue },
+        { token: Token.Column, foreground: colors.mediumVioletRed },
+        { token: Token.Table, foreground: colors.darkOrchid },
+        { token: Token.Database, foreground: colors.darkOrchid },
+        { token: Token.Function, foreground: colors.blue },
+        { token: Token.Parameter, foreground: colors.midnightBlue },
+        { token: Token.Variable, foreground: colors.midnightBlue },
+        { token: Token.Identifier, foreground: colors.black },
+        { token: Token.ClientParameter, foreground: colors.tealBlue },
+        { token: Token.QueryParameter, foreground: colors.tealBlue },
+        { token: Token.ScalarParameter, foreground: colors.blue },
+        { token: Token.MathOperator, foreground: colors.black },
+        { token: Token.QueryOperator, foreground: colors.orangeRed },
+        { token: Token.Command, foreground: colors.blue },
+        { token: Token.Keyword, foreground: colors.blue },
+        { token: Token.MaterializedView, foreground: colors.darkOrchid },
+        { token: Token.SchemaMember, foreground: colors.black }, // check this one
+        { token: Token.SignatureParameter, foreground: colors.black }, // check this one
+        { token: Token.Option, foreground: colors.black }, // check this one
     ],
     colors: {},
 };
@@ -74,31 +74,31 @@ const dark: monaco.editor.IStandaloneThemeData = {
     inherit: true,
     rules: [
         { token: '', foreground: colors.white },
-        { token: Tokens.PlainText, foreground: colors.white },
-        { token: Tokens.Comment, foreground: colors.oliveDrab },
-        { token: Tokens.Punctuation, foreground: colors.white },
-        { token: Tokens.Directive, foreground: colors.lightGoldenrodYellow },
-        { token: Tokens.Literal, foreground: colors.white },
-        { token: Tokens.StringLiteral, foreground: colors.paleChestnut },
-        { token: Tokens.Type, foreground: colors.skyBlue },
-        { token: Tokens.Column, foreground: colors.paleVioletRed },
-        { token: Tokens.Table, foreground: colors.softGold },
-        { token: Tokens.Database, foreground: colors.softGold },
-        { token: Tokens.Function, foreground: colors.skyBlue },
-        { token: Tokens.Parameter, foreground: colors.lightSkyBlue },
-        { token: Tokens.Variable, foreground: colors.lightSkyBlue },
-        { token: Tokens.Identifier, foreground: colors.white },
-        { token: Tokens.ClientParameter, foreground: colors.tealBlue },
-        { token: Tokens.QueryParameter, foreground: colors.tealBlue },
-        { token: Tokens.ScalarParameter, foreground: colors.skyBlue },
-        { token: Tokens.MathOperator, foreground: colors.white },
-        { token: Tokens.QueryOperator, foreground: colors.mediumTurquoise },
-        { token: Tokens.Command, foreground: colors.skyBlue },
-        { token: Tokens.Keyword, foreground: colors.skyBlue },
-        { token: Tokens.MaterializedView, foreground: colors.softGold },
-        { token: Tokens.SchemaMember, foreground: colors.black }, // check this one
-        { token: Tokens.SignatureParameter, foreground: colors.black }, // check this one
-        { token: Tokens.Option, foreground: colors.black }, // check this one
+        { token: Token.PlainText, foreground: colors.white },
+        { token: Token.Comment, foreground: colors.oliveDrab },
+        { token: Token.Punctuation, foreground: colors.white },
+        { token: Token.Directive, foreground: colors.lightGoldenrodYellow },
+        { token: Token.Literal, foreground: colors.white },
+        { token: Token.StringLiteral, foreground: colors.paleChestnut },
+        { token: Token.Type, foreground: colors.skyBlue },
+        { token: Token.Column, foreground: colors.paleVioletRed },
+        { token: Token.Table, foreground: colors.softGold },
+        { token: Token.Database, foreground: colors.softGold },
+        { token: Token.Function, foreground: colors.skyBlue },
+        { token: Token.Parameter, foreground: colors.lightSkyBlue },
+        { token: Token.Variable, foreground: colors.lightSkyBlue },
+        { token: Token.Identifier, foreground: colors.white },
+        { token: Token.ClientParameter, foreground: colors.tealBlue },
+        { token: Token.QueryParameter, foreground: colors.tealBlue },
+        { token: Token.ScalarParameter, foreground: colors.skyBlue },
+        { token: Token.MathOperator, foreground: colors.white },
+        { token: Token.QueryOperator, foreground: colors.mediumTurquoise },
+        { token: Token.Command, foreground: colors.skyBlue },
+        { token: Token.Keyword, foreground: colors.skyBlue },
+        { token: Token.MaterializedView, foreground: colors.softGold },
+        { token: Token.SchemaMember, foreground: colors.black }, // check this one
+        { token: Token.SignatureParameter, foreground: colors.black }, // check this one
+        { token: Token.Option, foreground: colors.black }, // check this one
     ],
     colors: {
         'editor.background': colors.jetBlack,
@@ -107,6 +107,6 @@ const dark: monaco.editor.IStandaloneThemeData = {
 };
 
 export const themes: Theme[] = [
-    { name: ThemeNames.light, data: light },
-    { name: ThemeNames.dark, data: dark },
+    { name: ThemeName.light, data: light },
+    { name: ThemeName.dark, data: dark },
 ];

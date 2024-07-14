@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test';
 import { LanguageSettings } from '../../../src/languageServiceManager/settings';
+import { ThemeName } from '../../../src/syntax-highlighting/themes';
 
 export const createMonaKustoModel = (page: Page) => {
     return {
@@ -26,6 +27,10 @@ export const createMonaKustoModel = (page: Page) => {
         }),
         editor: () => ({
             locator: page.locator('[role="textbox"]'),
+            setTheme: async (theme: ThemeName) => {
+                const button = page.locator(`#${theme}`);
+                await button.click();
+            },
         }),
         settings: () => ({
             set: async (property: keyof LanguageSettings, checked: boolean) => {

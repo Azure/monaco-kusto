@@ -1,6 +1,6 @@
 import type * as monaco from 'monaco-editor';
 import { LANGUAGE_ID } from '../globals';
-import { Tokens } from './types';
+import { Token } from './types';
 
 // TODO: add more static keywords for faster coloring
 const queryOperators = [
@@ -89,16 +89,16 @@ export const kustoLanguageDefinition: monaco.languages.IMonarchLanguage = {
     functions,
     tokenizer: {
         root: [
-            [/(\/\/.*$)/, Tokens.Comment],
-            [/[\(\)\{\}\|\[\]\:\=\,]/, Tokens.Punctuation],
-            [/"([^"\\]*(\\.[^"\\]*)*)"/, Tokens.StringLiteral],
+            [/(\/\/.*$)/, Token.Comment],
+            [/[\(\)\{\}\|\[\]\:\=\,]/, Token.Punctuation],
+            [/"([^"\\]*(\\.[^"\\]*)*)"/, Token.StringLiteral],
             [
                 /[\w@#\-$\.]+/,
                 {
                     cases: {
-                        '@queryOperators': Tokens.QueryOperator,
-                        '@commands': Tokens.Command,
-                        '@functions': Tokens.Function,
+                        '@queryOperators': Token.QueryOperator,
+                        '@commands': Token.Command,
+                        '@functions': Token.Function,
                         '@default': 'identifier',
                     },
                 },
