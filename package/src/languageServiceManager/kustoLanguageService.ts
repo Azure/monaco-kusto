@@ -20,7 +20,7 @@ import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFrom
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference } from '../types';
 import { Mutable } from '../util';
-import { ClassificationRange } from '../syntax-highlighting/types';
+import { ClassificationRange, tokenTypes } from '../syntax-highlighting/types';
 
 let List = System.Collections.Generic.List$1;
 
