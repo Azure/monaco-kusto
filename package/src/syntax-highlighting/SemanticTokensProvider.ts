@@ -16,8 +16,6 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
     }
 
     async provideDocumentSemanticTokens(model: editor.ITextModel) {
-        console.log('provideDocumentSemanticTokens');
-
         const resource = model.uri;
         const classifications = await this.classificationsGetter(resource);
         const semanticTokens = classifications.map((classification, index) => {
