@@ -7,7 +7,7 @@ import type { LanguageSettings } from './languageServiceManager/settings';
 import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageServiceManager/schema';
 import type { RenderInfo } from './languageServiceManager/renderInfo';
 import type { ClusterReference, DatabaseReference, KustoWorker } from './types';
-import { ClassificationRange, DocumentSemanticToken } from './syntax-highlighting/types';
+import { ClassificationRange } from './syntax-highlighting/types';
 
 export type InterfaceFor<C> = {
     [Member in keyof C]: C[Member];
@@ -21,8 +21,6 @@ export type InterfaceFor<C> = {
 export type IKustoWorkerImpl = InterfaceFor<KustoWorkerImpl>;
 
 export class KustoWorkerImpl {
-    // --- model sync -----------------------
-
     private _ctx: worker.IWorkerContext;
     private _languageService: kustoService.LanguageService;
     private _languageId: string;
@@ -34,8 +32,6 @@ export class KustoWorkerImpl {
         this._languageService = kustoService.getKustoLanguageService();
         this._languageService.configure(this._languageSettings);
     }
-
-    // --- language service host ---------------
 
     setSchema(schema: Schema) {
         return this._languageService.setSchema(schema);

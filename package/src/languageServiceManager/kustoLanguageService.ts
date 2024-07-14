@@ -20,7 +20,7 @@ import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFrom
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference } from '../types';
 import { Mutable } from '../util';
-import { ClassificationRange, tokenTypes } from '../syntax-highlighting/types';
+import { ClassificationRange } from '../syntax-highlighting/types';
 
 let List = System.Collections.Generic.List$1;
 
@@ -484,23 +484,6 @@ class KustoLanguageService implements LanguageService {
 
         return k.CslDocumentation.Instance.GetTopic(completionOption);
     }
-
-    private disabledCompletionItemsV1: { [value: string]: k.OptionKind } = {
-        capacity: k.OptionKind.Policy,
-        callout: k.OptionKind.Policy,
-        encoding: k.OptionKind.Policy,
-        batching: k.OptionKind.Policy,
-        querythrottling: k.OptionKind.Policy,
-        merge: k.OptionKind.Policy,
-        querylimit: k.OptionKind.Policy,
-        rowstore: k.OptionKind.Policy,
-        streamingingestion: k.OptionKind.Policy,
-        restricted_view_access: k.OptionKind.Policy,
-        sharding: k.OptionKind.Policy,
-        'restricted-viewers': k.OptionKind.Policy,
-        attach: k.OptionKind.Command,
-        purge: k.OptionKind.Command,
-    };
 
     doRangeFormat(document: TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {
         if (!document) {
