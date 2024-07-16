@@ -13,7 +13,7 @@ import {
     getEntityDataTypeFromCslType,
 } from './languageServiceManager/schema';
 import type { LanguageSettings } from './languageServiceManager/settings';
-import { themes } from './syntax-highlighting/themes';
+import { themes } from './syntaxHighlighting/themes';
 
 export * from './languageServiceManager/schema';
 export * from './languageServiceManager/renderInfo';

@@ -5,8 +5,8 @@ import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution
 import * as languageFeatures from './languageFeatures';
 import type { Schema } from './languageServiceManager/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
-import { SemanticTokensProvider } from './syntax-highlighting/SemanticTokensProvider';
-import { kustoLanguageDefinition } from './syntax-highlighting/kustoMonarchLanguageDefinition';
+import { SemanticTokensProvider } from './syntaxHighlighting/SemanticTokensProvider';
+import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
 import { LANGUAGE_ID } from './globals';
 
 export interface AugmentedWorker

@@ -7,7 +7,7 @@ import type { LanguageSettings } from './languageServiceManager/settings';
 import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageServiceManager/schema';
 import type { RenderInfo } from './languageServiceManager/renderInfo';
 import type { ClusterReference, DatabaseReference, KustoWorker } from './types';
-import { ClassificationRange } from './syntax-highlighting/types';
+import { ClassificationRange } from './syntaxHighlighting/types';
 
 export type InterfaceFor<C> = {
     [Member in keyof C]: C[Member];

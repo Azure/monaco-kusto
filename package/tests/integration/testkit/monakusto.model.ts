@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 import { LanguageSettings } from '../../../src/languageServiceManager/settings';
-import { ThemeName } from '../../../src/syntax-highlighting/themes';
+import { ThemeName } from '../../../src/syntaxHighlighting/themes';
 
 export const createMonaKustoModel = (page: Page) => {
     return {

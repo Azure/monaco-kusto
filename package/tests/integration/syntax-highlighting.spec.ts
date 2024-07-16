@@ -1,7 +1,7 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
-import { ThemeName, themes } from '../../src/syntax-highlighting/themes';
-import { Token } from '../../src/syntax-highlighting/types';
+import { ThemeName, themes } from '../../src/syntaxHighlighting/themes';
+import { Token } from '../../src/syntaxHighlighting/types';
 import convert from 'color-convert';
 
 const query = `// Query to analyze storm events 
