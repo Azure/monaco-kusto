@@ -9,11 +9,12 @@ export function createCompletionFilteredText(userInput: string | undefined, comp
     return `${userInput}${completionItem.filterText}`;
 }
 
-export function getSelectedIndex(completionItems: ls.CompletionItem[], userInput: string): number {
-    if (!userInput) return 0;
+export function getFocusedItem(completionItems: ls.CompletionItem[], userInput: string): ls.CompletionItem {
+    const firstCompletionItem = completionItems[0];
+    if (!userInput) return firstCompletionItem;
 
-    const firstMatchingItemIndex = completionItems.findIndex((item) =>
+    const firstMatchingItem = completionItems.find((item) =>
         item.filterText?.toLowerCase().startsWith(userInput.toLowerCase())
     );
-    return firstMatchingItemIndex === -1 ? 0 : firstMatchingItemIndex;
+    return firstMatchingItem ?? firstCompletionItem;
 }

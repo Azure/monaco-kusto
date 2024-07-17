@@ -8,7 +8,7 @@ import type { Schema } from './languageServiceManager/schema';
 import type { ClassifiedRange } from './languageServiceManager/kustoLanguageService';
 import { AugmentedWorkerAccessor } from './kustoMode';
 import { CompletionCacheManager, createCompletionCacheManager } from './completionCacheManager/completionCacheManager';
-import { createCompletionFilteredText, getSelectedIndex } from './languageFeatures.utils';
+import { createCompletionFilteredText, getFocusedItem } from './languageFeatures.utils';
 
 // --- diagnostics ---
 
@@ -824,7 +824,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
             .then((info) => {
                 if (!info) return;
 
-                const selectedItemIndex = getSelectedIndex(info.items, userInput);
+                const selectedItem = getFocusedItem(info.items, userInput);
 
                 let items: monaco.languages.CompletionItem[] = info.items.map((entry, index) => {
                     let item: monaco.languages.CompletionItem = {
@@ -837,7 +837,7 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                         detail: entry.detail,
                         range: wordRange,
                         kind: toCompletionItemKind(entry.kind),
-                        preselect: index === selectedItemIndex,
+                        preselect: selectedItem.filterText === entry.filterText,
                     };
                     if (entry.textEdit) {
                         // TODO: Where is the "range" property coming from?

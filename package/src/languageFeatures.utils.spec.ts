@@ -1,5 +1,5 @@
 import { test, describe, expect } from '@jest/globals';
-import { createCompletionFilteredText, getSelectedIndex } from './languageFeatures.utils';
+import { createCompletionFilteredText, getFocusedItem } from './languageFeatures.utils';
 import { completionItemBuilder } from '../tests/unit/builders/CompletionListBuilder';
 
 describe('createCompletionFilteredText', () => {
@@ -31,30 +31,24 @@ describe('createCompletionFilteredText', () => {
     });
 });
 
-describe('getSelectedIndex', () => {
-    test('returns 0 if the user input is not provided', () => {
-        const completionItems = [completionItemBuilder().withFilterText('EndTime').build()];
-        const selectedIndex = getSelectedIndex(completionItems, undefined);
-        expect(selectedIndex).toBe(0);
+describe('getFocusedItem', () => {
+    const first = completionItemBuilder().withFilterText('EndTime').build();
+    const second = completionItemBuilder().withFilterText('StartTime').build();
+    const third = completionItemBuilder().withFilterText('timespan').build();
+    const completionItems = [first, second, third];
+
+    test('returns the first item if the user input is not provided', () => {
+        const focusedItem = getFocusedItem(completionItems, undefined);
+        expect(focusedItem).toEqual(first);
     });
 
-    test("returns the index of the first item matching the user input's case-insensitive prefix", () => {
-        const completionItems = [
-            completionItemBuilder().withFilterText('EndTime').build(),
-            completionItemBuilder().withFilterText('StartTime').build(),
-            completionItemBuilder().withFilterText('timespan').build(),
-        ];
-        const selectedIndex = getSelectedIndex(completionItems, 'Time');
-        expect(selectedIndex).toBe(2);
+    test("returns the item matching the user input's case-insensitive prefix", () => {
+        const focusedItem = getFocusedItem(completionItems, 'Time');
+        expect(focusedItem).toEqual(third);
     });
 
-    test('returns 0 when no items start with the user input', () => {
-        const completionItems = [
-            completionItemBuilder().withFilterText('EndTime').build(),
-            completionItemBuilder().withFilterText('StartTime').build(),
-            completionItemBuilder().withFilterText('timespan').build(),
-        ];
-        const selectedIndex = getSelectedIndex(completionItems, 'Mitzi');
-        expect(selectedIndex).toBe(0);
+    test('returns the first item when no items start with the user input', () => {
+        const focusedItem = getFocusedItem(completionItems, 'Mitzi');
+        expect(focusedItem).toEqual(first);
     });
 });
