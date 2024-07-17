@@ -1960,9 +1960,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     private getCurrentCommandV2(script: k2.CodeScript, offset: number) {
-        let block = script.GetBlockAtPosition(offset);
-
-        return block;
+        return script.GetBlockAtPosition(offset);
     }
 
     private getTextToInsert(

@@ -101,6 +101,7 @@ Every PR should come with a test that checks it.
         'semanticHighlighting.enabled': true,
     });
     ```
+-   `getRangeHtml` is a new public API for retrieving HTML content with syntax highlighting for clipboard data.
 
 ### 11.4.0
 

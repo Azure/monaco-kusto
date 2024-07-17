@@ -3,24 +3,19 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
-import { extend, getCurrentCommandRange } from './extendedEditor';
+import { extend } from './extendedEditor';
 import type { LanguageServiceDefaults, WorkerAccessor } from './types';
-import {
-    getCslTypeNameFromClrType,
-    getCallName,
-    getExpression,
-    getInputParametersAsCslString,
-    getEntityDataTypeFromCslType,
-} from './languageServiceManager/schema';
 import type { LanguageSettings } from './languageServiceManager/settings';
 import { themes } from './syntaxHighlighting/themes';
+import { LANGUAGE_ID } from './globals';
+import * as schema from './languageServiceManager/schema';
+import { getRangeHtml } from './extendedGlobalApi';
 
 export * from './languageServiceManager/schema';
 export * from './languageServiceManager/renderInfo';
 export * from './languageServiceManager/settings';
 export * from './types';
-
-export { getCurrentCommandRange } from './extendedEditor';
+export * from './extendedGlobalApi';
 
 // --- Kusto configuration and defaults ---------
 
@@ -104,7 +99,7 @@ monaco.languages.onLanguage('kusto', () => {
 });
 
 monaco.languages.register({
-    id: 'kusto',
+    id: LANGUAGE_ID,
     extensions: ['.csl', '.kql'],
 });
 
@@ -161,14 +156,10 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
 }
 
 const globalApi: typeof import('./monaco.contribution') = {
-    getCslTypeNameFromClrType,
-    getCallName,
-    getExpression,
-    getInputParametersAsCslString,
-    getEntityDataTypeFromCslType,
+    ...schema,
     kustoDefaults,
     getKustoWorker,
-    getCurrentCommandRange,
+    getRangeHtml,
 };
 
 (monaco as any).languages.kusto = globalApi;
