@@ -29,10 +29,6 @@ export function completionItemBuilder() {
             completionItem.filterText = filterText;
             return builder;
         },
-        withForcePrecedence: (forcePrecedence: boolean) => {
-            completionItem.data = { forcePrecedence };
-            return builder;
-        },
         build: (): CompletionItem => completionItem,
     };
 

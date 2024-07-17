@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 11.4.0
+
+-   feat: IntelliSense completion items now maintain the original order from the language service, with the most relevant option automatically focused based on the user's input.
+
 ### 11.3.0
 
 -   fix: Exclude punctuation-only syntax from completion items.

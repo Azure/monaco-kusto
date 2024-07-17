@@ -40,14 +40,26 @@ const schema = {
                             DocString: 'The start time',
                         },
                         {
+                            Name: 'EndTime',
+                            Type: 'System.DateTime',
+                            CslType: 'datetime',
+                            DocString: 'The end time',
+                        },
+                        {
+                            Name: 'EpisodeId',
+                            Type: 'System.Int32',
+                            CslType: 'int',
+                        },
+                        {
+                            Name: 'EventId',
+                            Type: 'System.Int32',
+                            CslType: 'int',
+                        },
+                        {
                             Name: 'State',
                             Type: 'System.String',
                             CslType: 'string',
-                        },
-                        {
-                            Name: 'counter',
-                            Type: 'System.Number',
-                            CslType: 'number',
+                            Examples: ['Custom State 1', 'Custom State 2'],
                         },
                     ],
                 },
