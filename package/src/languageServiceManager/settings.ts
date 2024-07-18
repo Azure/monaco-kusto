@@ -4,8 +4,6 @@ export interface LanguageSettings {
     includeControlCommands?: boolean;
     newlineAfterPipe?: boolean;
     openSuggestionDialogAfterPreviousSuggestionAccepted?: boolean;
-    useSemanticColorization?: boolean;
-    useTokenColorization?: boolean;
     disabledCompletionItems?: string[];
     onDidProvideCompletionItems?: OnDidProvideCompletionItems;
     enableHover?: boolean;

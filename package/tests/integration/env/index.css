@@ -1,3 +1,7 @@
+body {
+    background-color: #87ceeb;
+}
+
 #container {
     display: flex;
     flex-direction: row;
@@ -14,7 +18,12 @@
 }
 
 #settings {
+    background-color: white;
     width: 100%;
     border: 1px solid grey;
     border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 12px;
 }

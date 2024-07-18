@@ -2066,11 +2066,13 @@ __metadata:
     "@rollup/plugin-terser": ^0.4.3
     "@rollup/plugin-virtual": ^3.0.1
     "@tsconfig/node20": ^20.1.2
+    "@types/color-convert": ^2.0.3
     "@types/jest": ^29.5.12
     "@types/lodash-es": ^4.17.9
     "@types/node": ^20.6.3
     "@types/xregexp": ^4.4.0
     browser-sync: ^3.0.2
+    color-convert: ^2.0.1
     concurrently: ^8.2.1
     http-server: ^14.1.1
     jest: ^29.7.0
@@ -3680,6 +3682,22 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: e827570e097bd7d625a673c9c208af2d1a22fa3885c0a1646533cf24394c839c3e5f60ac1bc60c0ddcc69c0615078c9fb2c01b42596c7c582d895d974f2409ee
+  languageName: node
+  linkType: hard
+
+"@types/color-convert@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@types/color-convert@npm:2.0.3"
+  dependencies:
+    "@types/color-name": "*"
+  checksum: bb6649b49a9da85435c0076c0b00183b972ee2ccbebb7f2f20e58843f081616bba054280fad96fe19e8bb998b3494a3f4c105dea6fef31147f92097f2c08f1ca
+  languageName: node
+  linkType: hard
+
+"@types/color-name@npm:*":
+  version: 1.1.4
+  resolution: "@types/color-name@npm:1.1.4"
+  checksum: d0cc22e0f0f4c0a5bed2051e41c3e5b484ca522ecf196a2ff3b7af8acdebd3a1c7823909fab3f3d1ab5f407d70858ead30d7423a060b7c7cef7966ea95056cac
   languageName: node
   linkType: hard
 

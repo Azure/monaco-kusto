@@ -2,10 +2,12 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import { WorkerManager } from './workerManager';
 import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution';
-import { KustoLanguageDefinition } from './languageServiceManager/kustoMonarchLanguageDefinition';
 import * as languageFeatures from './languageFeatures';
 import type { Schema } from './languageServiceManager/schema';
 import type { IKustoWorkerImpl } from './kustoWorker';
+import { SemanticTokensProvider } from './syntaxHighlighting/SemanticTokensProvider';
+import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
+import { LANGUAGE_ID } from './globals';
 
 export interface AugmentedWorker
     extends KustoWorker,
@@ -34,7 +36,6 @@ export function setupMode(
     let onSchemaChange = new monaco.Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
     let disposables: monaco.IDisposable[] = [];
-    let monarchTokensProvider: monaco.IDisposable;
 
     const client = new WorkerManager(monacoInstance, defaults);
     disposables.push(client);
@@ -70,49 +71,20 @@ export function setupMode(
         );
     };
 
-    const language = 'kusto';
     disposables.push(
         monacoInstance.languages.registerCompletionItemProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings)
         )
     );
 
-    // Monaco tokenization runs in main thread so we're using a quick schema-unaware tokenization.
-    // a web worker will run semantic colorization in the background (ColorizationAdapter).
-    if (defaults.languageSettings.useTokenColorization) {
-        monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(language, KustoLanguageDefinition);
-    }
-
-    // listen to configuration changes and if we're switching from semantic to monarch colorization, do the switch.
-    defaults.onDidChange((e) => {
-        if (!e.languageSettings.useTokenColorization && monarchTokensProvider !== undefined) {
-            monarchTokensProvider.dispose();
-            monarchTokensProvider = undefined;
-        }
-
-        if (e.languageSettings.useTokenColorization && monarchTokensProvider == undefined) {
-            monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
-                language,
-                KustoLanguageDefinition
-            );
-        }
-    });
+    setMonarchTokensProvider(monacoInstance, disposables);
+    registerDocumentSemanticTokensProvider(workerAccessor, monacoInstance);
 
     disposables.push(
         new languageFeatures.DiagnosticsAdapter(
             monacoInstance,
-            language,
-            workerAccessor,
-            defaults,
-            onSchemaChange.event
-        )
-    );
-
-    disposables.push(
-        new languageFeatures.ColorizationAdapter(
-            monacoInstance,
-            language,
+            LANGUAGE_ID,
             workerAccessor,
             defaults,
             onSchemaChange.event
@@ -121,50 +93,53 @@ export function setupMode(
 
     disposables.push(
         monacoInstance.languages.registerDocumentRangeFormattingEditProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.FormatAdapter(workerAccessor)
         )
     );
 
     disposables.push(
         monacoInstance.languages.registerFoldingRangeProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.FoldingAdapter(workerAccessor)
         )
     );
 
     disposables.push(
         monacoInstance.languages.registerDefinitionProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.DefinitionAdapter(workerAccessor)
         )
     );
 
     disposables.push(
-        monacoInstance.languages.registerRenameProvider(language, new languageFeatures.RenameAdapter(workerAccessor))
+        monacoInstance.languages.registerRenameProvider(LANGUAGE_ID, new languageFeatures.RenameAdapter(workerAccessor))
     );
 
     disposables.push(
         monacoInstance.languages.registerReferenceProvider(
-            language,
+            LANGUAGE_ID,
             new languageFeatures.ReferenceAdapter(workerAccessor)
         )
     );
 
     if (defaults.languageSettings.enableHover) {
         disposables.push(
-            monacoInstance.languages.registerHoverProvider(language, new languageFeatures.HoverAdapter(workerAccessor))
+            monacoInstance.languages.registerHoverProvider(
+                LANGUAGE_ID,
+                new languageFeatures.HoverAdapter(workerAccessor)
+            )
         );
     }
 
     monacoInstance.languages.registerDocumentFormattingEditProvider(
-        language,
+        LANGUAGE_ID,
         new languageFeatures.DocumentFormatAdapter(workerAccessor)
     );
     kustoWorker = workerAccessor;
     resolveWorker(workerAccessor);
 
-    monacoInstance.languages.setLanguageConfiguration(language, {
+    monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, {
         folding: {
             offSide: false,
             markers: { start: /^\s*[\r\n]/gm, end: /^\s*[\r\n]/gm },
@@ -187,4 +162,28 @@ export function setupMode(
 
 export function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
     return workerPromise.then(() => kustoWorker);
+}
+
+// This function sets the Monarch token provider,
+// enabling fast syntax highlighting before the language service is called for semantic coloring.
+function setMonarchTokensProvider(monacoInstance: typeof globalThis.monaco, disposables: monaco.IDisposable[]) {
+    const monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
+        LANGUAGE_ID,
+        kustoLanguageDefinition
+    );
+    disposables.push(monarchTokensProvider);
+}
+
+// This function registers a semantic token provider that utilizes the language service
+// for more context-relevant syntax highlighting.
+function registerDocumentSemanticTokensProvider(
+    workerAccessor: AugmentedWorkerAccessor,
+    monacoInstance: typeof globalThis.monaco
+) {
+    const classificationsGetter = async (resource: monaco.Uri) => {
+        const worker = await workerAccessor(resource);
+        return worker.getClassifications(resource.toString());
+    };
+    const semanticTokenProvider = new SemanticTokensProvider(classificationsGetter);
+    monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
 }

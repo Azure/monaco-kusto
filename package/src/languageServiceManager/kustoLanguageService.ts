@@ -20,6 +20,7 @@ import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFrom
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference } from '../types';
 import { Mutable } from '../util';
+import { ClassificationRange } from '../syntaxHighlighting/types';
 
 let List = System.Collections.Generic.List$1;
 
@@ -86,19 +87,6 @@ export interface ClassifiedRange {
 }
 
 /**
- * convert the bridge.net object to a plain javascript object that only contains data.
- * @param k2Classifications @kusto/language-service-next bridge.net object
- */
-function toClassifiedRange(k2Classifications: k2.ClassifiedRange[]): ClassifiedRange[] {
-    return k2Classifications.map((classification) => ({
-        start: classification.Start,
-        end: classification.End,
-        length: classification.Length,
-        kind: classification.Kind,
-    }));
-}
-
-/**
  * colorization data for specific line range.
  */
 export interface ColorizationRange {
@@ -151,7 +139,7 @@ export interface LanguageService {
         includeSuggestions?: boolean
     ): Promise<ls.Diagnostic[]>;
     getResultActions(document: TextDocument, start: number, end: number): Promise<ResultAction[]>;
-    doColorization(document: TextDocument, intervals: { start: number; end: number }[]): Promise<ColorizationRange[]>;
+    getClassifications(document: TextDocument): Promise<ClassificationRange[]>;
     doRename(document: TextDocument, position: ls.Position, newName: string): Promise<ls.WorkspaceEdit | undefined>;
     doHover(document: TextDocument, position: ls.Position): Promise<ls.Hover | undefined>;
     setParameters(
@@ -497,23 +485,6 @@ class KustoLanguageService implements LanguageService {
         return k.CslDocumentation.Instance.GetTopic(completionOption);
     }
 
-    private disabledCompletionItemsV1: { [value: string]: k.OptionKind } = {
-        capacity: k.OptionKind.Policy,
-        callout: k.OptionKind.Policy,
-        encoding: k.OptionKind.Policy,
-        batching: k.OptionKind.Policy,
-        querythrottling: k.OptionKind.Policy,
-        merge: k.OptionKind.Policy,
-        querylimit: k.OptionKind.Policy,
-        rowstore: k.OptionKind.Policy,
-        streamingingestion: k.OptionKind.Policy,
-        restricted_view_access: k.OptionKind.Policy,
-        sharding: k.OptionKind.Policy,
-        'restricted-viewers': k.OptionKind.Policy,
-        attach: k.OptionKind.Command,
-        purge: k.OptionKind.Command,
-    };
-
     doRangeFormat(document: TextDocument, range: ls.Range): Promise<ls.TextEdit[]> {
         if (!document) {
             return Promise.resolve([]);
@@ -796,58 +767,23 @@ class KustoLanguageService implements LanguageService {
             });
     }
 
-    /**
-     * Colorize one or more kusto blocks (a.k.a commands), or just the entire document.
-     * Supports multi-cursor editing (colorizes blocks on multiple changes).
-     * @param document The document to colorize
-     * @param changeIntervals an array containing 0 or more changed intervals. if the array is empty - just colorize the entire row.
-     * if the array contains a single change - just color the kusto blocks that wraps this change. If multiple changes are provided,
-     * colorize all blocks that intersect these changes.
-     * The code will try to only parse once if this is the same command.
-     */
-    doColorization(
-        document: TextDocument,
-        changeIntervals: { start: number; end: number }[]
-    ): Promise<ColorizationRange[]> {
-        if (!document || !this._languageSettings.useSemanticColorization) {
-            return Promise.resolve([]);
-        }
+    async getClassifications(document: TextDocument): Promise<ClassificationRange[]> {
+        const codeScript = this.parseDocumentV2(document);
+        const codeBlocks = this.toArray<k2.CodeBlock>(codeScript.Blocks);
+        const classificationRanges = codeBlocks.map((block) => {
+            const { Classifications } = block.Service.GetClassifications(block.Start, block.Length);
+            return this.toArray<k2.ClassifiedRange>(Classifications);
+        });
 
-        // V2 intellisense
-        const script = this.parseDocumentV2(document);
-        if (changeIntervals.length > 0) {
-            const blocks = this.toArray<k2.CodeBlock>(script.Blocks);
-            const affectedBlocks = this.getAffectedBlocks(blocks, changeIntervals);
+        return classificationRanges.flatMap((ranges) => {
+            return ranges.map((range) => {
+                const { line, character } = document.positionAt(range.Start);
+                const length = range.Length;
+                const kind = range.Kind;
 
-            const result = affectedBlocks.map((block) => ({
-                classifications: toClassifiedRange(
-                    this.toArray<k2.ClassifiedRange>(
-                        block.Service.GetClassifications(block.Start, block.End).Classifications
-                    )
-                ),
-                absoluteStart: block.Start,
-                absoluteEnd: block.End,
-            }));
-            return Promise.resolve(result);
-        }
-
-        // Entire document requested
-        const blocks = this.toArray<k2.CodeBlock>(script.Blocks);
-        const classifications = blocks
-            .map((block) => {
-                return this.toArray<k2.ClassifiedRange>(
-                    block.Service.GetClassifications(block.Start, block.Length).Classifications
-                );
-            })
-            .reduce((prev, curr) => prev.concat(curr), []);
-
-        return Promise.resolve([
-            {
-                classifications: toClassifiedRange(classifications),
-                absoluteStart: 0,
-                absoluteEnd: document.getText().length,
-            },
-        ]);
+                return { line, character, length, kind };
+            });
+        });
     }
 
     private getAffectedBlocks(blocks: k2.CodeBlock[], changeIntervals: { start: number; end: number }[]) {
@@ -2024,9 +1960,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     private getCurrentCommandV2(script: k2.CodeScript, offset: number) {
-        let block = script.GetBlockAtPosition(offset);
-
-        return block;
+        return script.GetBlockAtPosition(offset);
     }
 
     private getTextToInsert(
@@ -2307,7 +2241,6 @@ class KustoLanguageService implements LanguageService {
 
 let languageService = new KustoLanguageService(KustoLanguageService.dummySchema, {
     includeControlCommands: true,
-    useSemanticColorization: true,
     completionOptions: { includeExtendedSyntax: false },
 });
 

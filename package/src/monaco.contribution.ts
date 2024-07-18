@@ -3,23 +3,19 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
-import { extend, getCurrentCommandRange } from './extendedEditor';
+import { extend } from './extendedEditor';
 import type { LanguageServiceDefaults, WorkerAccessor } from './types';
-import {
-    getCslTypeNameFromClrType,
-    getCallName,
-    getExpression,
-    getInputParametersAsCslString,
-    getEntityDataTypeFromCslType,
-} from './languageServiceManager/schema';
 import type { LanguageSettings } from './languageServiceManager/settings';
+import { themes } from './syntaxHighlighting/themes';
+import { LANGUAGE_ID } from './globals';
+import * as schema from './languageServiceManager/schema';
+import { getRangeHtml } from './extendedGlobalApi';
 
 export * from './languageServiceManager/schema';
 export * from './languageServiceManager/renderInfo';
 export * from './languageServiceManager/settings';
 export * from './types';
-
-export { getCurrentCommandRange } from './extendedEditor';
+export * from './extendedGlobalApi';
 
 // --- Kusto configuration and defaults ---------
 
@@ -68,8 +64,6 @@ const defaultLanguageSettings: LanguageSettings = {
     includeControlCommands: true,
     newlineAfterPipe: true,
     openSuggestionDialogAfterPreviousSuggestionAccepted: true,
-    useSemanticColorization: true,
-    useTokenColorization: false,
     enableHover: true,
     formatter: {
         indentationSize: 4,
@@ -100,81 +94,16 @@ function withMode(callback: (module: typeof mode) => void): void {
 
 export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
-export const themeNames = {
-    light: 'kusto-light',
-    dark: 'kusto-dark',
-    dark2: 'kusto-dark2',
-};
-
 monaco.languages.onLanguage('kusto', () => {
     withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
 });
 
 monaco.languages.register({
-    id: 'kusto',
+    id: LANGUAGE_ID,
     extensions: ['.csl', '.kql'],
 });
 
-monaco.editor.defineTheme(themeNames.light, {
-    base: 'vs',
-    inherit: true,
-    rules: [
-        { token: 'comment', foreground: '008000' }, // CommentToken Green
-        { token: 'variable.predefined', foreground: '800080' }, // CalculatedColumnToken Purple
-        { token: 'function', foreground: '0000FF' }, // FunctionNameToken Blue
-        { token: 'operator.sql', foreground: 'CC3700' }, // _WAS_ OperatorToken OrangeRed, but wasn't accessible.
-        { token: 'string', foreground: 'B22222' }, // StringLiteralToken Firebrick
-        { token: 'operator.scss', foreground: '0000FF' }, // SubOperatorToken Blue
-        { token: 'variable', foreground: 'C71585' }, // TableColumnToken MediumVioletRed
-        { token: 'variable.parameter', foreground: '9932CC' }, // TableToken DarkOrchid
-        { token: '', foreground: '000000' }, // UnknownToken, PlainTextToken  Black
-        { token: 'type', foreground: '0000FF' }, // DataTypeToken Blue
-        { token: 'tag', foreground: '0000FF' }, // ControlCommandToken Blue
-        { token: 'annotation', foreground: '2B91AF' }, // QueryParametersToken FF2B91AF
-        { token: 'keyword', foreground: '0000FF' }, // CslCommandToken, PluginToken Blue
-        { token: 'number', foreground: '191970' }, // LetVariablesToken MidnightBlue
-        { token: 'annotation', foreground: '9400D3' }, // ClientDirectiveToken DarkViolet
-        { token: 'invalid', background: 'cd3131' },
-    ],
-    colors: {},
-});
-
-monaco.editor.defineTheme(themeNames.dark, {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [
-        { token: 'comment', foreground: '608B4E' }, // CommentToken Green
-        { token: 'variable.predefined', foreground: '4ec9b0' }, // CalculatedColumnToken Purple
-        { token: 'function', foreground: 'dcdcaa' }, // FunctionNameToken Blue
-        { token: 'operator.sql', foreground: '9cdcfe' }, // OperatorToken OrangeRed
-        { token: 'string', foreground: 'ce9178' }, // StringLiteralToken Firebrick
-        { token: 'operator.scss', foreground: '569cd6' }, // SubOperatorToken Blue
-        { token: 'variable', foreground: '4ec9b0' }, // TableColumnToken MediumVioletRed
-        { token: 'variable.parameter', foreground: 'c586c0' }, // TableToken DarkOrchid
-        { token: '', foreground: 'd4d4d4' }, // UnknownToken, PlainTextToken  Black
-        { token: 'type', foreground: '569cd6' }, // DataTypeToken Blue
-        { token: 'tag', foreground: '569cd6' }, // ControlCommandToken Blue
-        { token: 'annotation', foreground: '9cdcfe' }, // QueryParametersToken FF2B91AF
-        { token: 'keyword', foreground: '569cd6' }, // CslCommandToken, PluginToken Blue
-        { token: 'number', foreground: 'd7ba7d' }, // LetVariablesToken MidnightBlue
-        { token: 'annotation', foreground: 'b5cea8' }, // ClientDirectiveToken DarkViolet
-        { token: 'invalid', background: 'cd3131' },
-    ],
-    colors: {
-        // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-    },
-});
-
-monaco.editor.defineTheme(themeNames.dark2, {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [],
-    colors: {
-        // see: https://code.visualstudio.com/api/references/theme-color#editor-widget-colors
-        'editor.background': '#1B1A19', // gray 200
-        'editorSuggestWidget.selectedBackground': '#004E8C',
-    },
-});
+themes.forEach(({ name, data }) => monaco.editor.defineTheme(name, data));
 
 // Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
 // Most other language features are initialized in kustoMode.ts
@@ -227,15 +156,10 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
 }
 
 const globalApi: typeof import('./monaco.contribution') = {
-    getCslTypeNameFromClrType,
-    getCallName,
-    getExpression,
-    getInputParametersAsCslString,
-    getEntityDataTypeFromCslType,
+    ...schema,
     kustoDefaults,
     getKustoWorker,
-    getCurrentCommandRange,
-    themeNames,
+    getRangeHtml,
 };
 
 (monaco as any).languages.kusto = globalApi;

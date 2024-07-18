@@ -5,9 +5,9 @@ import type { IRange } from 'monaco-editor/esm/vs/editor/editor.api';
 import * as kustoService from './languageServiceManager/kustoLanguageService';
 import type { LanguageSettings } from './languageServiceManager/settings';
 import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageServiceManager/schema';
-import type { ColorizationRange } from './languageServiceManager/kustoLanguageService';
 import type { RenderInfo } from './languageServiceManager/renderInfo';
 import type { ClusterReference, DatabaseReference, KustoWorker } from './types';
+import { ClassificationRange } from './syntaxHighlighting/types';
 
 export type InterfaceFor<C> = {
     [Member in keyof C]: C[Member];
@@ -21,8 +21,6 @@ export type InterfaceFor<C> = {
 export type IKustoWorkerImpl = InterfaceFor<KustoWorkerImpl>;
 
 export class KustoWorkerImpl {
-    // --- model sync -----------------------
-
     private _ctx: worker.IWorkerContext;
     private _languageService: kustoService.LanguageService;
     private _languageId: string;
@@ -34,8 +32,6 @@ export class KustoWorkerImpl {
         this._languageService = kustoService.getKustoLanguageService();
         this._languageService.configure(this._languageSettings);
     }
-
-    // --- language service host ---------------
 
     setSchema(schema: Schema) {
         return this._languageService.setSchema(schema);
@@ -268,14 +264,9 @@ export class KustoWorkerImpl {
         return formatted;
     }
 
-    // Colorize document. if offsets provided, will only colorize commands at these offsets. otherwise - will color the entire document.
-    doColorization(uri: string, colorizationIntervals: { start: number; end: number }[]): Promise<ColorizationRange[]> {
+    getClassifications(uri: string): Promise<ClassificationRange[]> {
         const document = this._getTextDocument(uri);
-        const colorizationInfo: Promise<ColorizationRange[]> = this._languageService.doColorization(
-            document,
-            colorizationIntervals
-        );
-        return colorizationInfo;
+        return this._languageService.getClassifications(document);
     }
 
     getClientDirective(text: string): Promise<{ isClientDirective: boolean; directiveWithoutLeadingComments: string }> {

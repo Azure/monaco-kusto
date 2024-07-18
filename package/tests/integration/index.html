@@ -8,13 +8,21 @@
     </head>
     <body>
         <script type="module" src="/env/main.ts"></script>
+        <h1>Monaco Kusto</h1>
         <div id="container">
             <div id="editor"></div>
             <div id="settings">
-                <h1>Settings</h1>
+                <h2>Settings</h2>
                 <label onclick="updateLanguageSettings(event)">
                     <input role="checkbox" id="openSuggestionDialogAfterPreviousSuggestionAccepted" type="checkbox" />
                     Open Suggestion Dialog After Previous Suggestion Accepted
+                </label>
+                <label onclick="setThemeMode(event)">
+                    Theme:
+                    <input id="kusto-light" type="radio" value="kusto-light" name="theme" checked />
+                    <label for="kusto-light">Light</label>
+                    <input id="kusto-dark" type="radio" value="kusto-dark" name="theme" />
+                    <label for="kusto-dark">Dark</label>
                 </label>
             </div>
         </div>
