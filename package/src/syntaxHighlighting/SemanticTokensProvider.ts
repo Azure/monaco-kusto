@@ -12,15 +12,15 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
     }
 
     getLegend() {
-        return { tokenTypes: tokenTypes, tokenModifiers: [] };
+        return { tokenTypes, tokenModifiers: [] };
     }
 
     async provideDocumentSemanticTokens(model: editor.ITextModel) {
         const resource = model.uri;
         const classifications = await this.classificationsGetter(resource);
         const semanticTokens = classifications.map((classification, index) => {
-            const last = classifications[index - 1];
-            return semanticTokenMaker(classification, last);
+            const previousClassification = classifications[index - 1];
+            return semanticTokenMaker(classification, previousClassification);
         });
 
         return {
@@ -35,11 +35,11 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
 const emptyClassification = { line: 0, character: 0, length: 0, kind: 0 };
 function semanticTokenMaker(
     classification: ClassificationRange,
-    lastClassification: ClassificationRange = emptyClassification
+    previousClassification: ClassificationRange = emptyClassification
 ): DocumentSemanticToken {
     const { line, character, length, kind } = classification;
-    const deltaLine = line - lastClassification.line;
-    const deltaStart = deltaLine ? character : character - lastClassification.character;
+    const deltaLine = line - previousClassification.line;
+    const deltaStart = deltaLine ? character : character - previousClassification.character;
 
     return [deltaLine, deltaStart, length, kind, 0];
 }

@@ -62,9 +62,9 @@ const light: monaco.editor.IStandaloneThemeData = {
         { token: Token.Command, foreground: colors.blue },
         { token: Token.Keyword, foreground: colors.blue },
         { token: Token.MaterializedView, foreground: colors.darkOrchid },
-        { token: Token.SchemaMember, foreground: colors.black }, // check this one
-        { token: Token.SignatureParameter, foreground: colors.black }, // check this one
-        { token: Token.Option, foreground: colors.black }, // check this one
+        { token: Token.SchemaMember, foreground: colors.black },
+        { token: Token.SignatureParameter, foreground: colors.black },
+        { token: Token.Option, foreground: colors.black },
     ],
     colors: {},
 };
@@ -96,9 +96,9 @@ const dark: monaco.editor.IStandaloneThemeData = {
         { token: Token.Command, foreground: colors.skyBlue },
         { token: Token.Keyword, foreground: colors.skyBlue },
         { token: Token.MaterializedView, foreground: colors.softGold },
-        { token: Token.SchemaMember, foreground: colors.black }, // check this one
-        { token: Token.SignatureParameter, foreground: colors.black }, // check this one
-        { token: Token.Option, foreground: colors.black }, // check this one
+        { token: Token.SchemaMember, foreground: colors.black },
+        { token: Token.SignatureParameter, foreground: colors.black },
+        { token: Token.Option, foreground: colors.black },
     ],
     colors: {
         'editor.background': colors.jetBlack,
