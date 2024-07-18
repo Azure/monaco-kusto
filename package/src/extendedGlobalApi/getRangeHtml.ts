@@ -2,7 +2,7 @@ import { editor, IRange } from 'monaco-editor/esm/vs/editor/editor.api';
 
 export function getRangeHtml(model: editor.IModel, range: IRange): string {
     const { startLineNumber, endLineNumber, endColumn } = range;
-    const isLastLineEmpty = endColumn === 0;
+    const isLastLineEmpty = endColumn === 1;
     const actualLastLine = isLastLineEmpty ? endLineNumber - 1 : endLineNumber;
     const totalLines = actualLastLine - startLineNumber + 1;
 

@@ -14,15 +14,15 @@ describe('getRangeHtml', () => {
     });
 
     test('returns colorized html for each line in the range', () => {
-        const range = makeRange(1, 1, 3, 1);
+        const range = makeRange(1, 1, 3, 2);
 
         const rangeHtml = getRangeHtml(modelDummy, range);
 
         expect(rangeHtml).toBe('<div>1</div><br/><div>2</div><br/><div>3</div>');
     });
 
-    test('skip last line when end column is 0', () => {
-        const range = makeRange(1, 1, 3, 0);
+    test('skip last line when end column is 1', () => {
+        const range = makeRange(1, 1, 3, 1);
 
         const rangeHtml = getRangeHtml(modelDummy, range);
 
