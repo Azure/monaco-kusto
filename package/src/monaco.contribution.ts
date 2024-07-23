@@ -85,7 +85,6 @@ export async function getKustoWorker(): Promise<WorkerAccessor> {
 export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
 monaco.languages.onLanguage(LANGUAGE_ID, async () => {
-    console.log('onLanguage');
     await mode.setupMode(kustoDefaults, monaco as typeof monaco);
 });
 
@@ -99,7 +98,6 @@ themes.forEach(({ name, data }) => monaco.editor.defineTheme(name, data));
 // Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
 // Most other language features are initialized in kustoMode.ts
 monaco.editor.onDidCreateEditor((editor) => {
-    console.log('onDidCreateEditor');
     if (window.MonacoEnvironment?.globalAPI) {
         // hook up extension methods to editor.
         extend(editor);

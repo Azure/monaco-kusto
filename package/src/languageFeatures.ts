@@ -33,9 +33,7 @@ export class DiagnosticsAdapter {
         private defaults: LanguageServiceDefaults,
         onSchemaChange: monaco.IEvent<Schema>
     ) {
-        console.log('constructor');
         const onModelAdd = (model: monaco.editor.IModel): void => {
-            console.log('onModelAdd');
             let languageId = model.getLanguageId();
             const modelUri = model.uri.toString();
             if (languageId !== this._languageId) {
@@ -54,13 +52,11 @@ export class DiagnosticsAdapter {
             });
 
             this._schemaListener[modelUri] = onSchemaChange(() => {
-                console.log('onSchemaChange', modelUri);
                 self.setTimeout(() => this._doValidate(model, languageId, []), 0);
             });
         };
 
         const onEditorAdd = (editor: monaco.editor.ICodeEditor) => {
-            console.log('onEditorAdd');
             const editorId = editor.getId();
 
             if (!this._cursorListener[editorId]) {
@@ -82,7 +78,6 @@ export class DiagnosticsAdapter {
         };
 
         const onModelRemoved = (model: monaco.editor.IModel): void => {
-            console.log('onModelRemoved');
             this._monacoInstance.editor.setModelMarkers(model, this._languageId, []);
 
             let uriStr = model.uri.toString();
@@ -135,7 +130,6 @@ export class DiagnosticsAdapter {
         this._disposables.push(this._monacoInstance.editor.onWillDisposeModel(onModelRemoved));
         this._disposables.push(
             this._monacoInstance.editor.onDidChangeModelLanguage((event) => {
-                console.log('onDidChangeModelLanguage');
                 onModelRemoved(event.model);
                 onModelAdd(event.model);
             })
@@ -224,7 +218,6 @@ export class DiagnosticsAdapter {
     }
 
     public dispose(): void {
-        console.log('dispose');
         this._disposables.forEach((d) => d && d.dispose());
         this._disposables = [];
     }

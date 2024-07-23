@@ -5,9 +5,11 @@ import { KustoWorker, LanguageServiceDefaults, showSchema } from './monaco.contr
 import * as languageFeatures from './languageFeatures';
 import { Schema, ScalarParameter, TabularParameter } from './languageServiceManager/schema';
 import { IKustoWorkerImpl } from './kustoWorker';
-import { SemanticTokensProvider } from './syntaxHighlighting/SemanticTokensProvider';
-import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
 import { LANGUAGE_ID } from './globals';
+import {
+    registerDocumentSemanticTokensProvider,
+    setMonarchTokensProvider,
+} from './syntaxHighlighting/syntaxHighlightingRegistrar';
 
 export interface AugmentedWorker
     extends KustoWorker,
@@ -23,7 +25,6 @@ export async function setupMode(
     defaults: LanguageServiceDefaults,
     monacoInstance: typeof monaco
 ): Promise<AugmentedWorkerAccessor> {
-    console.log('setupMode');
     let onSchemaChange = new monaco.Emitter<Schema>();
     const client = new WorkerManager(monacoInstance, defaults);
     let semanticTokensDisposable: monaco.IDisposable;
@@ -123,17 +124,4 @@ export async function setupMode(
 
 export async function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
     return workerAccessor;
-}
-
-// This function sets the Monarch token provider,
-// enabling fast syntax highlighting before the language service is called for semantic coloring.
-export function setMonarchTokensProvider(monacoInstance: typeof monaco) {
-    monacoInstance.languages.setMonarchTokensProvider(LANGUAGE_ID, kustoLanguageDefinition);
-}
-
-// This function registers a semantic token provider that utilizes the language service
-// for more context-relevant syntax highlighting.
-export function registerDocumentSemanticTokensProvider(worker: IKustoWorkerImpl, monacoInstance: typeof monaco) {
-    const semanticTokenProvider = new SemanticTokensProvider(worker.getClassifications);
-    return monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
 }
