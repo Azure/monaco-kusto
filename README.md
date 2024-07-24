@@ -87,6 +87,12 @@ Every PR should come with a test that checks it.
 
 ### 12.0.0
 
+-   fix: Resolved a race condition to ensure the semantic tokens provider is registered after setting the language server schema.
+-   fix: Fixed an issue where semantic highlighting didn't work on schema change by properly handling provider registration.
+-   fix: Disposed of the existing provider whenever a new one is registered to prevent memory leaks.
+
+### 12.0.0
+
 ### Breaking Changes
 
 -   Replaced syntax highlighting in Monaco-Kusto. The old method injected CSS for each KQL classified block, causing copy-to-clipboard issues. The new implementation uses:
