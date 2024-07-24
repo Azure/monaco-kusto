@@ -4,7 +4,7 @@ import { WorkerManager } from './workerManager';
 import { KustoWorker, LanguageServiceDefaults, showSchema } from './monaco.contribution';
 import * as languageFeatures from './languageFeatures';
 import { Schema, ScalarParameter, TabularParameter } from './languageServiceManager/schema';
-import type { IKustoWorkerImpl } from './kustoWorker';
+import { IKustoWorkerImpl } from './kustoWorker';
 import { SemanticTokensProvider } from './syntaxHighlighting/SemanticTokensProvider';
 import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
 import { LANGUAGE_ID } from './globals';
@@ -26,11 +26,18 @@ export async function setupMode(
     console.log('setupMode');
     let onSchemaChange = new monaco.Emitter<Schema>();
     const client = new WorkerManager(monacoInstance, defaults);
+    let semanticTokensDisposable: monaco.IDisposable;
 
     workerAccessor = async (uri) => {
-        const augmentedSetSchema = async (schema: Schema, worker: KustoWorker) => {
+        const worker = await client.getLanguageServiceWorker(uri);
+
+        const augmentedSetSchema = async (schema: Schema) => {
             await worker.setSchema(schema);
             onSchemaChange.fire(schema);
+            if (semanticTokensDisposable) {
+                semanticTokensDisposable.dispose();
+            }
+            semanticTokensDisposable = registerDocumentSemanticTokensProvider(worker, monacoInstance);
         };
         const setSchemaFromShowSchema = async (
             schema: showSchema.Result,
@@ -46,19 +53,17 @@ export async function setupMode(
             );
             normalizedSchema.globalScalarParameters = globalScalarParameters;
             normalizedSchema.globalTabularParameters = globalTabularParameters;
-            await augmentedSetSchema(normalizedSchema, worker);
+            await augmentedSetSchema(normalizedSchema);
         };
 
-        const worker = await client.getLanguageServiceWorker(uri);
         return {
             ...worker,
-            setSchema: (schema: Schema) => augmentedSetSchema(schema, worker),
+            setSchema: augmentedSetSchema,
             setSchemaFromShowSchema,
         };
     };
 
     setMonarchTokensProvider(monacoInstance);
-    registerDocumentSemanticTokensProvider(workerAccessor, monacoInstance);
 
     const completionAdapter = new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings);
     monacoInstance.languages.registerCompletionItemProvider(LANGUAGE_ID, completionAdapter);
@@ -128,16 +133,7 @@ export function setMonarchTokensProvider(monacoInstance: typeof monaco) {
 
 // This function registers a semantic token provider that utilizes the language service
 // for more context-relevant syntax highlighting.
-export function registerDocumentSemanticTokensProvider(
-    workerAccessor: AugmentedWorkerAccessor,
-    monacoInstance: typeof monaco
-) {
-    const classificationsGetter = async (uri: monaco.Uri) => {
-        console.log('classificationsGetter', uri.toString());
-        const worker = await workerAccessor(uri);
-        return worker.getClassifications(uri.toString());
-    };
-    const semanticTokenProvider = new SemanticTokensProvider(classificationsGetter);
-    console.log('registerDocumentSemanticTokensProvider');
-    monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
+export function registerDocumentSemanticTokensProvider(worker: IKustoWorkerImpl, monacoInstance: typeof monaco) {
+    const semanticTokenProvider = new SemanticTokensProvider(worker.getClassifications);
+    return monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
 }

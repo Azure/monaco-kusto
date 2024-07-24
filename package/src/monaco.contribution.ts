@@ -10,7 +10,6 @@ import { themes } from './syntaxHighlighting/themes';
 import { LANGUAGE_ID } from './globals';
 import * as schema from './languageServiceManager/schema';
 import { getRangeHtml } from './extendedGlobalApi';
-import { registerDocumentSemanticTokensProvider } from './kustoMode';
 
 export * from './languageServiceManager/schema';
 export * from './languageServiceManager/renderInfo';
