@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
-import type * as mode from './kustoMode';
+import * as mode from './kustoMode';
 import KustoCommandHighlighter from './commandHighlighter';
 import KustoCommandFormatter from './commandFormatter';
 import { extend } from './extendedEditor';
@@ -16,8 +16,6 @@ export * from './languageServiceManager/renderInfo';
 export * from './languageServiceManager/settings';
 export * from './types';
 export * from './extendedGlobalApi';
-
-// --- Kusto configuration and defaults ---------
 
 class LanguageServiceDefaultsImpl implements LanguageServiceDefaults {
     private _onDidChange = new monaco.Emitter<LanguageServiceDefaults>();
@@ -80,22 +78,14 @@ const defaultLanguageSettings: LanguageSettings = {
     completionOptions: { includeExtendedSyntax: false },
 };
 
-export function getKustoWorker(): Promise<WorkerAccessor> {
-    return new Promise((resolve, reject) => {
-        withMode((mode) => {
-            mode.getKustoWorker().then(resolve, reject);
-        });
-    });
-}
-
-function withMode(callback: (module: typeof mode) => void): void {
-    import('./kustoMode').then(callback);
+export async function getKustoWorker(): Promise<WorkerAccessor> {
+    return mode.getKustoWorker();
 }
 
 export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
-monaco.languages.onLanguage('kusto', () => {
-    withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
+monaco.languages.onLanguage(LANGUAGE_ID, () => {
+    mode.setupMode(kustoDefaults, monaco as typeof monaco);
 });
 
 monaco.languages.register({

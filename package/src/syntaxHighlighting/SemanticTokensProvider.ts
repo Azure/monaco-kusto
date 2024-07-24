@@ -2,7 +2,7 @@ import type * as monaco from 'monaco-editor';
 import { editor } from 'monaco-editor';
 import { ClassificationRange, DocumentSemanticToken, tokenTypes } from './types';
 
-type ClassificationsGetter = (resource: monaco.Uri) => Promise<ClassificationRange[]>;
+type ClassificationsGetter = (uri: string) => Promise<ClassificationRange[]>;
 
 export class SemanticTokensProvider implements monaco.languages.DocumentSemanticTokensProvider {
     private readonly classificationsGetter: ClassificationsGetter;
@@ -16,13 +16,12 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
     }
 
     async provideDocumentSemanticTokens(model: editor.ITextModel) {
-        const resource = model.uri;
-        const classifications = await this.classificationsGetter(resource);
+        const uri = model.uri.toString();
+        const classifications = await this.classificationsGetter(uri);
         const semanticTokens = classifications.map((classification, index) => {
             const previousClassification = classifications[index - 1];
             return semanticTokenMaker(classification, previousClassification);
         });
-
         return {
             data: new Uint32Array(semanticTokens.flat()),
             resultId: model.getVersionId().toString(),

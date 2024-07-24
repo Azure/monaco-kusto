@@ -1,145 +1,101 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import { WorkerManager } from './workerManager';
-import type { KustoWorker, LanguageServiceDefaults } from './monaco.contribution';
+import { KustoWorker, LanguageServiceDefaults, showSchema } from './monaco.contribution';
 import * as languageFeatures from './languageFeatures';
-import type { Schema } from './languageServiceManager/schema';
-import type { IKustoWorkerImpl } from './kustoWorker';
-import { SemanticTokensProvider } from './syntaxHighlighting/SemanticTokensProvider';
-import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
+import { Schema, ScalarParameter, TabularParameter } from './languageServiceManager/schema';
+import { IKustoWorkerImpl } from './kustoWorker';
 import { LANGUAGE_ID } from './globals';
+import { semanticTokensProviderRegistrarCreator } from './syntaxHighlighting/semanticTokensProviderRegistrar';
+import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
 
 export interface AugmentedWorker
     extends KustoWorker,
         Omit<IKustoWorkerImpl, 'setSchemaFromShowSchema' | 'getReferencedSymbols'> {}
 
 export interface AugmentedWorkerAccessor {
-    (first: monaco.Uri, ...more: monaco.Uri[]): Promise<AugmentedWorker>;
+    (first: monaco.Uri): Promise<AugmentedWorker>;
 }
 
-let kustoWorker: AugmentedWorkerAccessor;
-let resolveWorker: (value: AugmentedWorkerAccessor | PromiseLike<AugmentedWorkerAccessor>) => void;
-let rejectWorker: (err: any) => void;
-let workerPromise: Promise<AugmentedWorkerAccessor> = new Promise((resolve, reject) => {
-    resolveWorker = resolve;
-    rejectWorker = reject;
-});
+let workerAccessor: AugmentedWorkerAccessor;
 
-/**
- * Called when Kusto language is first needed (a model has the language set)
- * @param defaults
- */
-export function setupMode(
+export async function setupMode(
     defaults: LanguageServiceDefaults,
-    monacoInstance: typeof globalThis.monaco
-): AugmentedWorkerAccessor {
+    monacoInstance: typeof monaco
+): Promise<AugmentedWorkerAccessor> {
     let onSchemaChange = new monaco.Emitter<Schema>();
-    // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
-    let disposables: monaco.IDisposable[] = [];
-
     const client = new WorkerManager(monacoInstance, defaults);
-    disposables.push(client);
+    const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator();
 
-    const workerAccessor: AugmentedWorkerAccessor = (first, ...more) => {
-        const augmentedSetSchema = async (schema: Schema, worker: KustoWorker) => {
-            const workerPromise = worker.setSchema(schema);
+    workerAccessor = async (uri) => {
+        const worker = await client.getLanguageServiceWorker(uri);
 
-            await workerPromise.then(() => {
-                onSchemaChange.fire(schema);
-            });
+        const augmentedSetSchema = async (schema: Schema) => {
+            await worker.setSchema(schema);
+            onSchemaChange.fire(schema);
+            semanticTokensProviderRegistrar(monacoInstance, worker);
         };
-        const worker = client.getLanguageServiceWorker(...[first].concat(more));
-        return worker.then(
-            (worker): AugmentedWorker => ({
-                ...worker,
-                setSchema: (schema) => augmentedSetSchema(schema, worker),
-                async setSchemaFromShowSchema(
-                    schema,
-                    connection,
-                    database,
-                    globalScalarParameters,
-                    globalTabularParameters
-                ) {
-                    await worker.normalizeSchema(schema, connection, database).then((schema) => {
-                        if (globalScalarParameters || globalTabularParameters) {
-                            schema = { ...schema, globalScalarParameters, globalTabularParameters };
-                        }
-                        augmentedSetSchema(schema, worker);
-                    });
-                },
-            })
-        );
+        const setSchemaFromShowSchema = async (
+            schema: showSchema.Result,
+            clusterConnectionString: string,
+            databaseInContextName: string,
+            globalScalarParameters: ScalarParameter[],
+            globalTabularParameters: TabularParameter[]
+        ) => {
+            const normalizedSchema = await worker.normalizeSchema(
+                schema,
+                clusterConnectionString,
+                databaseInContextName
+            );
+            normalizedSchema.globalScalarParameters = globalScalarParameters;
+            normalizedSchema.globalTabularParameters = globalTabularParameters;
+            await augmentedSetSchema(normalizedSchema);
+        };
+
+        return {
+            ...worker,
+            setSchema: augmentedSetSchema,
+            setSchemaFromShowSchema,
+        };
     };
 
-    disposables.push(
-        monacoInstance.languages.registerCompletionItemProvider(
-            LANGUAGE_ID,
-            new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings)
-        )
+    monacoInstance.languages.setMonarchTokensProvider(LANGUAGE_ID, kustoLanguageDefinition);
+
+    const completionAdapter = new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings);
+    monacoInstance.languages.registerCompletionItemProvider(LANGUAGE_ID, completionAdapter);
+
+    // this constructor has side effects and therefore doesn't need to be passed anywhere
+    new languageFeatures.DiagnosticsAdapter(
+        monacoInstance,
+        LANGUAGE_ID,
+        workerAccessor,
+        defaults,
+        onSchemaChange.event
     );
 
-    setMonarchTokensProvider(monacoInstance, disposables);
-    registerDocumentSemanticTokensProvider(workerAccessor, monacoInstance);
+    const documentRangeFormattingAdapter = new languageFeatures.FormatAdapter(workerAccessor);
+    monacoInstance.languages.registerDocumentRangeFormattingEditProvider(LANGUAGE_ID, documentRangeFormattingAdapter);
 
-    disposables.push(
-        new languageFeatures.DiagnosticsAdapter(
-            monacoInstance,
-            LANGUAGE_ID,
-            workerAccessor,
-            defaults,
-            onSchemaChange.event
-        )
-    );
+    const foldingRangeAdapter = new languageFeatures.FoldingAdapter(workerAccessor);
+    monacoInstance.languages.registerFoldingRangeProvider(LANGUAGE_ID, foldingRangeAdapter);
 
-    disposables.push(
-        monacoInstance.languages.registerDocumentRangeFormattingEditProvider(
-            LANGUAGE_ID,
-            new languageFeatures.FormatAdapter(workerAccessor)
-        )
-    );
+    const definitionProvider = new languageFeatures.DefinitionAdapter(workerAccessor);
+    monacoInstance.languages.registerDefinitionProvider(LANGUAGE_ID, definitionProvider);
 
-    disposables.push(
-        monacoInstance.languages.registerFoldingRangeProvider(
-            LANGUAGE_ID,
-            new languageFeatures.FoldingAdapter(workerAccessor)
-        )
-    );
+    monacoInstance.languages.registerRenameProvider(LANGUAGE_ID, new languageFeatures.RenameAdapter(workerAccessor));
 
-    disposables.push(
-        monacoInstance.languages.registerDefinitionProvider(
-            LANGUAGE_ID,
-            new languageFeatures.DefinitionAdapter(workerAccessor)
-        )
-    );
-
-    disposables.push(
-        monacoInstance.languages.registerRenameProvider(LANGUAGE_ID, new languageFeatures.RenameAdapter(workerAccessor))
-    );
-
-    disposables.push(
-        monacoInstance.languages.registerReferenceProvider(
-            LANGUAGE_ID,
-            new languageFeatures.ReferenceAdapter(workerAccessor)
-        )
-    );
+    const referenceProvider = new languageFeatures.ReferenceAdapter(workerAccessor);
+    monacoInstance.languages.registerReferenceProvider(LANGUAGE_ID, referenceProvider);
 
     if (defaults.languageSettings.enableHover) {
-        disposables.push(
-            monacoInstance.languages.registerHoverProvider(
-                LANGUAGE_ID,
-                new languageFeatures.HoverAdapter(workerAccessor)
-            )
-        );
+        const hoverAdapter = new languageFeatures.HoverAdapter(workerAccessor);
+        monacoInstance.languages.registerHoverProvider(LANGUAGE_ID, hoverAdapter);
     }
 
-    monacoInstance.languages.registerDocumentFormattingEditProvider(
-        LANGUAGE_ID,
-        new languageFeatures.DocumentFormatAdapter(workerAccessor)
-    );
-    kustoWorker = workerAccessor;
-    resolveWorker(workerAccessor);
+    const documentFormattingAdapter = new languageFeatures.DocumentFormatAdapter(workerAccessor);
+    monacoInstance.languages.registerDocumentFormattingEditProvider(LANGUAGE_ID, documentFormattingAdapter);
 
-    monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, {
+    const languageConfiguration = {
         folding: {
             offSide: false,
             markers: { start: /^\s*[\r\n]/gm, end: /^\s*[\r\n]/gm },
@@ -155,35 +111,12 @@ export function setupMode(
             { open: "'", close: "'", notIn: ['string', 'comment'] },
             { open: '"', close: '"', notIn: ['string', 'comment'] },
         ],
-    });
-
-    return kustoWorker;
-}
-
-export function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
-    return workerPromise.then(() => kustoWorker);
-}
-
-// This function sets the Monarch token provider,
-// enabling fast syntax highlighting before the language service is called for semantic coloring.
-function setMonarchTokensProvider(monacoInstance: typeof globalThis.monaco, disposables: monaco.IDisposable[]) {
-    const monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
-        LANGUAGE_ID,
-        kustoLanguageDefinition
-    );
-    disposables.push(monarchTokensProvider);
-}
-
-// This function registers a semantic token provider that utilizes the language service
-// for more context-relevant syntax highlighting.
-function registerDocumentSemanticTokensProvider(
-    workerAccessor: AugmentedWorkerAccessor,
-    monacoInstance: typeof globalThis.monaco
-) {
-    const classificationsGetter = async (resource: monaco.Uri) => {
-        const worker = await workerAccessor(resource);
-        return worker.getClassifications(resource.toString());
     };
-    const semanticTokenProvider = new SemanticTokensProvider(classificationsGetter);
-    monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
+    monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, languageConfiguration);
+
+    return workerAccessor;
+}
+
+export async function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
+    return workerAccessor;
 }
