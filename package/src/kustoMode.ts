@@ -6,10 +6,8 @@ import * as languageFeatures from './languageFeatures';
 import { Schema, ScalarParameter, TabularParameter } from './languageServiceManager/schema';
 import { IKustoWorkerImpl } from './kustoWorker';
 import { LANGUAGE_ID } from './globals';
-import {
-    registerDocumentSemanticTokensProvider,
-    setMonarchTokensProvider,
-} from './syntaxHighlighting/syntaxHighlightingRegistrar';
+import { semanticTokensProviderRegistrarCreator } from './syntaxHighlighting/semanticTokensProviderRegistrar';
+import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
 
 export interface AugmentedWorker
     extends KustoWorker,
@@ -27,7 +25,7 @@ export async function setupMode(
 ): Promise<AugmentedWorkerAccessor> {
     let onSchemaChange = new monaco.Emitter<Schema>();
     const client = new WorkerManager(monacoInstance, defaults);
-    let semanticTokensDisposable: monaco.IDisposable;
+    const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator();
 
     workerAccessor = async (uri) => {
         const worker = await client.getLanguageServiceWorker(uri);
@@ -35,10 +33,7 @@ export async function setupMode(
         const augmentedSetSchema = async (schema: Schema) => {
             await worker.setSchema(schema);
             onSchemaChange.fire(schema);
-            if (semanticTokensDisposable) {
-                semanticTokensDisposable.dispose();
-            }
-            semanticTokensDisposable = registerDocumentSemanticTokensProvider(worker, monacoInstance);
+            semanticTokensProviderRegistrar(monacoInstance, worker);
         };
         const setSchemaFromShowSchema = async (
             schema: showSchema.Result,
@@ -64,7 +59,7 @@ export async function setupMode(
         };
     };
 
-    setMonarchTokensProvider(monacoInstance);
+    monacoInstance.languages.setMonarchTokensProvider(LANGUAGE_ID, kustoLanguageDefinition);
 
     const completionAdapter = new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings);
     monacoInstance.languages.registerCompletionItemProvider(LANGUAGE_ID, completionAdapter);
