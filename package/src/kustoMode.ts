@@ -19,7 +19,11 @@ export interface AugmentedWorkerAccessor {
 
 let workerAccessor: AugmentedWorkerAccessor;
 
-export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typeof monaco): AugmentedWorkerAccessor {
+export async function setupMode(
+    defaults: LanguageServiceDefaults,
+    monacoInstance: typeof monaco
+): Promise<AugmentedWorkerAccessor> {
+    console.log('setupMode');
     let onSchemaChange = new monaco.Emitter<Schema>();
     const client = new WorkerManager(monacoInstance, defaults);
 
@@ -118,23 +122,22 @@ export async function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
 
 // This function sets the Monarch token provider,
 // enabling fast syntax highlighting before the language service is called for semantic coloring.
-function setMonarchTokensProvider(monacoInstance: typeof monaco) {
-    const monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
-        LANGUAGE_ID,
-        kustoLanguageDefinition
-    );
+export function setMonarchTokensProvider(monacoInstance: typeof monaco) {
+    monacoInstance.languages.setMonarchTokensProvider(LANGUAGE_ID, kustoLanguageDefinition);
 }
 
 // This function registers a semantic token provider that utilizes the language service
 // for more context-relevant syntax highlighting.
-function registerDocumentSemanticTokensProvider(
+export function registerDocumentSemanticTokensProvider(
     workerAccessor: AugmentedWorkerAccessor,
     monacoInstance: typeof monaco
 ) {
-    const classificationsGetter = async (resource: monaco.Uri) => {
-        const worker = await workerAccessor(resource);
-        return worker.getClassifications(resource.toString());
+    const classificationsGetter = async (uri: monaco.Uri) => {
+        console.log('classificationsGetter', uri.toString());
+        const worker = await workerAccessor(uri);
+        return worker.getClassifications(uri.toString());
     };
     const semanticTokenProvider = new SemanticTokensProvider(classificationsGetter);
+    console.log('registerDocumentSemanticTokensProvider');
     monacoInstance.languages.registerDocumentSemanticTokensProvider(LANGUAGE_ID, semanticTokenProvider);
 }

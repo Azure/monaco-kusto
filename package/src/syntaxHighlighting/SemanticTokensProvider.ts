@@ -12,17 +12,19 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
     }
 
     getLegend() {
+        console.log('getLegend');
         return { tokenTypes, tokenModifiers: [] };
     }
 
     async provideDocumentSemanticTokens(model: editor.ITextModel) {
+        console.log('provideDocumentSemanticTokens *');
         const resource = model.uri;
         const classifications = await this.classificationsGetter(resource);
         const semanticTokens = classifications.map((classification, index) => {
             const previousClassification = classifications[index - 1];
             return semanticTokenMaker(classification, previousClassification);
         });
-
+        console.log('provideDocumentSemanticTokens **', semanticTokens);
         return {
             data: new Uint32Array(semanticTokens.flat()),
             resultId: model.getVersionId().toString(),

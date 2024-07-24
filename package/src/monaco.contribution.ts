@@ -10,14 +10,13 @@ import { themes } from './syntaxHighlighting/themes';
 import { LANGUAGE_ID } from './globals';
 import * as schema from './languageServiceManager/schema';
 import { getRangeHtml } from './extendedGlobalApi';
+import { registerDocumentSemanticTokensProvider } from './kustoMode';
 
 export * from './languageServiceManager/schema';
 export * from './languageServiceManager/renderInfo';
 export * from './languageServiceManager/settings';
 export * from './types';
 export * from './extendedGlobalApi';
-
-// --- Kusto configuration and defaults ---------
 
 class LanguageServiceDefaultsImpl implements LanguageServiceDefaults {
     private _onDidChange = new monaco.Emitter<LanguageServiceDefaults>();
@@ -86,8 +85,9 @@ export async function getKustoWorker(): Promise<WorkerAccessor> {
 
 export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
-monaco.languages.onLanguage('kusto', async () => {
-    mode.setupMode(kustoDefaults, monaco as typeof monaco);
+monaco.languages.onLanguage(LANGUAGE_ID, async () => {
+    console.log('onLanguage');
+    await mode.setupMode(kustoDefaults, monaco as typeof monaco);
 });
 
 monaco.languages.register({
@@ -100,6 +100,7 @@ themes.forEach(({ name, data }) => monaco.editor.defineTheme(name, data));
 // Initialize kusto specific language features that don't currently have a natural way to extend using existing apis.
 // Most other language features are initialized in kustoMode.ts
 monaco.editor.onDidCreateEditor((editor) => {
+    console.log('onDidCreateEditor');
     if (window.MonacoEnvironment?.globalAPI) {
         // hook up extension methods to editor.
         extend(editor);
