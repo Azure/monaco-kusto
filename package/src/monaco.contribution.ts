@@ -84,8 +84,8 @@ export async function getKustoWorker(): Promise<WorkerAccessor> {
 
 export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
-monaco.languages.onLanguage(LANGUAGE_ID, async () => {
-    await mode.setupMode(kustoDefaults, monaco as typeof monaco);
+monaco.languages.onLanguage(LANGUAGE_ID, () => {
+    mode.setupMode(kustoDefaults, monaco as typeof monaco);
 });
 
 monaco.languages.register({
