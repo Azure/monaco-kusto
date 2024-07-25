@@ -8,6 +8,7 @@ import type { IKustoWorkerImpl } from './kustoWorker';
 import { SemanticTokensProvider } from './syntaxHighlighting/SemanticTokensProvider';
 import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
 import { LANGUAGE_ID } from './globals';
+import { semanticTokensProviderRegistrarCreator } from './syntaxHighlighting/semanticTokensProviderRegistrar';
 
 export interface AugmentedWorker
     extends KustoWorker,
@@ -36,6 +37,7 @@ export function setupMode(
     let onSchemaChange = new monaco.Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
     let disposables: monaco.IDisposable[] = [];
+    const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator();
 
     const client = new WorkerManager(monacoInstance, defaults);
     disposables.push(client);
@@ -47,6 +49,7 @@ export function setupMode(
             await workerPromise.then(() => {
                 onSchemaChange.fire(schema);
             });
+            semanticTokensProviderRegistrar(monacoInstance, workerAccessor);
         };
         const worker = client.getLanguageServiceWorker(...[first].concat(more));
         return worker.then(

@@ -22,7 +22,6 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
             const previousClassification = classifications[index - 1];
             return semanticTokenMaker(classification, previousClassification);
         });
-
         return {
             data: new Uint32Array(semanticTokens.flat()),
             resultId: model.getVersionId().toString(),
