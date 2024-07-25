@@ -73,8 +73,8 @@ export interface EngineSchema {
         readonly databases: readonly Database[];
     };
     readonly database: Database | undefined; // a reference to the database that's in current context.
-    globalScalarParameters?: readonly ScalarParameter[];
-    globalTabularParameters?: readonly TabularParameter[];
+    readonly globalScalarParameters?: readonly ScalarParameter[];
+    readonly globalTabularParameters?: readonly TabularParameter[];
 }
 
 export type TableEntityType = 'Table' | 'ExternalTable' | 'MaterializedViewTable';
