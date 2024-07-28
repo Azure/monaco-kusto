@@ -1,7 +1,7 @@
 import monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { LANGUAGE_ID } from '../globals';
 import { SemanticTokensProvider } from './SemanticTokensProvider';
-import { IKustoWorkerImpl } from '../kustoWorker';
+import { AugmentedWorkerAccessor } from '../kustoMode';
 
 export type SemanticTokensProviderRegistrar = (
     monacoInstance: typeof monaco,
@@ -13,8 +13,8 @@ export type SemanticTokensProviderRegistrar = (
 export function semanticTokensProviderRegistrarCreator() {
     const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreatorForTest();
 
-    return (monacoInstance: typeof monaco, worker: IKustoWorkerImpl) => {
-        const semanticTokensProvider = semanticTokensProviderMaker(worker);
+    return (monacoInstance: typeof monaco, workerAccessor: AugmentedWorkerAccessor) => {
+        const semanticTokensProvider = semanticTokensProviderMaker(workerAccessor);
         semanticTokensProviderRegistrar(monacoInstance, semanticTokensProvider);
     };
 }
@@ -33,6 +33,10 @@ export function semanticTokensProviderRegistrarCreatorForTest() {
     };
 }
 
-function semanticTokensProviderMaker(worker: IKustoWorkerImpl): SemanticTokensProvider {
-    return new SemanticTokensProvider(worker.getClassifications);
+function semanticTokensProviderMaker(workerAccessor: AugmentedWorkerAccessor): SemanticTokensProvider {
+    const classificationsGetter = async (resource: monaco.Uri) => {
+        const worker = await workerAccessor(resource);
+        return worker.getClassifications(resource.toString());
+    };
+    return new SemanticTokensProvider(classificationsGetter);
 }

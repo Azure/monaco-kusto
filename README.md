@@ -85,7 +85,11 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
-### 12.0.0
+### 12.0.2
+
+-   fix: Revert the refactor as it caused build issues
+
+### 12.0.1
 
 -   fix: Resolved a race condition to ensure the semantic tokens provider is registered after setting the language server schema.
 -   fix: Fixed an issue where semantic highlighting didn't work on schema change by properly handling provider registration.
