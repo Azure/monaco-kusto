@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.3
+
+-   feat: Upgrade language-service to 0.0.279.
+
 ### 12.0.2
 
 -   fix: Revert the refactor as it caused build issues

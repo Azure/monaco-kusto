@@ -2030,6 +2030,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kusto/language-service@npm:0.0.279":
+  version: 0.0.279
+  resolution: "@kusto/language-service@npm:0.0.279"
+  checksum: d8136fef5cc67d85bec9447a9a873d1df72308bef39fdc5395cdeb06e58193cc3793d220875c1cbe07f7f78d35c0912d0a1e448367917258f52be94914337c95
+  languageName: node
+  linkType: hard
+
 "@kusto/monaco-kusto@npm:^10.0.8":
   version: 10.0.22
   resolution: "@kusto/monaco-kusto@npm:10.0.22"
@@ -2055,7 +2062,7 @@ __metadata:
     "@babel/preset-env": ^7.22.20
     "@babel/preset-typescript": ^7.22.15
     "@faker-js/faker": ^8.4.1
-    "@kusto/language-service": 0.0.278
+    "@kusto/language-service": 0.0.279
     "@kusto/language-service-next": 11.6.1
     "@playwright/test": ^1.44.0
     "@rollup/plugin-alias": ^5.0.0
