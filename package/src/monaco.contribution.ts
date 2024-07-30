@@ -8,7 +8,13 @@ import type { LanguageServiceDefaults, WorkerAccessor } from './types';
 import type { LanguageSettings } from './languageServiceManager/settings';
 import { themes } from './syntaxHighlighting/themes';
 import { LANGUAGE_ID } from './globals';
-import * as schema from './languageServiceManager/schema';
+import {
+    getCslTypeNameFromClrType,
+    getCallName,
+    getExpression,
+    getInputParametersAsCslString,
+    getEntityDataTypeFromCslType,
+} from './languageServiceManager/schema';
 import { getRangeHtml } from './extendedGlobalApi';
 
 export * from './languageServiceManager/schema';
@@ -156,7 +162,11 @@ function isStandaloneCodeEditor(editor: monaco.editor.ICodeEditor): editor is mo
 }
 
 const globalApi: typeof import('./monaco.contribution') = {
-    ...schema,
+    getCslTypeNameFromClrType,
+    getCallName,
+    getExpression,
+    getInputParametersAsCslString,
+    getEntityDataTypeFromCslType,
     kustoDefaults,
     getKustoWorker,
     getRangeHtml,
