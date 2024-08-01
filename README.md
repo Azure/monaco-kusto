@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.4
+
+-   fix: Explicitly export getRangeHtml from monaco.contribution to fix an issue with parcel build.
+
 ### 12.0.3
 
 -   feat: Upgrade language-service to 0.0.279.

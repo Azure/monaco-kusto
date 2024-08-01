@@ -173,3 +173,6 @@ const globalApi: typeof import('./monaco.contribution') = {
 };
 
 (monaco as any).languages.kusto = globalApi;
+
+// I am not sure why this is needed, but it is. Without it, parcel production build removes this function.
+export { getRangeHtml };
