@@ -96,9 +96,9 @@ const dark: monaco.editor.IStandaloneThemeData = {
         { token: Token.Command, foreground: colors.skyBlue },
         { token: Token.Keyword, foreground: colors.skyBlue },
         { token: Token.MaterializedView, foreground: colors.softGold },
-        { token: Token.SchemaMember, foreground: colors.black },
-        { token: Token.SignatureParameter, foreground: colors.black },
-        { token: Token.Option, foreground: colors.black },
+        { token: Token.SchemaMember, foreground: colors.white },
+        { token: Token.SignatureParameter, foreground: colors.white },
+        { token: Token.Option, foreground: colors.white },
     ],
     colors: {
         'editor.background': colors.jetBlack,
