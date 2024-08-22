@@ -1695,7 +1695,7 @@ class KustoLanguageService implements LanguageService {
         const paramSymbol: sym.ScalarSymbol = Kusto.Language.Symbols.ScalarTypes.GetSymbol(
             getCslTypeNameFromClrType(param.type)
         );
-        return new sym.ParameterSymbol(param.name, paramSymbol, null);
+        return new sym.ParameterSymbol(param.name, paramSymbol, param.docstring ?? null);
     }
 
     private static createTabularParameterSymbol(param: s.TabularParameter): sym.ParameterSymbol {
@@ -1720,13 +1720,13 @@ class KustoLanguageService implements LanguageService {
                 paramSymbol,
                 null,
                 null,
-                null,
+                param.examples ? KustoLanguageService.toBridgeList(param.examples) : null,
                 false,
                 null,
                 1,
                 1,
                 expression,
-                null
+                param.docstring ?? null
             );
         }
 

@@ -87,6 +87,10 @@ Every PR should come with a test that checks it.
 
 ### 12.0.5
 
+-   fix: Parameter docstrings are now shown on hover
+
+### 12.0.5
+
 -   fix: Dark mode colors are now more readable.
 
 ### 12.0.4
