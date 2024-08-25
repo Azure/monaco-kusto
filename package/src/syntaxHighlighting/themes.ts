@@ -17,7 +17,7 @@ const colors = {
     paleChestnut: '#D69D85',
     paleVioletRed: '#DB7093',
     firebrick: '#B22222',
-    orangeRed: '#FF4500',
+    orangeRed: '#D93900',
     mediumVioletRed: '#C71585',
     magenta: '#FF00FF', // for debugging
     darkOrchid: '#9932CC',

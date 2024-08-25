@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.6
+
+-   fix: KQL color contrast for query operators now complies with accessibility guidelines.
+
 ### 12.0.5
 
 -   fix: Dark mode colors are now more readable.
