@@ -146,16 +146,13 @@ export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typ
 function asDisposable(disposables: IDisposable[]): IDisposable {
     return {
         dispose: () => {
-            console.log('disposeAll');
             return disposeAll(disposables);
         },
     };
 }
 
 function disposeAll(disposables: IDisposable[]) {
-    while (disposables.length) {
-        disposables.pop()!.dispose();
-    }
+    disposables.forEach((d) => d.dispose());
 }
 
 export function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
