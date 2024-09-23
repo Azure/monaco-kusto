@@ -161,5 +161,12 @@ function applyDefaultTheme() {
     monaco.editor.setTheme(value);
 }
 
+function changeModel() {
+    const value = getEditorValue();
+    const model = monaco.editor.createModel(value, 'kusto');
+    editor.setModel(model);
+}
+
 (window as any).updateLanguageSettings = updateLanguageSettings;
 (window as any).setThemeMode = setThemeMode;
+(window as any).changeModel = changeModel;
