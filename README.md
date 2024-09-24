@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.9
+
+-   fix: decrease bundle size.
+
 ### 12.0.8
 
 -   fix: dispose all monaco models when disposing the worker to prevent memory leaks.
