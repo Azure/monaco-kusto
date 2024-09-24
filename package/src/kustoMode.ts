@@ -8,7 +8,7 @@ import type { IKustoWorkerImpl } from './kustoWorker';
 import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
 import { LANGUAGE_ID } from './globals';
 import { semanticTokensProviderRegistrarCreator } from './syntaxHighlighting/semanticTokensProviderRegistrar';
-import { IDisposable } from 'monaco-editor';
+import type { IDisposable } from 'monaco-editor';
 
 export interface AugmentedWorker
     extends KustoWorker,
