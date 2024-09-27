@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.10
+
+-   fix: Parameter docstrings not shown
+
 ### 12.0.9
 
 -   fix: decrease bundle size.
@@ -100,10 +104,6 @@ Every PR should come with a test that checks it.
 ### 12.0.6
 
 -   fix: KQL color contrast for query operators now complies with accessibility guidelines.
-
-### 12.0.5
-
--   fix: Parameter docstrings are now shown on hover
 
 ### 12.0.5
 
