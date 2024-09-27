@@ -1,0 +1,6 @@
+_base_query: table(StartTime)
+
+Base query
+Availability: Inline
+
+Base query will be inlined into this query

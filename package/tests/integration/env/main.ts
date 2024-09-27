@@ -10,6 +10,7 @@ import debounce from 'lodash/debounce';
 import kustoWorkerUrl from './kustoWorker?url';
 // @ts-ignore
 import editorWorker from './editorWorker?url';
+import type { ScalarParameter, TabularParameter } from '../../../src/monaco.contribution';
 
 window.MonacoEnvironment = {
     getWorker(_moduleId, label) {
@@ -100,11 +101,34 @@ window.addEventListener('resize', () => {
     editor.layout();
 });
 
+const scalarParameter: ScalarParameter = {
+    name: '_time_zone',
+    type: 'string',
+    docstring: 'IANA time zone. For example: "America/Los_Angeles", UTC, or "Europe/Stockholm"',
+};
+
+const tabularParameter: TabularParameter = {
+    columns: [
+        {
+            name: 'StartTime',
+            type: 'datetime',
+        },
+    ],
+    name: '_base_query',
+    docstring: '# Base query\n\n## Availability: Inline\n\nBase query will be inlined into this query\n',
+};
+
 getKustoWorker().then((workerAccessor) => {
     const model = editor.getModel();
     if (model) {
         workerAccessor(model.uri).then((worker) => {
-            worker.setSchemaFromShowSchema(schema, 'https://help.kusto.windows.net', 'Samples');
+            worker.setSchemaFromShowSchema(
+                schema,
+                'https://help.kusto.windows.net',
+                'Samples',
+                [scalarParameter],
+                [tabularParameter]
+            );
         });
     }
 });
