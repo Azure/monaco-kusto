@@ -8,6 +8,7 @@ import type { IKustoWorkerImpl } from './kustoWorker';
 import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
 import { LANGUAGE_ID } from './globals';
 import { semanticTokensProviderRegistrarCreator } from './syntaxHighlighting/semanticTokensProviderRegistrar';
+import type { IDisposable } from 'monaco-editor';
 
 export interface AugmentedWorker
     extends KustoWorker,
@@ -29,13 +30,10 @@ let workerPromise: Promise<AugmentedWorkerAccessor> = new Promise((resolve, reje
  * Called when Kusto language is first needed (a model has the language set)
  * @param defaults
  */
-export function setupMode(
-    defaults: LanguageServiceDefaults,
-    monacoInstance: typeof globalThis.monaco
-): AugmentedWorkerAccessor {
-    let onSchemaChange = new monaco.Emitter<Schema>();
+export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typeof globalThis.monaco): IDisposable {
+    const onSchemaChange = new monaco.Emitter<Schema>();
     // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
-    let disposables: monaco.IDisposable[] = [];
+    const disposables: monaco.IDisposable[] = [];
     const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator();
 
     const client = new WorkerManager(monacoInstance, defaults);
@@ -80,10 +78,7 @@ export function setupMode(
         )
     );
 
-    const monarchTokensProvider = monacoInstance.languages.setMonarchTokensProvider(
-        LANGUAGE_ID,
-        kustoLanguageDefinition
-    );
+    disposables.push(monacoInstance.languages.setMonarchTokensProvider(LANGUAGE_ID, kustoLanguageDefinition));
 
     disposables.push(
         new languageFeatures.DiagnosticsAdapter(
@@ -143,27 +138,41 @@ export function setupMode(
     kustoWorker = workerAccessor;
     resolveWorker(workerAccessor);
 
-    monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, {
-        folding: {
-            offSide: false,
-            markers: { start: /^\s*[\r\n]/gm, end: /^\s*[\r\n]/gm },
-        },
-        comments: {
-            lineComment: '//',
-            blockComment: null,
-        },
-        autoClosingPairs: [
-            { open: '{', close: '}' },
-            { open: '[', close: ']' },
-            { open: '(', close: ')' },
-            { open: "'", close: "'", notIn: ['string', 'comment'] },
-            { open: '"', close: '"', notIn: ['string', 'comment'] },
-        ],
-    });
+    disposables.push(monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, kanguageConfiguration));
 
-    return kustoWorker;
+    return asDisposable(disposables);
+}
+
+function asDisposable(disposables: IDisposable[]): IDisposable {
+    return {
+        dispose: () => {
+            return disposeAll(disposables);
+        },
+    };
+}
+
+function disposeAll(disposables: IDisposable[]) {
+    disposables.forEach((d) => d.dispose());
 }
 
 export function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
     return workerPromise.then(() => kustoWorker);
 }
+
+const kanguageConfiguration = {
+    folding: {
+        offSide: false,
+        markers: { start: /^\s*[\r\n]/gm, end: /^\s*[\r\n]/gm },
+    },
+    comments: {
+        lineComment: '//',
+        blockComment: null,
+    },
+    autoClosingPairs: [
+        { open: '{', close: '}' },
+        { open: '[', close: ']' },
+        { open: '(', close: ')' },
+        { open: "'", close: "'", notIn: ['string', 'comment'] },
+        { open: '"', close: '"', notIn: ['string', 'comment'] },
+    ],
+};

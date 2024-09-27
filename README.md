@@ -85,6 +85,22 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.9
+
+-   fix: decrease bundle size.
+
+### 12.0.8
+
+-   fix: dispose all monaco models when disposing the worker to prevent memory leaks.
+
+### 12.0.7
+
+-   revert: KQL color contrast for query operators change.
+
+### 12.0.6
+
+-   fix: KQL color contrast for query operators now complies with accessibility guidelines.
+
 ### 12.0.5
 
 -   fix: Parameter docstrings are now shown on hover
