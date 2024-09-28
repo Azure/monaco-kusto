@@ -56,6 +56,7 @@ test.describe('completion items', () => {
         expect(options).toEqual([
             'EndTime',
             'StartTime',
+            '_time_zone',
             'datetime()',
             'datetime_add(part, value, datetime)',
             'datetime_diff(part, datetime1, datetime2)',
@@ -66,7 +67,6 @@ test.describe('completion items', () => {
             'format_datetime(date, format)',
             'format_timespan(timespan, format)',
             'ingestion_time()',
-            'make_datetime(year, month, day, [hour], [minute], [second])',
         ]);
     });
 
