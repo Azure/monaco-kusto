@@ -4,16 +4,15 @@ export default defineConfig({
     outputDir: './.test-results',
     preserveOutput: 'failures-only',
     forbidOnly: !!process.env.CI,
-    retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 1 : undefined,
     timeout: 5_000,
     expect: { timeout: 5_000 },
     // https://playwright.dev/docs/test-reporters#github-actions-annotations
     // 'github' for GitHub Actions CI to generate annotations, plus a concise 'dot'
     // default 'list' when running locally
-    reporter: process.env.CI ? 'github' : 'list',
+    reporter: process.env.CI ? 'github' : undefined,
     use: {
-        trace: 'on-first-retry',
+        trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
         defaultBrowserType: 'chromium',
     },
     webServer: {
