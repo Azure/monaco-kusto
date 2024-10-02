@@ -8,7 +8,10 @@ export default defineConfig({
     workers: process.env.CI ? 1 : undefined,
     timeout: 5_000,
     expect: { timeout: 5_000 },
-    reporter: 'line',
+    // https://playwright.dev/docs/test-reporters#github-actions-annotations
+    // 'github' for GitHub Actions CI to generate annotations, plus a concise 'dot'
+    // default 'list' when running locally
+    reporter: process.env.CI ? 'github' : 'list',
     use: {
         trace: 'on-first-retry',
         defaultBrowserType: 'chromium',
