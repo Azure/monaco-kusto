@@ -27,16 +27,15 @@ jobs:
 
       - name: Typecheck
         run: yarn workspaces foreach -pv run ci:typecheck
-
-      - name: Install Playwright deps
-        run: yarn test:install
-
       - name: test samples
         run: yarn test:samples
 
       - name: unit tests
         working-directory: package
         run: yarn test
+
+      - name: Install Playwright deps
+        run: yarn test:install
 
       - name: integration tests
         working-directory: package
