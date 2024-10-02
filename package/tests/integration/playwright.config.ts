@@ -10,7 +10,7 @@ export default defineConfig({
     // https://playwright.dev/docs/test-reporters#github-actions-annotations
     // 'github' for GitHub Actions CI to generate annotations, plus a concise 'dot'
     // default 'list' when running locally
-    reporter: process.env.CI ? 'github' : undefined,
+    reporter: process.env.CI ? [['github'], ['html']] : undefined,
     use: {
         trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
         defaultBrowserType: 'chromium',
