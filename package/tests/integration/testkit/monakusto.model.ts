@@ -26,7 +26,7 @@ export const createMonaKustoModel = (page: Page) => {
             },
         }),
         editor: () => ({
-            locator: page.locator('[role="textbox"]'),
+            locator: page.getByRole('textbox'),
             setTheme: async (theme: ThemeName) => {
                 const button = page.locator(`#${theme}`);
                 await button.click();
