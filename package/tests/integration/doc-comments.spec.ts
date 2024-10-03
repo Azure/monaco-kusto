@@ -11,7 +11,9 @@ test('scalar', async ({ page }) => {
 
     await page.getByRole('code').getByText('_time_zone').hover();
     const tooltip = await page.getByRole('tooltip').locator('.rendered-markdown').innerText();
-    expect(tooltip).toMatchSnapshot();
+    expect(tooltip).toEqual(
+        `_time_zone: string\n\nIANA time zone. For example: "America/Los_Angeles", UTC, or "Europe/Stockholm"`
+    );
 });
 
 test('tabular', async ({ page }) => {
@@ -24,5 +26,7 @@ test('tabular', async ({ page }) => {
 
     await page.getByRole('code').getByText('_base_query').hover();
     const tooltip = await page.getByRole('tooltip').locator('.rendered-markdown').innerText();
-    expect(tooltip).toMatchSnapshot();
+    expect(tooltip).toEqual(
+        `_base_query: table(StartTime)\n\nBase query\nAvailability: Inline\n\nBase query will be inlined into this query`
+    );
 });

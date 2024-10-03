@@ -1,3 +1,0 @@
-_time_zone: string
-
-IANA time zone. For example: "America/Los_Angeles", UTC, or "Europe/Stockholm"
