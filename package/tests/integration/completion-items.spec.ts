@@ -9,9 +9,9 @@ test.describe('completion items', () => {
         model = createMonaKustoModel(page);
 
         const initialValue = 'StormEvents';
-        const editor = model.editor().locator;
-        await editor.focus();
-        await editor.fill(initialValue);
+        const monaco = model.monaco().locator;
+        await monaco.click();
+        await page.keyboard.type(initialValue);
         await model.intellisense().wait();
         await page.keyboard.press('Enter');
     });

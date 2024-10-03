@@ -25,8 +25,11 @@ export const createMonaKustoModel = (page: Page) => {
                 }
             },
         }),
+        monaco: () => ({
+            locator: page.locator('.monaco-editor').nth(0),
+        }),
         editor: () => ({
-            locator: page.getByRole('textbox'),
+            locator: page.locator('[role="textbox"]'),
             setTheme: async (theme: ThemeName) => {
                 const button = page.locator(`#${theme}`);
                 await button.click();
