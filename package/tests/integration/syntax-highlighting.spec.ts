@@ -4,7 +4,7 @@ import { ThemeName, themes } from '../../src/syntaxHighlighting/themes';
 import { Token } from '../../src/syntaxHighlighting/types';
 import convert from 'color-convert';
 
-const query = `// Query to analyze storm events
+const query = `// Query to analyze storm events 
 StormEvents
 | where State == "Custom State 1"
 | project StartTime, EndTime, Duration = datetime_diff('minute', EndTime, StartTime)
@@ -33,8 +33,7 @@ test.describe('syntax highlighting', () => {
         model = createMonaKustoModel(page);
 
         const editor = model.editor().locator;
-        await editor.click();
-        await page.keyboard.press(query);
+        await editor.focus();
         await editor.fill(query);
         await page.keyboard.press('Enter');
 
