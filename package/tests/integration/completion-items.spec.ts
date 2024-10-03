@@ -10,7 +10,7 @@ test.describe('completion items', () => {
 
         const initialValue = 'StormEvents';
         const monaco = model.monaco().locator;
-        await monaco.click({ timeout: 20_000 });
+        await monaco.click();
         await page.keyboard.type(initialValue);
         await model.intellisense().wait();
         await page.keyboard.press('Enter');
