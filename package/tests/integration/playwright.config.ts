@@ -5,7 +5,6 @@ export default defineConfig({
     preserveOutput: 'failures-only',
     forbidOnly: !!process.env.CI,
     workers: process.env.CI ? 1 : undefined,
-    expect: { timeout: 50_000 },
     // https://playwright.dev/docs/test-reporters#github-actions-annotations
     // 'github' for GitHub Actions CI to generate annotations, plus a concise 'dot'
     // default 'list' when running locally

@@ -25,9 +25,6 @@ export const createMonaKustoModel = (page: Page) => {
                 }
             },
         }),
-        monaco: () => ({
-            locator: page.locator('.monaco-editor').nth(0),
-        }),
         editor: () => ({
             locator: page.locator('[role="textbox"]'),
             setTheme: async (theme: ThemeName) => {
