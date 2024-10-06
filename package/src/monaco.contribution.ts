@@ -94,19 +94,14 @@ export function getKustoWorker(): Promise<WorkerAccessor> {
     });
 }
 
-function withMode<T>(callback: (module: typeof mode) => T): Promise<T> {
-    return import('./kustoMode').then(callback);
+function withMode(callback: (module: typeof mode) => void): void {
+    import('./kustoMode').then(callback);
 }
 
 export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSettings);
 
-let disposable: monaco.IDisposable;
-monaco.languages.onLanguage('kusto', async () => {
-    disposable = await withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
-});
-
-monaco.editor.onWillDisposeModel((model) => {
-    disposable.dispose();
+monaco.languages.onLanguage('kusto', () => {
+    withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
 });
 
 monaco.languages.register({
