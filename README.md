@@ -85,6 +85,18 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.10
+
+-   revert disposing monaco providers when disposing the models.
+
+### 12.0.9
+
+-   fix: decrease bundle size.
+
+### 12.0.8
+
+-   fix: dispose all monaco models when disposing the worker to prevent memory leaks.
+
 ### 12.0.7
 
 -   revert: KQL color contrast for query operators change.
