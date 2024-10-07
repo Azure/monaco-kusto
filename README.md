@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.10
+
+-   fix: Parameter docstrings not shown
+
 ### 12.0.9
 
 -   fix: decrease bundle size.

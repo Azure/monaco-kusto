@@ -1,6 +1,6 @@
 {
     "name": "@kusto/monaco-kusto",
-    "version": "12.0.9",
+    "version": "12.0.10",
     "description": "CSL, KQL plugin for the Monaco Editor",
     "author": {
         "name": "Microsoft"
@@ -24,7 +24,7 @@
         "clean": "rimraf ./release",
         "start": "ts-node ./scripts/dev.ts",
         "test": "jest",
-        "test:integration": "playwright test --trace=retain-on-failure -c tests/integration/playwright.config.ts",
+        "test:integration": "playwright test -c tests/integration/playwright.config.ts",
         "test:integration:watch": "ts-node ./scripts/test.ts"
     },
     "types": "./release/esm/monaco.contribution.d.ts",
