@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.11
+
+-   fix: avoid race condition on worker disposal
+
 ### 12.0.10
 
 -   fix: Parameter docstrings not shown

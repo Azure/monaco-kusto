@@ -30,14 +30,11 @@ let workerPromise: Promise<AugmentedWorkerAccessor> = new Promise((resolve, reje
  * Called when Kusto language is first needed (a model has the language set)
  * @param defaults
  */
-export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typeof globalThis.monaco): IDisposable {
+export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typeof globalThis.monaco) {
     const onSchemaChange = new monaco.Emitter<Schema>();
-    // TODO: when should we dispose of these? seems like monaco-css and monaco-typescript don't dispose of these.
-    const disposables: monaco.IDisposable[] = [];
     const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator();
 
     const client = new WorkerManager(monacoInstance, defaults);
-    disposables.push(client);
 
     const workerAccessor: AugmentedWorkerAccessor = (first, ...more) => {
         const augmentedSetSchema = async (schema: Schema, worker: KustoWorker) => {
@@ -71,64 +68,45 @@ export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typ
         );
     };
 
-    disposables.push(
-        monacoInstance.languages.registerCompletionItemProvider(
-            LANGUAGE_ID,
-            new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings)
-        )
+    monacoInstance.languages.registerCompletionItemProvider(
+        LANGUAGE_ID,
+        new languageFeatures.CompletionAdapter(workerAccessor, defaults.languageSettings)
     );
 
-    disposables.push(monacoInstance.languages.setMonarchTokensProvider(LANGUAGE_ID, kustoLanguageDefinition));
+    monacoInstance.languages.setMonarchTokensProvider(LANGUAGE_ID, kustoLanguageDefinition);
 
-    disposables.push(
-        new languageFeatures.DiagnosticsAdapter(
-            monacoInstance,
-            LANGUAGE_ID,
-            workerAccessor,
-            defaults,
-            onSchemaChange.event
-        )
+    new languageFeatures.DiagnosticsAdapter(
+        monacoInstance,
+        LANGUAGE_ID,
+        workerAccessor,
+        defaults,
+        onSchemaChange.event
     );
 
-    disposables.push(
-        monacoInstance.languages.registerDocumentRangeFormattingEditProvider(
-            LANGUAGE_ID,
-            new languageFeatures.FormatAdapter(workerAccessor)
-        )
+    monacoInstance.languages.registerDocumentRangeFormattingEditProvider(
+        LANGUAGE_ID,
+        new languageFeatures.FormatAdapter(workerAccessor)
     );
 
-    disposables.push(
-        monacoInstance.languages.registerFoldingRangeProvider(
-            LANGUAGE_ID,
-            new languageFeatures.FoldingAdapter(workerAccessor)
-        )
+    monacoInstance.languages.registerFoldingRangeProvider(
+        LANGUAGE_ID,
+        new languageFeatures.FoldingAdapter(workerAccessor)
     );
 
-    disposables.push(
-        monacoInstance.languages.registerDefinitionProvider(
-            LANGUAGE_ID,
-            new languageFeatures.DefinitionAdapter(workerAccessor)
-        )
+    monacoInstance.languages.registerDefinitionProvider(
+        LANGUAGE_ID,
+        new languageFeatures.DefinitionAdapter(workerAccessor)
     );
 
-    disposables.push(
-        monacoInstance.languages.registerRenameProvider(LANGUAGE_ID, new languageFeatures.RenameAdapter(workerAccessor))
-    );
+    monacoInstance.languages.registerRenameProvider(LANGUAGE_ID, new languageFeatures.RenameAdapter(workerAccessor));
 
-    disposables.push(
-        monacoInstance.languages.registerReferenceProvider(
-            LANGUAGE_ID,
-            new languageFeatures.ReferenceAdapter(workerAccessor)
-        )
+    monacoInstance.languages.registerReferenceProvider(
+        LANGUAGE_ID,
+        new languageFeatures.ReferenceAdapter(workerAccessor)
     );
 
     if (defaults.languageSettings.enableHover) {
-        disposables.push(
-            monacoInstance.languages.registerHoverProvider(
-                LANGUAGE_ID,
-                new languageFeatures.HoverAdapter(workerAccessor)
-            )
-        );
+        monacoInstance.languages.registerHoverProvider(LANGUAGE_ID, new languageFeatures.HoverAdapter(workerAccessor));
     }
 
     monacoInstance.languages.registerDocumentFormattingEditProvider(
@@ -138,21 +116,7 @@ export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typ
     kustoWorker = workerAccessor;
     resolveWorker(workerAccessor);
 
-    disposables.push(monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, kanguageConfiguration));
-
-    return asDisposable(disposables);
-}
-
-function asDisposable(disposables: IDisposable[]): IDisposable {
-    return {
-        dispose: () => {
-            return disposeAll(disposables);
-        },
-    };
-}
-
-function disposeAll(disposables: IDisposable[]) {
-    disposables.forEach((d) => d.dispose());
+    monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, kanguageConfiguration);
 }
 
 export function getKustoWorker(): Promise<AugmentedWorkerAccessor> {

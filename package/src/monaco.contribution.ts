@@ -102,11 +102,7 @@ export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSett
 
 let disposable: monaco.IDisposable;
 monaco.languages.onLanguage('kusto', async () => {
-    disposable = await withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
-});
-
-monaco.editor.onWillDisposeModel((model) => {
-    disposable.dispose();
+    await withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
 });
 
 monaco.languages.register({
