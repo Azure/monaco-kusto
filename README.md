@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.12
+
+-   feat: Upgrade language-service-next to 11.7.1.
+
 ### 12.0.11
 
 -   fix: avoid race condition on worker disposal
