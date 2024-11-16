@@ -1,0 +1,6 @@
+{
+    "include": ["./scripts"],
+    "compilerOptions": {
+        "esModuleInterop": true
+    }
+}
