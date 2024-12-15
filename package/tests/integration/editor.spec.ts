@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
 
-test.describe('editor', () => {
+test.describe.only('editor', () => {
     let model: MonaKustoModel;
 
     test.beforeEach(async ({ page }) => {
@@ -35,6 +35,16 @@ test.describe('editor', () => {
                 editorValue = await editor.inputValue();
                 expect(editorValue).toEqual('');
             });
+        });
+
+        test('should highlight matching pairs', async ({ page }) => {
+            const bracketElements = page.locator('.bracket-match');
+
+            await page.keyboard.type('StormEvents\n' + '| where (datetime() < ago(1h))\n');
+            await expect(bracketElements).not.toBeVisible();
+
+            await page.keyboard.press('ArrowLeft');
+            await expect(bracketElements).toHaveCount(2);
         });
     });
 });
