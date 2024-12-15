@@ -36,5 +36,15 @@ test.describe('editor', () => {
                 expect(editorValue).toEqual('');
             });
         });
+
+        test('should highlight matching pairs', async ({ page }) => {
+            const bracketElements = page.locator('.bracket-match');
+
+            await page.keyboard.type('StormEvents\n' + '| where (datetime() < ago(1h))\n');
+            await expect(bracketElements).not.toBeVisible();
+
+            await page.keyboard.press('ArrowLeft');
+            await expect(bracketElements).toHaveCount(2);
+        });
     });
 });

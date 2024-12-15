@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.14
+
+-   feat: highlight matching brackets.
+
 ### 12.0.13
 
 -   feat: Upgrade language-service-next to 11.7.3.

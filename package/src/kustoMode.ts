@@ -8,7 +8,8 @@ import type { IKustoWorkerImpl } from './kustoWorker';
 import { kustoLanguageDefinition } from './syntaxHighlighting/kustoMonarchLanguageDefinition';
 import { LANGUAGE_ID } from './globals';
 import { semanticTokensProviderRegistrarCreator } from './syntaxHighlighting/semanticTokensProviderRegistrar';
-import type { IDisposable } from 'monaco-editor';
+import { languages } from 'monaco-editor/esm/vs/editor/editor.api';
+import LanguageConfiguration = languages.LanguageConfiguration;
 
 export interface AugmentedWorker
     extends KustoWorker,
@@ -116,14 +117,14 @@ export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typ
     kustoWorker = workerAccessor;
     resolveWorker(workerAccessor);
 
-    monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, kanguageConfiguration);
+    monacoInstance.languages.setLanguageConfiguration(LANGUAGE_ID, languageConfiguration);
 }
 
 export function getKustoWorker(): Promise<AugmentedWorkerAccessor> {
     return workerPromise.then(() => kustoWorker);
 }
 
-const kanguageConfiguration = {
+const languageConfiguration: LanguageConfiguration = {
     folding: {
         offSide: false,
         markers: { start: /^\s*[\r\n]/gm, end: /^\s*[\r\n]/gm },
@@ -139,4 +140,10 @@ const kanguageConfiguration = {
         { open: "'", close: "'", notIn: ['string', 'comment'] },
         { open: '"', close: '"', notIn: ['string', 'comment'] },
     ],
+    brackets: [
+        ['[', ']'],
+        ['{', '}'],
+        ['(', ')'],
+    ],
+    colorizedBracketPairs: [],
 };
