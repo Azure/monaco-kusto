@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
 
-test.describe.only('editor', () => {
+test.describe('editor', () => {
     let model: MonaKustoModel;
 
     test.beforeEach(async ({ page }) => {
