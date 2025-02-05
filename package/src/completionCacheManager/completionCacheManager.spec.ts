@@ -7,7 +7,10 @@ describe('completionCacheManager', () => {
     let completionCacheManager: CompletionCacheManager;
     const mockGetFromLanguageService: jest.MockedFunction<GetFromLanguageService> = jest.fn();
     const resource = {} as monaco.Uri;
-    const position = {} as ls.Position;
+    const position = {
+        line: 0,
+        character: 0,
+    } as ls.Position;
 
     beforeEach(() => {
         mockGetFromLanguageService.mockClear();
@@ -42,6 +45,15 @@ describe('completionCacheManager', () => {
 
         test('calls language service when the current word is contained in the previous word', async () => {
             await completionCacheManager.getCompletionItems('a', resource, position);
+            expect(mockGetFromLanguageService).toHaveBeenCalledTimes(1);
+        });
+
+        test('calls language service when the position line has changed', async () => {
+            const newPosition = {
+                line: 1,
+                character: 0,
+            };
+            await completionCacheManager.getCompletionItems('ab', resource, newPosition);
             expect(mockGetFromLanguageService).toHaveBeenCalledTimes(1);
         });
     });
