@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.15
+
+-   fix: executing the same query on a different line now correctly displays completion items.
+
 ### 12.0.14
 
 -   feat: highlight matching brackets.
