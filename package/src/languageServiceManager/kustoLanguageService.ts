@@ -555,27 +555,20 @@ class KustoLanguageService implements LanguageService {
         if (!clusterReferences) {
             return Promise.resolve([]);
         }
-        let newClustersReferences: ClusterReference[] = [];
-        let newClustersReferencesSet = new Set(); // used to remove duplicates
 
+        const newClustersReferencesSet = new Set<string>(); // used to remove duplicates
         // Keep only unique clusters that aren't already exist in the Global State
         for (let i = 0; i < clusterReferences.Count; i++) {
             const clusterReference: k2.ClusterReference = clusterReferences.getItem(i);
-            const clusterHostName = Kusto.Language.KustoFacts.GetHostName(clusterReference.Cluster);
-
-            // ignore duplicates
-            if (newClustersReferencesSet.has(clusterHostName)) {
-                continue;
-            }
-            newClustersReferencesSet.add(clusterHostName);
-
+            // not using Kusto.Language.KustoFacts.KustoWindowsNet because the engine client adds suffix anyway
+            const clusterName = Kusto.Language.KustoFacts.GetFullHostName(clusterReference.Cluster, null);
             // ignore references that are already in the GlobalState.
-            if (!this._clustersSetInGlobalState.has(clusterHostName)) {
-                newClustersReferences.push({ clusterName: clusterHostName });
+            if (!this._clustersSetInGlobalState.has(clusterName)) {
+                newClustersReferencesSet.add(clusterName);
             }
         }
 
-        return Promise.resolve(newClustersReferences);
+        return Promise.resolve(Array.from(newClustersReferencesSet).map((clusterName) => ({ clusterName })));
     }
 
     getDatabaseReferences(document: TextDocument, cursorOffset?: number): Promise<DatabaseReference[]> {
