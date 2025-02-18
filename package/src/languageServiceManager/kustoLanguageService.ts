@@ -561,7 +561,8 @@ class KustoLanguageService implements LanguageService {
         // Keep only unique clusters that aren't already exist in the Global State
         for (let i = 0; i < clusterReferences.Count; i++) {
             const clusterReference: k2.ClusterReference = clusterReferences.getItem(i);
-            // not using Kusto.Language.KustoFacts.KustoWindowsNet because the engine client adds suffix anyway
+            // Because the engine client adds suffix anyway
+            // const clusterName = Kusto.Language.KustoFacts.GetFullHostName(clusterReference.Cluster, Kusto.Language.KustoFacts.KustoWindowsNet);
             const clusterName = Kusto.Language.KustoFacts.GetFullHostName(clusterReference.Cluster, null);
             if (!this._clustersSetInGlobalState.has(clusterName)) {
                 newClustersReferencesSet.add(clusterName);
