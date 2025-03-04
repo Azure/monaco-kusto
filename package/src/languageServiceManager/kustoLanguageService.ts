@@ -584,7 +584,7 @@ class KustoLanguageService implements LanguageService {
         let newDatabasesReferencesSet = new Set();
         for (let i1 = 0; i1 < databasesReferences.Count; i1++) {
             const databaseReference: k2.DatabaseReference = databasesReferences.getItem(i1);
-            const clusterHostName = Kusto.Language.KustoFacts.GetHostName(databaseReference.Cluster);
+            const clusterHostName = Kusto.Language.KustoFacts.GetFullHostName(databaseReference.Cluster, null);
 
             // ignore duplicates
             const databaseReferenceUniqueId = this.createDatabaseUniqueName(
