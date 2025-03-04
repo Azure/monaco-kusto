@@ -85,6 +85,18 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.18
+
+-   fix: database references function to use full host name to improve proxy database cross cluster scheme fetching.
+
+### 12.0.17
+
+-   fix: cluster references function to use full host name to improve proxy clusters cross cluster scheme fetching. 
+
+### 12.0.16
+
+-   feat: update language service with chart updated.
+
 ### 12.0.15
 
 -   fix: executing the same query on a different line now correctly displays completion items.
