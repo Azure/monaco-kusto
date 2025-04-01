@@ -91,7 +91,7 @@ Every PR should come with a test that checks it.
 
 ### 12.0.17
 
--   fix: cluster references function to use full host name to improve proxy clusters cross cluster scheme fetching. 
+-   fix: cluster references function to use full host name to improve proxy clusters cross cluster scheme fetching.
 
 ### 12.0.16
 
