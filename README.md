@@ -85,17 +85,13 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
-### 12.0.19
-
--   feat: Upgrade language-service-next to 11.7.6.
-
 ### 12.0.18
 
 -   fix: database references function to use full host name to improve proxy database cross cluster scheme fetching.
 
 ### 12.0.17
 
--   fix: cluster references function to use full host name to improve proxy clusters cross cluster scheme fetching.
+-   fix: cluster references function to use full host name to improve proxy clusters cross cluster scheme fetching. 
 
 ### 12.0.16
 
