@@ -85,6 +85,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+### 12.0.19
+
+-   fix: bug in sending the full host name - database references function to use full host name to improve proxy database cross cluster scheme fetching.
+
 ### 12.0.18
 
 -   fix: database references function to use full host name to improve proxy database cross cluster scheme fetching.

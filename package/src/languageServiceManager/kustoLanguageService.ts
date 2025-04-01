@@ -601,7 +601,7 @@ class KustoLanguageService implements LanguageService {
             if (!foundInGlobalState) {
                 newDatabasesReferences.push({
                     databaseName: databaseReference.Database,
-                    clusterName: databaseReference.Cluster,
+                    clusterName: clusterHostName,
                 });
             }
         }
