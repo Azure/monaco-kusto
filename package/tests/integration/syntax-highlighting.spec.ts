@@ -3,6 +3,7 @@ import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit
 import { ThemeName, themes } from '../../src/syntaxHighlighting/themes';
 import { Token } from '../../src/syntaxHighlighting/types';
 import convert from 'color-convert';
+import { setupFakeEnvironment } from './env/setupFakeEnvironment';
 
 const query = `// Query to analyze storm events 
 StormEvents
@@ -29,6 +30,7 @@ test.describe('syntax highlighting', () => {
     let assertTextColor: (text: string, expectedColor: string) => Promise<void>;
 
     test.beforeEach(async ({ page }) => {
+        await setupFakeEnvironment(page)
         await loadPageAndWait(page);
         model = createMonaKustoModel(page);
 
