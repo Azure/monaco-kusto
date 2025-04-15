@@ -122,7 +122,7 @@ const schema = window.schema === undefined ? defaultSchema : window.schema;
 
 getKustoWorker().then((workerAccessor) => {
     const model = editor.getModel();
-    if (model) {
+    if (model && schema !== null) {
         workerAccessor(model.uri).then((worker) => {
             worker.setSchemaFromShowSchema(
                 schema,

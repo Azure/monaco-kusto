@@ -481,14 +481,14 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
                         label: entry.label,
                         insertText: entry.insertText,
                         sortText: entry.sortText,
-                        filterText: createCompletionFilteredText(userInput, entry),
-                        // TODO: Is this cast safe?
+                        filterText: entry.data?.loadingPlaceholder ? userInput : createCompletionFilteredText(userInput, entry),
                         documentation: this.formatDocLink((entry.documentation as undefined | ls.MarkupContent)?.value),
                         detail: entry.detail,
                         range: wordRange,
                         kind: toCompletionItemKind(entry.kind),
                         preselect: selectedItem.filterText === entry.filterText,
                     };
+
                     if (entry.textEdit) {
                         // TODO: Where is the "range" property coming from?
                         item.range = toRange((entry.textEdit as any).range);
