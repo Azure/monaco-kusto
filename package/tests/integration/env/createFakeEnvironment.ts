@@ -23,7 +23,7 @@ window.MonacoEnvironment = {
     },
 };
 
-const schema = {
+const defaultSchema = {
     Plugins: [],
     Databases: {
         Samples: {
@@ -117,6 +117,8 @@ const tabularParameter: TabularParameter = {
     name: '_base_query',
     docstring: '# Base query\n\n## Availability: Inline\n\nBase query will be inlined into this query\n',
 };
+
+const schema = window.schema === undefined ? defaultSchema : window.schema;
 
 getKustoWorker().then((workerAccessor) => {
     const model = editor.getModel();

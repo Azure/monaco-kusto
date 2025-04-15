@@ -1,11 +1,14 @@
 import { test, expect, Locator } from '@playwright/test';
 import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
+import { setupFakeEnvironment } from './env/setupFakeEnvironment';
 
 test.describe('completion items', () => {
     let model: MonaKustoModel;
     let editor: Locator;
 
     test.beforeEach(async ({ page }) => {
+        await setupFakeEnvironment(page)
+
         await loadPageAndWait(page);
         model = createMonaKustoModel(page);
 
@@ -72,7 +75,7 @@ test.describe('completion items', () => {
     });
 
     test('focus the first item that matches user input as a prefix', async ({ page }) => {
-        // Split typing the time string to ensure the language service is invoked on t instead of time.
+        // Split typing the time string to ensure the language service is invoked on it instead of time.
         await page.keyboard.type('where t');
         await model.intellisense().wait();
 

@@ -1,10 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
+import { setupFakeEnvironment } from './env/setupFakeEnvironment';
 
 test.describe('editor', () => {
     let model: MonaKustoModel;
 
     test.beforeEach(async ({ page }) => {
+        await setupFakeEnvironment(page)
         await loadPageAndWait(page);
         model = createMonaKustoModel(page);
 
