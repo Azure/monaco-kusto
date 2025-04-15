@@ -8,7 +8,6 @@ test.describe('completion items', () => {
 
     test.beforeEach(async ({ page }) => {
         await setupFakeEnvironment(page)
-
         await loadPageAndWait(page);
         model = createMonaKustoModel(page);
 
@@ -94,5 +93,20 @@ test.describe('completion items', () => {
 
         const options = model.intellisense().options();
         await expect(options.locator).toHaveCount(2);
+    });
+
+    test('show a loading indication until schema is loaded', async ({ page }) => {
+        await setupFakeEnvironment(page, null)
+        await loadPageAndWait(page);
+
+        await editor.focus();
+        await page.keyboard.type('Storm');
+        await model.intellisense().wait();
+
+        const firstItem = model.intellisense().option(0);
+        await expect(firstItem.locator).toHaveText('Loading Schema...');
+
+        const options = await model.intellisense().options().locator.allInnerTexts();
+        expect(options.length).toEqual(1)
     });
 });
