@@ -1,0 +1,16 @@
+diff --git a/esm/vs/base/common/platform.js b/esm/vs/base/common/platform.js
+index 2bf4a301e61c949907119674825201540e9e8ef1..67407961e89b4e6bee93368d36825824b39a0da4 100644
+--- a/esm/vs/base/common/platform.js
++++ b/esm/vs/base/common/platform.js
+@@ -25,9 +25,9 @@ if (typeof $globalThis.vscode !== 'undefined' && typeof $globalThis.vscode.proce
+     // Native environment (sandboxed)
+     nodeProcess = $globalThis.vscode.process;
+ }
+-else if (typeof process !== 'undefined' && typeof process?.versions?.node === 'string') {
++else if (typeof $globalThis.process !== 'undefined') {
+     // Native environment (non-sandboxed)
+-    nodeProcess = process;
++    nodeProcess = $globalThis.process;
+ }
+ const isElectronProcess = typeof nodeProcess?.versions?.electron === 'string';
+ const isElectronRenderer = isElectronProcess && nodeProcess?.type === 'renderer';
