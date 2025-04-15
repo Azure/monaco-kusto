@@ -8968,10 +8968,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.52.0":
+"monaco-editor@npm:0.52.2":
   version: 0.52.2
   resolution: "monaco-editor@npm:0.52.2"
   checksum: d5ff7b7a469afee25ac708d9ace0dcc5ef24ed328dfc526a52944a497f0d826cfb0685a778ff4b7becc0a8f7843f260c17ea6de3f6719481d53501d79ebb1260
+  languageName: node
+  linkType: hard
+
+"monaco-editor@patch:monaco-editor@npm%3A0.52.2#./.yarn/patches/monaco-editor-npm-0.52.2-584d16bfa6.patch::locator=monaco-kusto%40workspace%3A.":
+  version: 0.52.2
+  resolution: "monaco-editor@patch:monaco-editor@npm%3A0.52.2#./.yarn/patches/monaco-editor-npm-0.52.2-584d16bfa6.patch::version=0.52.2&hash=f3eb8d&locator=monaco-kusto%40workspace%3A."
+  checksum: 73dc05ad5fcfdca0867948168d87897e557982488db3db15e412479512e9d2e78e9d8b630fd1aac1d8892b7d20cfe4d60137f8dbb3289c9db3fd80eed8ebfb78
   languageName: node
   linkType: hard
 
