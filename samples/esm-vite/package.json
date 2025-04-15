@@ -10,8 +10,8 @@
         "playwright:webserver": "vite --port 3000"
     },
     "dependencies": {
-        "@kusto/monaco-kusto": "^10.0.8",
-        "monaco-editor": "^0.49.0"
+        "@kusto/monaco-kusto": "workspace:*",
+        "monaco-editor": "^0.52.0"
     },
     "devDependencies": {
         "vite": "^5.0.0",
