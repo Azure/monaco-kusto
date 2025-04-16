@@ -6,7 +6,8 @@ import convert from 'color-convert';
 
 const query = `// Query to analyze storm events 
 StormEvents
-| extend [\`\`\`Multiline
+| extend [\`\`\`Multi
+line
 Column\`\`\`] = "test"
 | where State == "Custom State 1"
 | project StartTime, EndTime, Duration = datetime_diff('minute', EndTime, StartTime)
@@ -19,7 +20,7 @@ const queryTokensToQueryParts = {
     [Token.QueryOperator]: ['where', 'project', 'summarize', 'order', 'extend'],
     [Token.Column]: ['StartTime', 'EndTime', 'Duration', 'TotalDuration'],
     [Token.Function]: ['datetime_diff', 'avg'],
-    [Token.StringLiteral]: ['Custom State 1', 'minute', 'Multiline', 'Column', 'test', '```'],
+    [Token.StringLiteral]: ['Custom State 1', 'minute', 'Multi', 'line', 'Column', 'test', '```'],
     [Token.MathOperator]: ['=='],
     [Token.Punctuation]: ['|', ',', '(', ')', '=', '[', ']'],
 };
