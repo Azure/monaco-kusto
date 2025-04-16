@@ -1,15 +1,16 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Locator } from '@playwright/test';
 import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
 
 test.describe('completion items', () => {
     let model: MonaKustoModel;
+    let editor: Locator;
 
     test.beforeEach(async ({ page }) => {
         await loadPageAndWait(page);
         model = createMonaKustoModel(page);
 
         const initialValue = 'StormEvents';
-        const editor = model.editor().locator;
+        editor = model.editor().locator;
         await editor.focus();
         await editor.fill(initialValue);
         await model.intellisense().wait();
@@ -80,5 +81,15 @@ test.describe('completion items', () => {
 
         const focusedItem = model.intellisense().focused();
         expect(focusedItem.locator).toHaveText('timespan()');
+    });
+
+    test('Intellisense should remain open when typing "project-re"', async ({ page }) => {
+        await editor.pressSequentially('project');
+        await model.intellisense().wait();
+        await editor.pressSequentially('-re');
+        await model.intellisense().wait();
+
+        const options = model.intellisense().options();
+        await expect(options.locator).toHaveCount(2);
     });
 });

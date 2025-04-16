@@ -146,4 +146,5 @@ const languageConfiguration: LanguageConfiguration = {
         ['(', ')'],
     ],
     colorizedBracketPairs: [],
+    wordPattern: /[a-zA-Z0-9\-_]+/g,
 };
