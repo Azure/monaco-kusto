@@ -1,31 +1,31 @@
 export type ClassificationKind = Kusto.Language.Editor.ClassificationKind;
 
 export enum Token {
-    PlainText = 'plainText',
-    Comment = 'comment',
-    Punctuation = 'punctuation',
-    Directive = 'directive',
-    Literal = 'literal',
-    StringLiteral = 'stringLiteral',
-    Type = 'type',
-    Column = 'column',
-    Table = 'table',
-    Database = 'database',
-    Function = 'function',
-    Parameter = 'parameter',
-    Variable = 'variable',
-    Identifier = 'identifier',
-    ClientParameter = 'clientParameter',
-    QueryParameter = 'queryParameter',
-    ScalarParameter = 'scalarParameter',
-    MathOperator = 'mathOperator',
-    QueryOperator = 'queryOperator',
-    Command = 'command',
-    Keyword = 'keyword',
-    MaterializedView = 'materializedView',
-    SchemaMember = 'schemaMember',
-    SignatureParameter = 'signatureParameter',
-    Option = 'option',
+    PlainText = 'plainText', // 0
+    Comment = 'comment', // 1
+    Punctuation = 'punctuation', // 2
+    Directive = 'directive', // 3
+    Literal = 'literal', // 4
+    StringLiteral = 'stringLiteral', // 5
+    Type = 'type', // 6
+    Column = 'column', // 7
+    Table = 'table', // 8
+    Database = 'database', // 9
+    Function = 'function', // 10
+    Parameter = 'parameter', // 11
+    Variable = 'variable', // 12
+    Identifier = 'identifier', // 13
+    ClientParameter = 'clientParameter', // 14
+    QueryParameter = 'queryParameter', // 15
+    ScalarParameter = 'scalarParameter', // 16
+    MathOperator = 'mathOperator', // 17
+    QueryOperator = 'queryOperator', // 18
+    Command = 'command', // 19
+    Keyword = 'keyword', // 20
+    MaterializedView = 'materializedView', // 21
+    SchemaMember = 'schemaMember', // 22
+    SignatureParameter = 'signatureParameter', // 23
+    Option = 'option', // 24
 }
 
 export const tokenTypes = [

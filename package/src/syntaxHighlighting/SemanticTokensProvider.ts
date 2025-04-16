@@ -18,13 +18,29 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
     async provideDocumentSemanticTokens(model: editor.ITextModel) {
         const resource = model.uri;
         const classifications = await this.classificationsGetter(resource);
-        const semanticTokens = classifications.map((classification, index) => {
-            const previousClassification = classifications[index - 1];
-            return semanticTokenMaker(classification, previousClassification);
-        });
+
+        const tokens: DocumentSemanticToken[] = [];
+        let prevLine = 0;
+        let prevChar = 0;
+
+        for (const classification of classifications) {
+            const parts = toSemanticTokens(classification, model);
+
+            for (const part of parts) {
+                const [absLine, absChar, length, kind, modifiers] = part;
+
+                const deltaLine = absLine - prevLine;
+                const deltaChar = deltaLine === 0 ? absChar - prevChar : absChar;
+
+                tokens.push([deltaLine, deltaChar, length, kind, modifiers]);
+
+                prevLine = absLine;
+                prevChar = absChar;
+            }
+        }
 
         return {
-            data: new Uint32Array(semanticTokens.flat()),
+            data: new Uint32Array(tokens.flat(2)),
             resultId: model.getVersionId().toString(),
         };
     }
@@ -32,14 +48,25 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
     releaseDocumentSemanticTokens() {}
 }
 
-const emptyClassification = { line: 0, character: 0, length: 0, kind: 0 };
-function semanticTokenMaker(
-    classification: ClassificationRange,
-    previousClassification: ClassificationRange = emptyClassification
-): DocumentSemanticToken {
+function toSemanticTokens(classification: ClassificationRange, model: editor.ITextModel): DocumentSemanticToken[] {
     const { line, character, length, kind } = classification;
-    const deltaLine = line - previousClassification.line;
-    const deltaStart = deltaLine ? character : character - previousClassification.character;
+    const tokens: DocumentSemanticToken[] = [];
 
-    return [deltaLine, deltaStart, length, kind, 0];
+    let remainingLength = length;
+    let currentLine = line;
+    let currentChar = character;
+
+    while (remainingLength > 0 && currentLine < model.getLineCount()) {
+        const lineLength = model.getLineLength(currentLine + 1);
+        const available = lineLength - currentChar + 1;
+        const tokenLength = Math.min(remainingLength, available);
+
+        tokens.push([currentLine, currentChar, tokenLength, kind, 0]);
+
+        remainingLength -= tokenLength;
+        currentLine++;
+        currentChar = 0; // reset for next line
+    }
+
+    return tokens;
 }
