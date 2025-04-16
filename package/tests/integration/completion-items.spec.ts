@@ -1,15 +1,18 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Locator } from '@playwright/test';
 import { createMonaKustoModel, MonaKustoModel, loadPageAndWait } from './testkit';
+import { setupFakeEnvironment } from './env/setupFakeEnvironment';
 
 test.describe('completion items', () => {
     let model: MonaKustoModel;
+    let editor: Locator
 
     test.beforeEach(async ({ page }) => {
+        await setupFakeEnvironment(page)
         await loadPageAndWait(page);
         model = createMonaKustoModel(page);
 
         const initialValue = 'StormEvents';
-        const editor = model.editor().locator;
+        editor = model.editor().locator;
         await editor.focus();
         await editor.fill(initialValue);
         await model.intellisense().wait();
@@ -71,7 +74,7 @@ test.describe('completion items', () => {
     });
 
     test('focus the first item that matches user input as a prefix', async ({ page }) => {
-        // Split typing the time string to ensure the language service is invoked on t instead of time.
+        // Split typing the time string to ensure the language service is invoked on it instead of time.
         await page.keyboard.type('where t');
         await model.intellisense().wait();
 
@@ -79,6 +82,21 @@ test.describe('completion items', () => {
         await model.intellisense().waitForFocused();
 
         const focusedItem = model.intellisense().focused();
-        expect(focusedItem.locator).toHaveText('timespan()');
+        await expect(focusedItem.locator).toHaveText('timespan()');
+    });
+
+    test('show a loading indication until schema is loaded', async ({ page }) => {
+        await setupFakeEnvironment(page, null)
+        await loadPageAndWait(page);
+
+        await editor.focus();
+        await page.keyboard.type('Storm');
+        await model.intellisense().wait();
+
+        const firstItem = model.intellisense().option(0);
+        await expect(firstItem.locator).toHaveText('Loading Schema...');
+
+        const options = await model.intellisense().options().locator.allInnerTexts();
+        expect(options.length).toEqual(1)
     });
 });

@@ -221,6 +221,7 @@ class KustoLanguageService implements LanguageService {
     private _languageSettings: LanguageSettings;
     private _completionOptions: Kusto.Language.Editor.CompletionOptions;
     private _schema: Mutable<s.Schema>;
+    private _schemaLoaded: Boolean;
     private _schemaCache: {
         [cluster: string]: {
             [dbName: string]: { database: s.Database; symbol: sym.DatabaseSymbol; includesFunctions: boolean };
@@ -387,6 +388,22 @@ class KustoLanguageService implements LanguageService {
     doCompleteV2(document: TextDocument, position: ls.Position): Promise<ls.CompletionList> {
         if (!document) {
             return Promise.resolve(ls.CompletionList.create([]));
+        }
+
+        if (!this._schemaLoaded) {
+            console.log('>>> schema did not load');
+            const loadingCompletionItem = ls.CompletionItem.create('Loading Schema...');
+            loadingCompletionItem.insertText = ''
+            loadingCompletionItem.sortText = '0';
+            loadingCompletionItem.filterText = '';
+            loadingCompletionItem.textEdit = undefined;
+            loadingCompletionItem.insertTextFormat = ls.InsertTextFormat.PlainText;
+            loadingCompletionItem.kind = ls.CompletionItemKind.Text;
+            loadingCompletionItem.detail = 'Waiting for Kusto language service';
+            loadingCompletionItem.data = { loadingPlaceholder: true };
+            return Promise.resolve(ls.CompletionList.create([loadingCompletionItem]));
+        } else {
+            console.log('>>> schema loaded');
         }
 
         const script = this.parseDocumentV2(document);
@@ -800,6 +817,7 @@ class KustoLanguageService implements LanguageService {
         clusterName: string,
         databases: { name: string; alternativeName?: string }[]
     ): Promise<void> {
+console.log('>>> addClusterToSchema')
         let clusterNameOnly = Kusto.Language.KustoFacts.GetHostName(clusterName);
         let cluster: sym.ClusterSymbol = this._kustoJsSchemaV2.GetCluster$1(clusterNameOnly);
         if (cluster) {
@@ -825,6 +843,7 @@ class KustoLanguageService implements LanguageService {
     }
 
     addDatabaseToSchema(document: TextDocument, clusterName: string, databaseSchema: s.Database): Promise<void> {
+        console.log('>>> addDatabaseToSchema');
         let clusterHostName = Kusto.Language.KustoFacts.GetHostName(clusterName);
         let cluster: sym.ClusterSymbol = this._kustoJsSchemaV2.GetCluster$1(clusterHostName);
         if (!cluster) {
@@ -840,6 +859,8 @@ class KustoLanguageService implements LanguageService {
 
     setSchema(schema: s.Schema): Promise<void> {
         this._schema = schema;
+        this._schemaLoaded = true;
+        console.log('>>> setSchema', schema);
         // We support intellisenseV2 only if the clusterType is "Engine", even if the setting is enabled
         if (schema && schema.clusterType === 'Engine') {
             let kustoJsSchemaV2: GlobalState = this.convertToKustoJsSchemaV2(schema);
@@ -898,6 +919,7 @@ class KustoLanguageService implements LanguageService {
         globalTabularParameters: s.TabularParameter[],
         databaseInContextAlternateName: string
     ): Promise<void> {
+        console.log('>>> setSchemaFromShowSchema', schema)
         const normalized = this._normalizeSchema(
             schema,
             clusterConnectionString,
