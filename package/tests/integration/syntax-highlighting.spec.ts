@@ -6,6 +6,8 @@ import convert from 'color-convert';
 
 const query = `// Query to analyze storm events 
 StormEvents
+| extend [\`\`\`Multiline
+Column\`\`\`] = "test"
 | where State == "Custom State 1"
 | project StartTime, EndTime, Duration = datetime_diff('minute', EndTime, StartTime)
 | summarize TotalDuration = avg(Duration) by State
@@ -14,12 +16,12 @@ StormEvents
 const queryTokensToQueryParts = {
     [Token.Comment]: ['// Query to analyze storm events'],
     [Token.Table]: ['StormEvents'],
-    [Token.QueryOperator]: ['where', 'project', 'summarize', 'order'],
+    [Token.QueryOperator]: ['where', 'project', 'summarize', 'order', 'extend'],
     [Token.Column]: ['StartTime', 'EndTime', 'Duration', 'TotalDuration'],
     [Token.Function]: ['datetime_diff', 'avg'],
-    [Token.StringLiteral]: ['Custom State 1', 'minute'],
+    [Token.StringLiteral]: ['Custom State 1', 'minute', 'Multiline', 'Column', 'test', '```'],
     [Token.MathOperator]: ['=='],
-    [Token.Punctuation]: ['|', ',', '(', ')', '='],
+    [Token.Punctuation]: ['|', ',', '(', ')', '=', '[', ']'],
 };
 
 const themeNames = [ThemeName.light, ThemeName.dark];
@@ -71,6 +73,7 @@ function createAssertTextColor(page: Page) {
     return async (text: string, expectedColorInHex: string) => {
         const expectedColor = hexToRgb(expectedColorInHex);
         const elements = await page.getByText(text).all();
+
         if (elements.length === 0) {
             return expect(elements.length).not.toBe(0);
         }
