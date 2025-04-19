@@ -85,6 +85,11 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+## 12.0.21
+
+-   fix: support multiline bracketed strings in semantic tokenization (improves syntax highlighting).
+-   fix: include hyphenated words in IntelliSense logic to avoid resetting suggestions when typing "-".
+
 ### 12.0.20
 
 -   feat: Upgrade language-service-next to 11.7.6.
