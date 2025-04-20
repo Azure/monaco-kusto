@@ -72,7 +72,6 @@ const editor = monaco.editor.create(document.getElementById('root')!, {
     value: 'StormEvents | take 10',
     language: 'kusto',
     theme: 'kusto-light',
-    'semanticHighlighting.enabled': true,
 });
 
 window.addEventListener('resize', () => {
