@@ -26,8 +26,5 @@
         "ts-node": "^10.9.1",
         "typescript": "^5.2.2",
         "wait-on": "^7.0.1"
-    },
-    "resolutions": {
-        "monaco-editor@^0.52.0": "patch:monaco-editor@npm%3A0.52.2#./.yarn/patches/monaco-editor-npm-0.52.2-584d16bfa6.patch"
     }
 }
