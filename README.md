@@ -32,7 +32,6 @@ Example at [/samples/amd](https://github.com/Azure/monaco-kusto/tree/master/samp
    be made available via a global
    require `require` by adding the script tag: `<script src="<path>/vs/loader.js"></script>`
 3. You should now be able to create monaco editors with `language: 'kusto'`. The
-   kusto worker can be reached via the monaco global:
    `monaco.languages.kusto.getKustoWorker()`
 4. If using typeScript, add "@kusto/monaco-kusto/globalApi" to compilerOptions.types in tsconfig.json`
 
@@ -84,6 +83,10 @@ Every PR should come with a test that checks it.
 -   Run `yarn test:integration:watch` from the package folder to run the tests in a browser and rebuild after each change
 
 ## Changelog
+
+## 13.0.0
+
+-   breaking change: upgrade monaco-editor version to 0.52.0
 
 ## 12.0.21
 
