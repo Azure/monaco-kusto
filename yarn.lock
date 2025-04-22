@@ -2053,7 +2053,7 @@ __metadata:
     http-server: ^14.1.1
     jest: ^29.7.0
     lodash-es: ^4.17.21
-    monaco-editor: ^0.51.0
+    monaco-editor: ^0.52.0
     rimraf: ^5.0.1
     rollup: ^3.29.2
     terser: ^5.19.4
@@ -2066,7 +2066,7 @@ __metadata:
     vscode-languageserver-types: ^3.17.4
     xregexp: ^5.1.1
   peerDependencies:
-    monaco-editor: ^0.51.0
+    monaco-editor: ^0.52.0
   bin:
     copyMonacoFilesAMD: copyMonacoFilesAMD.js
   languageName: unknown
@@ -8968,10 +8968,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.51.0":
-  version: 0.51.0
-  resolution: "monaco-editor@npm:0.51.0"
-  checksum: 86cd6e5a756407bc9564ae4c408cdaecbf3410b5bf88e22783e22e79e1e1d048c1cba7c26249e6b234731ffc1aad3660c27213ce1f3f441b3e04cf01a75b1f8c
+"monaco-editor@npm:^0.52.0":
+  version: 0.52.2
+  resolution: "monaco-editor@npm:0.52.2"
+  checksum: d5ff7b7a469afee25ac708d9ace0dcc5ef24ed328dfc526a52944a497f0d826cfb0685a778ff4b7becc0a8f7843f260c17ea6de3f6719481d53501d79ebb1260
   languageName: node
   linkType: hard
 
@@ -8981,7 +8981,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     http-server: ^14.1.1
-    monaco-editor: ^0.51.0
+    monaco-editor: ^0.52.0
   languageName: unknown
   linkType: soft
 
@@ -9002,7 +9002,7 @@ __metadata:
     css-loader: ^6.8.1
     express: ^4.18.2
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.51.0
+    monaco-editor: ^0.52.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -9028,7 +9028,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.8.1
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.51.0
+    monaco-editor: ^0.52.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
@@ -9045,7 +9045,7 @@ __metadata:
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
     "@tsconfig/recommended": ^1.0.3
-    monaco-editor: ^0.51.0
+    monaco-editor: ^0.52.0
     parcel: ^2.0.0
     typescript: ^5.2.2
   languageName: unknown
@@ -9056,7 +9056,7 @@ __metadata:
   resolution: "monaco-kusto--esm-vite-sample@workspace:samples/esm-vite"
   dependencies:
     "@kusto/monaco-kusto": "workspace:*"
-    monaco-editor: ^0.51.0
+    monaco-editor: ^0.52.0
     vite: ^5.0.0
     vite-plugin-node-polyfills: ^0.17.0
   languageName: unknown
@@ -9073,7 +9073,7 @@ __metadata:
     babel-loader: ^9.1.2
     css-loader: ^6.8.1
     html-webpack-plugin: ^5.5.3
-    monaco-editor: ^0.51.0
+    monaco-editor: ^0.52.0
     react: ^18.2.0
     react-dom: ^18.2.0
     style-loader: ^3.3.2
