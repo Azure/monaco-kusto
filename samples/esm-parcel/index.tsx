@@ -25,11 +25,13 @@ self.MonacoEnvironment = {
     createTrustedTypesPolicy() {
         return undefined;
     },
-    getWorkerUrl(_moduleId, label) {
-        if (label === 'kusto') {
-            return kustoWorkerUrl;
+    getWorker(_moduleId, label) {
+        switch (label) {
+            case 'kusto':
+                return new Worker(kustoWorkerUrl);
+            default:
+                return new Worker(editorWorkerUrl);
         }
-        return editorWorkerUrl;
     },
 };
 
