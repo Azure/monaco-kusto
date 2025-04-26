@@ -24,8 +24,10 @@
         "clean": "rimraf ./release",
         "start": "ts-node ./scripts/dev.ts",
         "test": "jest",
-        "test:integration": "playwright test -c tests/integration/playwright.config.ts",
-        "test:integration:watch": "ts-node ./scripts/test.ts"
+        "test:it": "playwright test -c tests/integration/playwright.config.ts",
+        "test:it:ui": "ts-node ./scripts/test-ui.ts",
+        "test:it:serve": "concurrently \"yarn rollup -c ./scripts/rollup.esm.js -w --bundleConfigAsCjs\" \"yarn vite tests/integration serve --config tests/integration/vite.config.ts\"",
+        "test:it:watch": "PWTEST_WATCH=1 playwright test -c tests/integration/playwright.config.ts"
     },
     "types": "./release/esm/monaco.contribution.d.ts",
     "module": "./release/esm/monaco.contribution.js",
