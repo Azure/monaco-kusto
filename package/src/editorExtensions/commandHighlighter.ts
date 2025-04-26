@@ -1,5 +1,5 @@
 import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { getCurrentCommandRange } from './extendedEditor';
+import { getCurrentCommandRange } from '../extendedEditor';
 
 /**
  * Highlights the command that surround cursor location
