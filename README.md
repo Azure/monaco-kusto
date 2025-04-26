@@ -91,6 +91,13 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+## 13.0.1
+
+-   feat: Close IntelliSense automatically when running a query with `Shift+Enter`.
+-   chore: Add `watch` and `serve` scripts to improve local development experience.
+-   chore: Rename all `test:integration` scripts to shorter `test:it`.
+-   chore: Bump package version.
+
 ## 13.0.0
 
 -   breaking change: upgrade monaco-editor version to 0.52.0
