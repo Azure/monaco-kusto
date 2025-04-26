@@ -78,11 +78,26 @@ Every PR should come with a test that checks it.
 
 ## Running integration tests
 
--   Run `yarn test:integration:install` from the root of the project
--   Run `yarn test:integration` from the package folder to run the tests in headless mode
--   Run `yarn test:integration:watch` from the package folder to run the tests in a browser and rebuild after each change
+-   From the project root, run `yarn test:install` to install test dependencies.
+-   In the package folder:
+    - Run `yarn test:it` to execute tests in headless mode.
+    - Run `yarn test:it:ui` to open the tests in a browser and rebuild automatically after each change.
+    - Run `yarn test:it:serve` to start the test server and rebuild automatically after each change.
+    - Run `yarn test:it:watch` to run tests in the terminal and automatically re-run them when test files change.
+
+> **Best practice:**  
+> Before running `yarn test:it` or `yarn test:it:watch`, first run `yarn test:it:serve`.  
+> These scripts (`test:it` and `test:it:watch`) do **not** automatically rebuild the project, so running the server ensures your latest code is tested.
 
 ## Changelog
+
+## 13.0.1
+
+-   feat: Close IntelliSense automatically when running a query with `Shift+Enter`.
+-   chore: Add `watch` and `serve` scripts to improve local development experience.
+-   chore: Rename all `test:integration` scripts to shorter `test:it`.
+-   chore: Bump package version.
+
 
 ## 13.0.0
 
