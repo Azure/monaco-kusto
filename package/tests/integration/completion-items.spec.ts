@@ -92,4 +92,12 @@ test.describe('completion items', () => {
         const options = model.intellisense().options();
         await expect(options.locator).toHaveCount(2);
     });
+
+    test('Intellisense should close when the user runs a query', async ({ page }) => {
+        await model.intellisense().wait();
+        await expect(model.intellisense().locator).toBeVisible();
+
+        await model.editor().locator.press('Shift+Enter');
+        await expect(model.intellisense().locator).not.toBeVisible();
+    });
 });
