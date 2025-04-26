@@ -80,10 +80,10 @@ Every PR should come with a test that checks it.
 
 -   From the project root, run `yarn test:install` to install test dependencies.
 -   In the package folder:
-    - Run `yarn test:it` to execute tests in headless mode.
-    - Run `yarn test:it:ui` to open the tests in a browser and rebuild automatically after each change.
-    - Run `yarn test:it:serve` to start the test server and rebuild automatically after each change.
-    - Run `yarn test:it:watch` to run tests in the terminal and automatically re-run them when test files change.
+    -   Run `yarn test:it` to execute tests in headless mode.
+    -   Run `yarn test:it:ui` to open the tests in a browser and rebuild automatically after each change.
+    -   Run `yarn test:it:serve` to start the test server and rebuild automatically after each change.
+    -   Run `yarn test:it:watch` to run tests in the terminal and automatically re-run them when test files change.
 
 > **Best practice:**  
 > Before running `yarn test:it` or `yarn test:it:watch`, first run `yarn test:it:serve`.  
