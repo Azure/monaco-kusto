@@ -2009,10 +2009,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kusto/language-service-next@npm:11.7.6":
-  version: 11.7.6
-  resolution: "@kusto/language-service-next@npm:11.7.6"
-  checksum: 6c74d2dd8837a329ddb9d2b448441bc3f4472758f926a343e23b31b1e44880a615800e1e81c13491635425ba42a0a85a4471a3b15455397bacb29af5bc9a485d
+"@kusto/language-service-next@npm:12.0.0":
+  version: 12.0.0
+  resolution: "@kusto/language-service-next@npm:12.0.0"
+  checksum: f65da1af428d8d9ee03bb268beebcb0c2add105dfc7bbc708fe19620884d2ddc6d6993e458f807f8d4bf785144643cf304c8e7f67f50f46bdbbd1846b0b28208
   languageName: node
   linkType: hard
 
@@ -2032,7 +2032,7 @@ __metadata:
     "@babel/preset-typescript": ^7.22.15
     "@faker-js/faker": ^8.4.1
     "@kusto/language-service": 0.0.283
-    "@kusto/language-service-next": 11.7.6
+    "@kusto/language-service-next": 12.0.0
     "@playwright/test": ^1.44.0
     "@rollup/plugin-alias": ^5.0.0
     "@rollup/plugin-babel": ^6.0.3
