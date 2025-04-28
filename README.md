@@ -91,6 +91,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+## 13.0.1
+
+-   feat: Close IntelliSense automatically when running a query with `Shift+Enter`.
+
 ## 13.0.0
 
 -   breaking change: upgrade monaco-editor version to 0.52.0
