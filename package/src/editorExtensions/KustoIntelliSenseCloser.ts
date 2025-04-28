@@ -35,7 +35,6 @@ export default class KustoIntelliSenseCloser {
             label: 'Close IntelliSense',
             keybindings: [monaco.KeyMod.Shift | monaco.KeyCode.Enter],
             run: (editor) => closeIntelliSense(this.editor),
-            contextMenuGroupId: '1_modification',
         });
     }
 }
