@@ -91,9 +91,14 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+## 13.0.2
+
+-   fix: revert the behaviour that closed the IntelliSense/completion menu when pressing `Shift+Enter` (introduced in 13.0.1).
+
 ## 13.0.1
 
 -   feat: Close IntelliSense automatically when running a query with `Shift+Enter`.
+-   chore: upgrade **language‑service‑next** to **v12.0.0**.
 
 ## 13.0.0
 
