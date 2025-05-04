@@ -3,7 +3,6 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './editorExtensions/commandHighlighter';
 import KustoCommandFormatter from './editorExtensions/commandFormatter';
-import KustoIntelliSenseCloser from './editorExtensions/KustoIntelliSenseCloser';
 import { extend } from './extendedEditor';
 import type { LanguageServiceDefaults, WorkerAccessor } from './types';
 import type { LanguageSettings } from './languageServiceManager/settings';
@@ -127,7 +126,6 @@ monaco.editor.onDidCreateEditor((editor) => {
 
     if (isStandaloneCodeEditor(editor)) {
         new KustoCommandFormatter(editor);
-        new KustoIntelliSenseCloser(editor);
     }
 
     triggerSuggestDialogWhenCompletionItemSelected(editor);
