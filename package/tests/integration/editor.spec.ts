@@ -46,5 +46,17 @@ test.describe('editor', () => {
             await page.keyboard.press('ArrowLeft');
             await expect(bracketElements).toHaveCount(2);
         });
+
+        test('should upper case selected text', async ({ page }) => {
+            await page.keyboard.type('storm events| where (datetime() < ago(1h))');
+            await page.keyboard.press('ControlOrMeta+A');
+
+            await page.keyboard.press('Control+Shift+U');
+
+            const editor = model.editor();
+
+            const editorValue = editor.editorTextContent().locator;
+            await expect(editorValue).toContainText('STORM EVENTS| WHERE (DATETIME() < AGO(1H))');
+        });
     });
 });
