@@ -65,6 +65,7 @@ function App() {
                 value: 'StormEvents | take 10',
                 language: 'kusto',
                 theme: 'kusto-light',
+                'semanticHighlighting.enabled': true,
             });
 
             monaco.languages.kusto.getKustoWorker().then((workerAccessor: monaco.languages.kusto.WorkerAccessor) => {

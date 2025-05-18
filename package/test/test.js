@@ -40,6 +40,7 @@ fetch('./test/mode.txt')
                 },
                 fixedOverflowWidgets: true,
                 copyWithSyntaxHighlighting: true,
+                'semanticHighlighting.enabled': true,
             });
 
             applyDefaultsOnDomElements();
