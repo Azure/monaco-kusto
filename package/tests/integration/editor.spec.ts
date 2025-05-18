@@ -47,7 +47,7 @@ test.describe('editor', () => {
             await expect(bracketElements).toHaveCount(2);
         });
 
-        test('wrap pasted datetime strings with datetime()', async ({ page }) => {
+        test('wrap pasted extended datetime strings with datetime()', async ({ page }) => {
             await page.evaluate(() => {
                 navigator.clipboard.writeText('2023-01-01T00:00:00Z');
             });
@@ -56,6 +56,17 @@ test.describe('editor', () => {
 
             const editorValue = model.editor().textContent().locator;
             await expect(editorValue).toHaveText('datetime(2023-01-01T00:00:00Z)');
+        });
+
+        test('wrap pasted date only strings with datetime()', async ({ page }) => {
+            await page.evaluate(() => {
+                navigator.clipboard.writeText('2023-01-01');
+            });
+
+            await page.keyboard.press('ControlOrMeta+V');
+
+            const editorValue = model.editor().textContent().locator;
+            await expect(editorValue).toHaveText('datetime(2023-01-01)');
         });
     });
 });

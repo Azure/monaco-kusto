@@ -6,7 +6,7 @@ export function dateStringWrapper(editor: monaco.editor.ICodeEditor) {
         }
         const model = editor.getModel();
         const pastedTextString = model.getValueInRange(pastedTextRange);
-        if (isBareUtcDate(pastedTextString)) {
+        if (isBareIsoDate(pastedTextString)) {
             const selection = editor.getSelection();
             const startPos = selection?.getStartPosition();
             if (model && startPos) {
@@ -23,7 +23,7 @@ export function dateStringWrapper(editor: monaco.editor.ICodeEditor) {
     });
 }
 
-function isBareUtcDate(text: string): boolean {
+export function isBareIsoDate(text: string): boolean {
     const s = text.trim();
-    return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(s);
+    return /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}Z)?$/.test(s);
 }
