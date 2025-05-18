@@ -79,6 +79,7 @@ function App() {
             value: 'StormEvents | take 10',
             language: 'kusto',
             theme: 'kusto-light',
+            'semanticHighlighting.enabled': true,
         });
 
         getKustoWorker().then((workerAccessor) => {
