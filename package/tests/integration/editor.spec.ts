@@ -46,5 +46,16 @@ test.describe('editor', () => {
             await page.keyboard.press('ArrowLeft');
             await expect(bracketElements).toHaveCount(2);
         });
+
+        test('wrap pasted datetime strings with datetime()', async ({ page }) => {
+            await page.evaluate(() => {
+                navigator.clipboard.writeText('2023-01-01T00:00:00Z');
+            });
+
+            await page.keyboard.press('ControlOrMeta+V');
+
+            const editorValue = model.editor().textContent().locator;
+            await expect(editorValue).toHaveText('datetime(2023-01-01T00:00:00Z)');
+        });
     });
 });

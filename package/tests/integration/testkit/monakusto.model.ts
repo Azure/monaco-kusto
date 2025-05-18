@@ -32,6 +32,9 @@ export const createMonaKustoModel = (page: Page) => {
                 const button = page.locator(`#${theme}`);
                 await button.click();
             },
+            textContent: (editorTextContentLocator = page.locator('.view-lines.monaco-mouse-cursor-text')) => ({
+                locator: editorTextContentLocator,
+            }),
         }),
         settings: () => ({
             locator: page.locator('#settings'),
