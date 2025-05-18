@@ -1,25 +1,30 @@
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+
 export function dateStringWrapper(editor: monaco.editor.ICodeEditor) {
-    editor.onDidPaste(async (event) => {
-        const pastedTextRange = event.range;
-        if (!pastedTextRange) {
-            return;
-        }
+    editor.onDidPaste((event) => {
+        const { range } = event;
+        if (!range) return;
+
         const model = editor.getModel();
-        const pastedTextString = model.getValueInRange(pastedTextRange);
-        if (isBareIsoDate(pastedTextString)) {
-            const selection = editor.getSelection();
-            const startPos = selection?.getStartPosition();
-            if (model && startPos) {
-                const editOperation = {
-                    range: pastedTextRange,
-                    text: `datetime(${pastedTextString})`,
-                    forceMoveMarkers: true,
-                };
-                model.pushStackElement();
-                editor.executeEdits('paste-date', [editOperation], []);
-                model.pushStackElement();
-            }
-        }
+        const pasted = model.getValueInRange(range);
+        if (!isBareIsoDate(pasted)) return;
+
+        const wrapped = `datetime(${pasted})`;
+
+        const edit: monaco.editor.IIdentifiedSingleEditOperation = {
+            range,
+            text: wrapped,
+            forceMoveMarkers: true,
+        };
+
+        const cursorStateComputer: monaco.editor.ICursorStateComputer = () => {
+            const startOffset = model.getOffsetAt(range.getStartPosition());
+            const endPos = model.getPositionAt(startOffset + wrapped.length);
+
+            return [new monaco.Selection(endPos.lineNumber, endPos.column, endPos.lineNumber, endPos.column)];
+        };
+
+        editor.executeEdits('paste-date', [edit], cursorStateComputer);
     });
 }
 
