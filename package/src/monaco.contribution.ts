@@ -17,6 +17,7 @@ import {
     getEntityDataTypeFromCslType,
 } from './languageServiceManager/schema';
 import { getRangeHtml } from './extendedGlobalApi';
+import CaseInvertor from './editorExtensions/CaseInvertor';
 
 export * from './languageServiceManager/schema';
 export * from './languageServiceManager/renderInfo';
@@ -127,6 +128,7 @@ monaco.editor.onDidCreateEditor((editor) => {
 
     if (isStandaloneCodeEditor(editor)) {
         new KustoCommandFormatter(editor);
+        new CaseInvertor(editor);
     }
 
     triggerSuggestDialogWhenCompletionItemSelected(editor);
