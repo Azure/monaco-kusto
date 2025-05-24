@@ -46,7 +46,9 @@ test.describe('editor', () => {
             await page.keyboard.press('ArrowLeft');
             await expect(bracketElements).toHaveCount(2);
         });
+    });
 
+    test.describe('date paste wrapping', () => {
         test('wrap pasted extended datetime strings with datetime()', async ({ page }) => {
             await page.evaluate(() => {
                 navigator.clipboard.writeText('2023-01-01T00:00:00Z');
@@ -68,7 +70,9 @@ test.describe('editor', () => {
             const editorValue = model.editor().textContent().locator;
             await expect(editorValue).toHaveText('datetime(2023-01-01)');
         });
+    });
 
+    test.describe('case invertor', () => {
         test('should upper case selected text', async ({ page }) => {
             await page.keyboard.type('storm events| where (datetime() < ago(1h))');
             await page.keyboard.press('ControlOrMeta+A');
