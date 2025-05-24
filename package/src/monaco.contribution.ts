@@ -3,6 +3,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type * as mode from './kustoMode';
 import KustoCommandHighlighter from './editorExtensions/commandHighlighter';
 import KustoCommandFormatter from './editorExtensions/commandFormatter';
+import { dateStringWrapper } from './editorExtensions/dateStringWrapper';
 import { extend } from './extendedEditor';
 import type { LanguageServiceDefaults, WorkerAccessor } from './types';
 import type { LanguageSettings } from './languageServiceManager/settings';
@@ -129,6 +130,7 @@ monaco.editor.onDidCreateEditor((editor) => {
     }
 
     triggerSuggestDialogWhenCompletionItemSelected(editor);
+    dateStringWrapper(editor);
 });
 
 function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {

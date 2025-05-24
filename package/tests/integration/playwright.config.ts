@@ -12,6 +12,7 @@ export default defineConfig({
     use: {
         trace: 'retain-on-failure',
         defaultBrowserType: 'chromium',
+        permissions: ['clipboard-read', 'clipboard-write'],
     },
     webServer: {
         command: 'yarn vite serve . --config ./vite.config.ts',
