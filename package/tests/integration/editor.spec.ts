@@ -72,7 +72,7 @@ test.describe('editor', () => {
         });
     });
 
-    test.describe.only('case invertor', () => {
+    test.describe('case invertor', () => {
         test('should upper case selected text', async ({ page }) => {
             await page.keyboard.type('storm events| where (datetime() < ago(1h))');
             await page.keyboard.press('ControlOrMeta+A');
