@@ -93,9 +93,10 @@ Every PR should come with a test that checks it.
 
 ## 13.1.0
 
--   feat: Add keyboard shortcuts for changing case:
-    -   `Ctrl+Shift+U`: Converts current selection to **uppercase**
-    -   `Ctrl+Shift+L`: Converts current selection to **lowercase**
+- feat: Add keyboard shortcuts for changing case:
+    - `Ctrl+Shift+U`: Converts current selection to **uppercase**
+    - `Ctrl+Shift+L`: Converts current selection to **lowercase**
+- feat: Wrap pasted bare ISO **date** and **datetime** strings with `datetime()`
 
 ## 13.0.2
 
