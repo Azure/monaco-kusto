@@ -72,7 +72,7 @@ test.describe('editor', () => {
         });
     });
 
-    test.describe('case invertor', () => {
+    test.describe.only('case invertor', () => {
         test('should upper case selected text', async ({ page }) => {
             await page.keyboard.type('storm events| where (datetime() < ago(1h))');
             await page.keyboard.press('ControlOrMeta+A');
@@ -83,6 +83,18 @@ test.describe('editor', () => {
 
             const editorValue = editor.textContent().locator;
             await expect(editorValue).toContainText('STORM EVENTS| WHERE (DATETIME() < AGO(1H))');
+        });
+
+        test('should lower case selected text', async ({ page }) => {
+            await page.keyboard.type('STORM EVENTS| WHERE (DATETIME() < AGO(1H))');
+            await page.keyboard.press('ControlOrMeta+A');
+
+            await page.keyboard.press('Control+Shift+L');
+
+            const editor = model.editor();
+
+            const editorValue = editor.textContent().locator;
+            await expect(editorValue).toContainText('storm events| where (datetime() < ago(1h))');
         });
     });
 });

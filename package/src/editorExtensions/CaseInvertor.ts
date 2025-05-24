@@ -14,7 +14,7 @@ interface SuggestController extends monaco.editor.IEditorContribution {
  * and allows safe registration of actions with keybindings.
  */
 export default class CaseInvertor {
-    private actionRegistered = false;
+    private actionsRegistered = false;
 
     constructor(private editor: monaco.editor.IStandaloneCodeEditor) {
         this.editor.onDidChangeCursorSelection(() => {
@@ -22,14 +22,15 @@ export default class CaseInvertor {
                 return;
             }
 
-            if (!this.actionRegistered) {
-                this.registerAction();
-                this.actionRegistered = true;
+            if (!this.actionsRegistered) {
+                this.registerUpperCaseHandler();
+                this.registerLowerCaseHandler();
+                this.actionsRegistered = true;
             }
         });
     }
 
-    private registerAction() {
+    private registerUpperCaseHandler() {
         this.editor.addAction({
             id: 'kusto.toUpperCase',
             label: 'To Upper Case',
@@ -47,9 +48,23 @@ export default class CaseInvertor {
             },
         });
     }
-}
 
-export function closeIntelliSense(editor: monaco.editor.IStandaloneCodeEditor) {
-    const controller = editor.getContribution<SuggestController>('editor.contrib.suggestController');
-    controller?.cancelSuggestWidget();
+    private registerLowerCaseHandler() {
+        this.editor.addAction({
+            id: 'kusto.toLowerCase',
+            label: 'To Lower Case',
+            keybindings: [monaco.KeyMod.WinCtrl | monaco.KeyMod.Shift | monaco.KeyCode.KeyL],
+            run: (editor) => {
+                const selectedRange = editor.getSelection();
+                const selectedText = editor.getModel().getValueInRange(selectedRange);
+                const lowerCaseText = selectedText.toLowerCase();
+                editor.executeEdits('toLowerCase', [
+                    {
+                        range: selectedRange,
+                        text: lowerCaseText,
+                    },
+                ]);
+            },
+        });
+    }
 }
