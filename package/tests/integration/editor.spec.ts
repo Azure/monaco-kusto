@@ -77,7 +77,7 @@ test.describe('editor', () => {
             await page.keyboard.type('storm events| where (datetime() < ago(1h))');
             await page.keyboard.press('ControlOrMeta+A');
 
-            await page.keyboard.press('Control+Shift+U');
+            await page.keyboard.press('ControlOrMeta+Shift+U');
 
             const editor = model.editor();
 
@@ -89,7 +89,7 @@ test.describe('editor', () => {
             await page.keyboard.type('STORM EVENTS| WHERE (DATETIME() < AGO(1H))');
             await page.keyboard.press('ControlOrMeta+A');
 
-            await page.keyboard.press('Control+Shift+L');
+            await page.keyboard.press('ControlOrMeta+Shift+L');
 
             const editor = model.editor();
 

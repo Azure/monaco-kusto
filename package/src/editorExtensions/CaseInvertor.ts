@@ -15,8 +15,11 @@ interface SuggestController extends monaco.editor.IEditorContribution {
  */
 export default class CaseInvertor {
     private actionsRegistered = false;
+    private readonly ctrlKeyMod: number;
 
     constructor(private editor: monaco.editor.IStandaloneCodeEditor) {
+        this.ctrlKeyMod = this.isMac() ? monaco.KeyMod.WinCtrl : monaco.KeyMod.CtrlCmd;
+
         this.editor.onDidChangeCursorSelection(() => {
             if (this.editor.getModel()?.getLanguageId() !== 'kusto') {
                 return;
@@ -34,7 +37,7 @@ export default class CaseInvertor {
         this.editor.addAction({
             id: 'kusto.toUpperCase',
             label: 'To Upper Case',
-            keybindings: [monaco.KeyMod.WinCtrl | monaco.KeyMod.Shift | monaco.KeyCode.KeyU],
+            keybindings: [this.ctrlKeyMod | monaco.KeyMod.Shift | monaco.KeyCode.KeyU],
             run: (editor) => {
                 const selectedRange = editor.getSelection();
                 const selectedText = editor.getModel().getValueInRange(selectedRange);
@@ -53,7 +56,7 @@ export default class CaseInvertor {
         this.editor.addAction({
             id: 'kusto.toLowerCase',
             label: 'To Lower Case',
-            keybindings: [monaco.KeyMod.WinCtrl | monaco.KeyMod.Shift | monaco.KeyCode.KeyL],
+            keybindings: [this.ctrlKeyMod | monaco.KeyMod.Shift | monaco.KeyCode.KeyL],
             run: (editor) => {
                 const selectedRange = editor.getSelection();
                 const selectedText = editor.getModel().getValueInRange(selectedRange);
@@ -66,5 +69,10 @@ export default class CaseInvertor {
                 ]);
             },
         });
+    }
+
+    private isMac() {
+        const uaData = (navigator as any).userAgentData;
+        return uaData ? uaData.platform === 'macOS' : /Mac|iPod|iPhone|iPad/.test(navigator.platform);
     }
 }
