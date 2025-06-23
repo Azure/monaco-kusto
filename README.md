@@ -92,6 +92,7 @@ Every PR should come with a test that checks it.
 ## Changelog
 
 ## 13.1.1
+
 -   fix: Do not re-trigger IntelliSense when the user clicks on a dot (.), such as in column names.
 
 ## 13.1.0
