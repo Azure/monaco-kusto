@@ -62,6 +62,11 @@ const schema = {
                             CslType: 'string',
                             Examples: ['Custom State 1', 'Custom State 2'],
                         },
+                        {
+                            Name: 'Col.WithDotInName',
+                            Type: 'System.String',
+                            CslType: 'string',
+                        },
                     ],
                 },
             },

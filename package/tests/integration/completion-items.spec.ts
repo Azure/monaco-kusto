@@ -24,6 +24,19 @@ test.describe('completion items', () => {
         await expect(option.locator).toHaveText('1d');
     });
 
+    test('intellisense remains open on dot press', async ({ page }) => {
+        await page.keyboard.type('where col.');
+        await model.intellisense().wait();
+        await expect(model.intellisense().locator).toBeVisible();
+    });
+
+    test('intellisense remains open on control commands', async ({ page }) => {
+        await editor.fill('');
+        await page.keyboard.type('.');
+        await model.intellisense().wait();
+        await expect(model.intellisense().locator).toBeVisible();
+    });
+
     test('exclude parameters on matching results', async ({ page }) => {
         await page.keyboard.type('where StartTime > ago');
         await model.intellisense().wait();
