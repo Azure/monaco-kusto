@@ -91,6 +91,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+## 13.1.1
+
+-   fix: Update query operator color to adhere to accessibility standards.
+
 ## 13.1.0
 
 -   feat: Add keyboard shortcuts for changing case:
