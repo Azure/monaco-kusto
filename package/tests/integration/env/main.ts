@@ -187,3 +187,5 @@ function applyDefaultTheme() {
 
 (window as any).updateLanguageSettings = updateLanguageSettings;
 (window as any).setThemeMode = setThemeMode;
+(window as any).editor = editor;
+(window as any).getKustoWorker = async () => (await getKustoWorker())(editor.getModel().uri);
