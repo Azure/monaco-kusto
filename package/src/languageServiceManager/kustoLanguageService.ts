@@ -18,7 +18,7 @@ import GlobalState = Kusto.Language.GlobalState;
 
 import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
-import type { ClusterReference, DatabaseReference } from '../types';
+import type { ClusterReference, DatabaseReference, GetReferencedGlobalParamsResult } from '../types';
 import { Mutable } from '../util';
 import { ClassificationRange } from '../syntaxHighlighting/types';
 
@@ -181,7 +181,7 @@ export interface LanguageService {
         document: TextDocument,
         offset?: number
     ): Promise<{ name: string; kind: string; display: string }[]>;
-    getReferencedGlobalParams(document: TextDocument, offset?: number): Promise<{ name: string; type: string }[]>;
+    getReferencedGlobalParams(document: TextDocument, offset?: number): Promise<GetReferencedGlobalParamsResult>;
     getRenderInfo(document: TextDocument, cursorOffset: number): Promise<RenderInfo | undefined>;
     getDatabaseReferences(document: TextDocument, cursorOffset: number): Promise<DatabaseReference[]>;
     getClusterReferences(document: TextDocument, cursorOffset: number): Promise<ClusterReference[]>;
@@ -1426,14 +1426,24 @@ class KustoLanguageService implements LanguageService {
         return Promise.resolve(result);
     }
 
-    getReferencedGlobalParams(
+    async getReferencedGlobalParams(
         document: TextDocument,
         cursorOffset?: number
-    ): Promise<{ name: string; type: string }[]> {
+    ): Promise<GetReferencedGlobalParamsResult> {
         const parsedAndAnalyzed = this.parseAndAnalyze(document, cursorOffset);
 
         if (!parsedAndAnalyzed) {
-            Promise.resolve([]);
+            return { kind: 'ok', parameters: [] };
+        }
+
+        const diagnostics = parsedAndAnalyzed.GetDiagnostics().GetEnumerator();
+
+        while (diagnostics.moveNext()) {
+            if (diagnostics.Current.Code === 'KS245') {
+                return { kind: 'maximumDepthExceeded' };
+            } else {
+                console.warn(`getReferencedGlobalParams: ${diagnostics.Current.Code} ${diagnostics.Current.Message}`);
+            }
         }
 
         // We take the ambient parameters
@@ -1453,8 +1463,8 @@ class KustoLanguageService implements LanguageService {
                 ambientParameters.filter((ambientParameter) => ambientParameter === referencedSymbol).length > 0
         );
 
-        const result = intersection.map((param) => ({ name: param.Name, type: param.Type.Name }));
-        return Promise.resolve(result);
+        const parameters = intersection.map((param) => ({ name: param.Name, type: param.Type.Name }));
+        return { kind: 'ok', parameters };
     }
 
     getGlobalParams(document: TextDocument): Promise<{ name: string; type: string }[]> {
