@@ -29,6 +29,13 @@ export interface LanguageServiceDefaults {
     getWorkerMaxIdleTime(): number;
 }
 
+/**
+ * kind == maximumDepthExceeded: Query syntax depth exceeded maximum safe limit
+ */
+export type GetReferencedGlobalParamsResult =
+    | { kind: 'ok'; parameters: { name: string; type: string }[] }
+    | { kind: 'maximumDepthExceeded' };
+
 export interface KustoWorker {
     setSchema(schema: Schema): Promise<void>;
     setSchemaFromShowSchema(
@@ -69,7 +76,7 @@ export interface KustoWorker {
      * statement.
      * It is also different from getGlobalParams that will return all global parameters whether used or not.
      */
-    getReferencedGlobalParams(uri: string, cursorOffset?: number): Promise<{ name: string; type: string }[]>;
+    getReferencedGlobalParams(uri: string, cursorOffset?: number): Promise<GetReferencedGlobalParamsResult>;
 
     getReferencedSymbols(uri: string, cursorOffset?: number): Promise<{ name: string; kind: string }[]>;
     /**
