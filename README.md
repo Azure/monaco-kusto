@@ -91,6 +91,10 @@ Every PR should come with a test that checks it.
 
 ## Changelog
 
+## 14.0.0
+
+-   feat: Add maximumDepthExceeded result kind to getReferencedGlobalParams
+
 ### 13.1.3
 
 -   chore: Revert @kusto/language-service-next upgrade to 12.1.0
