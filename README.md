@@ -85,11 +85,16 @@ Every PR should come with a test that checks it.
     -   Run `yarn test:it:serve` to start the test server and rebuild automatically after each change.
     -   Run `yarn test:it:watch` to run tests in the terminal and automatically re-run them when test files change.
 
-> **Best practice:**  
-> Before running `yarn test:it` or `yarn test:it:watch`, first run `yarn test:it:serve`.  
+> **Best practice:**
+> Before running `yarn test:it` or `yarn test:it:watch`, first run `yarn test:it:serve`.
 > These scripts (`test:it` and `test:it:watch`) do **not** automatically rebuild the project, so running the server ensures your latest code is tested.
 
 ## Changelog
+
+### 13.1.2
+
+-   chore: Update @kusto/language-service to 0.0.285
+-   chore: Update @kusto/language-service-next to 12.1.0
 
 ## 13.1.1
 
