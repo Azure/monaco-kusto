@@ -94,6 +94,7 @@ Every PR should come with a test that checks it.
 ### 13.1.2
 
 -   chore: Update @kusto/language-service to 0.0.285
+-   chore: Update @kusto/language-service-next to 12.1.0
 
 ## 13.1.1
 
