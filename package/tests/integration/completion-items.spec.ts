@@ -92,4 +92,13 @@ test.describe('completion items', () => {
         const options = model.intellisense().options();
         await expect(options.locator).toHaveCount(2);
     });
+
+    test('Intellisense should work for functions', async ({ page }) => {
+        await editor.clear();
+        await editor.pressSequentially('MyFunc');
+        await model.intellisense().wait();
+
+        const options = model.intellisense().options();
+        await expect(options.locator).toHaveCount(1);
+    });
 });
