@@ -43,6 +43,15 @@ export const createMonaKustoModel = (page: Page) => {
                 await checkbox.setChecked(checked);
             },
         }),
+        getReferencedGlobalParams: async () => {
+            const message = page.waitForEvent('dialog').then(async (dialog) => {
+                const message = dialog.message();
+                await dialog.dismiss();
+                return message;
+            });
+            await page.getByRole('button', { name: 'getReferencedGlobalParams' }).click();
+            return message;
+        },
     };
 };
 
