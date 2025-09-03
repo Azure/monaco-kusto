@@ -6,7 +6,7 @@ import * as kustoService from './languageServiceManager/kustoLanguageService';
 import type { LanguageSettings } from './languageServiceManager/settings';
 import { Schema, showSchema, ScalarParameter, Database, TabularParameter } from './languageServiceManager/schema';
 import type { RenderInfo } from './languageServiceManager/renderInfo';
-import type { ClusterReference, DatabaseReference, KustoWorker } from './types';
+import type { ClusterReference, DatabaseReference, GetReferencedGlobalParamsResult, KustoWorker } from './types';
 import { ClassificationRange } from './syntaxHighlighting/types';
 
 export type InterfaceFor<C> = {
@@ -119,7 +119,7 @@ export class KustoWorkerImpl {
     getReferencedSymbols(uri: string, cursorOffset?: number) {
         const document = this._getTextDocument(uri);
         if (!document) {
-            console.error(`getReferencedGlobalParams: document is ${document}. uri is ${uri}`);
+            console.error(`getReferencedSymbols: document is ${document}. uri is ${uri}`);
             return null;
         }
 
@@ -131,7 +131,7 @@ export class KustoWorkerImpl {
         return referencedParams;
     }
 
-    getReferencedGlobalParams(uri: string, cursorOffset?: number): Promise<{ name: string; type: string }[]> {
+    getReferencedGlobalParams(uri: string, cursorOffset?: number): Promise<GetReferencedGlobalParamsResult> {
         const document = this._getTextDocument(uri);
         if (!document) {
             console.error(`getReferencedGlobalParams: document is ${document}. uri is ${uri}`);
