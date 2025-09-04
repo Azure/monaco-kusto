@@ -65,7 +65,17 @@ const schema = {
                     ],
                 },
             },
-            Functions: {},
+            Functions: {
+                MyFunc: {
+                    Name: 'MyFunc',
+                    InputParameters: [],
+                    Body: '{     StormEvents     | limit 100 }  ',
+                    Folder: 'Demo',
+                    DocString: 'Simple demo function',
+                    FunctionKind: 'Unknown',
+                    OutputColumns: [],
+                },
+            },
         },
     },
 };
