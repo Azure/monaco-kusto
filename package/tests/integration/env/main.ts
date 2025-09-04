@@ -197,3 +197,11 @@ function applyDefaultTheme() {
 
 (window as any).updateLanguageSettings = updateLanguageSettings;
 (window as any).setThemeMode = setThemeMode;
+(window as any).getReferencedGlobalParamsButton = async () =>
+    getKustoWorker()
+        .then((workerAccessor) => workerAccessor(editor.getModel().uri))
+        .then((worker) => worker.getReferencedGlobalParams(editor.getModel().uri.toString(), 0))
+        .then(
+            (result) => alert('success: ' + JSON.stringify(result)),
+            (result) => alert('exception: ' + JSON.stringify(result))
+        );
