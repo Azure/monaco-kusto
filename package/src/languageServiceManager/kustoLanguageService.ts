@@ -989,6 +989,7 @@ class KustoLanguageService implements LanguageService {
                                     : (inputParam.Columns as undefined | null | []),
                             })),
                         })),
+                    graphs: [] // this is a temporary workaround as graphs are not included in the .show schema as json command output
                 })
             );
 
@@ -1761,10 +1762,11 @@ class KustoLanguageService implements LanguageService {
         const tableSymbols: sym.Symbol[] = (db.tables || []).map(this.createTableSymbol);
         const functionSymbols = (db.functions || []).map(this.createFunctionSymbol);
         const entityGroupsSymbols = (db.entityGroups || []).map(this.createEntityGroupSymbol);
+        const graphModelSymbols = (db.graphs || []).map(this.createGraphModelSymbol);
         const databaseSymbol = new sym.DatabaseSymbol.$ctor2(
             db.name,
             db.alternateName || null,
-            tableSymbols.concat(functionSymbols).concat(entityGroupsSymbols)
+            tableSymbols.concat(functionSymbols).concat(entityGroupsSymbols).concat(graphModelSymbols)
         );
 
         return databaseSymbol;
@@ -2242,6 +2244,10 @@ class KustoLanguageService implements LanguageService {
 
     private static createEntityGroupSymbol(entityGroup: s.EntityGroup): sym.EntityGroupSymbol {
         return new sym.EntityGroupSymbol.$ctor3(entityGroup.name, entityGroup.members.join(), null);
+    }
+
+    private static createGraphModelSymbol(graph: s.Graph): sym.GraphModelSymbol {
+        return new sym.GraphModelSymbol.$ctor1(graph.name, null, null, null)
     }
 }
 

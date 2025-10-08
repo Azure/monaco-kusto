@@ -59,9 +59,14 @@ export interface Database {
     readonly alternateName?: string;
     readonly tables: readonly Table[];
     readonly functions: readonly Function[];
+    readonly graphs: readonly Graph[];
     readonly entityGroups: readonly EntityGroup[];
     readonly majorVersion: number;
     readonly minorVersion: number;
+}
+
+export interface Graph {
+    readonly name: string;
 }
 
 export type ClusterType = 'Engine' | 'DataManagement' | 'ClusterManager';
