@@ -67,6 +67,10 @@ export interface Database {
 
 export interface Graph {
     readonly name: string;
+    readonly entityType: 'Graph';
+    readonly edges: string[];
+    readonly nodes: string[];
+    readonly snapshots: string[];
 }
 
 export type ClusterType = 'Engine' | 'DataManagement' | 'ClusterManager';
@@ -224,6 +228,16 @@ export namespace showSchema {
         readonly [functionName: string]: Function;
     }
 
+    export interface Graph {
+        readonly Name: string;
+        readonly Nodes: string[];
+        readonly Edges: string[];
+    }
+
+    export interface Graphs {
+        readonly [graphName: string]: Graph;
+    }
+
     export interface Database {
         readonly Name: string;
         readonly Tables: Tables;
@@ -233,6 +247,7 @@ export namespace showSchema {
         readonly MajorVersion: number;
         readonly MinorVersion: number;
         readonly Functions: Functions;
+        readonly Graphs: Graphs;
         readonly DatabaseAccessMode: string;
     }
 

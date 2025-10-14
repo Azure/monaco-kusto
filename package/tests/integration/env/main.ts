@@ -23,6 +23,10 @@ window.MonacoEnvironment = {
     },
 };
 
+interface TestableMonacoEditorElement extends HTMLElement {
+    __containerRef: monaco.editor.IStandaloneCodeEditor;
+}
+
 const schema = {
     Plugins: [],
     Databases: {
@@ -64,6 +68,62 @@ const schema = {
                         },
                     ],
                 },
+                SimpleGraph_Edges: {
+                    Name: 'SimpleGraph_Edges',
+                    Folder: 'Graph/Simple',
+                    DocString:
+                        'Represents a relationship table capturing interactions between entities such as people, companies, and cities.',
+                    OrderedColumns: [
+                        {
+                            Name: 'source',
+                            Type: 'System.String',
+                            CslType: 'string',
+                        },
+                        {
+                            Name: 'target',
+                            Type: 'System.String',
+                            CslType: 'string',
+                        },
+                        {
+                            Name: 'lbl',
+                            Type: 'System.String',
+                            CslType: 'string',
+                        },
+                        {
+                            Name: 'since',
+                            Type: 'System.String',
+                            CslType: 'string',
+                        },
+                    ],
+                },
+                SimpleGraph_Nodes: {
+                    Name: 'SimpleGraph_Nodes',
+                    Folder: 'Graph/Simple',
+                    DocString:
+                        'Represents a nodes table including people, companies, and cities, with associated metadata.',
+                    OrderedColumns: [
+                        {
+                            Name: 'id',
+                            Type: 'System.String',
+                            CslType: 'string',
+                        },
+                        {
+                            Name: 'lbl',
+                            Type: 'System.String',
+                            CslType: 'string',
+                        },
+                        {
+                            Name: 'name',
+                            Type: 'System.String',
+                            CslType: 'string',
+                        },
+                        {
+                            Name: 'properties',
+                            Type: 'System.Object',
+                            CslType: 'dynamic',
+                        },
+                    ],
+                },
             },
             Functions: {
                 MyFunc: {
@@ -76,6 +136,15 @@ const schema = {
                     OutputColumns: [],
                 },
             },
+            Graphs: {
+                Simple: {
+                    Name: 'Simple',
+                    EntityType: 'Graph',
+                    Nodes: ['SimpleGraph_Nodes'],
+                    Edges: ['SimpleGraph_Edges'],
+                    Snapshots: [],
+                },
+            },
         },
     },
 };
@@ -86,7 +155,8 @@ function getEditorValue(): string {
     return storageValue?.trim().length ? storageValue : defaultValue;
 }
 
-const editor = monaco.editor.create(document.getElementById('editor'), {
+const container = document.getElementById('editor')
+const editor = monaco.editor.create(container, {
     value: getEditorValue(),
     language: 'kusto',
     theme: 'kusto-light',
@@ -102,6 +172,7 @@ const editor = monaco.editor.create(document.getElementById('editor'), {
     copyWithSyntaxHighlighting: true,
     'semanticHighlighting.enabled': true,
 });
+(container as TestableMonacoEditorElement).__containerRef = editor;
 
 const updateEditorValueInLocalStorage = () => localStorage.setItem('dev-kusto-query', editor.getValue());
 const debouncedUpdateEditorValueInLocalStorage = debounce(updateEditorValueInLocalStorage, 1000);

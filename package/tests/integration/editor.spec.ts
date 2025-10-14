@@ -97,4 +97,37 @@ test.describe('editor', () => {
             await expect(editorValue).toContainText('storm events| where (datetime() < ago(1h))');
         });
     });
+
+    test.describe('schema validation', () => {
+        test('graph schema works', async ({ page }) => {
+            await page.keyboard.type("graph('Simple')\n");
+
+            // test node1 completion
+            await page.keyboard.type("| graph-match (node1)-[edge]->(node2)\n    where node1.");
+            await model.intellisense().wait()
+            const nodeOptions = await model.intellisense().options().locator.allInnerTexts();
+            expect(nodeOptions).toEqual([
+                'id',
+                'lbl',
+                'name',
+                'properties'
+            ]);
+
+            // test edge completion
+            await page.keyboard.type('name == "bli" and edge.');
+            await model.intellisense().wait()
+            const edgeOptions = await model.intellisense().options().locator.allInnerTexts();
+            expect(edgeOptions).toEqual([
+                'lbl',
+                'since',
+                'source',
+                'target'
+            ]);
+
+            // test entire query including graph name
+            await page.keyboard.type('lbl == "bla"\nproject node_column = node1.name, edge_column = edge.lbl');
+            await model.intellisense().wait() // just to ensure the query is fully parsed
+            await expect.poll(model.editor().hasErrors).toBeFalsy();
+        });
+    });
 });
