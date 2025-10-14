@@ -168,6 +168,10 @@ This section provides a high-level overview of the main files and their responsi
 
 ## Changelog
 
+### 14.1.0
+
+-   feat: support graph schema
+
 ### 14.0.1
 
 -   chore: Update @kusto/language-service-next upgrade to 12.2.0
