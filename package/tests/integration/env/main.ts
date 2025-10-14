@@ -155,7 +155,7 @@ function getEditorValue(): string {
     return storageValue?.trim().length ? storageValue : defaultValue;
 }
 
-const container = document.getElementById('editor')
+const container = document.getElementById('editor');
 const editor = monaco.editor.create(container, {
     value: getEditorValue(),
     language: 'kusto',

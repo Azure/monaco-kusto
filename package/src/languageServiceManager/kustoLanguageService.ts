@@ -16,13 +16,7 @@ import k2 = Kusto.Language.Editor;
 import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
-import {
-    Database,
-    EntityGroup,
-    getCslTypeNameFromClrType,
-    getEntityDataTypeFromCslType,
-    showSchema,
-} from './schema';
+import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFromCslType, showSchema } from './schema';
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference, GetReferencedGlobalParamsResult } from '../types';
 import { Mutable } from '../util';
@@ -939,7 +933,7 @@ class KustoLanguageService implements LanguageService {
                     EntityGroups = {},
                     MinorVersion,
                     MajorVersion,
-                    Graphs
+                    Graphs,
                 }: s.showSchema.Database) => ({
                     name: Name,
                     alternateName: databaseInContextAlternateName,
@@ -1003,8 +997,8 @@ class KustoLanguageService implements LanguageService {
                             edges: graph.Edges,
                             nodes: graph.Nodes,
                             snapshots: [],
-                        }
-                        return [...graphArray, graphEntity]
+                        };
+                        return [...graphArray, graphEntity];
                     }, []), // this is a temporary workaround as graphs are not included in the .show schema as json command output
                 })
             );
@@ -2263,9 +2257,9 @@ class KustoLanguageService implements LanguageService {
     }
 
     private static createGraphModelSymbol(graph: s.Graph): sym.GraphModelSymbol {
-        const edges =  new Bridge.ArrayEnumerable(graph.edges || []);
-        const nodes =  new Bridge.ArrayEnumerable(graph.nodes || []);
-        return new sym.GraphModelSymbol.$ctor1(graph.name, edges, nodes, null)
+        const edges = new Bridge.ArrayEnumerable(graph.edges || []);
+        const nodes = new Bridge.ArrayEnumerable(graph.nodes || []);
+        return new sym.GraphModelSymbol.$ctor1(graph.name, edges, nodes, null);
     }
 }
 
