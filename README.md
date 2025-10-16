@@ -147,6 +147,9 @@ This section provides a high-level overview of the main files and their responsi
 
 ![img.png](img.png)
 
+- **`monaco.contribution`**  
+  Declares and exports the Kusto language as a Monaco Editor contribution, making it available for registration and use externally.
+
 - **`kustoMode`** Sets up and registers the Kusto language in Monaco Editor, wiring together language features, workers, and configuration.
 
 - **`workerManager`** Manages the lifecycle and communication with web workers that run language services in the background.
@@ -159,9 +162,6 @@ This section provides a high-level overview of the main files and their responsi
 
 - **`languageFeatures`**  
   Contains adapters and implementations for Monaco Editor language features (completion, hover, formatting, folding, etc.) specific to Kusto.
-
-- **`monaco.contribution`**  
-  Declares and exports the Kusto language as a Monaco Editor contribution, making it available for registration and use externally.
 
 - **`monacoInstance`**  
   Represents the Monaco Editor instance itself. It is responsible for editor creation, configuration, and interaction with the registered Kusto language features.
