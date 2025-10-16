@@ -56,6 +56,14 @@ There are 2 APIs to set a Kusto schema:
    interface `Result` in `schema.ts`), so when this method is used, it also
    requires a cluster URI and the name of the database in context.
 
+### Schema Parsing Flow
+
+The schema parsing process in Monaco-Kusto involves several components, starting from the Kusto command and ending with language features in the editor. Here is how the flow works:
+
+Below is a diagram illustrating the schema parsing flow:
+
+![img_1.png](img_1.png)
+
 ## Getting Started: Running the Local Demo App
 
 To quickly try Monaco-Kusto locally, run the following command from the `package` folder:
