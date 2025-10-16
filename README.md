@@ -56,6 +56,24 @@ There are 2 APIs to set a Kusto schema:
    interface `Result` in `schema.ts`), so when this method is used, it also
    requires a cluster URI and the name of the database in context.
 
+### Schema Parsing Flow
+
+The schema parsing process in Monaco-Kusto involves several components, starting from the Kusto command and ending with language features in the editor. Here is how the flow works:
+
+Below is a diagram illustrating the schema parsing flow:
+
+![img_1.png](img_1.png)
+
+## Getting Started: Running the Local Demo App
+
+To quickly try Monaco-Kusto locally, run the following command from the `package` folder:
+
+```
+yarn start
+```
+
+This will start a local development server and open the demo app at http://localhost:7777.
+
 ## Contributing
 
 Every PR should come with a test that checks it.
@@ -88,6 +106,65 @@ Every PR should come with a test that checks it.
 > **Best practice:**
 > Before running `yarn test:it` or `yarn test:it:watch`, first run `yarn test:it:serve`.
 > These scripts (`test:it` and `test:it:watch`) do **not** automatically rebuild the project, so running the server ensures your latest code is tested.
+
+## Running Monaco-Kusto Locally in Azure-Kusto-WebUX
+
+To run monaco-kusto locally inside the Azure-Kusto-WebUX project (which should exist outside this project folder with the original project name `Azure-Kusto-WebUX`), you can use the provided script:
+
+```sh
+./debug-monaco-kusto.sh
+```
+
+### Script Modes: KustoWeb and Fabric
+
+There are two ways to run the script:
+
+- **KustoWeb (default):** The script is currently set up to run the `kustoweb` app inside Azure-Kusto-WebUX. This is the default behavior.
+- **Fabric:** To run the Fabric app instead, simply comment out the Step 4 section for KustoWeb and uncomment the Step 4 section for Fabric in `debug-monaco-kusto.sh`.
+
+This allows you to easily switch between running KustoWeb and Fabric for local development.
+
+### Project Structure Requirements
+
+For the debug-monaco-kusto.sh script to work, ensure that your project structure resembles the following, with both `monaco-kusto` and `Azure-Kusto-WebUX` as sibling folders:
+
+```
+/your-workspace-root
+|-- monaco-kusto
+|   |-- ...
+|   |-- debug-monaco-kusto.sh
+|   |-- ...
+|
+|-- Azure-Kusto-WebUX
+    `-- ...
+```
+
+The important part is that the `Azure-Kusto-WebUX` folder is a sibling to `monaco-kusto`, and that its `node_modules` folder and `package.json` file are at its root. The script relies on this structure to copy files and run the correct build steps.
+
+## Architecture Overview
+
+This section provides a high-level overview of the main files and their responsibilities in the project.
+
+![img.png](img.png)
+
+- **`monaco.contribution`**  
+  Declares and exports the Kusto language as a Monaco Editor contribution, making it available for registration and use externally.
+
+- **`kustoMode`** Sets up and registers the Kusto language in Monaco Editor, wiring together language features, workers, and configuration.
+
+- **`workerManager`** Manages the lifecycle and communication with web workers that run language services in the background.
+
+- **`kustoWorker`** Implements the actual worker logic, handling requests for language features from the main thread.
+
+- **`kustoLanguageService`**  
+  Implements the core logic for Kusto language features such as parsing, validation, and providing language intelligence (completion, diagnostics, etc.).  
+  Uses the `language-service-next` library, which was originally created in C# and migrated to TypeScript using bridgejs.
+
+- **`languageFeatures`**  
+  Contains adapters and implementations for Monaco Editor language features (completion, hover, formatting, folding, etc.) specific to Kusto.
+
+- **`monacoInstance`**  
+  Represents the Monaco Editor instance itself. It is responsible for editor creation, configuration, and interaction with the registered Kusto language features.
 
 ## Changelog
 
@@ -1014,17 +1091,3 @@ Every PR should come with a test that checks it.
 #### Bug fixes
 
 -   setSchema does not update syntax highlighting
-
-# Contributing
-
-This project welcomes contributions and suggestions. Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
-
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
