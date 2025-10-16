@@ -89,6 +89,40 @@ Every PR should come with a test that checks it.
 > Before running `yarn test:it` or `yarn test:it:watch`, first run `yarn test:it:serve`.
 > These scripts (`test:it` and `test:it:watch`) do **not** automatically rebuild the project, so running the server ensures your latest code is tested.
 
+## Running Monaco-Kusto Locally in Azure-Kusto-WebUX
+
+To run monaco-kusto locally inside the Azure-Kusto-WebUX project (which should exist outside this project folder with the original project name `Azure-Kusto-WebUX`), you can use the provided script:
+
+```sh
+./debug-monaco-kusto.sh
+```
+
+### Script Modes: KustoWeb and Fabric
+
+There are two ways to run the script:
+
+- **KustoWeb (default):** The script is currently set up to run the `kustoweb` app inside Azure-Kusto-WebUX. This is the default behavior.
+- **Fabric:** To run the Fabric app instead, simply comment out the Step 4 section for KustoWeb and uncomment the Step 4 section for Fabric in `debug-monaco-kusto.sh`.
+
+This allows you to easily switch between running KustoWeb and Fabric for local development.
+
+### Project Structure Requirements
+
+For the debug-monaco-kusto.sh script to work, ensure that your project structure resembles the following, with both `monaco-kusto` and `Azure-Kusto-WebUX` as sibling folders:
+
+```
+/your-workspace-root
+|-- monaco-kusto
+|   |-- ...
+|   |-- debug-monaco-kusto.sh
+|   |-- ...
+|
+|-- Azure-Kusto-WebUX
+    `-- ...
+```
+
+The important part is that the `Azure-Kusto-WebUX` folder is a sibling to `monaco-kusto`, and that its `node_modules` folder and `package.json` file are at its root. The script relies on this structure to copy files and run the correct build steps.
+
 ## Architecture Overview
 
 This section provides a high-level overview of the main files and their responsibilities in the project.
