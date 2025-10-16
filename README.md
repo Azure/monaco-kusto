@@ -89,6 +89,31 @@ Every PR should come with a test that checks it.
 > Before running `yarn test:it` or `yarn test:it:watch`, first run `yarn test:it:serve`.
 > These scripts (`test:it` and `test:it:watch`) do **not** automatically rebuild the project, so running the server ensures your latest code is tested.
 
+## Architecture Overview
+
+This section provides a high-level overview of the main files and their responsibilities in the project.
+
+![img.png](img.png)
+
+- **`kustoMode`** Sets up and registers the Kusto language in Monaco Editor, wiring together language features, workers, and configuration.
+
+- **`workerManager`** Manages the lifecycle and communication with web workers that run language services in the background.
+
+- **`kustoWorker`** Implements the actual worker logic, handling requests for language features from the main thread.
+
+- **`kustoLanguageService`**  
+  Implements the core logic for Kusto language features such as parsing, validation, and providing language intelligence (completion, diagnostics, etc.).  
+  Uses the `language-service-next` library, which was originally created in C# and migrated to TypeScript using bridgejs.
+
+- **`languageFeatures`**  
+  Contains adapters and implementations for Monaco Editor language features (completion, hover, formatting, folding, etc.) specific to Kusto.
+
+- **`monaco.contribution`**  
+  Declares and exports the Kusto language as a Monaco Editor contribution, making it available for registration and use externally.
+
+- **`monacoInstance`**  
+  Represents the Monaco Editor instance itself. It is responsible for editor creation, configuration, and interaction with the registered Kusto language features.
+
 ## Changelog
 
 ### 14.0.1
