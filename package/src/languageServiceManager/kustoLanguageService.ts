@@ -2259,7 +2259,8 @@ class KustoLanguageService implements LanguageService {
     private static createGraphModelSymbol(graph: s.Graph): sym.GraphModelSymbol {
         const edges = new Bridge.ArrayEnumerable(graph.edges || []);
         const nodes = new Bridge.ArrayEnumerable(graph.nodes || []);
-        return new sym.GraphModelSymbol.$ctor1(graph.name, edges, nodes, null);
+        const snapshots = new Bridge.ArrayEnumerable(graph.snapshots || []);
+        return new sym.GraphModelSymbol.$ctor1(graph.name, edges, nodes, snapshots );
     }
 }
 
