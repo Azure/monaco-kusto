@@ -16,7 +16,7 @@ import k2 = Kusto.Language.Editor;
 import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
-import { Database, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
+import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference, GetReferencedGlobalParamsResult } from '../types';
 import { Mutable } from '../util';
