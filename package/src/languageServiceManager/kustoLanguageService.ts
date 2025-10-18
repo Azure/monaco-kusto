@@ -16,7 +16,7 @@ import k2 = Kusto.Language.Editor;
 import sym = Kusto.Language.Symbols;
 import GlobalState = Kusto.Language.GlobalState;
 
-import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFromCslType, showSchema } from './schema';
+import { Database, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference, GetReferencedGlobalParamsResult } from '../types';
 import { Mutable } from '../util';
@@ -990,7 +990,7 @@ class KustoLanguageService implements LanguageService {
                                     : (inputParam.Columns as undefined | null | []),
                             })),
                         })),
-                    graphs: Object.values(Graphs).reduce((graphArray, graph: showSchema.Graph) => {
+                    graphs: Object.values(Graphs).reduce((graphArray, graph: s.showSchema.Graph) => {
                         const graphEntity = {
                             name: graph.Name,
                             entityType: 'Graph',
