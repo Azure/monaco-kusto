@@ -1,6 +1,11 @@
 import { Page } from '@playwright/test';
 import { LanguageSettings } from '../../../src/languageServiceManager/settings';
 import { ThemeName } from '../../../src/syntaxHighlighting/themes';
+import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
+
+interface TestableMonacoEditorElement extends HTMLElement {
+    __containerRef: editor.IStandaloneCodeEditor;
+}
 
 export const createMonaKustoModel = (page: Page) => {
     return {
@@ -35,6 +40,15 @@ export const createMonaKustoModel = (page: Page) => {
             textContent: (editorTextContentLocator = page.locator('.view-lines.monaco-mouse-cursor-text')) => ({
                 locator: editorTextContentLocator,
             }),
+            hasErrors: () => {
+                return page.getByTestId('query-editor').evaluate((e: TestableMonacoEditorElement) => {
+                    const range = e.__containerRef.getModel()?.getFullModelRange();
+                    const decorations = e.__containerRef.getDecorationsInRange(range!) ?? [];
+                    return decorations.some((d) => {
+                        return d.options.className?.includes('squiggly-error');
+                    });
+                });
+            },
         }),
         settings: () => ({
             locator: page.locator('#settings'),

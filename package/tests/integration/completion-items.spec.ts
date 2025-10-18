@@ -80,7 +80,7 @@ test.describe('completion items', () => {
         await model.intellisense().waitForFocused();
 
         const focusedItem = model.intellisense().focused();
-        expect(focusedItem.locator).toHaveText('timespan()');
+        await expect(focusedItem.locator).toHaveText('timespan()');
     });
 
     test('Intellisense should remain open when typing "project-re"', async ({ page }) => {
