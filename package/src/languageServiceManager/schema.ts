@@ -232,6 +232,7 @@ export namespace showSchema {
         readonly Name: string;
         readonly Nodes: string[];
         readonly Edges: string[];
+        readonly Snapshots: string[];
     }
 
     export interface Graphs {

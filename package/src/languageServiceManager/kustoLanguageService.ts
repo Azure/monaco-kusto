@@ -996,7 +996,7 @@ class KustoLanguageService implements LanguageService {
                             entityType: 'Graph',
                             edges: graph.Edges,
                             nodes: graph.Nodes,
-                            snapshots: [],
+                            snapshots: graph.Snapshots,
                         };
                         return [...graphArray, graphEntity];
                     }, []), // this is a temporary workaround as graphs are not included in the .show schema as json command output
