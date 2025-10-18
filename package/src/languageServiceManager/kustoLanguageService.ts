@@ -2260,7 +2260,7 @@ class KustoLanguageService implements LanguageService {
         const edges = new Bridge.ArrayEnumerable(graph.edges || []);
         const nodes = new Bridge.ArrayEnumerable(graph.nodes || []);
         const snapshots = new Bridge.ArrayEnumerable(graph.snapshots || []);
-        return new sym.GraphModelSymbol.$ctor1(graph.name, edges, nodes, snapshots );
+        return new sym.GraphModelSymbol.$ctor1(graph.name, edges, nodes, snapshots);
     }
 }
 
