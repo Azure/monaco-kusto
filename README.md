@@ -119,8 +119,8 @@ To run monaco-kusto locally inside the Azure-Kusto-WebUX project (which should e
 
 There are two ways to run the script:
 
-- **KustoWeb (default):** The script is currently set up to run the `kustoweb` app inside Azure-Kusto-WebUX. This is the default behavior.
-- **Fabric:** To run the Fabric app instead, simply comment out the Step 4 section for KustoWeb and uncomment the Step 4 section for Fabric in `debug-monaco-kusto.sh`.
+-   **KustoWeb (default):** The script is currently set up to run the `kustoweb` app inside Azure-Kusto-WebUX. This is the default behavior.
+-   **Fabric:** To run the Fabric app instead, simply comment out the Step 4 section for KustoWeb and uncomment the Step 4 section for Fabric in `debug-monaco-kusto.sh`.
 
 This allows you to easily switch between running KustoWeb and Fabric for local development.
 
@@ -147,26 +147,30 @@ This section provides a high-level overview of the main files and their responsi
 
 ![img.png](img.png)
 
-- **`monaco.contribution`**  
-  Declares and exports the Kusto language as a Monaco Editor contribution, making it available for registration and use externally.
+-   **`monaco.contribution`**  
+    Declares and exports the Kusto language as a Monaco Editor contribution, making it available for registration and use externally.
 
-- **`kustoMode`** Sets up and registers the Kusto language in Monaco Editor, wiring together language features, workers, and configuration.
+-   **`kustoMode`** Sets up and registers the Kusto language in Monaco Editor, wiring together language features, workers, and configuration.
 
-- **`workerManager`** Manages the lifecycle and communication with web workers that run language services in the background.
+-   **`workerManager`** Manages the lifecycle and communication with web workers that run language services in the background.
 
-- **`kustoWorker`** Implements the actual worker logic, handling requests for language features from the main thread.
+-   **`kustoWorker`** Implements the actual worker logic, handling requests for language features from the main thread.
 
-- **`kustoLanguageService`**  
-  Implements the core logic for Kusto language features such as parsing, validation, and providing language intelligence (completion, diagnostics, etc.).  
-  Uses the `language-service-next` library, which was originally created in C# and migrated to TypeScript using bridgejs.
+-   **`kustoLanguageService`**  
+    Implements the core logic for Kusto language features such as parsing, validation, and providing language intelligence (completion, diagnostics, etc.).  
+    Uses the `language-service-next` library, which was originally created in C# and migrated to TypeScript using bridgejs.
 
-- **`languageFeatures`**  
-  Contains adapters and implementations for Monaco Editor language features (completion, hover, formatting, folding, etc.) specific to Kusto.
+-   **`languageFeatures`**  
+    Contains adapters and implementations for Monaco Editor language features (completion, hover, formatting, folding, etc.) specific to Kusto.
 
-- **`monacoInstance`**  
-  Represents the Monaco Editor instance itself. It is responsible for editor creation, configuration, and interaction with the registered Kusto language features.
+-   **`monacoInstance`**  
+    Represents the Monaco Editor instance itself. It is responsible for editor creation, configuration, and interaction with the registered Kusto language features.
 
 ## Changelog
+
+### 14.1.0
+
+-   feat: support graph schema
 
 ### 14.0.1
 

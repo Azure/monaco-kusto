@@ -933,6 +933,7 @@ class KustoLanguageService implements LanguageService {
                     EntityGroups = {},
                     MinorVersion,
                     MajorVersion,
+                    Graphs,
                 }: s.showSchema.Database) => ({
                     name: Name,
                     alternateName: databaseInContextAlternateName,
@@ -989,6 +990,16 @@ class KustoLanguageService implements LanguageService {
                                     : (inputParam.Columns as undefined | null | []),
                             })),
                         })),
+                    graphs: Object.values(Graphs).reduce((graphArray, graph: s.showSchema.Graph) => {
+                        const graphEntity = {
+                            name: graph.Name,
+                            entityType: 'Graph',
+                            edges: graph.Edges,
+                            nodes: graph.Nodes,
+                            snapshots: graph.Snapshots,
+                        };
+                        return [...graphArray, graphEntity];
+                    }, []), // this is a temporary workaround as graphs are not included in the .show schema as json command output
                 })
             );
 
@@ -1761,10 +1772,11 @@ class KustoLanguageService implements LanguageService {
         const tableSymbols: sym.Symbol[] = (db.tables || []).map(this.createTableSymbol);
         const functionSymbols = (db.functions || []).map(this.createFunctionSymbol);
         const entityGroupsSymbols = (db.entityGroups || []).map(this.createEntityGroupSymbol);
+        const graphModelSymbols = (db.graphs || []).map(this.createGraphModelSymbol);
         const databaseSymbol = new sym.DatabaseSymbol.$ctor2(
             db.name,
             db.alternateName || null,
-            tableSymbols.concat(functionSymbols).concat(entityGroupsSymbols)
+            tableSymbols.concat(functionSymbols).concat(entityGroupsSymbols).concat(graphModelSymbols)
         );
 
         return databaseSymbol;
@@ -2242,6 +2254,13 @@ class KustoLanguageService implements LanguageService {
 
     private static createEntityGroupSymbol(entityGroup: s.EntityGroup): sym.EntityGroupSymbol {
         return new sym.EntityGroupSymbol.$ctor3(entityGroup.name, entityGroup.members.join(), null);
+    }
+
+    private static createGraphModelSymbol(graph: s.Graph): sym.GraphModelSymbol {
+        const edges = new Bridge.ArrayEnumerable(graph.edges || []);
+        const nodes = new Bridge.ArrayEnumerable(graph.nodes || []);
+        const snapshots = new Bridge.ArrayEnumerable(graph.snapshots || []);
+        return new sym.GraphModelSymbol.$ctor1(graph.name, edges, nodes, snapshots);
     }
 }
 
