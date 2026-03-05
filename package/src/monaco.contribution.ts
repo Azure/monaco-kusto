@@ -18,6 +18,8 @@ import {
 } from './languageServiceManager/schema';
 import { getRangeHtml } from './extendedGlobalApi';
 import CaseInvertor from './editorExtensions/CaseInvertor';
+import { patchSuggestWidgetA11y } from './editorExtensions/suggestWidgetA11y';
+import './editorExtensions/suggestWidgetA11y.css';
 
 export * from './languageServiceManager/schema';
 export * from './languageServiceManager/renderInfo';
@@ -133,6 +135,7 @@ monaco.editor.onDidCreateEditor((editor) => {
 
     triggerSuggestDialogWhenCompletionItemSelected(editor);
     dateStringWrapper(editor);
+    patchSuggestWidgetA11y(editor); // a11y fix: keyboard-accessible "Read more" button
 });
 
 function triggerSuggestDialogWhenCompletionItemSelected(editor: monaco.editor.ICodeEditor) {
