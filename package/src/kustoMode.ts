@@ -30,21 +30,33 @@ let workerPromise: Promise<AugmentedWorkerAccessor> = new Promise((resolve, reje
 /**
  * Called when Kusto language is first needed (a model has the language set)
  * @param defaults
+ * @param monacoInstance
+ * @param onSchemaUpdateCompleteEmitter Optional,fired when the language service has finished all schema-related work
  */
-export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typeof globalThis.monaco) {
+export function setupMode(
+    defaults: LanguageServiceDefaults,
+    monacoInstance: typeof monaco,
+    onSchemaUpdateCompleteEmitter?: monaco.Emitter<{ uri: monaco.Uri }>
+) {
     const onSchemaChange = new monaco.Emitter<Schema>();
-    const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator();
+    const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator((uri) => {
+        console.log('*************[kustoMode] tokens-provided callback firing emitter for', uri.toString()); // Debug: verify emitter fires per-URI
+        onSchemaUpdateCompleteEmitter?.fire({ uri });
+    });
 
     const client = new WorkerManager(monacoInstance, defaults);
 
     const workerAccessor: AugmentedWorkerAccessor = (first, ...more) => {
         const augmentedSetSchema = async (schema: Schema, worker: KustoWorker) => {
+            console.log('*************[Monaco] Setting schema in worker'); // Debug log to trace schema setting
             const workerPromise = worker.setSchema(schema);
 
             await workerPromise.then(() => {
+
                 onSchemaChange.fire(schema);
             });
             semanticTokensProviderRegistrar(monacoInstance, workerAccessor);
+            console.log('*************[Monaco] semantic tokens provider registered'); // Debug log to confirm completion of schema setting and provider registration
         };
         const worker = client.getLanguageServiceWorker(...[first].concat(more));
         return worker.then(

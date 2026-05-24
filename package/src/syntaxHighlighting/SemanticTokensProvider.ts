@@ -3,12 +3,15 @@ import { editor } from 'monaco-editor';
 import { ClassificationRange, DocumentSemanticToken, tokenTypes } from './types';
 
 type ClassificationsGetter = (resource: monaco.Uri) => Promise<ClassificationRange[]>;
+type OnTokensProvided = (uri: monaco.Uri) => void;
 
 export class SemanticTokensProvider implements monaco.languages.DocumentSemanticTokensProvider {
     private readonly classificationsGetter: ClassificationsGetter;
+    private readonly onTokensProvided?: OnTokensProvided;
 
-    constructor(classificationsGetter: ClassificationsGetter) {
+    constructor(classificationsGetter: ClassificationsGetter, onTokensProvided?: OnTokensProvided) {
         this.classificationsGetter = classificationsGetter;
+        this.onTokensProvided = onTokensProvided;
     }
 
     getLegend() {
@@ -39,10 +42,15 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
             }
         }
 
-        return {
+        const result = {
             data: new Uint32Array(tokens.flat(2)),
             resultId: model.getVersionId().toString(),
         };
+        
+        this.onTokensProvided?.(resource);
+        console.log('************* tokens provided for model:', resource.toString()); // Debug: verify which model got tokens
+
+        return result;
     }
 
     releaseDocumentSemanticTokens() {}

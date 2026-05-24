@@ -26,17 +26,17 @@ fi
 cp -r "$SOURCE_FOLDER" "$DESTINATION_FOLDER" && echo "Copied folder from $SOURCE_FOLDER to $DESTINATION_FOLDER"
 
 ## Step 4: KWE > Go to WEB_UX_FOLDER and run start the app
-cd "$WEB_UX_FOLDER" || { echo "Failed to change directory to $WEB_UX_FOLDER"; exit 1; }
-yarn clean-build-cache && echo "Successfully cleaned build cache"
-cd "$KUSTOWEB_FOLDER" || { echo "Failed to change directory to $KUSTOWEB_FOLDER"; exit 1; }
-yarn build:dev && echo "Successfully built all packages"
-yarn start && echo "Successfully started the application"
+# cd "$WEB_UX_FOLDER" || { echo "Failed to change directory to $WEB_UX_FOLDER"; exit 1; }
+# yarn clean-build-cache && echo "Successfully cleaned build cache"
+# cd "$KUSTOWEB_FOLDER" || { echo "Failed to change directory to $KUSTOWEB_FOLDER"; exit 1; }
+# yarn build:dev && echo "Successfully built all packages"
+# yarn start && echo "Successfully started the application"
 
 #cd kustoWeb
 #yarn test:integration
 
 ## Step 4: Fabric > Go to WEB_UX_FOLDER and run start the app
-#cd "$WEB_UX_FOLDER" || { echo "Failed to change directory to $WEB_UX_FOLDER"; exit 1; }
-#yarn clean-vite-cache && echo "Successfully cleaned build cache"
-#cd "$FABRIC_FOLDER" || { echo "Failed to change directory to $FABRIC_FOLDER"; exit 1; }
-#yarn build:dev && yarn start:dev --force && echo "Successfully started the application"
+cd "$WEB_UX_FOLDER" || { echo "Failed to change directory to $WEB_UX_FOLDER"; exit 1; }
+yarn clean-vite-cache && echo "Successfully cleaned build cache"
+cd "$FABRIC_FOLDER" || { echo "Failed to change directory to $FABRIC_FOLDER"; exit 1; }
+yarn build && yarn start --force && echo "Successfully started the application"
