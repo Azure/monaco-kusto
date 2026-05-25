@@ -46,7 +46,7 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
             data: new Uint32Array(tokens.flat(2)),
             resultId: model.getVersionId().toString(),
         };
-        
+
         this.onTokensProvided?.(resource);
 
         return result;

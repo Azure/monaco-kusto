@@ -29,9 +29,7 @@ describe('SemanticTokensProvider', () => {
     test('does not throw when no onTokensProvided callback is supplied', async () => {
         const provider = new SemanticTokensProvider(async () => []);
 
-        await expect(
-            provider.provideDocumentSemanticTokens(makeModel(uri))
-        ).resolves.toEqual(
+        await expect(provider.provideDocumentSemanticTokens(makeModel(uri))).resolves.toEqual(
             expect.objectContaining({
                 data: expect.any(Uint32Array),
                 resultId: '1',
@@ -42,9 +40,7 @@ describe('SemanticTokensProvider', () => {
     test('returns the expected tokens shape', async () => {
         const provider = new SemanticTokensProvider(async () => []);
 
-        const result = await provider.provideDocumentSemanticTokens(
-            makeModel(uri)
-        );
+        const result = await provider.provideDocumentSemanticTokens(makeModel(uri));
 
         expect(result.data).toBeInstanceOf(Uint32Array);
         expect(result.data.length).toBe(0);

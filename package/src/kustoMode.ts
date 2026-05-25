@@ -50,7 +50,6 @@ export function setupMode(
             const workerPromise = worker.setSchema(schema);
 
             await workerPromise.then(() => {
-
                 onSchemaChange.fire(schema);
             });
             semanticTokensProviderRegistrar(monacoInstance, workerAccessor);

@@ -42,7 +42,6 @@ jest.mock('./languageFeatures', () => {
     };
 });
 
-
 function makeMonacoInstance(): any {
     return {
         languages: {
@@ -74,7 +73,7 @@ describe('setupMode onSchemaUpdateComplete wiring', () => {
         setSchemaMock.mockClear();
     });
     const stubUri = { toString: () => 'file:///stub.kql' } as unknown as monaco.Uri;
-    
+
     test('does not fire the emitter on setSchema alone (waits for semantic tokens)', async () => {
         const emitter = new monaco.Emitter<{ uri: monaco.Uri }>();
         const listener = jest.fn();
@@ -96,14 +95,14 @@ describe('setupMode onSchemaUpdateComplete wiring', () => {
         emitter.event(listener);
 
         setupMode(makeDefaults(), makeMonacoInstance(), emitter);
-        
+
         const accessor = await getKustoWorker();
         const worker = await accessor({} as monaco.Uri);
 
         expect(listener).not.toHaveBeenCalled();
-        
+
         await worker.setSchema({ table: 't' } as unknown as Schema);
-        
+
         expect(capturedOnTokensProvided).toBeDefined();
         capturedOnTokensProvided!(stubUri);
 
