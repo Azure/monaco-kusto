@@ -34,7 +34,6 @@ export class DiagnosticsAdapter {
         onSchemaChange: monaco.IEvent<Schema>
     ) {
         const onModelAdd = (model: monaco.editor.IModel): void => {
-            console.log('***************[Monaco] diagnostics > model added with language', model.getLanguageId(), 'and uri', model.uri.toString());
             let languageId = model.getLanguageId();
             const modelUri = model.uri.toString();
             if (languageId !== this._languageId) {
@@ -58,7 +57,6 @@ export class DiagnosticsAdapter {
         };
 
         const onEditorAdd = (editor: monaco.editor.ICodeEditor) => {
-            console.log('***************[Monaco] diagnostics > editor added with id', editor.getId());
             const editorId = editor.getId();
 
             if (!this._cursorListener[editorId]) {
@@ -458,7 +456,6 @@ export class CompletionAdapter implements monaco.languages.CompletionItemProvide
         context: monaco.languages.CompletionContext,
         token: monaco.CancellationToken
     ): monaco.Thenable<monaco.languages.CompletionList> {
-        console.log('***************[Monaco] Providing completion items with context', context);
         const wordInfo = model.getWordUntilPosition(position);
         const wordRange = new monaco.Range(
             position.lineNumber,

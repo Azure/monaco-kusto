@@ -48,7 +48,6 @@ export class SemanticTokensProvider implements monaco.languages.DocumentSemantic
         };
         
         this.onTokensProvided?.(resource);
-        console.log('************* tokens provided for model:', resource.toString()); // Debug: verify which model got tokens
 
         return result;
     }

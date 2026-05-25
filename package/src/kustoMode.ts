@@ -40,7 +40,6 @@ export function setupMode(
 ) {
     const onSchemaChange = new monaco.Emitter<Schema>();
     const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator((uri) => {
-        console.log('*************[kustoMode] tokens-provided callback firing emitter for', uri.toString()); // Debug: verify emitter fires per-URI
         onSchemaUpdateCompleteEmitter?.fire({ uri });
     });
 
@@ -48,7 +47,6 @@ export function setupMode(
 
     const workerAccessor: AugmentedWorkerAccessor = (first, ...more) => {
         const augmentedSetSchema = async (schema: Schema, worker: KustoWorker) => {
-            console.log('*************[Monaco] Setting schema in worker'); // Debug log to trace schema setting
             const workerPromise = worker.setSchema(schema);
 
             await workerPromise.then(() => {
@@ -56,7 +54,6 @@ export function setupMode(
                 onSchemaChange.fire(schema);
             });
             semanticTokensProviderRegistrar(monacoInstance, workerAccessor);
-            console.log('*************[Monaco] semantic tokens provider registered'); // Debug log to confirm completion of schema setting and provider registration
         };
         const worker = client.getLanguageServiceWorker(...[first].concat(more));
         return worker.then(
