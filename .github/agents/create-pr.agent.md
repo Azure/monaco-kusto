@@ -40,11 +40,12 @@ Call `run_in_terminal` for each check below. STOP on the first failure and print
 | 1 | git installed | `git --version` | "Install git: https://git-scm.com/downloads" |
 | 2 | gh installed | `gh --version` | "Install gh: https://cli.github.com/ (brew install gh / apt install gh / winget install GitHub.cli)" |
 | 3 | gh authenticated | `gh auth status -h github.com` | "Run: gh auth login -h github.com -s repo" |
+| 3b | EMU account check | `gh api user -q .login` (check for `_microsoft` suffix) | "Your gh account (`$GH_USER`) appears to be an EMU managed-user account with the `_microsoft` suffix. These accounts cannot push branches to Azure/monaco-kusto. Use a different GitHub account." |
 | 4 | correct origin | `git remote get-url origin` (must contain `Azure/monaco-kusto`) | "Origin is not Azure/monaco-kusto; aborting." |
 | 5 | not on master | `git rev-parse --abbrev-ref HEAD` (capture as `BRANCH`; must != `master`) | "Refusing to PR from master. Create a feature branch first." |
 | 6 | can reach origin | `git fetch origin master` | "Cannot reach origin. Check VPN/network." |
 | 7 | clean tree (warn) | `git status --porcelain` | If non-empty: warn and ask whether to continue. |
-| 8 | push permission on origin | `gh repo view Azure/monaco-kusto --json viewerPermission -q .viewerPermission` (must be one of `ADMIN`, `MAINTAIN`, `WRITE`, `TRIAGE` — `WRITE` or higher is required to push a branch) | "Your account lacks push permission on Azure/monaco-kusto. Ask a maintainer to grant write access, or have a collaborator push the branch on your behalf." |
+| 8 | push permission on origin | `gh repo view Azure/monaco-kusto --json viewerPermission -q .viewerPermission` (must be one of `ADMIN`, `MAINTAIN`, `WRITE`, `TRIAGE` — `WRITE` or higher is required to push a branch) | "Your account lacks push permission on Azure/monaco-kusto. Ask an admin to grant write access." |
 | 9 | branch name not `master` and not already on origin with diverging history | `git ls-remote --heads origin "$BRANCH"` — if it exists, run `git fetch origin "$BRANCH"` and ensure local is ahead or equal (`git merge-base --is-ancestor origin/$BRANCH HEAD`) | "Remote branch `$BRANCH` has commits not in your local branch. Pull/rebase first." |
 
 Resolve `$GH_USER` with `gh api user -q .login` (used only for display/audit). All pushes go to `origin` (`Azure/monaco-kusto`).
@@ -108,39 +109,7 @@ If the new version already matches the current value (e.g., another commit on th
 
 Keep the summary ≤ 72 chars, imperative mood, no trailing period.
 
-**Body template** — modeled after the structured PR/fix reports used in `Azure-Kusto-WebUX/.github/agents/ado-pr-comment-fixer.agent.md`. Fill in every section; if a section has nothing, write `_N/A_` rather than deleting it.
-Be as concise as possible.
-
-```markdown
-## Summary
-<1–3 sentences: what changed and why. Link to issue/spec if any.>
-
-## Change type
-<major | minor | patch> — <one-line justification, referencing `.github/skills/semver-classification.skill.md`>
-
-## Changes
-- <bullet per area, derived from `git log` + `git diff --name-status`>
-- <group by package/src module when possible>
-
-## Breaking changes
-<Only if change_type = major. List affected public APIs and a short migration note for each. Otherwise: _N/A_.>
-
-## Test plan
-- [ ] `yarn typecheck`
-- [ ] `yarn test`
-- [ ] `yarn test:it` (if integration-relevant)
-- [ ] Manual smoke (if UI behavior changed) — describe steps
-
-## Reviewer guidance
-<Where to start reading, files that need extra scrutiny, anything non-obvious.>
-
-## Risk & rollback
-- Risk: <low | medium | high> — <one-line reason>
-- Rollback: <revert this PR | feature flag `<name>` | no special steps>
-
-## Linked issues
-<From commit trailers (`Closes #123`, `Refs #456`) or _N/A_.>
-```
+**Body template** — see [`.github/templates/pr-body-template.md`](.github/templates/pr-body-template.md). Fill in every section; if a section has nothing, write `_N/A_` rather than deleting it. Be as concise as possible.
 
 ### Step 6 — Confirmation gate (REQUIRED)
 Print the proposed `change_type`, **new version**, title, and body. Ask the user to **confirm / edit / abort**. Do NOT proceed without explicit approval.
