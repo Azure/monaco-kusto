@@ -1,6 +1,6 @@
 ---
 name: monaco-kusto-pr-creator
-description: "MUTATING. Compares current branch to origin/master, infers semver change_type using .github/skills/semver-classification.md, drafts a PR title and description, and opens a PR on Azure/monaco-kusto via gh CLI. Requires user confirmation before pushing or creating the PR."
+description: "MUTATING. Pushes the current local branch to `origin` as a remote feature branch on Azure/monaco-kusto, infers semver change_type using .github/skills/semver-classification.md, drafts a PR title and description, and opens a pull request via gh CLI. Merging happens remotely on GitHub through the PR — this agent never merges locally and never pushes to `master`. Requires user confirmation before pushing or creating the PR."
 
 tools:
   - run_in_terminal
@@ -10,6 +10,13 @@ tools:
 ---
 
 # monaco-kusto PR Creator
+
+## Merge model (read first)
+This agent uses a **remote-branch + remote-merge** flow:
+1. Your local feature branch is pushed to `origin` (Azure/monaco-kusto) as a remote branch of the same name.
+2. A pull request is opened on GitHub with `base = master`, `head = <branch>`.
+3. Review, approvals, CI, and the final merge all happen **remotely on github.com** — not in your local clone.
+4. This agent never runs `git merge`, `git rebase` onto master, or pushes to `master`. After the PR is opened, the agent's job is done; merging is a human action in the GitHub UI.
 
 ## Repository constants
 - GitHub repo: `Azure/monaco-kusto`
@@ -37,10 +44,10 @@ Call `run_in_terminal` for each check below. STOP on the first failure and print
 | 5 | not on master | `git rev-parse --abbrev-ref HEAD` (capture as `BRANCH`; must != `master`) | "Refusing to PR from master. Create a feature branch first." |
 | 6 | can reach origin | `git fetch origin master` | "Cannot reach origin. Check VPN/network." |
 | 7 | clean tree (warn) | `git status --porcelain` | If non-empty: warn and ask whether to continue. |
-| 8 | fork exists | `gh repo view "$GH_USER/monaco-kusto" --json parent -q .parent.nameWithOwner` (must equal `Azure/monaco-kusto`) | Create one: `gh repo fork Azure/monaco-kusto --clone=false --remote=false` |
-| 9 | `fork` remote configured | `git remote get-url fork` returns the user's fork URL | Add it: `gh repo set-default "$GH_USER/monaco-kusto"` is NOT enough — run `git remote add fork "https://github.com/$GH_USER/monaco-kusto.git"` |
+| 8 | push permission on origin | `gh repo view Azure/monaco-kusto --json viewerPermission -q .viewerPermission` (must be one of `ADMIN`, `MAINTAIN`, `WRITE`, `TRIAGE` — `WRITE` or higher is required to push a branch) | "Your account lacks push permission on Azure/monaco-kusto. Ask a maintainer to grant write access, or have a collaborator push the branch on your behalf." |
+| 9 | branch name not `master` and not already on origin with diverging history | `git ls-remote --heads origin "$BRANCH"` — if it exists, run `git fetch origin "$BRANCH"` and ensure local is ahead or equal (`git merge-base --is-ancestor origin/$BRANCH HEAD`) | "Remote branch `$BRANCH` has commits not in your local branch. Pull/rebase first." |
 
-Resolve `$GH_USER` with `gh api user -q .login`. Never push to `origin` (which is `Azure/monaco-kusto`).
+Resolve `$GH_USER` with `gh api user -q .login` (used only for display/audit). All pushes go to `origin` (`Azure/monaco-kusto`).
 
 **One-shot validation script** — users can run this manually to validate their machine before invoking the agent:
 
@@ -138,23 +145,23 @@ Be as concise as possible.
 ### Step 6 — Confirmation gate (REQUIRED)
 Print the proposed `change_type`, **new version**, title, and body. Ask the user to **confirm / edit / abort**. Do NOT proceed without explicit approval.
 
-### Step 7 — Push to fork and open PR
+### Step 7 — Create the remote branch on origin and open the PR
 
-**ALWAYS push to the user's fork, never to `origin` (Azure/monaco-kusto).** Contributors typically don't have push permission on the upstream repo.
+This step **creates the feature branch on the remote** (`origin` = Azure/monaco-kusto) and **opens a pull request on GitHub**. The merge into `master` is **performed later on github.com by a reviewer/maintainer** — this agent does not merge anything locally.
 
 On approval:
-1. Resolve `GH_USER=$(gh api user -q .login)`.
-2. Ensure a `fork` remote exists pointing at `https://github.com/$GH_USER/monaco-kusto.git`. If missing, create the fork (`gh repo fork Azure/monaco-kusto --clone=false --remote=false`) and add the remote (`git remote add fork "https://github.com/$GH_USER/monaco-kusto.git"`).
-3. Sync the fork's `master` with upstream (best-effort, ignore failures):
-   `gh repo sync "$GH_USER/monaco-kusto" -b master`
-4. Push the feature branch to the fork: `git push -u fork "$BRANCH"`.
-5. Write the body to a temp file (e.g. `mktemp`).
-6. Open the PR against upstream, with `--head` qualified by the fork owner:
-   `gh pr create --repo Azure/monaco-kusto --base master --head "$GH_USER:$BRANCH" --title "<title>" --body-file <tmpfile>`
-7. Print the resulting PR URL.
+1. Push the local feature branch to origin, creating (or fast-forwarding) the remote branch of the same name:
+   `git push -u origin "$BRANCH"`
+   - If the remote branch already exists and is an ancestor of HEAD, this fast-forwards.
+   - Never use `--force` or `--force-with-lease`. If the push is rejected as non-fast-forward, stop and instruct the user to rebase manually — do not rewrite remote history.
+2. Write the PR body to a temp file (e.g. `mktemp`).
+3. Open the PR against upstream `master`:
+   `gh pr create --repo Azure/monaco-kusto --base master --head "$BRANCH" --title "<title>" --body-file <tmpfile>`
+4. Print the resulting PR URL and remind the user that merging happens remotely on GitHub after review/CI — not via this agent and not locally.
 
 ## Safety rules
-- Always push to the **fork** remote, never to `origin` (Azure/monaco-kusto).
+- Push only to the feature branch `$BRANCH` on `origin`. Never push to `master` directly.
+- Merging is **remote-only**: the agent opens the PR and stops. It never runs `git merge`, `git rebase origin/master` onto local `master`, `gh pr merge`, or any other local/remote merge command. A human reviewer merges via the GitHub UI.
 - Always perform Step 4 (version bump + README changelog) — it is not optional and the user does not need to request it.
 - Never use `--no-verify`, `--force`, or `--force-with-lease`.
 - Never amend or rewrite already-pushed commits.
