@@ -12,17 +12,9 @@
 ## Breaking changes
 <Only if change_type = major. List affected public APIs and a short migration note for each. Otherwise: _N/A_.>
 
-## Test plan
-- Tests added/modified in this PR:
-  - [ ] <test file / test name> — <what it verifies>
-  - [ ] <test file / test name> — <what it verifies>
+## Tests added/modified in this PR:
+  - <test file / test name> — <what it verifies>
+  - <test file / test name> — <what it verifies>
 
 ## Reviewer guidance
-<Where to start reading, files that need extra scrutiny, anything non-obvious.>
-
-## Risk & rollback
-- Risk: <low | medium | high> — <one-line reason>
-- Rollback: <revert this PR | feature flag `<name>` | no special steps>
-
-## Linked issues
-<From commit trailers (`Closes #123`, `Refs #456`) or _N/A_.>
+<Only if not obvious. Where to start reading, files that need extra scrutiny. Otherwise: skip.>
