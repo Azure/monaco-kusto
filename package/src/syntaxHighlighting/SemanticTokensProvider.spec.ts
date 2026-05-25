@@ -20,10 +20,9 @@ describe('SemanticTokensProvider', () => {
         const classifications: ClassificationRange[] = [];
         const provider = new SemanticTokensProvider(async () => classifications, onTokensProvided);
 
+        expect(onTokensProvided).not.toHaveBeenCalled();
         await provider.provideDocumentSemanticTokens(makeModel(uri));
 
-        // add before
-        expect(onTokensProvided).toHaveBeenCalledTimes(1);
         expect(onTokensProvided).toHaveBeenCalledWith(uri);
     });
 

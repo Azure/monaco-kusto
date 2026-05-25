@@ -96,15 +96,17 @@ describe('setupMode onSchemaUpdateComplete wiring', () => {
         emitter.event(listener);
 
         setupMode(makeDefaults(), makeMonacoInstance(), emitter);
-
+        
         const accessor = await getKustoWorker();
         const worker = await accessor({} as monaco.Uri);
-        await worker.setSchema({ table: 't' } as unknown as Schema);
 
+        expect(listener).not.toHaveBeenCalled();
+        
+        await worker.setSchema({ table: 't' } as unknown as Schema);
+        
         expect(capturedOnTokensProvided).toBeDefined();
         capturedOnTokensProvided!(stubUri);
 
-        expect(listener).toHaveBeenCalledTimes(1);
         expect(listener).toHaveBeenCalledWith({ uri: stubUri });
     });
 

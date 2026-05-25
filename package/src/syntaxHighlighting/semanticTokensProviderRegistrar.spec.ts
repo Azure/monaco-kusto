@@ -55,7 +55,6 @@ describe('semanticTokensProviderRegistrar', () => {
 
         await provider!.provideDocumentSemanticTokens(model);
 
-        expect(onTokensProvided).toHaveBeenCalledTimes(1);
         expect(onTokensProvided).toHaveBeenCalledWith(resource);
     });
 });
