@@ -37,7 +37,10 @@ Call `run_in_terminal` for each check below. STOP on the first failure and print
 | 5 | not on master | `git rev-parse --abbrev-ref HEAD` (capture as `BRANCH`; must != `master`) | "Refusing to PR from master. Create a feature branch first." |
 | 6 | can reach origin | `git fetch origin master` | "Cannot reach origin. Check VPN/network." |
 | 7 | clean tree (warn) | `git status --porcelain` | If non-empty: warn and ask whether to continue. |
-| 8 | push permission (warn) | `gh api repos/Azure/monaco-kusto -q .permissions.push` | If `false`/missing: warn that PR may need to come from a fork. |
+| 8 | fork exists | `gh repo view "$GH_USER/monaco-kusto" --json parent -q .parent.nameWithOwner` (must equal `Azure/monaco-kusto`) | Create one: `gh repo fork Azure/monaco-kusto --clone=false --remote=false` |
+| 9 | `fork` remote configured | `git remote get-url fork` returns the user's fork URL | Add it: `gh repo set-default "$GH_USER/monaco-kusto"` is NOT enough — run `git remote add fork "https://github.com/$GH_USER/monaco-kusto.git"` |
+
+Resolve `$GH_USER` with `gh api user -q .login`. Never push to `origin` (which is `Azure/monaco-kusto`).
 
 **One-shot validation script** — users can run this manually to validate their machine before invoking the agent:
 
@@ -62,7 +65,34 @@ Read `.github/skills/semver-classification.md` and apply its rules to the data f
 - If ambiguous between two levels, pick the higher and state the reason.
 - If the user provided an override, use it but still print the rule-based suggestion for sanity-check.
 
-### Step 4 — Draft PR title and body
+### Step 4 — Bump version and update README changelog (MANDATORY — always run)
+
+This step runs on **every** invocation. Do NOT ask the user whether to bump — the bump is part of the PR.
+
+1. Read the current version from `package/package.json` (field `.version`).
+2. Compute the new version by applying `change_type` from Step 3:
+   - `major` → `X.0.0`
+   - `minor` → `X.Y+1.0`
+   - `patch` → `X.Y.Z+1`
+3. Update `package/package.json` to the new version (edit only the top-level `"version"` field; do not reformat the file).
+4. Prepend a new entry to the `## Changelog` section of `README.md`, immediately after the `## Changelog` heading, in the existing style:
+
+   ```markdown
+   ### <new version>
+
+   -   <type>: <one-line summary per notable change, derived from `git log` and the diff>
+   ```
+
+   - Use the same conventional-commit prefixes already present in the changelog (`feat:`, `fix:`, `chore:`, etc.).
+   - One bullet per user-visible change. Skip internal-only refactors unless they're the only changes (then one `chore:` line).
+5. Stage and commit both files on the current branch:
+   `git add package/package.json README.md && git commit -m "chore: bump version to <new version>"`
+   - If the working tree had other staged changes from Step 1's preflight, commit only `package/package.json` and `README.md` here — do not auto-stage unrelated files.
+6. Re-run `git diff --name-status $BASE..HEAD` so subsequent steps see the bump commit.
+
+If the new version already matches the current value (e.g., another commit on the branch already bumped it), skip the file edits and the commit, but print a note confirming the version is correct for the inferred `change_type`.
+
+### Step 5 — Draft PR title and body
 
 **Title:** `<type>: <short summary>` where `<type>` derives from `change_type`:
 - major → `feat!:` (or `fix!:` if purely fix-driven)
@@ -105,20 +135,30 @@ Be as concise as possible.
 <From commit trailers (`Closes #123`, `Refs #456`) or _N/A_.>
 ```
 
-### Step 5 — Confirmation gate (REQUIRED)
-Print the proposed `change_type`, title, and body. Ask the user to **confirm / edit / abort**. Do NOT proceed without explicit approval.
+### Step 6 — Confirmation gate (REQUIRED)
+Print the proposed `change_type`, **new version**, title, and body. Ask the user to **confirm / edit / abort**. Do NOT proceed without explicit approval.
 
-### Step 6 — Push and open PR
+### Step 7 — Push to fork and open PR
+
+**ALWAYS push to the user's fork, never to `origin` (Azure/monaco-kusto).** Contributors typically don't have push permission on the upstream repo.
+
 On approval:
-1. `git push -u origin "$BRANCH"`
-2. Write the body to a temp file (e.g. `mktemp`).
-3. `gh pr create --repo Azure/monaco-kusto --base master --head "$BRANCH" --title "<title>" --body-file <tmpfile>`
-4. Print the resulting PR URL.
+1. Resolve `GH_USER=$(gh api user -q .login)`.
+2. Ensure a `fork` remote exists pointing at `https://github.com/$GH_USER/monaco-kusto.git`. If missing, create the fork (`gh repo fork Azure/monaco-kusto --clone=false --remote=false`) and add the remote (`git remote add fork "https://github.com/$GH_USER/monaco-kusto.git"`).
+3. Sync the fork's `master` with upstream (best-effort, ignore failures):
+   `gh repo sync "$GH_USER/monaco-kusto" -b master`
+4. Push the feature branch to the fork: `git push -u fork "$BRANCH"`.
+5. Write the body to a temp file (e.g. `mktemp`).
+6. Open the PR against upstream, with `--head` qualified by the fork owner:
+   `gh pr create --repo Azure/monaco-kusto --base master --head "$GH_USER:$BRANCH" --title "<title>" --body-file <tmpfile>`
+7. Print the resulting PR URL.
 
 ## Safety rules
+- Always push to the **fork** remote, never to `origin` (Azure/monaco-kusto).
+- Always perform Step 4 (version bump + README changelog) — it is not optional and the user does not need to request it.
 - Never use `--no-verify`, `--force`, or `--force-with-lease`.
 - Never amend or rewrite already-pushed commits.
-- Never create the PR without the Step 5 confirmation.
+- Never create the PR without the Step 6 confirmation.
 - If preflight fails, stop and print remediation — do not attempt workarounds.
 
 ## Output format
