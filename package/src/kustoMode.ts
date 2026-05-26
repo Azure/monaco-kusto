@@ -30,10 +30,18 @@ let workerPromise: Promise<AugmentedWorkerAccessor> = new Promise((resolve, reje
 /**
  * Called when Kusto language is first needed (a model has the language set)
  * @param defaults
+ * @param monacoInstance
+ * @param onSchemaUpdateCompleteEmitter Optional,fired when the language service has finished all schema-related work
  */
-export function setupMode(defaults: LanguageServiceDefaults, monacoInstance: typeof globalThis.monaco) {
+export function setupMode(
+    defaults: LanguageServiceDefaults,
+    monacoInstance: typeof monaco,
+    onSchemaUpdateCompleteEmitter?: monaco.Emitter<{ uri: monaco.Uri }>
+) {
     const onSchemaChange = new monaco.Emitter<Schema>();
-    const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator();
+    const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreator((uri) => {
+        onSchemaUpdateCompleteEmitter?.fire({ uri });
+    });
 
     const client = new WorkerManager(monacoInstance, defaults);
 

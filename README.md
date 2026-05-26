@@ -168,6 +168,10 @@ This section provides a high-level overview of the main files and their responsi
 
 ## Changelog
 
+### 14.2.0
+
+-   feat: add `onSchemaUpdateComplete` event emitter so consumers can react to schema refresh completion
+
 ### 14.1.0
 
 -   feat: support graph schema

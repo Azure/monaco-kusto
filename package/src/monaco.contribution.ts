@@ -96,6 +96,11 @@ export function getKustoWorker(): Promise<WorkerAccessor> {
     });
 }
 
+// Fires after semantic tokens are (re)computed following a schema update; payload carries the model URI.
+const onSchemaUpdateCompleteEmitter = new monaco.Emitter<{ uri: monaco.Uri }>();
+
+export const onSchemaUpdateComplete: monaco.IEvent<{ uri: monaco.Uri }> = onSchemaUpdateCompleteEmitter.event;
+
 function withMode<T>(callback: (module: typeof mode) => T): Promise<T> {
     return import('./kustoMode').then(callback);
 }
@@ -104,7 +109,7 @@ export const kustoDefaults = new LanguageServiceDefaultsImpl(defaultLanguageSett
 
 let disposable: monaco.IDisposable;
 monaco.languages.onLanguage('kusto', async () => {
-    await withMode((mode) => mode.setupMode(kustoDefaults, monaco as typeof globalThis.monaco));
+    await withMode((mode) => mode.setupMode(kustoDefaults, monaco, onSchemaUpdateCompleteEmitter));
 });
 
 monaco.languages.register({
@@ -175,6 +180,7 @@ const globalApi: typeof import('./monaco.contribution') = {
     kustoDefaults,
     getKustoWorker,
     getRangeHtml,
+    onSchemaUpdateComplete,
 };
 
 (monaco as any).languages.kusto = globalApi;

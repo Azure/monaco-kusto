@@ -10,11 +10,11 @@ export type SemanticTokensProviderRegistrar = (
 
 // Registers semantic token provider that utilizes the language service
 // for more context-relevant syntax highlighting.
-export function semanticTokensProviderRegistrarCreator() {
+export function semanticTokensProviderRegistrarCreator(onTokensProvided?: (uri: monaco.Uri) => void) {
     const semanticTokensProviderRegistrar = semanticTokensProviderRegistrarCreatorForTest();
 
     return (monacoInstance: typeof monaco, workerAccessor: AugmentedWorkerAccessor) => {
-        const semanticTokensProvider = semanticTokensProviderMaker(workerAccessor);
+        const semanticTokensProvider = semanticTokensProviderMaker(workerAccessor, onTokensProvided);
         semanticTokensProviderRegistrar(monacoInstance, semanticTokensProvider);
     };
 }
@@ -33,10 +33,13 @@ export function semanticTokensProviderRegistrarCreatorForTest() {
     };
 }
 
-function semanticTokensProviderMaker(workerAccessor: AugmentedWorkerAccessor): SemanticTokensProvider {
+function semanticTokensProviderMaker(
+    workerAccessor: AugmentedWorkerAccessor,
+    onTokensProvided?: (uri: monaco.Uri) => void
+): SemanticTokensProvider {
     const classificationsGetter = async (resource: monaco.Uri) => {
         const worker = await workerAccessor(resource);
         return worker.getClassifications(resource.toString());
     };
-    return new SemanticTokensProvider(classificationsGetter);
+    return new SemanticTokensProvider(classificationsGetter, onTokensProvided);
 }
