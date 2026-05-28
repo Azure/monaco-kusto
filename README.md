@@ -168,6 +168,10 @@ This section provides a high-level overview of the main files and their responsi
 
 ## Changelog
 
+### 14.2.1
+
+-   chore: bump CI Node.js version to 22
+
 ### 14.2.0
 
 -   feat: add `onSchemaUpdateComplete` event emitter so consumers can react to schema refresh completion
