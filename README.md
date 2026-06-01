@@ -168,6 +168,10 @@ This section provides a high-level overview of the main files and their responsi
 
 ## Changelog
 
+### 14.2.2
+
+-   docs: add external references to semver-classification skill
+
 ### 14.2.1
 
 -   chore: bump CI Node.js version to 22
