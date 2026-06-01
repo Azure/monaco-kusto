@@ -34,3 +34,9 @@ Highest priority wins. If uncertain between two levels, pick the higher one and 
 -   `git diff $BASE..HEAD -- package/src/**` for public surface changes
 -   `git log $BASE..HEAD` for conventional-commit prefixes and `BREAKING CHANGE` trailers
 -   `package/package.json` (current version) and `CHANGELOG.md` (prior style)
+
+## References
+
+-   [Semantic Versioning 2.0.0 specification](https://semver.org/)
+-   [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/)
+-   [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
