@@ -20,7 +20,7 @@ const colors = {
     orangeRed: '#CE3600',
     mediumVioletRed: '#C71585',
     magenta: '#FF00FF', // for debugging
-    darkOrchid: '#9932CC',
+    darkOrchid: '#8229AD',
     darkViolet: '#9400D3',
     midnightBlue: '#191970',
     blue: '#0000FF',
