@@ -168,6 +168,10 @@ This section provides a high-level overview of the main files and their responsi
 
 ## Changelog
 
+### 14.2.3
+
+-   fix: update `darkOrchid` syntax highlighting color to `#8229AD`
+
 ### 14.2.2
 
 -   docs: add external references to semver-classification skill
