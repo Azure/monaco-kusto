@@ -1,7 +1,7 @@
 import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 import type { LanguageServiceDefaults } from './monaco.contribution';
-import type { IKustoWorkerImpl } from './kustoWorker';
+import type { IKustoWorkerImpl, ICreateData } from './kustoWorker';
 
 interface WorkerDetails {
     _worker: monaco.editor.MonacoWebWorker<IKustoWorkerImpl>;
@@ -76,17 +76,15 @@ export class WorkerManager {
         const { onDidProvideCompletionItems, ...languageSettings } = this._defaults.languageSettings;
 
         if (!this._workerDetailsPromise) {
+            const createData: ICreateData = { languageSettings, languageId: 'kusto' };
+            const workerPromise = this._resolveWorker().then((w) => {
+                w.postMessage('ignore');
+                w.postMessage(createData);
+                return w;
+            });
             const worker = this._monacoInstance.editor.createWebWorker<IKustoWorkerImpl>({
-                // module that exports the create() method and returns a `KustoWorker` instance
-                moduleId: 'vs/language/kusto/kustoWorker',
-
-                label: 'kusto',
-
-                // passed in to the create() method
-                createData: {
-                    languageSettings: languageSettings,
-                    languageId: 'kusto',
-                },
+                worker: workerPromise,
+                keepIdleModels: false,
             });
 
             const client = worker.getProxy().then((proxy) => {
@@ -120,5 +118,19 @@ export class WorkerManager {
                 return this._workerDetails?._worker?.withSyncedResources(resources);
             })
             .then((_) => _client);
+    }
+
+    private _resolveWorker(): Promise<Worker> {
+        const env = (globalThis as any).MonacoEnvironment;
+        if (env && typeof env.getWorker === 'function') {
+            return Promise.resolve(env.getWorker('workerMain.js', 'kusto'));
+        }
+        if (env && typeof env.getWorkerUrl === 'function') {
+            const url = env.getWorkerUrl('workerMain.js', 'kusto');
+            return Promise.resolve(new Worker(url, { name: 'kusto' }));
+        }
+        throw new Error(
+            "monaco-kusto: MonacoEnvironment.getWorker (or getWorkerUrl) must be defined and route label 'kusto' to the kusto worker script"
+        );
     }
 }

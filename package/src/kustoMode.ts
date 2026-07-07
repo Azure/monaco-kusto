@@ -55,26 +55,31 @@ export function setupMode(
             semanticTokensProviderRegistrar(monacoInstance, workerAccessor);
         };
         const worker = client.getLanguageServiceWorker(...[first].concat(more));
-        return worker.then(
-            (worker): AugmentedWorker => ({
-                ...worker,
-                setSchema: (schema) => augmentedSetSchema(schema, worker),
-                async setSchemaFromShowSchema(
+        return worker.then((worker): AugmentedWorker => {
+            const overrides: Partial<AugmentedWorker> = {
+                setSchema: (schema) => augmentedSetSchema(schema, worker as unknown as KustoWorker),
+                setSchemaFromShowSchema: async (
                     schema,
                     connection,
                     database,
                     globalScalarParameters,
                     globalTabularParameters
-                ) {
+                ) => {
                     await worker.normalizeSchema(schema, connection, database).then((schema) => {
                         if (globalScalarParameters || globalTabularParameters) {
                             schema = { ...schema, globalScalarParameters, globalTabularParameters };
                         }
-                        augmentedSetSchema(schema, worker);
+                        augmentedSetSchema(schema, worker as unknown as KustoWorker);
                     });
                 },
-            })
-        );
+            };
+            return new Proxy(worker as unknown as AugmentedWorker, {
+                get(target, prop) {
+                    if (prop in overrides) return (overrides as any)[prop];
+                    return (target as any)[prop];
+                },
+            });
+        });
     };
 
     monacoInstance.languages.registerCompletionItemProvider(
