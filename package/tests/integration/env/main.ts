@@ -201,6 +201,7 @@ const tabularParameter: TabularParameter = {
 };
 
 getKustoWorker().then((workerAccessor) => {
+    (window as any).__kustoWorkerAccessor = workerAccessor;
     const model = editor.getModel();
     if (model) {
         workerAccessor(model.uri).then((worker) => {
