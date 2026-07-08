@@ -18,22 +18,6 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ### Package content
 
 -   `/esm` Contains esm version of the library
--   `/dev` Contains an AMD version of the library
--   `/min` Contains a minified AMD version of the library
-
-### AMD module system:
-
-Example at [/samples/amd](https://github.com/Azure/monaco-kusto/tree/master/samples/amd)
-
-1. Run `npm run copyMonacoFilesAMD <path>` or `yarn copyMonacoFilesAMD <path>`
-   where <path> is where you want the monaco and kusto amd modules to be. These
-   files will need to be served as-in.
-2. Using a amd module loader, import `vs/language/kusto/monaco.contribution` 1. The monaco editors included loader can
-   be made available via a global
-   require `require` by adding the script tag: `<script src="<path>/vs/loader.js"></script>`
-3. You should now be able to create monaco editors with `language: 'kusto'`. The
-   `monaco.languages.kusto.getKustoWorker()`
-4. If using typeScript, add "@kusto/monaco-kusto/globalApi" to compilerOptions.types in tsconfig.json`
 
 ### ESM
 
@@ -190,9 +174,10 @@ This section provides a high-level overview of the main files and their responsi
 
 ## Changelog
 
-### 15.0.0
+### 15.0.0-preview
 
 -   **BREAKING**: Bumped `monaco-editor` peer dependency to `^0.55.0`.
+-   **BREAKING**: Dropped AMD support. Only ESM is shipped in this release. AMD may be reintroduced in a follow-up release; open an issue if you need it. The `dev`/`min` release folders, the `copyMonacoFilesAMD` bin, and the AMD samples were removed.
 -   fix: language-service worker methods (`doComplete`, `doValidation`, `doFolding`, etc.) are no longer missing on the proxy under `monaco-editor` >= 0.53 ([#528](https://github.com/Azure/monaco-kusto/issues/528)). monaco 0.53 removed the convenience overload of `editor.createWebWorker` that accepted `moduleId`/`label`/`createData`; the two-message worker handshake (`postMessage('ignore')` + `postMessage(createData)`) is now performed directly inside `WorkerManager`.
 -   **Consumer migration**: `MonacoEnvironment.getWorker` must return a **dedicated** kusto worker script for label `'kusto'` (a small file that imports both `@kusto/monaco-kusto/release/esm/kusto.worker` and `monaco-editor/esm/vs/editor/editor.worker`). Routing the label to the generic editor worker no longer works and will fail silently with a `$loadForeignModule` error inside the worker. See the "ESM" section above for an example.
 
