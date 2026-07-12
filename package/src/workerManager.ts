@@ -120,14 +120,14 @@ export class WorkerManager {
             .then((_) => _client);
     }
 
-    private _resolveWorker(): Promise<Worker> {
+    private async _resolveWorker(): Promise<Worker> {
         const env = (globalThis as any).MonacoEnvironment;
         if (env && typeof env.getWorker === 'function') {
-            return Promise.resolve(env.getWorker('workerMain.js', 'kusto'));
+            return env.getWorker('workerMain.js', 'kusto');
         }
         if (env && typeof env.getWorkerUrl === 'function') {
             const url = env.getWorkerUrl('workerMain.js', 'kusto');
-            return Promise.resolve(new Worker(url, { name: 'kusto' }));
+            return new Worker(url, { name: 'kusto' });
         }
         throw new Error(
             "monaco-kusto: MonacoEnvironment.getWorker (or getWorkerUrl) must be defined and route label 'kusto' to the kusto worker script"
