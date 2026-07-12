@@ -78,6 +78,8 @@ export class WorkerManager {
         if (!this._workerDetailsPromise) {
             const createData: ICreateData = { languageSettings, languageId: 'kusto' };
             const workerPromise = this._resolveWorker().then((w) => {
+                // kusto.worker.ts discards the first message, then arms
+                // monaco's initialize() listener which consumes the second (createData).
                 w.postMessage('ignore');
                 w.postMessage(createData);
                 return w;
