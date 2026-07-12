@@ -27,7 +27,7 @@ export class DiagnosticsAdapter {
     } = Object.create(null);
 
     constructor(
-        private _monacoInstance: typeof globalThis.monaco,
+        private _monacoInstance: typeof monaco,
         private _languageId: string,
         private _worker: AugmentedWorkerAccessor,
         private defaults: LanguageServiceDefaults,

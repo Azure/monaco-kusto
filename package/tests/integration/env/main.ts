@@ -171,6 +171,7 @@ const editor = monaco.editor.create(container, {
     },
     copyWithSyntaxHighlighting: true,
     'semanticHighlighting.enabled': true,
+    editContext: false,
 });
 (container as TestableMonacoEditorElement).__containerRef = editor;
 

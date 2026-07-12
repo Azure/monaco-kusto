@@ -54,6 +54,11 @@ test.describe('completion items', () => {
 
         await model.intellisense().focus(0);
         const options = await model.intellisense().options().locator.allInnerTexts();
+        // The language service returns ~24 completions here; monaco's suggest widget
+        // virtualizes and only renders items visible in the viewport. Under monaco 0.55
+        // the widget shows 12 rows (down from 13 on 0.52 — likely a row-height / footer
+        // change in monaco itself). We assert the visible prefix to keep this test
+        // focused on the language service's ordering, not on monaco's viewport size.
         expect(options).toEqual([
             'EndTime',
             'StartTime',
@@ -67,7 +72,6 @@ test.describe('completion items', () => {
             'datetime_utc_to_local(from, timezone)',
             'format_datetime(date, format)',
             'format_timespan(timespan, format)',
-            'ingestion_time()',
         ]);
     });
 

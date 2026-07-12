@@ -55,26 +55,28 @@ export function setupMode(
             semanticTokensProviderRegistrar(monacoInstance, workerAccessor);
         };
         const worker = client.getLanguageServiceWorker(...[first].concat(more));
-        return worker.then(
-            (worker): AugmentedWorker => ({
-                ...worker,
-                setSchema: (schema) => augmentedSetSchema(schema, worker),
-                async setSchemaFromShowSchema(
+        return worker.then((worker): AugmentedWorker => {
+            const overrides: Partial<AugmentedWorker> = {
+                setSchema: (schema) => augmentedSetSchema(schema, worker as unknown as KustoWorker),
+                setSchemaFromShowSchema: async (
                     schema,
                     connection,
                     database,
                     globalScalarParameters,
                     globalTabularParameters
-                ) {
+                ) => {
                     await worker.normalizeSchema(schema, connection, database).then((schema) => {
                         if (globalScalarParameters || globalTabularParameters) {
                             schema = { ...schema, globalScalarParameters, globalTabularParameters };
                         }
-                        augmentedSetSchema(schema, worker);
+                        augmentedSetSchema(schema, worker as unknown as KustoWorker);
                     });
                 },
-            })
-        );
+            };
+            // Inherit from `worker` so any non-overridden method (doComplete, doValidation, …)
+            // resolves via prototype lookup — even when monaco's worker uses a Proxy internally.
+            return Object.assign(Object.create(worker), overrides) as AugmentedWorker;
+        });
     };
 
     monacoInstance.languages.registerCompletionItemProvider(

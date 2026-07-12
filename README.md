@@ -18,29 +18,35 @@ Kusto language plugin for the Monaco Editor. It provides the following features 
 ### Package content
 
 -   `/esm` Contains esm version of the library
--   `/dev` Contains an AMD version of the library
--   `/min` Contains a minified AMD version of the library
-
-### AMD module system:
-
-Example at [/samples/amd](https://github.com/Azure/monaco-kusto/tree/master/samples/amd)
-
-1. Run `npm run copyMonacoFilesAMD <path>` or `yarn copyMonacoFilesAMD <path>`
-   where <path> is where you want the monaco and kusto amd modules to be. These
-   files will need to be served as-in.
-2. Using a amd module loader, import `vs/language/kusto/monaco.contribution` 1. The monaco editors included loader can
-   be made available via a global
-   require `require` by adding the script tag: `<script src="<path>/vs/loader.js"></script>`
-3. You should now be able to create monaco editors with `language: 'kusto'`. The
-   `monaco.languages.kusto.getKustoWorker()`
-4. If using typeScript, add "@kusto/monaco-kusto/globalApi" to compilerOptions.types in tsconfig.json`
 
 ### ESM
 
 Parcel example at [/samples/parcel](https://github.com/Azure/monaco-kusto/tree/master/samples/parcel)
 
 1. Configure your bundler so `@kusto/monaco-kusto/release/esm/kusto.worker` has it's own entry point
-2. Configure the global `MonacoEnvironment` with either `getWorkerUrl` or `getWorker`
+2. Configure the global `MonacoEnvironment` with either `getWorkerUrl` or `getWorker`. `getWorker` **must** return a dedicated kusto worker for label `'kusto'` — a small entry file that imports both `@kusto/monaco-kusto/release/esm/kusto.worker` and `monaco-editor/esm/vs/editor/editor.worker`. Example:
+
+    ```ts
+    // kustoWorker.ts (bundled as a worker entry)
+    import '@kusto/monaco-kusto/release/esm/kusto.worker';
+    import 'monaco-editor/esm/vs/editor/editor.worker';
+    ```
+
+    ```ts
+    // main.ts
+    import kustoWorkerUrl from './kustoWorker?url'; // or ?worker, depending on bundler
+    import editorWorkerUrl from 'monaco-editor/esm/vs/editor/editor.worker?url';
+
+    window.MonacoEnvironment = {
+        getWorker(_moduleId, label) {
+            if (label === 'kusto') return new Worker(kustoWorkerUrl, { type: 'module' });
+            return new Worker(editorWorkerUrl, { type: 'module' });
+        },
+    };
+    ```
+
+    Since monaco-editor 0.53, routing label `'kusto'` to the generic `editor.worker` no longer works — the worker will crash with `$loadForeignModule` and completions/semantic tokens will silently fail.
+
 3. You should now be able to create monaco editors with `language: 'kusto'`. The
    kusto worker can be reached via the monaco global:
    `monaco.languages.kusto.getKustoWorker()`
@@ -167,6 +173,11 @@ This section provides a high-level overview of the main files and their responsi
     Represents the Monaco Editor instance itself. It is responsible for editor creation, configuration, and interaction with the registered Kusto language features.
 
 ## Changelog
+
+### 15.0.0
+
+-   **BREAKING**: Bumped `monaco-editor` peer dependency to `^0.55.0`.
+-   **BREAKING**: Dropped AMD support. Only ESM is shipped in this release.
 
 ### 14.2.3
 

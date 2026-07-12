@@ -9,7 +9,7 @@ import * as path from 'node:path';
 import * as rollup from 'rollup';
 
 import esmConfig from './rollup.esm.js';
-import { copyLanguageServerFiles, packageFolder, rollupAMDConfig, rollupAMDOutput } from './lib.js';
+import { packageFolder } from './lib.js';
 
 function createReleaseFolder() {
     const releaseFolder = path.join(packageFolder, './release');
@@ -20,15 +20,6 @@ function createReleaseFolder() {
             rmSync(releaseFolder, { recursive: true });
             mkdirSync(releaseFolder);
         }
-    }
-}
-
-async function compileAMD() {
-    const bundle = await rollup.rollup(rollupAMDConfig);
-    try {
-        await Promise.all([bundle.write(rollupAMDOutput('dev')), bundle.write(rollupAMDOutput('min'))]);
-    } finally {
-        await bundle.close();
     }
 }
 
@@ -62,13 +53,7 @@ async function compileTypes() {
 
 async function main() {
     createReleaseFolder();
-    await Promise.all([
-        copyLanguageServerFiles('release/min'),
-        copyLanguageServerFiles('release/dev'),
-        compileESM(),
-        compileAMD(),
-        compileTypes(),
-    ]);
+    await Promise.all([compileESM(), compileTypes()]);
 }
 
 main();
