@@ -73,12 +73,9 @@ export function setupMode(
                     });
                 },
             };
-            return new Proxy(worker as unknown as AugmentedWorker, {
-                get(target, prop) {
-                    if (prop in overrides) return (overrides as any)[prop];
-                    return (target as any)[prop];
-                },
-            });
+            // Inherit from `worker` so any non-overridden method (doComplete, doValidation, …)
+            // resolves via prototype lookup — even when monaco's worker uses a Proxy internally.
+            return Object.assign(Object.create(worker), overrides) as AugmentedWorker;
         });
     };
 
