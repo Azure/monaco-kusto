@@ -178,7 +178,6 @@ This section provides a high-level overview of the main files and their responsi
 
 -   **BREAKING**: Bumped `monaco-editor` peer dependency to `^0.55.0`.
 -   **BREAKING**: Dropped AMD support. Only ESM is shipped in this release.
--   fix: language-service worker methods (`doComplete`, `doValidation`, `doFolding`, etc.) are no longer missing on the proxy under `monaco-editor` >= 0.53 ([#528](https://github.com/Azure/monaco-kusto/issues/528)). monaco 0.53 removed the convenience overload of `editor.createWebWorker` that accepted `moduleId`/`label`/`createData`; the two-message worker handshake (`postMessage('ignore')` + `postMessage(createData)`) is now performed directly inside `WorkerManager`.
 -   **Consumer migration**: `MonacoEnvironment.getWorker` must return a **dedicated** kusto worker script for label `'kusto'` (a small file that imports both `@kusto/monaco-kusto/release/esm/kusto.worker` and `monaco-editor/esm/vs/editor/editor.worker`). Routing the label to the generic editor worker no longer works and will fail silently with a `$loadForeignModule` error inside the worker. See the "ESM" section above for an example.
 
 ### 14.2.3
