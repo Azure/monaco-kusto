@@ -174,7 +174,7 @@ This section provides a high-level overview of the main files and their responsi
 
 ## Changelog
 
-### 15.0.0-preview
+### 15.0.0
 
 -   **BREAKING**: Bumped `monaco-editor` peer dependency to `^0.55.0`.
 -   **BREAKING**: Dropped AMD support. Only ESM is shipped in this release. AMD may be reintroduced in a follow-up release; open an issue if you need it. The `dev`/`min` release folders, the `copyMonacoFilesAMD` bin, and the AMD samples were removed.
