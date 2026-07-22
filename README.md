@@ -174,6 +174,10 @@ This section provides a high-level overview of the main files and their responsi
 
 ## Changelog
 
+### 15.0.1
+
+-   chore: upgrade `@kusto/language-service` 0.0.285 → 0.0.297 and `@kusto/language-service-next` 12.2.0 → 12.4.1, restoring missing KQL keyword-completion documentation
+
 ### 15.0.0
 
 -   **BREAKING**: Bumped `monaco-editor` peer dependency to `^0.55.0`.
