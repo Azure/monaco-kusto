@@ -509,7 +509,22 @@ class KustoLanguageService implements LanguageService {
         const endPos = document.positionAt(document.getText().length);
         const fullDocRange = ls.Range.create(startPos, endPos);
 
-        const formattedDoc = this.getFormattedCommandsInDocumentV2(document).formattedCommands.join('');
+        const { formattedCommands } = this.getFormattedCommandsInDocumentV2(document);
+        const commands = this.toArray<k2.CodeBlock>(this.parseDocumentV2(document).Blocks).filter(
+            (command) => command.Text && command.Text.trim() !== ''
+        );
+        const text = document.getText();
+        const formattedDoc = formattedCommands
+            .map((formatted, index) => {
+                if (index === commands.length - 1) return formatted;
+
+                // Include whitespace-only blocks skipped by the command formatter.
+                const separator = text
+                    .slice(commands[index].Start, commands[index + 1].Start)
+                    .match(/[\r\n][ \t\r\n]*$/);
+                return separator ? formatted.replace(/[\r\n][ \t\r\n]*$/, '') + separator[0] : formatted;
+            })
+            .join('');
 
         return Promise.resolve([ls.TextEdit.replace(fullDocRange, formattedDoc)]);
     }
