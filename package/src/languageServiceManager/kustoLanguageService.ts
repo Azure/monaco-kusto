@@ -345,7 +345,6 @@ class KustoLanguageService implements LanguageService {
         ladderchart: k2.CompletionKind.RenderChart,
         pivotchart: k2.CompletionKind.RenderChart,
         timeline: k2.CompletionKind.RenderChart,
-        timepivot: k2.CompletionKind.RenderChart,
         '3Dchart': k2.CompletionKind.RenderChart,
         list: k2.CompletionKind.RenderChart,
     };
