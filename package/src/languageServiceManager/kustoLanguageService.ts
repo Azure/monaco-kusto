@@ -509,10 +509,7 @@ class KustoLanguageService implements LanguageService {
         const endPos = document.positionAt(document.getText().length);
         const fullDocRange = ls.Range.create(startPos, endPos);
 
-        const { formattedCommands } = this.getFormattedCommandsInDocumentV2(document);
-        const commands = this.toArray<k2.CodeBlock>(this.parseDocumentV2(document).Blocks).filter(
-            (command) => command.Text && command.Text.trim() !== ''
-        );
+        const { commands, formattedCommands } = this.getFormattedCommandsInDocumentV2(document);
         const text = document.getText();
         const formattedDoc = formattedCommands
             .map((formatted, index) => {
@@ -1148,6 +1145,7 @@ class KustoLanguageService implements LanguageService {
         rangeStart?: number,
         rangeEnd?: number
     ): {
+        commands: k2.CodeBlock[];
         formattedCommands: string[];
         originalRange?: ls.Range;
     } {
@@ -1174,7 +1172,7 @@ class KustoLanguageService implements LanguageService {
         });
 
         if (commands.length === 0) {
-            return { formattedCommands: [] };
+            return { commands, formattedCommands: [] };
         }
 
         const formattedCommands = commands.map((command) => {
@@ -1197,7 +1195,7 @@ class KustoLanguageService implements LanguageService {
         });
 
         const originalRange = this.createRange(document, commands[0].Start, commands[commands.length - 1].End);
-        return { formattedCommands, originalRange };
+        return { commands, formattedCommands, originalRange };
     }
 
     getCommandsInDocumentV2(
