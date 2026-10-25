@@ -19,7 +19,7 @@ import GlobalState = Kusto.Language.GlobalState;
 import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference, GetReferencedGlobalParamsResult } from '../types';
-import { Mutable } from '../util';
+import { getTrailingSeparatorStart, Mutable } from '../util';
 import { ClassificationRange } from '../syntaxHighlighting/types';
 
 let List = System.Collections.Generic.List$1;
@@ -509,7 +509,20 @@ class KustoLanguageService implements LanguageService {
         const endPos = document.positionAt(document.getText().length);
         const fullDocRange = ls.Range.create(startPos, endPos);
 
-        const formattedDoc = this.getFormattedCommandsInDocumentV2(document).formattedCommands.join('');
+        const { commands, formattedCommands } = this.getFormattedCommandsInDocumentV2(document);
+        const text = document.getText();
+        const formattedDoc = formattedCommands
+            .map((formatted, index) => {
+                if (index === commands.length - 1) return formatted;
+
+                // Include whitespace-only blocks skipped by the command formatter.
+                const original = text.slice(commands[index].Start, commands[index + 1].Start);
+                const separatorStart = getTrailingSeparatorStart(original);
+                return separatorStart < original.length
+                    ? formatted.slice(0, getTrailingSeparatorStart(formatted)) + original.slice(separatorStart)
+                    : formatted;
+            })
+            .join('');
 
         return Promise.resolve([ls.TextEdit.replace(fullDocRange, formattedDoc)]);
     }
@@ -1133,6 +1146,7 @@ class KustoLanguageService implements LanguageService {
         rangeStart?: number,
         rangeEnd?: number
     ): {
+        commands: k2.CodeBlock[];
         formattedCommands: string[];
         originalRange?: ls.Range;
     } {
@@ -1159,7 +1173,7 @@ class KustoLanguageService implements LanguageService {
         });
 
         if (commands.length === 0) {
-            return { formattedCommands: [] };
+            return { commands, formattedCommands: [] };
         }
 
         const formattedCommands = commands.map((command) => {
@@ -1182,7 +1196,7 @@ class KustoLanguageService implements LanguageService {
         });
 
         const originalRange = this.createRange(document, commands[0].Start, commands[commands.length - 1].End);
-        return { formattedCommands, originalRange };
+        return { commands, formattedCommands, originalRange };
     }
 
     getCommandsInDocumentV2(
