@@ -19,7 +19,7 @@ import GlobalState = Kusto.Language.GlobalState;
 import { Database, EntityGroup, getCslTypeNameFromClrType, getEntityDataTypeFromCslType } from './schema';
 import type { RenderOptions, VisualizationType, RenderOptionKeys, RenderInfo } from './renderInfo';
 import type { ClusterReference, DatabaseReference, GetReferencedGlobalParamsResult } from '../types';
-import { Mutable } from '../util';
+import { getTrailingSeparatorStart, Mutable } from '../util';
 import { ClassificationRange } from '../syntaxHighlighting/types';
 
 let List = System.Collections.Generic.List$1;
@@ -516,10 +516,11 @@ class KustoLanguageService implements LanguageService {
                 if (index === commands.length - 1) return formatted;
 
                 // Include whitespace-only blocks skipped by the command formatter.
-                const separator = text
-                    .slice(commands[index].Start, commands[index + 1].Start)
-                    .match(/[\r\n][ \t\r\n]*$/);
-                return separator ? formatted.replace(/[\r\n][ \t\r\n]*$/, '') + separator[0] : formatted;
+                const original = text.slice(commands[index].Start, commands[index + 1].Start);
+                const separatorStart = getTrailingSeparatorStart(original);
+                return separatorStart < original.length
+                    ? formatted.slice(0, getTrailingSeparatorStart(formatted)) + original.slice(separatorStart)
+                    : formatted;
             })
             .join('');
 
