@@ -10,19 +10,16 @@ function document(text: string): TextDocument {
 }
 
 describe('document formatting separators', () => {
-    test('returns the commands paired with their formatted text', () => {
-        const { commands, formattedCommands } = service.getFormattedCommandsInDocumentV2(
-            document('print x=1\n\n\n\nprint y=2')
-        );
-        expect(commands.map((command) => command.Text.trim())).toEqual(['print x=1', 'print y=2']);
-        expect(formattedCommands.map((text) => text.trim())).toEqual(['print x = 1', 'print y = 2']);
+    test('formats the full command range while skipping whitespace-only blocks', async () => {
+        const doc = document('print x=1\n\n\n\nprint y=2');
+        const range = Range.create(doc.positionAt(0), doc.positionAt(doc.getText().length));
+        expect(await service.doRangeFormat(doc, range)).toEqual([{ range, newText: 'print x = 1\r\nprint y = 2' }]);
     });
 
-    test('returns no commands for a blank document', () => {
-        expect(service.getFormattedCommandsInDocumentV2(document(' \t\n\n'))).toEqual({
-            commands: [],
-            formattedCommands: [],
-        });
+    test('returns no range edits for a blank document', async () => {
+        const doc = document(' \t\n\n');
+        const range = Range.create(doc.positionAt(0), doc.positionAt(doc.getText().length));
+        expect(await service.doRangeFormat(doc, range)).toEqual([]);
     });
 
     const cases = [
