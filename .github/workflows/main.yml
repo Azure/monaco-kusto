@@ -33,3 +33,4 @@ jobs:
         with:
           token: ${{ secrets.NPMPUBLISHTOKEN }}
           package: ./package/package.json
+          access: public
