@@ -1,0 +1,23 @@
+/*
+ * Accessibility fix: Make the "Read more" button in Monaco's suggest widget
+ * visible when a suggestion row is keyboard-focused, not only on mouse hover.
+ * Fixes MAS 2.1.1 / WCAG SC 2.1.1 (Keyboard).
+ */
+
+/* Show "Read more" button when the suggestion row is keyboard focused */
+.monaco-editor .suggest-widget .monaco-list-row.focused .suggest-readMore,
+.monaco-editor .suggest-widget .monaco-list-row:focus .suggest-readMore,
+.monaco-editor .suggest-widget .monaco-list-row:focus-within .suggest-readMore {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* Visible focus ring when the "Read more" button itself is focused via Tab */
+.monaco-editor .suggest-widget .suggest-readMore:focus,
+.monaco-editor .suggest-widget .suggest-readMore:focus-visible {
+    outline: 2px solid var(--vscode-focusBorder, #005FCC);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
