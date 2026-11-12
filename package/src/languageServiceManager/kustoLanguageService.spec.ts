@@ -1,10 +1,72 @@
 import { Range, TextDocument } from 'vscode-languageserver-types';
 import { getKustoLanguageService } from './kustoLanguageService';
 import { getTrailingSeparatorStart } from '../util';
+import { showSchema } from './schema';
 
 jest.mock('language-service', () => ({}), { virtual: true });
 
 const service = getKustoLanguageService();
+
+describe('schema normalization', () => {
+    test.each([
+        { name: 'omitted', graphs: undefined, expected: [] },
+        { name: 'empty', graphs: {}, expected: [] },
+        {
+            name: 'populated',
+            graphs: {
+                Social: { Name: 'Social', Nodes: ['People'], Edges: ['Knows'], Snapshots: ['snapshot'] },
+            },
+            expected: [
+                { name: 'Social', entityType: 'Graph', nodes: ['People'], edges: ['Knows'], snapshots: ['snapshot'] },
+            ],
+        },
+    ])('normalizes a schema with $name Graphs', async ({ graphs, expected }) => {
+        const schema: showSchema.Result = {
+            Plugins: [],
+            Databases: {
+                TestDB: {
+                    Name: 'TestDB',
+                    Tables: {
+                        Events: {
+                            Name: 'Events',
+                            EntityType: 'Table',
+                            OrderedColumns: [{ Name: 'Name', Type: 'System.String', CslType: 'string' }],
+                        },
+                    },
+                    ExternalTables: {},
+                    MaterializedViews: undefined,
+                    EntityGroups: {},
+                    MajorVersion: 1,
+                    MinorVersion: 1,
+                    DatabaseAccessMode: 'ReadWrite',
+                    Functions: {
+                        MyFunction: {
+                            Name: 'MyFunction',
+                            Body: 'Events',
+                            InputParameters: [],
+                            Folder: '',
+                            DocString: 'Return events',
+                            FunctionKind: 'Unknown',
+                            OutputColumns: [],
+                        },
+                    },
+                    ...(graphs === undefined ? {} : { Graphs: graphs }),
+                },
+            },
+        };
+
+        const normalized = await service.normalizeSchema(schema, 'https://help.kusto.windows.net', 'TestDB');
+
+        expect(normalized.database).toBe(normalized.cluster.databases[0]);
+        expect(normalized.database.graphs).toEqual(expected);
+        expect(normalized.database.tables).toMatchObject([
+            { name: 'Events', entityType: 'Table', columns: [{ name: 'Name', type: 'string' }] },
+        ]);
+        expect(normalized.database.functions).toMatchObject([
+            { name: 'MyFunction', body: 'Events', inputParameters: [], docstring: 'Return events' },
+        ]);
+    });
+});
 
 function document(text: string): TextDocument {
     return TextDocument.create('file:///formatting.kql', 'kusto', 1, text);

@@ -248,7 +248,7 @@ export namespace showSchema {
         readonly MajorVersion: number;
         readonly MinorVersion: number;
         readonly Functions: Functions;
-        readonly Graphs: Graphs;
+        readonly Graphs?: Graphs;
         readonly DatabaseAccessMode: string;
     }
 

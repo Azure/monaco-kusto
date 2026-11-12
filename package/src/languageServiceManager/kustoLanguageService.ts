@@ -946,7 +946,7 @@ class KustoLanguageService implements LanguageService {
                     EntityGroups = {},
                     MinorVersion,
                     MajorVersion,
-                    Graphs,
+                    Graphs = {},
                 }: s.showSchema.Database) => ({
                     name: Name,
                     alternateName: databaseInContextAlternateName,
