@@ -174,6 +174,10 @@ This section provides a high-level overview of the main files and their responsi
 
 ## Changelog
 
+### 15.0.3
+
+-   fix: accept schema JSON without graph definitions
+
 ### 15.0.2
 
 -   fix: preserve separators between KQL queries during document formatting without changing selection or current-command formatting
